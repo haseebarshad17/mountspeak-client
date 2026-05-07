@@ -1,0 +1,1 @@
+// TO DO: Implement Supabase for the admin panel 
