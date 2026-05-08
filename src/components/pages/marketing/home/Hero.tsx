@@ -1,4 +1,4 @@
-import HeroFilters from '@/components/pages/public/home/HeroFilters'
+import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import React from 'react'
 
 const Hero = () => {

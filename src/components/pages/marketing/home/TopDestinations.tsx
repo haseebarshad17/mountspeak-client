@@ -41,7 +41,7 @@ const TopDestinations = () => {
                 <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end'>
                     <div>
                         <span className='text-xs font-semibold uppercase tracking-[0.12em] text-[#2D6A6A]'>Top Destinations</span>
-                        <h2 className='pt-1 text-3xl font-semibold leading-[1.05] text-[#102A43] sm:text-4xl lg:text-5xl'>Discover your love</h2>
+                        <h2 className='pt-1 agency-section-heading'>Discover your love</h2>
                     </div>
 
                     <Button

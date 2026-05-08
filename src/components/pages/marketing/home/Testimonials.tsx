@@ -96,11 +96,11 @@ const Testimonials = () => {
                             ))}
                         </Swiper>
 
-                    <button
+                        <button
                             type="button"
                             aria-label="Previous testimonial"
                             onClick={() => swiperRef.current?.slidePrev()}
-                        className="absolute left-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
+                            className="absolute left-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
                             transition hover:text-amber-300 lg:-left-6"
                         >
                             <ChevronLeft className="h-8 w-8 sm:h-11 sm:w-11" strokeWidth={1.5} />
@@ -109,7 +109,7 @@ const Testimonials = () => {
                             type="button"
                             aria-label="Next testimonial"
                             onClick={() => swiperRef.current?.slideNext()}
-                        className="absolute right-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
+                            className="absolute right-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
                         transition hover:text-amber-300 lg:-right-6"
                         >
                             <ChevronRight className="h-8 w-8 sm:h-11 sm:w-11" strokeWidth={1.5} />
@@ -117,7 +117,7 @@ const Testimonials = () => {
                     </div>
 
                     {/* Avatar pagination */}
-                    <div className="mx-auto mt-7 flex max-w-full items-center justify-center gap-1.5 sm:mt-9 sm:gap-3 md:gap-4">
+                    <div className="mx-auto mt-7 flex max-w-full items-center justify-center sm:mt-9 gap-4">
                         {testimonials.map((person, idx) => {
                             const isActive = idx === activeIndex
                             return (
@@ -149,7 +149,7 @@ const Testimonials = () => {
                     </div>
 
                     {/* Dot indicators (synced with slides) */}
-                    <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="pt-10 flex items-center justify-center gap-2">
                         {testimonials.map((_, idx) => (
                             <button
                                 key={idx}

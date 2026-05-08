@@ -22,7 +22,7 @@ export default function HeroFilters() {
 
     const triggerCls = cn(
         "flex h-14 !w-full items-center justify-start gap-2.5 px-4 text-sm font-medium",
-        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100",
+        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left",
         "rounded-none xl:bg-transparent xl:hover:bg-neutral-50/80",
         "border border-layout-separator rounded-md xl:border-y-0 xl:border-l-0 xl:rounded-none"
     )
@@ -40,8 +40,8 @@ export default function HeroFilters() {
                 <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
                     <PopoverTrigger>
                         <Button variant="ghost" className={triggerCls} asChild>
-                            <MapPin className="w-4 h-4 text-neutral-500" />
-                            {from || "From"}
+                            <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
+                            <span className="truncate min-w-0 w-full">{from || "From"}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -50,7 +50,10 @@ export default function HeroFilters() {
                             <Button
                                 key={city}
                                 variant="ghost"
-                                className={cn("w-full justify-start", from === city && "bg-neutral-100")}
+                                className={cn(
+                                    "w-full justify-start",
+                                    from === city && "bg-neutral-100"
+                                )}
                                 onClick={() => {
                                     setFrom(city)
                                     if (to === city) setTo("")
@@ -67,8 +70,8 @@ export default function HeroFilters() {
                 <Popover open={open === "to"} onOpenChange={(v) => setOpen(v ? "to" : null)}>
                     <PopoverTrigger>
                         <Button variant="ghost" className={triggerCls} asChild>
-                            <Navigation className="w-4 h-4 text-neutral-500" />
-                            {to || "To"}
+                            <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
+                            <span className="truncate min-w-0 w-full">{to || "To"}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -97,8 +100,8 @@ export default function HeroFilters() {
                 <Popover open={open === "date"} onOpenChange={(v) => setOpen(v ? "date" : null)}>
                     <PopoverTrigger>
                         <Button variant="ghost" className={triggerCls} asChild>
-                            <Calendar className="w-4 h-4 text-neutral-500" />
-                            {date || "Date"}
+                            <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
+                            <span className="truncate min-w-0 w-full">{date || "Date"}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -120,8 +123,8 @@ export default function HeroFilters() {
                 <Popover open={open === "trav"} onOpenChange={(v) => setOpen(v ? "trav" : null)}>
                     <PopoverTrigger>
                         <Button variant="ghost" className={triggerCls} asChild>
-                            <User className="w-4 h-4 text-neutral-500" />
-                            {travelers} · {travelClass}
+                            <User className="w-4 h-4 text-neutral-500 flex-shrink-0" />
+                            <span className="truncate min-w-0 w-full">{travelers} · {travelClass}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -167,7 +170,7 @@ export default function HeroFilters() {
                 {/* SEARCH */}
                 <div className="sm:col-span-2 xl:col-span-1 xl:p-2">
                     <Button className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[64px] xl:rounded-lg">
-                        Find Trip <Search className="ml-2 w-4 h-4" />
+                        Find Trip <Search className="ml-2 w-4 h-4 flex-shrink-0" />
                     </Button>
                 </div>
 
