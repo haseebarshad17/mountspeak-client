@@ -48,15 +48,15 @@ const Footer = () => {
     return (
         <footer className='bg-primary-500'>
             <div className='agency-container'>
-                <section className='flex flex-col gap-10 py-12 sm:py-14 lg:flex-row lg:justify-between lg:gap-6 lg:py-[95px]'>
-                    <div className='w-full max-w-[381px]'>
+                <section className='flex flex-col gap-10 py-[60px] xl:flex-row lg:justify-between lg:gap-6 lg:py-[95px]'>
+                    <div className='w-max flex-shrink-0 xl:pr-[170px] pr-[70px] pb-5'>
                         <a href="/">
                             <Image
                                 src='/images/generic/agency-logo.png'
                                 alt='logo'
                                 width={100}
                                 height={100}
-                              className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xlw-[95px]'
+                                className='h-auto w-[95px]'
                             />
                         </a>
                     </div>

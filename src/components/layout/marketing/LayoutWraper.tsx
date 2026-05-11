@@ -1,11 +1,10 @@
 "use client"
 
 import React from 'react'
-// import Header from './header/header';
-// import Footer from './footer/footer';
 import { usePathname } from 'next/navigation';
 import Header from './header/header';
 import Footer from './footer/footer';
+import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 
 interface LayoutWrapperProps {
     readonly children: React.ReactNode;
@@ -29,16 +28,16 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
 
     return (
-        <div className='w-full h-dvh flex overflow-hidden'>
+        <TanstackQueryProvider>
             <div
                 id='app-scroll-container'
-                className='w-full h-full overflow-y-auto scrollbar-content'
+                className='w-full h-dvh overflow-y-auto scrollbar-content'
             >
                 {ShouldShowHeader && <Header />}
                 {children}
                 {ShouldShowFooter && <Footer />}
             </div>
-        </div>
+        </TanstackQueryProvider>
     )
 }
 
