@@ -1,0 +1,395 @@
+{
+    "page": {
+        "id": "hunza-fairy-meadows-expedition",
+        "slug": "hunza-valley-fairy-meadows",
+        "type": "expedition_detail",
+        "status": "published",
+        "locale": "en",
+        "seo": {
+            "metaTitle": "Hunza Valley & Fairy Meadows Expedition",
+            "metaDescription": "Luxury expedition through Hunza Valley, Fairy Meadows, Baltit Fort, and Karakoram landscapes.",
+            "keywords": [
+                "Hunza Valley",
+                "Fairy Meadows",
+                "Pakistan travel",
+                "Luxury expedition",
+                "Karakoram",
+                "Gilgit Baltistan"
+            ],
+            "ogImage": "/images/expeditions/hunza-cover.jpg",
+            "canonicalUrl": "/expeditions/hunza-valley-fairy-meadows"
+        },
+        "theme": {
+            "primaryColor": "#0E3B43",
+            "secondaryColor": "#F26A3D",
+            "backgroundColor": "#F5F5F2",
+            "textColor": "#1F1F1F",
+            "fontHeading": "Playfair",
+            "fontBody": "Inter"
+        },
+        "navigation": {
+            "transparent": true,
+            "logo": {
+                "type": "image",
+                "src": "/branding/phnes-travels-logo-white.svg",
+                "alt": "Phnes Travels"
+            },
+            "menuItems": [{
+                    "label": "Home",
+                    "url": "/"
+                },
+                {
+                    "label": "Discover",
+                    "url": "/discover"
+                }
+            ],
+            "cta": {
+                "label": "Sign Up",
+                "url": "/signup",
+                "variant": "primary-light"
+            }
+        },
+        "heroSection": {
+            "id": "hero",
+            "layout": "full-bleed-overlay",
+            "backgroundMedia": {
+                "type": "image",
+                "desktop": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                "tablet": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                "mobile": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                "alt": "Hunza Valley aerial mountain landscape"
+            },
+            "overlay": {
+                "enabled": true,
+                "color": "#000000",
+                "opacity": 0.45
+            },
+            "eyebrow": "PREMIUM EXPEDITION",
+            "title": "Hunza Valley & Fairy Meadows",
+            "subtitle": "Explore ancient forts, alpine villages, glacier-fed valleys, and dramatic Karakoram landscapes.",
+            "tripHighlights": [{
+                    "icon": "calendar",
+                    "label": "7 DAYS / 6 NIGHTS"
+                },
+                {
+                    "icon": "mountain",
+                    "label": "HIGH ALTITUDE"
+                }
+            ],
+            "ctaGroup": [{
+                    "label": "Download Itinerary",
+                    "url": "/download/hunza-itinerary.pdf",
+                    "style": "primary"
+                },
+                {
+                    "label": "Speak With An Expert",
+                    "url": "/contact",
+                    "style": "secondary"
+                }
+            ]
+        },
+        "overviewSection": {
+            "id": "overview",
+            "title": "The Vertical Ascent",
+            "description": "Journey into the heart of the Karakoram range. This curated expedition balances thoughtful luxury with the raw Valley wilderness, taking travelers from the ancient settlements of Hunza to the legendary Fairy Meadows beneath Nanga Parbat.",
+            "statistics": [{
+                    "label": "MAX ELEVATION",
+                    "value": "3,300m"
+                },
+                {
+                    "label": "DIFFICULTY",
+                    "value": "Moderate-Challenging"
+                }
+            ],
+            "sideCard": {
+                "type": "map",
+                "title": "EXPEDITION ROUTE MAP",
+                "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+                "alt": "Hunza expedition route map"
+            },
+            "highlightColumns": [{
+                    "icon": "sunrise",
+                    "title": "The Best Time to Visit",
+                    "items": [
+                        "April – June for spring blossoms along the valley",
+                        "September – October for stable weather and clear peaks"
+                    ]
+                },
+                {
+                    "icon": "circle-check",
+                    "title": "What's Included",
+                    "items": [
+                        "Boutique accommodations and alpine camps",
+                        "Private ground transfers and trek logistics",
+                        "Expert local guides and expedition leadership"
+                    ]
+                },
+                {
+                    "icon": "circle-minus",
+                    "title": "What's Not Included",
+                    "items": [
+                        "International flights to Gilgit or Islamabad",
+                        "Personal trekking equipment and travel insurance",
+                        "Optional extensions not listed in the itinerary"
+                    ]
+                }
+            ]
+        },
+        "technicalRouteSection": {
+            "id": "technical-route",
+            "title": "The Path: Technical Route Breakdown",
+            "background": "light-card",
+            "segments": [{
+                    "segmentId": "segment-01",
+                    "title": "Gilgit to Karimabad",
+                    "description": "A scenic drive tracing the Karakoram Highway with curated cultural and landscape immersion stops.",
+                    "distanceKm": 100,
+                    "estimatedDuration": "3 hrs",
+                    "terrain": [
+                        "Mountain highway",
+                        "River valley roads"
+                    ]
+                },
+                {
+                    "segmentId": "segment-02",
+                    "title": "Raikot Bridge Technical Transfer",
+                    "description": "Transition into alpine transport with guided jeep access toward Tattu village.",
+                    "distanceKm": 15,
+                    "estimatedDuration": "2 hrs",
+                    "terrain": [
+                        "Jeep track",
+                        "Mountain ascent"
+                    ]
+                },
+                {
+                    "segmentId": "segment-03",
+                    "title": "The Alpine Trek",
+                    "description": "Moderate hiking trail through pine forests and glacial scenery leading to Fairy Meadows.",
+                    "distanceKm": 5,
+                    "estimatedDuration": "4 hrs",
+                    "terrain": [
+                        "Forest trail",
+                        "Alpine route"
+                    ]
+                }
+            ]
+        },
+        "placesVisitedSection": {
+            "id": "places-visited",
+            "eyebrow": "CULTURAL LANDMARKS",
+            "title": "Places Visited",
+            "intro": "From centuries-old forts to glacier-fed landscapes, each stop is selected to showcase the historical and geographical identity of Northern Pakistan.",
+            "cards": [{
+                    "id": "baltit-fort",
+                    "title": "Baltit Fort",
+                    "location": "Hunza Valley, Pakistan",
+                    "category": "Historical Landmark",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "gallery": [
+                        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                    ],
+                    "description": "A 700-year-old fort overlooking Karimabad, showcasing Tibetan-influenced architecture."
+                },
+                {
+                    "id": "eagles-nest",
+                    "title": "Eagle's Nest",
+                    "location": "Duikar, Hunza",
+                    "category": "Viewpoint",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "gallery": [
+                        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                    ],
+                    "description": "Panoramic viewpoint famous for sunrise and sunset over the Karakoram peaks."
+                },
+                {
+                    "id": "karagh-buddha",
+                    "title": "Karagh Buddha",
+                    "location": "Gilgit Baltistan",
+                    "category": "Historic Site",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "gallery": [
+                        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                    ],
+                    "description": "Ancient Buddhist rock carvings representing the region's spiritual heritage."
+                },
+                {
+                    "id": "reflection-lake",
+                    "title": "Reflection Lake",
+                    "location": "Fairy Meadows",
+                    "category": "Nature",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "gallery": [
+                        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                    ],
+                    "description": "High-altitude alpine lake reflecting surrounding snow-covered mountains."
+                }
+            ]
+        },
+        "itinerarySection": {
+            "id": "itinerary",
+            "title": "Day-by-Day Journey",
+            "timelineStyle": "zigzag-cards",
+            "days": [{
+                    "day": 1,
+                    "title": "Arrival in Gilgit",
+                    "description": "Airport arrival, luxury transfer, and orientation dinner with local cultural introduction.",
+                    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Gilgit valley aerial view",
+                    "activities": [
+                        "Airport pickup",
+                        "Boutique hotel check-in",
+                        "Local cuisine dinner"
+                    ],
+                    "accommodation": "Gilgit Serena Hotel"
+                },
+                {
+                    "day": 2,
+                    "title": "The Heart of Hunza",
+                    "description": "Explore Baltit Fort and the Altit village before sunset viewpoints over the valley.",
+                    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Baltit Fort exterior",
+                    "activities": [
+                        "Fort guided tour",
+                        "Village walk",
+                        "Photography session"
+                    ],
+                    "accommodation": "Hunza luxury lodge"
+                },
+                {
+                    "day": 3,
+                    "title": "Fairy Meadows Base Camp",
+                    "description": "Transfer toward Raikot Bridge followed by alpine trek into Fairy Meadows.",
+                    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Fairy Meadows landscape",
+                    "activities": [
+                        "Jeep transfer",
+                        "Guided trek",
+                        "Campfire evening"
+                    ],
+                    "accommodation": "Luxury alpine tents"
+                }
+            ]
+        },
+        "stayAndDineSection": {
+            "id": "stay-dine",
+            "title": "Stay & Dine",
+            "properties": [{
+                    "id": "gilgit-serena",
+                    "type": "Luxury Lodging",
+                    "name": "Gilgit Serena Hotel",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "description": "Premium mountain-view rooms with modern amenities and regional hospitality.",
+                    "amenities": [
+                        "WiFi",
+                        "Mountain View",
+                        "Restaurant",
+                        "Concierge"
+                    ],
+                    "rating": 4.8
+                },
+                {
+                    "id": "yak-grill",
+                    "type": "Local Partner",
+                    "name": "The Yak Grill",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "description": "Traditional northern cuisine paired with handcrafted interiors and valley produce.",
+                    "amenities": [
+                        "Organic Cuisine",
+                        "Local Dishes",
+                        "Private Dining"
+                    ],
+                    "rating": 4.6
+                },
+                {
+                    "id": "raikot-alpine-tents",
+                    "type": "Alpine Retreat",
+                    "name": "Raikot Alpine Tents",
+                    "thumbnail": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "description": "Boutique glamping setup beneath snow-covered mountain ranges.",
+                    "amenities": [
+                        "Heated Tents",
+                        "Campfire",
+                        "Guided Trek Support"
+                    ],
+                    "rating": 4.9
+                }
+            ]
+        },
+        "perksAndTechnicalsSection": {
+            "id": "perks-technicals",
+            "title": "Expedition Perks & Technicals",
+            "items": [{
+                    "icon": "mountain-tools",
+                    "title": "Custom Trail & Rigs",
+                    "description": "Specialized mountain logistics and route planning for safe expedition movement."
+                },
+                {
+                    "icon": "chef-hat",
+                    "title": "Private Expedition Chef",
+                    "description": "Curated culinary experiences featuring regional and international cuisine."
+                },
+                {
+                    "icon": "wifi",
+                    "title": "Satellite Connectivity",
+                    "description": "Emergency satellite communication support in remote locations."
+                },
+                {
+                    "icon": "medical-kit",
+                    "title": "High Altitude Medics",
+                    "description": "Medical readiness and emergency response planning for altitude adaptation."
+                }
+            ]
+        },
+        "gallerySection": {
+            "id": "visual-fragments",
+            "background": "dark",
+            "eyebrow": "THE EXPERIENCE",
+            "title": "Visual Fragments",
+            "actionLabel": "VIEW FULL GALLERY",
+            "actionUrl": "/gallery/hunza-expedition",
+            "layout": "masonry-grid",
+            "media": [{
+                    "id": "gallery-01",
+                    "type": "image",
+                    "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Suspension bridge in mountain valley"
+                },
+                {
+                    "id": "gallery-02",
+                    "type": "image",
+                    "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Textured fabric close-up"
+                },
+                {
+                    "id": "gallery-03",
+                    "type": "image",
+                    "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Portrait of local villager"
+                },
+                {
+                    "id": "gallery-04",
+                    "type": "image",
+                    "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                    "alt": "Mountain road through valley"
+                }
+            ]
+        },
+        "finalCtaSection": {
+            "id": "final-cta",
+            "title": "Are you ready to witness the peaks of giants?",
+            "description": "Connect with our expedition specialists to customize your journey.",
+            "buttons": [{
+                    "label": "DOWNLOAD ITINERARY",
+                    "url": "/download/hunza-itinerary.pdf",
+                    "style": "primary"
+                },
+                {
+                    "label": "SPEAK WITH AN EXPERT",
+                    "url": "/contact",
+                    "style": "secondary"
+                }
+            ]
+        }
+    }
+}
