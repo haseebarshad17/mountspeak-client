@@ -1,9 +1,10 @@
 import {
     // Agdasima, Noto_Sans,
-    // Roboto,
     // Red_Hat_Text,
+    Jost,
+    Karla,
     Montserrat,
-    Karla
+    Roboto,
 } from "next/font/google";
 
 
@@ -47,4 +48,18 @@ export const notoSans = Karla({
 //     display: "swap",
 //     variable: "--font-noto",
 // });
+
+export const jost = Jost({
+    subsets: ["latin"],
+    weight: ["500"],
+    display: "swap",
+    variable: "--font-jost",
+});
+
+export const roboto = Roboto({
+    subsets: ["latin"],
+    weight: ["400"],
+    display: "swap",
+    variable: "--font-roboto",
+});
 
