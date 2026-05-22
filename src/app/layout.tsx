@@ -4,7 +4,7 @@ import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
 import { defaultMeta } from "@/assests/meta";
-import { notoSans, redHatText } from "@/assests/fonts";
+import { jost, notoSans, redHatText, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
 
@@ -29,6 +29,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             className={cn(
                 notoSans.variable,
                 redHatText.variable,
+                jost.variable,
+                roboto.variable,
             )}
         >
             <body className={cn(notoSans.variable)}>

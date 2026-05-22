@@ -12,6 +12,8 @@ const config: Config = {
             fontFamily: {
                 heading: ["var(--font-heading)", "ui-sans-serif", "system-ui", "sans-serif"],
                 body: ["var(--font-noto)", "ui-sans-serif", "system-ui", "sans-serif"],
+                jost: ["var(--font-jost)", "ui-sans-serif", "system-ui", "sans-serif"],
+                roboto: ["var(--font-roboto)", "ui-sans-serif", "system-ui", "sans-serif"],
             },
 
             // Screens

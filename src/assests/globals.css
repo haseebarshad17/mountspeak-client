@@ -318,4 +318,16 @@
         @apply text-[32px] font-semibold  leading-none
     }
 
+    .testimonials-swiper .swiper-slide-active .testimonial-quote {
+        @apply bg-[#276968] text-white;
+    }
+
+    .testimonials-swiper .swiper-slide-active .testimonial-dots-full {
+        display: none;
+    }
+
+    .testimonials-swiper .swiper-slide-active .testimonial-dots-arc {
+        display: block;
+    }
+
 }

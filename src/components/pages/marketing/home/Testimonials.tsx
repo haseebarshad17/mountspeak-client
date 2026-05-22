@@ -1,170 +1,188 @@
-"use client"
+'use client'
 
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
-import Image from "next/image"
-import React, { useRef, useState } from "react"
-import { Swiper, SwiperSlide } from "swiper/react"
-import type { Swiper as SwiperType } from "swiper/types"
-import "swiper/css"
-import { cn } from "@/lib/utils/clsxUtils"
-
+import { SectionEyebrow } from '@/components/ui/section-eyebrow'
+import { Star } from 'lucide-react'
+import Image from 'next/image'
+import React, { useRef, useState } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import type { Swiper as SwiperType } from 'swiper/types'
+import 'swiper/css'
+import { cn } from '@/lib/utils/clsxUtils'
 
 const testimonials = [
     {
-        name: "Alice Smith",
+        name: 'Eqrah Mir',
+        location: 'lahore',
         quote:
-            "A real sense of community, nurtured. Really appreciate the help and support from the staff during my trips. Very helpful and always available when needed.",
-        avatar: "https://i.pravatar.cc/100?img=47",
+            "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
+        avatar: 'https://i.pravatar.cc/150?img=32',
     },
     {
-        name: "Noah Martin",
+        name: 'Maher Awais',
+        location: 'Lahore',
         quote:
-            "From booking to arrival, everything felt smooth and organized. The support team answered quickly and made our whole experience stress-free.",
-        avatar: "https://i.pravatar.cc/100?img=12",
+            'Asif bhi bht acha tour raha apky sath MashaAllah bht enjoy kia,, All the services were EXCELLENT!! HIGHLY Recommended ❤️❤️❤️',
+        avatar: 'https://i.pravatar.cc/150?img=11',
     },
     {
-        name: "Sophia Khan",
+        name: 'Eqrah Mir',
+        location: 'lahore',
         quote:
-            "The tour quality exceeded expectations and the communication was excellent. I felt looked after from day one to the final return.",
-        avatar: "https://i.pravatar.cc/100?img=5",
+            "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
+        avatar: 'https://i.pravatar.cc/150?img=47',
     },
-    {
-        name: "Ethan Parker",
-        quote:
-            "I loved the flexibility in planning and the level of detail throughout the journey. It made traveling with family easy and memorable.",
-        avatar: "https://i.pravatar.cc/100?img=28",
-    },
-    {
-        name: "Olivia Reed",
-        quote:
-            "Great destinations, clear pricing, and super responsive support. The whole platform feels designed around real travelers and their needs.",
-        avatar: "https://i.pravatar.cc/100?img=23",
-    },
-]
+] as const
+
+const DOT_COUNT = 32
+const DOT_RADIUS = 46
+const DOT_SIZE = 2.2
+
+function DottedAvatarFrame({ src, alt, clipId }: { src: string; alt: string; clipId: string }) {
+    const dots = Array.from({ length: DOT_COUNT }, (_, i) => {
+        const angle = (i / DOT_COUNT) * Math.PI * 2 - Math.PI / 2
+        const cx = 50 + DOT_RADIUS * Math.cos(angle)
+        const cy = 50 + DOT_RADIUS * Math.sin(angle)
+        return { cx, cy, isTopHalf: cy <= 50.5 }
+    })
+
+    return (
+        <div className='relative h-[92px] w-[92px] sm:h-[100px] sm:w-[100px]'>
+            {/* Inactive: full gold dot ring */}
+            <svg
+                className='testimonial-dots-full absolute inset-0 h-full w-full'
+                viewBox='0 0 100 100'
+                aria-hidden
+            >
+                {dots.map((dot, i) => (
+                    <circle key={`gold-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill='#F5D547' />
+                ))}
+            </svg>
+
+            {/* Active: white dots on top semicircle only */}
+            <svg
+                className='testimonial-dots-arc absolute inset-0 hidden h-full w-full'
+                viewBox='0 0 100 100'
+                aria-hidden
+            >
+                <defs>
+                    <clipPath id={clipId}>
+                        <rect x='0' y='0' width='100' height='52' />
+                    </clipPath>
+                </defs>
+                <g clipPath={`url(#${clipId})`}>
+                    {dots.map(
+                        (dot, i) =>
+                            dot.isTopHalf && (
+                                <circle key={`white-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill='#FFFFFF' />
+                            ),
+                    )}
+                </g>
+            </svg>
+
+            <div className='absolute left-1/2 top-1/2 h-[72px] w-[72px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[2.5px] border-white sm:h-20 sm:w-20'>
+                <Image src={src} alt={alt} fill className='object-cover' sizes='80px' />
+            </div>
+        </div>
+    )
+}
+
+function TestimonialCard({
+    quote,
+    name,
+    location,
+    avatar,
+    clipId,
+}: {
+    quote: string
+    name: string
+    location: string
+    avatar: string
+    clipId: string
+}) {
+    return (
+        <div className='flex flex-col items-center px-2 pb-4 pt-2'>
+            <div className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl bg-[#F2F2F2] px-5 pb-16 pt-8 text-center text-[#4B5563] transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'>
+                <p className='font-roboto text-sm font-normal leading-7 sm:text-base'>{quote}</p>
+
+                <div className='testimonial-avatar-wrap absolute -bottom-11 left-1/2 -translate-x-1/2 sm:-bottom-12'>
+                    <DottedAvatarFrame src={avatar} alt={name} clipId={clipId} />
+                </div>
+            </div>
+
+            <div className='mt-14 text-center sm:mt-16'>
+                <h3 className='font-roboto text-base font-semibold text-[#111827] sm:text-xl'>{name}</h3>
+                <p className='pt-0.5 font-roboto text-base font-normal capitalize text-[#9CA3AF]'>{location}</p>
+                <div className='mt-2 flex items-center justify-center gap-1'>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className='h-4 w-4 fill-[#F5D547] text-[#F5D547]' aria-hidden />
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
 
 const Testimonials = () => {
     const swiperRef = useRef<SwiperType | null>(null)
-    const [activeIndex, setActiveIndex] = useState(0)
+    const [activeIndex, setActiveIndex] = useState(1)
 
     return (
-        <section className="overflow-hidden pb-16 sm:pb-20 lg:pb-[110px]">
-            <main className="relative bg-[url('/images/pages/home/testimonial-background.png')] 
-            bg-cover bg-center">
-                <div className="agency-container relative z-10 px-3 py-10 sm:px-4 sm:py-12 lg:py-14">
-                    <header className="text-center text-white">
-                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-white/90">
-                            Testimonials
-                        </p>
-                        <h2 className="pt-2 agency-section-heading">
-                            What they say about us
-                        </h2>
-                    </header>
+        <section className='overflow-hidden bg-white pb-16 sm:pb-20 lg:pb-[112px]' aria-labelledby='testimonials-heading'>
+            <div className='agency-container py-10 sm:py-12 lg:py-14'>
+                <header className='mx-auto max-w-3xl text-center'>
+                    <SectionEyebrow name='Testimonial' />
+                    <h2
+                        id='testimonials-heading'
+                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] text-[#14141F] sm:pt-4'
+                    >
+                        Our Clients Say!!!
+                    </h2>
+                </header>
 
-                    {/* Only rating, quote, name slide */}
-                    <div className="relative mx-auto mt-8 max-w-[720px] px-7 sm:mt-10 sm:px-10 lg:px-0">
-                        <Swiper
-                            slidesPerView={1}
-                            loop
-                            speed={600}
-                            onBeforeInit={(swiper) => {
-                                swiperRef.current = swiper
-                            }}
-                            onSlideChange={(swiper) => {
-                                setActiveIndex(swiper.realIndex)
-                            }}
-                            className="w-full user-select-none select-none"
-                        >
-                            {testimonials.map((item) => (
-                                <SwiperSlide key={item.name}>
-                                    <div className="flex flex-col items-center px-2 text-center text-white">
-                                        <div className="flex items-center gap-1 text-amber-400">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <Star
-                                                    key={i}
-                                                    className="h-4 w-4 fill-current sm:h-5 sm:w-5"
-                                                />
-                                            ))}
-                                        </div>
-                                        <p className="mt-5 max-w-[640px] text-sm leading-7 text-white/92 sm:text-base sm:leading-8">
-                                            &ldquo;{item.quote}&rdquo;
-                                        </p>
-                                        <h3 className="mt-7 text-xl font-semibold sm:text-2xl lg:text-[28px]">
-                                            {item.name}
-                                        </h3>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-
-                        <button
-                            type="button"
-                            aria-label="Previous testimonial"
-                            onClick={() => swiperRef.current?.slidePrev()}
-                            className="absolute left-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
-                            transition hover:text-amber-300 lg:-left-6"
-                        >
-                            <ChevronLeft className="h-8 w-8 sm:h-11 sm:w-11" strokeWidth={1.5} />
-                        </button>
-                        <button
-                            type="button"
-                            aria-label="Next testimonial"
-                            onClick={() => swiperRef.current?.slideNext()}
-                            className="absolute right-0 top-[42%] z-10 -translate-y-1/2 text-amber-400 
-                        transition hover:text-amber-300 lg:-right-6"
-                        >
-                            <ChevronRight className="h-8 w-8 sm:h-11 sm:w-11" strokeWidth={1.5} />
-                        </button>
-                    </div>
-
-                    {/* Avatar pagination */}
-                    <div className="mx-auto mt-7 flex max-w-full items-center justify-center sm:mt-9 gap-4">
-                        {testimonials.map((person, idx) => {
-                            const isActive = idx === activeIndex
-                            return (
-                                <button
-                                    key={person.name}
-                                    type="button"
-                                    onClick={() => swiperRef.current?.slideToLoop(idx)}
-                                    className={cn(
-                                        "relative shrink-0 overflow-hidden rounded-full ring-2 transition-all duration-300 ease-out",
-                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2",
-                                        "focus-visible:ring-offset-transparent h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11",
-                                        isActive
-                                            ? "z-[1] ring-amber-400 scale-110 sm:scale-115 md:scale-125"
-                                            : "opacity-90 ring-white/45 hover:opacity-100"
-                                    )}
-                                    aria-label={`Show testimonial from ${person.name}`}
-                                    aria-current={isActive ? "true" : undefined}
-                                >
-                                    <Image
-                                        src={person.avatar}
-                                        alt={person.name}
-                                        fill
-                                        className="object-cover"
-                                        sizes="72px"
-                                    />
-                                </button>
-                            )
-                        })}
-                    </div>
-
-                    {/* Dot indicators (synced with slides) */}
-                    <div className="pt-10 flex items-center justify-center gap-2">
-                        {testimonials.map((_, idx) => (
-                            <button
-                                key={idx}
-                                type="button"
-                                aria-label={`Go to testimonial ${idx + 1}`}
-                                onClick={() => swiperRef.current?.slideToLoop(idx)}
-                                className={`h-2 rounded-full transition-all duration-300 ${idx === activeIndex
-                                    ? "w-5 bg-amber-400"
-                                    : "w-2 bg-white/65 hover:bg-white/85"
-                                    }`}
-                            />
+                <div className='relative mx-auto mt-8 max-w-[1280px] sm:mt-10 lg:mt-12'>
+                    <Swiper
+                        slidesPerView={1}
+                        centeredSlides
+                        loop
+                        speed={500}
+                        spaceBetween={20}
+                        initialSlide={1}
+                        breakpoints={{
+                            640: { slidesPerView: 1.4, spaceBetween: 24 },
+                            900: { slidesPerView: 2.2, spaceBetween: 28 },
+                            1100: { slidesPerView: 3, spaceBetween: 32 },
+                        }}
+                        onBeforeInit={(swiper) => {
+                            swiperRef.current = swiper
+                        }}
+                        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                        className='testimonials-swiper !overflow-visible px-2'
+                    >
+                        {testimonials.map((item, index) => (
+                            <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
+                                <TestimonialCard {...item} clipId={`testimonial-arc-${index}`} />
+                            </SwiperSlide>
                         ))}
-                    </div>
+                    </Swiper>
                 </div>
-            </main>
+
+                <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
+                    {testimonials.map((_, idx) => (
+                        <button
+                            key={idx}
+                            type='button'
+                            aria-label={`Go to testimonial ${idx + 1}`}
+                            onClick={() => swiperRef.current?.slideToLoop(idx)}
+                            className={cn(
+                                'transition-all duration-300',
+                                idx === activeIndex
+                                    ? 'h-2 w-10 rounded-full bg-[#276968]'
+                                    : 'h-2.5 w-2.5 rounded-full border-2 border-[#F5D547] bg-transparent',
+                            )}
+                        />
+                    ))}
+                </div>
+            </div>
         </section>
     )
 }
