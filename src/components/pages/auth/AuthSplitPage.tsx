@@ -17,7 +17,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   return (
     <section className="h-full  flex justify-center">
-      <div className="flex h-full w-full max-w-[1400px] flex-col overflow-hidden  bg-white md:flex-row">
+      <div className="flex h-full w-full max-w-[100%] border-none flex-col overflow-hidden  bg-white md:flex-row">
         <div className="relative hidden overflow-hidden md:block md:w-1/2">
           <Image
             src={authSideImageSrc}
