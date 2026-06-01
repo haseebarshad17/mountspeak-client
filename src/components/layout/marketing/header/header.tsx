@@ -122,12 +122,14 @@ const Header = () => {
                             <Button
                                 variant='transparent'
                                 className='text-white'
+                                href='/login'
                             >
                                 Login
                             </Button>
                             <Button
                                 variant='secondary'
                                 className='w-max rounded-sm px-5'
+                                href='/register'
                             >
                                 Sign Up
                             </Button>
@@ -206,12 +208,14 @@ const Header = () => {
                         <Button
                             variant='transparent'
                             className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
+                            href='/login'
                         >
                             Login
                         </Button>
                         <Button
                             variant='secondary'
                             className='flex-1 !w-full rounded-md bg-white text-primary-700'
+                            href='/register'
                         >
                             Sign Up
                         </Button>

@@ -1,9 +1,12 @@
 import {
     // Agdasima, Noto_Sans,
     // Red_Hat_Text,
+    Hanken_Grotesk,
+    JetBrains_Mono,
     Jost,
     Karla,
     Montserrat,
+    Plus_Jakarta_Sans,
     Roboto,
 } from "next/font/google";
 
@@ -61,5 +64,26 @@ export const roboto = Roboto({
     weight: ["400"],
     display: "swap",
     variable: "--font-roboto",
+});
+
+export const hankenGrotesk = Hanken_Grotesk({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800"],
+    display: "swap",
+    variable: "--font-hanken-grotesk",
+});
+
+export const plusJakartaSans = Plus_Jakarta_Sans({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800"],
+    display: "swap",
+    variable: "--font-plus-jakarta-sans",
+});
+
+export const jetBrainsMono = JetBrains_Mono({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800"],
+    display: "swap",
+    variable: "--font-jetbrains-mono",
 });
 

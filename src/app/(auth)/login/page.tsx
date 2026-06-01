@@ -1,9 +1,7 @@
-import React from 'react'
+import AuthSplitPage from "@/components/pages/auth/AuthSplitPage";
 
 const Page = () => {
-    return (
-        <div>Page</div>
-    )
-}
+  return <AuthSplitPage mode="login" />;
+};
 
-export default Page
+export default Page;
