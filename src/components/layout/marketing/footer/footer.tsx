@@ -52,7 +52,7 @@ const Footer = () => {
                     <div className='w-max flex-shrink-0 xl:pr-[170px] pr-[70px] pb-5'>
                         <a href="/">
                             <Image
-                                src='/images/generic/agency-logo.png'
+                                src='/images/generic/agency-logo-white.svg'
                                 alt='logo'
                                 width={100}
                                 height={100}
