@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { CircleCheck, CircleMinus, MapPin, Sunrise, type LucideIcon } from 'lucide-react'
 
 import type { TourPage } from './tour-page.types'
-import { Separator } from '@radix-ui/react-dropdown-menu'
 
 const overviewColumnIcons: Record<string, LucideIcon> = {
     sunrise: Sunrise,

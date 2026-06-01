@@ -79,12 +79,12 @@ function TourCard({
             </div>
 
             <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-12 text-center sm:px-4 sm:pb-5 sm:pt-14 lg:px-5 lg:pb-6 lg:pt-16'>
-                <h3 className='font-jost text-[11px] font-medium uppercase leading-snug tracking-wide text-white xs:text-xs sm:text-sm md:text-[15px] lg:text-base'>
+                <h3 className='font-jost text-[20px] font-medium uppercase leading-snug tracking-wide text-white'>
                     {title}
                 </h3>
                 <Link
                     href='#'
-                    className='mt-2 inline-flex items-center gap-1.5 font-roboto text-xs font-normal text-white/95 transition-colors hover:text-white sm:mt-3 sm:text-sm'
+                    className='mt-2 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
                 >
                     View All Place
                     <ArrowRight className='h-3.5 w-3.5 sm:h-4 sm:w-4' strokeWidth={2} aria-hidden />

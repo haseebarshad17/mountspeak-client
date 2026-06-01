@@ -1,7 +1,9 @@
-import { FilterPills } from '@/components/pages/marketing/home/PopularDestination'
+'use client'
+
+import { FilterPills } from '@/components/pages/marketing/home/filter-pills'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import Image from 'next/image'
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 
 const galleryFilters = [
     'All',
@@ -16,26 +18,32 @@ const galleryImages = [
     {
         src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80',
         alt: 'Mountain valley landscape',
+        category: 'Mountains & Valleys',
     },
     {
         src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80',
         alt: 'Travelers on a group tour',
+        category: 'World tour',
     },
     {
         src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
         alt: 'Scenic mountain peaks',
+        category: 'Mountains & Valleys',
     },
     {
         src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80',
         alt: 'Mountain valley landscape',
+        category: 'Culture & Heritage',
     },
     {
         src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80',
         alt: 'Travelers on a group tour',
+        category: 'Advantureal Tour',
     },
     {
         src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
         alt: 'Scenic mountain peaks',
+        category: 'Lakes & Rivers',
     },
 ] as const
 
@@ -54,6 +62,13 @@ function GalleryImageCard({ src, alt }: { src: string; alt: string }) {
 }
 
 const TourismTravelingGallery = () => {
+    const [activeFilter, setActiveFilter] = useState('All')
+
+    const filteredImages = useMemo(() => {
+        if (activeFilter === 'All') return galleryImages
+        return galleryImages.filter((image) => image.category === activeFilter)
+    }, [activeFilter])
+
     return (
         <section
             className='bg-white pb-12 sm:pb-16 md:pb-20 lg:pb-[220px]'
@@ -77,14 +92,15 @@ const TourismTravelingGallery = () => {
 
                 <FilterPills
                     labels={galleryFilters}
-                    activeLabel='All'
+                    activeLabel={activeFilter}
+                    onLabelChange={setActiveFilter}
                     className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10'
                 />
 </div>
 
                 {/* Figma: 1424×313.77 row — 6 columns, 12px gap, no slider */}
                 <div className='mx-auto mt-6 grid max-w-[1424px] grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-3 sm:gap-[12px] lg:mt-2 lg:grid-cols-6'>
-                    {galleryImages.map((image, index) => (
+                    {filteredImages.map((image, index) => (
                         <GalleryImageCard key={`${image.src}-${index}`} src={image.src} alt={image.alt} />
                     ))}
                 </div>
