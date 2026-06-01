@@ -91,7 +91,7 @@ const Header = () => {
                     {/* Logo  */}
                     <div>
                         <Image
-                            src={'/images/generic/agency-logo.png'}
+                            src={'/images/generic/agency-logo-white.svg'}
                             alt='logo'
                             width={100}
                             height={100}
@@ -172,7 +172,7 @@ const Header = () => {
                 >
                     <div className='flex items-center justify-between'>
                         <Image
-                            src={'/images/generic/agency-logo.png'}
+                            src={'/images/generic/agency-logo-white.svg'}
                             alt='logo'
                             width={100}
                             height={100}
