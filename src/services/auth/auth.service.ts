@@ -1,10 +1,11 @@
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
     LoginDTO,
     SignupDTO
 } from './auth.types'
 
 
-type AuthServiceProps = { supabase: any }
+type AuthServiceProps = { supabase: SupabaseClient }
 
 export const authService = ({ supabase }: AuthServiceProps) => {
     return {

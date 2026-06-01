@@ -1,5 +1,7 @@
+import type { SupabaseClient } from '@supabase/supabase-js'
+
 type PlansServiceProps = {
-    supabase: any
+    supabase: SupabaseClient
 }
 
 export const plansService = ({ supabase }: PlansServiceProps) => {

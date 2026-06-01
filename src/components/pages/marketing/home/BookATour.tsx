@@ -15,7 +15,6 @@ const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 
 function FormField({
     label,
-    required,
     children,
     className,
 }: {

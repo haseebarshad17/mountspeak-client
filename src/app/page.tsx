@@ -1,6 +1,5 @@
 import ExploreTheWorld from '@/components/pages/marketing/home/ExploreTheWorld'
 import TourismTravelingGallery from '@/components/pages/marketing/home/TourismTravelingGallery'
-import FlightHotels from '@/components/pages/marketing/home/FlightHotels'
 import Hero from '@/components/pages/marketing/home/Hero'
 import OurServices from '@/components/pages/marketing/home/OurServices'
 import PlanPerfectTrip from '@/components/pages/marketing/home/PlanPerfectTrip'
