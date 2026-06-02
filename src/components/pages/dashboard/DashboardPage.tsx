@@ -1,6 +1,137 @@
-import Image from "next/image";
+'use client'
 
-const DashboardPage = () => {
+import Image from "next/image"
+import React, { useEffect, useState } from "react"
+import { z } from "zod"
+
+import { supabase } from "@/lib/supabase/supabase.client"
+
+const profileSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(2, "Full name must be at least 2 characters.")
+    .max(60, "Full name cannot exceed 60 characters."),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(7, "Please enter a valid phone number.")
+    .max(20, "Phone number cannot exceed 20 characters.")
+    .regex(
+      /^\+?[0-9\s-]{7,20}$/,
+      "Enter a valid phone number (e.g. +92 300 1234567).",
+    ),
+  location: z
+    .string()
+    .trim()
+    .min(2, "Location must be at least 2 characters.")
+    .max(80, "Location cannot exceed 80 characters."),
+  email: z.string().trim().email("Please enter a valid email address."),
+})
+
+export default function DashboardPage() {
+  const [userId, setUserId] = useState<string | null>(null)
+
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [location, setLocation] = useState("")
+
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [errors, setErrors] = useState<Partial<Record<string, string>>>({})
+
+  useEffect(() => {
+    let mounted = true
+    async function loadProfile() {
+      try {
+        const {
+          data: { user },
+          error: userErr,
+        } = await supabase.auth.getUser()
+
+        if (userErr) throw userErr
+        if (!user) return
+
+        const { id } = user
+        if (!mounted) return
+        setUserId(id)
+        setEmail(user.email ?? "")
+
+        const { data, error } = await supabase
+          .from("users")
+          .select("full_name, phone_number, location, email")
+          .eq("id", id)
+          .single()
+
+        if (error) {
+          // Profile row may not exist yet; keep UI empty but editable.
+          setFullName("")
+          setPhoneNumber("")
+          setLocation("")
+          setEmail(user.email ?? "")
+          setLoading(false)
+          return
+        }
+
+        if (!mounted) return
+        setFullName(data?.full_name ?? "")
+        setPhoneNumber(data?.phone_number ?? "")
+        setLocation(data?.location ?? "")
+        setEmail(data?.email ?? user.email ?? "")
+      } catch {
+        // If auth/profile fails, still render the page.
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    loadProfile()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const handleSave = async () => {
+    if (!userId) return
+    setSaving(true)
+    setErrors({})
+
+    try {
+      const parsed = profileSchema.safeParse({
+        fullName,
+        phoneNumber,
+        location,
+        email,
+      })
+
+      if (!parsed.success) {
+        const nextErrors: Record<string, string> = {}
+        parsed.error.issues.forEach((issue) => {
+          const key = issue.path[0] as string
+          nextErrors[key] = issue.message
+        })
+        setErrors(nextErrors as any)
+        return
+      }
+
+      // Email should never be changed from this page.
+      const payload = {
+        full_name: parsed.data.fullName,
+        phone_number: parsed.data.phoneNumber,
+        location: parsed.data.location,
+      }
+
+      const { error } = await supabase.from("users").update(payload).eq("id", userId)
+      if (error) {
+        setErrors({ location: "Unable to save changes. Please try again." } as any)
+        return
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <main className="w-full pl-8 pr-4">
       <section className="mx-auto w-full max-w-[1100px]">
@@ -41,36 +172,94 @@ const DashboardPage = () => {
           </div>
 
           <div className="mt-8 grid gap-6 grid-cols-1 md:grid-cols-2 md:gap-x-10 md:gap-y-8">
-            {[
-              { label: "Full Name", value: "Zain Ahmed" },
-              { label: "Email Address", value: "zain.ahmed@explorer.pk" },
-              { label: "Phone Number", value: "+92 300 1234567" },
-              { label: "Location", value: "Lahore, Pakistan" },
-            ].map((item) => (
-              <div key={item.label}>
-                <p
-                  className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-                >
-                  {item.label}
+            <div>
+              <p
+                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                Full Name
+              </p>
+              <input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+              />
+              {errors.fullName ? (
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                  {errors.fullName}
                 </p>
-                <p
-                  className="mt-2 border-b border-[#87909a] px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E]"
-                  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                >
-                  {item.value}
+              ) : null}
+            </div>
+
+            <div>
+              <p
+                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                Email Address
+              </p>
+              <input
+                value={email}
+                disabled
+                readOnly
+                className="mt-2 w-full cursor-not-allowed border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] opacity-60 outline-none"
+                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+              />
+            </div>
+
+            <div>
+              <p
+                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                Phone Number
+              </p>
+              <input
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+92 300 1234567"
+                type="tel"
+                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+              />
+              {errors.phoneNumber ? (
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                  {errors.phoneNumber}
                 </p>
-              </div>
-            ))}
+              ) : null}
+            </div>
+
+            <div>
+              <p
+                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                Location
+              </p>
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+              />
+              {errors.location ? (
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                  {errors.location}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="mt-16 flex justify-end">
             <button
               type="button"
-              className="min-h-[48px] min-w-[164px] bg-[#002a31] px-6 text-xs font-medium uppercase tracking-[1.2px] text-white transition hover:bg-[#07363d]"
+              onClick={handleSave}
+              disabled={loading || saving}
+              className="min-h-[48px] min-w-[164px] bg-[#002a31] px-6 text-xs font-medium uppercase tracking-[1.2px] text-white transition hover:bg-[#07363d] disabled:cursor-not-allowed disabled:opacity-60"
               style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             >
-              Save Changes
+              {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
@@ -121,7 +310,10 @@ const DashboardPage = () => {
                 members: "2 Members",
               },
             ].map((tour) => (
-              <article key={tour.title} className="border border-[#22484f] bg-[#08343c] p-6 max-w-[372px] min-h-[149px]">
+              <article
+                key={tour.title}
+                className="border border-[#22484f] bg-[#08343c] p-6 max-w-[372px] min-h-[149px]"
+              >
                 <p
                   className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"
                   style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
@@ -138,7 +330,10 @@ const DashboardPage = () => {
                   className="mt-4 flex flex-wrap items-center gap-5 text-base text-[#FFFFFFB2]"
                   style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                 >
-                  <span className="inline-flex items-center gap-1 "   style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}>
+                  <span
+                    className="inline-flex items-center gap-1"
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                  >
                     <Image
                       src="/images/pages/dashboard/calendar.svg"
                       alt="Calendar icon"
@@ -147,7 +342,10 @@ const DashboardPage = () => {
                     />
                     {tour.date}
                   </span>
-                  <span className="inline-flex items-center gap-1"   style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}>
+                  <span
+                    className="inline-flex items-center gap-1"
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                  >
                     <Image
                       src="/images/pages/dashboard/people.svg"
                       alt="People icon"
@@ -163,7 +361,5 @@ const DashboardPage = () => {
         </section>
       </section>
     </main>
-  );
-};
-
-export default DashboardPage;
+  )
+}
