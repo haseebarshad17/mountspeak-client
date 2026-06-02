@@ -249,6 +249,30 @@
 
 /* Layer Utilities  */
 @layer utilities {
+    .font-noto {
+        font-family: var(--font-noto-serif), ui-serif, Georgia, serif;
+    }
+
+    .font-manrope {
+        font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    /* /detail — match homepage typography (heading + roboto body) */
+    .detail-page {
+        font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .detail-page :is(h1, h2, h3, h4, h5, h6),
+    .detail-page .font-heading,
+    .detail-page .font-noto {
+        font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .detail-page :is(p, li, span, a, button, label, dt, dd, input, textarea),
+    .detail-page .font-body,
+    .detail-page .font-manrope {
+        font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+    }
 
     /* Scrollbar hide */
     .scrollbar-hide {

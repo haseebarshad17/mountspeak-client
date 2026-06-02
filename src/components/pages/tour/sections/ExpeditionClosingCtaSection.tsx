@@ -15,18 +15,14 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
     return (
         <section
             id={finalCtaSection.id}
-            className="py-20 sm:py-24"
+            className="py-10 sm:py-[120px]"
             style={{ backgroundColor: theme.backgroundColor }}
         >
-            <div className="agency-container text-center">
-                <h2 className="mx-auto max-w-3xl font-heading text-3xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.75rem]">
+            <div className="agency-container text-center !px-16">
+                <h2 className="mx-auto max-w-3xl font-noto text-3xl font-bold  text-[#191C1C] sm:text-4xl lg:text-[48px] lg:leading-[57px]">
                     {finalCtaSection.title}
                 </h2>
-                {finalCtaSection.description ? (
-                    <p className="mx-auto mt-4 max-w-xl text-neutral-600">
-                        {finalCtaSection.description}
-                    </p>
-                ) : null}
+
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
                     {finalCtaSection.buttons.map((btn) => {
                         const isPrimary = btn.style === 'primary'
@@ -35,10 +31,10 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                 key={btn.label}
                                 href={btn.url}
                                 className={cn(
-                                    'inline-flex min-h-12 min-w-[200px] items-center justify-center rounded-md px-8 text-xs font-bold uppercase tracking-wider transition-colors sm:text-sm',
+                                    'inline-flex min-h-[58px] w-full max-w-[257px] font-manrope items-center justify-center  px-8 text-xs uppercase  transition-colors sm:text-base',
                                     isPrimary
                                         ? 'text-white shadow-md'
-                                        : 'border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50'
+                                        : 'border border-[#737879] bg-white text-neutral-900 hover:bg-neutral-50'
                                 )}
                                 style={
                                     isPrimary

@@ -5,7 +5,9 @@ import {
     JetBrains_Mono,
     Jost,
     Karla,
+    Manrope,
     Montserrat,
+    Noto_Serif,
     Plus_Jakarta_Sans,
     Roboto,
 } from "next/font/google";
@@ -85,5 +87,19 @@ export const jetBrainsMono = JetBrains_Mono({
     weight: ["400", "500", "600", "700", "800"],
     display: "swap",
     variable: "--font-jetbrains-mono",
+});
+
+export const notoSerif = Noto_Serif({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    display: "swap",
+    variable: "--font-noto-serif",
+});
+
+export const manrope = Manrope({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800"],
+    display: "swap",
+    variable: "--font-manrope",
 });
 

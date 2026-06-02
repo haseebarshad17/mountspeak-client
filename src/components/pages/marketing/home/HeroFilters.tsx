@@ -37,7 +37,7 @@ export default function HeroFilters() {
 
                 {/* FROM */}
                 <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
-                    <PopoverTrigger>
+                    <PopoverTrigger asChild>
                         <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{from || "From"}</span>
@@ -67,7 +67,7 @@ export default function HeroFilters() {
 
                 {/* TO */}
                 <Popover open={open === "to"} onOpenChange={(v) => setOpen(v ? "to" : null)}>
-                    <PopoverTrigger>
+                    <PopoverTrigger asChild>
                         <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{to || "To"}</span>
@@ -97,7 +97,7 @@ export default function HeroFilters() {
 
                 {/* DATE */}
                 <Popover open={open === "date"} onOpenChange={(v) => setOpen(v ? "date" : null)}>
-                    <PopoverTrigger>
+                    <PopoverTrigger asChild>
                         <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{date || "Date of stay"}</span>
@@ -120,7 +120,7 @@ export default function HeroFilters() {
 
                 {/* TRAVELERS */}
                 <Popover open={open === "trav"} onOpenChange={(v) => setOpen(v ? "trav" : null)}>
-                    <PopoverTrigger>
+                    <PopoverTrigger asChild>
                         <Button variant="ghost" className={triggerCls}>
                             <User className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{travelers > 1 || travelClass !== "Economy" ? `${travelers} · ${travelClass}` : "Traveler - Class"}</span>
