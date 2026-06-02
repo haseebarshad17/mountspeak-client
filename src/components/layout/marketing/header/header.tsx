@@ -4,11 +4,15 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/clsxUtils'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const Header = () => {
+    const pathname = usePathname()
+    const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(false)
+    const [isScrolled, setIsScrolled] = useState(isTermsPage)
 
     const AgencyNavigationLinks = [
         {
@@ -31,6 +35,11 @@ const Header = () => {
 
 
     useEffect(() => {
+        if (isTermsPage) {
+            setIsScrolled(true)
+            return
+        }
+
         const scrollContainer = document.getElementById('app-scroll-container')
 
         const getScrollTop = () => {
@@ -56,7 +65,7 @@ const Header = () => {
 
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [])
+    }, [isTermsPage])
 
     useEffect(() => {
         document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -72,26 +81,39 @@ const Header = () => {
         }
     }, [isMobileMenuOpen])
 
+    const useLightNav = isTermsPage
+
     return (
         <>
             <header
                 className={cn(
-                    'fixed z-50 rounded-xl ease duration-300 sm:left-6 sm:right-6 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px]',
-                    "lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7",
-                    "top-7 left-4 right-4",
-                    isScrolled
+                    'z-50 ease duration-300',
+                    useLightNav
+                        ? 'relative top-0 left-0 right-0 w-full border-b'
+                        : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
+                    useLightNav
                         ? [
-                            "border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg",
-                            "xl:py-4 xl:px-10 lg:py-4 lg:px-6 sm:py-3 sm:px-5 py-4 px-4"
+                            'border-[#C0C8C9]/60 bg-white/95 shadow-sm backdrop-blur-sm',
+                            'py-4',
                         ]
-                        : 'border border-transparent bg-transparent'
+                        : isScrolled
+                          ? [
+                                "border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg",
+                                "xl:py-4 xl:px-10 lg:py-4 lg:px-6 sm:py-3 sm:px-5 py-4 px-4"
+                            ]
+                          : 'border border-transparent bg-transparent',
                 )}
             >
+                <div className={cn(useLightNav ? 'mx-auto w-full max-w-[1182px] px-[15px]' : '')}>
                 <div className='flex w-full items-center justify-between gap-4'>
                     {/* Logo  */}
                     <div>
                         <Image
-                            src={'/images/generic/agency-logo-white.svg'}
+                            src={
+                                useLightNav
+                                    ? '/images/generic/agency-logo.svg'
+                                    : '/images/generic/agency-logo-white.svg'
+                            }
                             alt='logo'
                             width={100}
                             height={100}
@@ -109,7 +131,10 @@ const Header = () => {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className='text-sm font-normal text-white xl:text-base'
+                                    className={cn(
+                                        'text-sm font-normal xl:text-base',
+                                        useLightNav ? 'text-[#00292C]' : 'text-white',
+                                    )}
                                 >
                                     {link.label}
                                 </Link>
@@ -121,14 +146,18 @@ const Header = () => {
                         <div className='flex items-center'>
                             <Button
                                 variant='transparent'
-                                className='text-white'
+                                className={useLightNav ? 'text-[#00292C]' : 'text-white'}
                                 href='/login'
                             >
                                 Login
                             </Button>
                             <Button
                                 variant='secondary'
-                                className='w-max rounded-sm px-5'
+                                className={cn(
+                                    'w-max rounded-sm px-5',
+                                    useLightNav &&
+                                        'bg-[#00292C] text-white hover:bg-[#003d42]',
+                                )}
                                 href='/register'
                             >
                                 Sign Up
@@ -142,13 +171,29 @@ const Header = () => {
                         aria-label='Open menu'
                         aria-expanded={isMobileMenuOpen}
                         onClick={() => setIsMobileMenuOpen(true)}
-                        className='group flex h-10 w-10 items-center justify-center rounded-md bg-white/10 backdrop-blur-sm transition hover:bg-white/20 lg:hidden'
+                        className={cn(
+                            'group flex h-10 w-10 items-center justify-center rounded-md transition lg:hidden',
+                            useLightNav
+                                ? 'bg-[#00292C]/10 hover:bg-[#00292C]/15'
+                                : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
+                        )}
                     >
                         <span className='flex flex-col items-end gap-[5px]'>
-                            <span className='h-[2.5px] w-6 rounded-full bg-white transition-transform duration-300 group-hover:translate-x-[1px]' />
-                            <span className='h-[2.5px] w-4 rounded-full bg-white transition-transform duration-300 group-hover:-translate-x-[1px]' />
+                            <span
+                                className={cn(
+                                    'h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]',
+                                    useLightNav ? 'bg-[#00292C]' : 'bg-white',
+                                )}
+                            />
+                            <span
+                                className={cn(
+                                    'h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]',
+                                    useLightNav ? 'bg-[#00292C]' : 'bg-white',
+                                )}
+                            />
                         </span>
                     </button>
+                </div>
                 </div>
             </header>
 
@@ -174,7 +219,11 @@ const Header = () => {
                 >
                     <div className='flex items-center justify-between'>
                         <Image
-                            src={'/images/generic/agency-logo-white.svg'}
+                            src={
+                                useLightNav
+                                    ? '/images/generic/agency-logo.svg'
+                                    : '/images/generic/agency-logo-white.svg'
+                            }
                             alt='logo'
                             width={100}
                             height={100}
