@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BookMarked, LogOut, UserRound } from "lucide-react";
 
-const DashboardSidebar = () => {
-  const [activeItem, setActiveItem] = useState<"profile" | "bookings">("profile");
+interface DashboardSidebarProps {
+  onNavigate?: () => void;
+}
+
+const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
+  const pathname = usePathname();
+  const isProfileActive = pathname.startsWith("/dashboard");
+  const isBookingsActive = pathname.startsWith("/bookings");
 
   return (
     <aside className="w-full md:w-[264px] md:min-w-[264px] md:max-w-[264px]">
-      <div >
+      <div>
         <p
           className="text-[12px] font-semibold uppercase tracking-[0.6px] pl-2 text-[#707979]"
           style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
@@ -17,11 +24,11 @@ const DashboardSidebar = () => {
         </p>
 
         <nav className="mt-4 space-y-2">
-          <button
-            type="button"
-            onClick={() => setActiveItem("profile")}
+          <Link
+            href="/dashboard"
+            onClick={onNavigate}
             className={`flex min-h-[48px] max-w-[264px] w-full items-center gap-3 px-4 text-left text-base transition ${
-              activeItem === "profile"
+              isProfileActive
                 ? "border border-[#e4ebee] border-l-4 border-l-[#00292C] bg-[#0640451A] text-[#1a1c1e]"
                 : "border border-transparent text-[#2f3b45] hover:bg-[#0640451A]"
             }`}
@@ -33,13 +40,13 @@ const DashboardSidebar = () => {
             >
               Profile
             </span>
-          </button>
+          </Link>
 
-          <button
-            type="button"
-            onClick={() => setActiveItem("bookings")}
+          <Link
+            href="/bookings"
+            onClick={onNavigate}
             className={`flex h-12 w-full max-w-[264px] items-center gap-3 px-4 text-left transition ${
-              activeItem === "bookings"
+              isBookingsActive
                 ? "border border-[#e4ebee] border-l-4 border-l-[#00292C] bg-[#0640451A] text-[#1a1c1e]"
                 : "border border-transparent text-[#2f3b45] hover:bg-[#0640451A]"
             }`}
@@ -51,7 +58,7 @@ const DashboardSidebar = () => {
             >
               Bookings
             </span>
-          </button>
+          </Link>
         </nav>
 
         <button

@@ -18,7 +18,7 @@ const DashboardPage = () => {
           travel preferences for future adventures in Pakistan.
         </p>
 
-        <div className="mt-8 border border-[#dfe4e8] bg-white p-6 md:px-10 md:pt-10 max-w-[856px] min-h-[564px]">
+        <div className="mt-8 border border-[#C0C8C9] bg-white p-6 md:px-10 md:pt-10 max-w-[856px] min-h-[564px]">
           <div className="grid gap-8 pl-[6px] pt-[14px] max-w-[774px] min-h-160px md:grid-cols-[236px_1fr] md:items-center">
             <div className="flex w-[236px] justify-start">
               <div className="h-[160px] w-[150px] bg-[radial-gradient(circle_at_25%_20%,#54606a,#212a32_72%)]" />

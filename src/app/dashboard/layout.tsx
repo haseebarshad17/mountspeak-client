@@ -60,7 +60,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               ×
             </button>
           </div>
-          <DashboardSidebar />
+            <DashboardSidebar onNavigate={() => setIsMobileSidebarOpen(false)} />
         </aside>
       </div>
     </div>
