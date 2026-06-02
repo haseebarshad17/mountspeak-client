@@ -2,7 +2,7 @@ import TourPageContent from '@/components/pages/tour/TourPageContent'
 
 export default function DetailPage() {
     return (
-        <main className="bg-white">
+        <main className="detail-page bg-white">
             <TourPageContent tourSlug="hunza-valley-fairy-meadows" />
         </main>
     )
