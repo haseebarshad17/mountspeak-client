@@ -8,8 +8,8 @@ import { ExpeditionHeroSection } from './sections/ExpeditionHeroSection'
 import { ExpeditionOverviewSection } from './sections/ExpeditionOverviewSection'
 import { ExpeditionPerksTechnicalsSection } from './sections/ExpeditionPerksTechnicalsSection'
 import { PlacesVisitedCardsSection } from './sections/PlacesVisitedCardsSection'
-import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { TechnicalRouteBreakdownSection } from './sections/TechnicalRouteBreakdownSection'
+import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
 
 type TourPageContentProps = {

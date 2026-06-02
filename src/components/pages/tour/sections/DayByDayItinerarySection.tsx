@@ -9,89 +9,105 @@ type DayByDayItinerarySectionProps = {
 
 export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps) {
     const { itinerarySection, theme } = page
+    const days = itinerarySection.days
 
     return (
         <section
             id={itinerarySection.id}
-            className="border-t border-black/[0.06] py-16 sm:py-20 lg:py-24"
-            style={{ backgroundColor: '#F0F0EC' }}
+            className="border-t border-black/[0.06] bg-[#F0F0EC] py-16 sm:py-20 lg:py-24"
         >
             <div className="agency-container">
-                <h2 className="text-center font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+                <h2 className="text-center font-heading text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
                     {itinerarySection.title}
                 </h2>
 
-                <div className="mx-auto mt-14 max-w-5xl space-y-12 lg:space-y-16">
-                    {itinerarySection.days.map((day, index) => {
-                        const imageOnRight = index % 2 === 0
-                        const block = (
-                            <div className="flex flex-1 flex-col justify-center lg:px-6">
-                                <div className="flex items-center gap-3">
+                <div className="relative mx-auto mt-14 max-w-6xl">
+                    <div
+                        className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-neutral-300 lg:block"
+                        aria-hidden
+                    />
+
+                    <div className="space-y-16 lg:space-y-24">
+                        {days.map((day, index) => {
+                            const imageOnRight = index % 2 === 0
+                            const isLast = index === days.length - 1
+                            const dayLabel = String(day.day).padStart(2, '0')
+
+                            const textBlock = (
+                                <div
+                                    className={`flex flex-col justify-center lg:px-6 ${
+                                        imageOnRight ? 'lg:items-end lg:text-right' : 'lg:items-start lg:text-left'
+                                    }`}
+                                >
                                     <span
-                                        className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white"
+                                        className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white lg:hidden"
                                         style={{ backgroundColor: theme.primaryColor }}
                                     >
-                                        {day.day}
+                                        {dayLabel}
                                     </span>
                                     <h3 className="font-heading text-xl font-semibold text-neutral-900 sm:text-2xl">
                                         {day.title}
                                     </h3>
+                                    <p className="mt-4 max-w-md text-sm leading-relaxed text-neutral-600 sm:text-base">
+                                        {day.description}
+                                    </p>
                                 </div>
-                                <p className="mt-4 text-sm leading-relaxed text-neutral-600 sm:text-base">
-                                    {day.description}
-                                </p>
-                                {day.activities.length > 0 ? (
-                                    <ul className="mt-4 space-y-1.5 text-sm text-neutral-600">
-                                        {day.activities.map((a) => (
-                                            <li key={a} className="flex gap-2">
-                                                <span
-                                                    className="mt-2 h-1 w-1 shrink-0 rounded-full"
-                                                    style={{ backgroundColor: theme.secondaryColor }}
-                                                />
-                                                {a}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : null}
-                                <p className="mt-4 text-xs font-medium uppercase tracking-wider text-neutral-500">
-                                    Stay:{' '}
-                                    <span className="normal-case text-neutral-700">
-                                        {day.accommodation}
-                                    </span>
-                                </p>
-                            </div>
-                        )
-                        const visual = (
-                            <div className="relative aspect-[16/11] w-full overflow-hidden rounded-xl lg:aspect-[5/4]">
-                                <Image
-                                    src={day.image}
-                                    alt={day.alt}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 1024px) 100vw, 50vw"
-                                />
-                            </div>
-                        )
+                            )
 
-                        return (
-                            <div
-                                key={day.day}
-                                className="grid gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center"
-                            >
-                                {imageOnRight ? (
-                                    <>
-                                        {block}
-                                        {visual}
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="order-2 lg:order-1">{visual}</div>
-                                        <div className="order-1 lg:order-2">{block}</div>
-                                    </>
-                                )}
-                            </div>
-                        )
-                    })}
+                            const visual = (
+                                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl sm:aspect-[2/1]">
+                                    <Image
+                                        src={day.image}
+                                        alt={day.alt}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 1024px) 100vw, 42vw"
+                                    />
+                                </div>
+                            )
+
+                            return (
+                                <div
+                                    key={day.day}
+                                    className="grid items-center gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-8"
+                                >
+                                    {imageOnRight ? (
+                                        <>
+                                            <div className="lg:pr-2">{textBlock}</div>
+                                            <div className="relative hidden flex-col items-center lg:flex">
+                                                <span
+                                                    className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
+                                                    style={{ backgroundColor: theme.primaryColor }}
+                                                >
+                                                    {dayLabel}
+                                                </span>
+                                                {!isLast ? (
+                                                    <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
+                                                ) : null}
+                                            </div>
+                                            <div className="lg:pl-2">{visual}</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="order-2 lg:order-1 lg:pr-2">{visual}</div>
+                                            <div className="relative order-1 hidden flex-col items-center lg:order-2 lg:flex">
+                                                <span
+                                                    className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
+                                                    style={{ backgroundColor: theme.primaryColor }}
+                                                >
+                                                    {dayLabel}
+                                                </span>
+                                                {!isLast ? (
+                                                    <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
+                                                ) : null}
+                                            </div>
+                                            <div className="order-3 lg:order-3 lg:pl-2">{textBlock}</div>
+                                        </>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         </section>
