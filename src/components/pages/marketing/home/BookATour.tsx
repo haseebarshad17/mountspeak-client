@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
+import { z } from 'zod'
 
 const fieldClass =
     'box-border h-[58px] w-full max-w-[304px] rounded-[10px] border-0 bg-white p-4 font-roboto text-base font-normal leading-6 tracking-normal text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40'
@@ -12,6 +13,65 @@ const selectClass = `${fieldClass} appearance-none bg-[length:16px] bg-[right_16
 const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align-top`
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
+
+type BookATourFormValues = {
+    name: string
+    email: string
+    phone: string
+    date: string
+    destination: string
+    persons: string
+    category: string
+    specialRequest: string
+}
+
+type BookATourFormErrors = Partial<Record<keyof BookATourFormValues, string>>
+
+const initialFormValues: BookATourFormValues = {
+    name: '',
+    email: '',
+    phone: '',
+    date: '',
+    destination: '',
+    persons: '',
+    category: '',
+    specialRequest: '',
+}
+
+const bookATourSchema = z.object({
+    name: z.string().trim().min(1, 'Name is required').min(2, 'Name must be at least 2 characters').max(50, 'Name must be at most 50 characters'),
+    email: z.string().trim().min(1, 'Email is required').email('Please enter a valid email address'),
+    phone: z.string().trim().min(1, 'Phone number is required').min(10, 'Phone number must be at least 10 characters').max(20, 'Phone number must be at most 20 characters'),
+    date: z
+        .string()
+        .trim()
+        .min(1, 'Date is required')
+        .refine((value) => {
+            const selectedDate = new Date(`${value}T00:00:00`)
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+            return !Number.isNaN(selectedDate.getTime()) && selectedDate > today
+        }, 'Date must be in the future'),
+    destination: z.string().trim().min(1, 'Please select your destination'),
+    persons: z.string().trim().min(1, 'Please select number of people'),
+    category: z.string().trim().min(1, 'Please select category'),
+    specialRequest: z.string(),
+})
+
+const getFieldErrors = (error: z.ZodError<BookATourFormValues>): BookATourFormErrors => {
+    const flattenedErrors = error.flatten().fieldErrors
+
+    return {
+        name: flattenedErrors.name?.[0],
+        email: flattenedErrors.email?.[0],
+        phone: flattenedErrors.phone?.[0],
+        date: flattenedErrors.date?.[0],
+        destination: flattenedErrors.destination?.[0],
+        persons: flattenedErrors.persons?.[0],
+        category: flattenedErrors.category?.[0],
+        specialRequest: flattenedErrors.specialRequest?.[0],
+    }
+}
 
 function FormField({
     label,
@@ -32,6 +92,52 @@ function FormField({
 }
 
 const BookATour = () => {
+    const [formValues, setFormValues] = useState<BookATourFormValues>(initialFormValues)
+    const [errors, setErrors] = useState<BookATourFormErrors>({})
+    const [hasSubmitted, setHasSubmitted] = useState(false)
+
+    const validateAndSetErrors = (values: BookATourFormValues) => {
+        const result = bookATourSchema.safeParse(values)
+        if (result.success) {
+            setErrors({})
+            return true
+        }
+
+        setErrors(getFieldErrors(result.error))
+        return false
+    }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.target
+        const nextValues = {
+            ...formValues,
+            [name]: value,
+        } as BookATourFormValues
+
+        setFormValues(nextValues)
+
+        if (hasSubmitted) {
+            validateAndSetErrors(nextValues)
+        }
+    }
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setHasSubmitted(true)
+
+        const isValid = validateAndSetErrors(formValues)
+        if (!isValid) {
+            return
+        }
+
+        setFormValues(initialFormValues)
+        setErrors({})
+        setHasSubmitted(false)
+    }
+
+    const getInputClassName = (hasError: boolean, className: string) =>
+        `${className} ${hasError ? 'ring-2 ring-red-400 focus:ring-red-400' : ''}`
+
     return (
         <section
             className="relative mb-[88px] bg-[url('/images/pages/home/testimonial-background.png')] bg-cover bg-center"
@@ -87,7 +193,7 @@ const BookATour = () => {
 
                         <form
                             className='mt-6 flex w-full max-w-[624px] flex-col gap-4 sm:mt-8'
-                            onSubmit={(e) => e.preventDefault()}
+                            onSubmit={handleSubmit}
                             noValidate
                         >
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
@@ -97,8 +203,17 @@ const BookATour = () => {
                                         name='name'
                                         placeholder='Your Name *'
                                         required
-                                        className={fieldClass}
+                                        value={formValues.name}
+                                        onChange={handleChange}
+                                        aria-invalid={Boolean(errors.name)}
+                                        aria-describedby={errors.name ? 'book-a-tour-name-error' : undefined}
+                                        className={getInputClassName(Boolean(errors.name), fieldClass)}
                                     />
+                                    {errors.name && (
+                                        <p id='book-a-tour-name-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.name}
+                                        </p>
+                                    )}
                                 </FormField>
                                 <FormField label='Your Email' required>
                                     <input
@@ -106,8 +221,17 @@ const BookATour = () => {
                                         name='email'
                                         placeholder='Your Email *'
                                         required
-                                        className={fieldClass}
+                                        value={formValues.email}
+                                        onChange={handleChange}
+                                        aria-invalid={Boolean(errors.email)}
+                                        aria-describedby={errors.email ? 'book-a-tour-email-error' : undefined}
+                                        className={getInputClassName(Boolean(errors.email), fieldClass)}
                                     />
+                                    {errors.email && (
+                                        <p id='book-a-tour-email-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.email}
+                                        </p>
+                                    )}
                                 </FormField>
                             </div>
 
@@ -117,8 +241,17 @@ const BookATour = () => {
                                         type='tel'
                                         name='phone'
                                         placeholder='Your Phone'
-                                        className={fieldClass}
+                                        value={formValues.phone}
+                                        onChange={handleChange}
+                                        aria-invalid={Boolean(errors.phone)}
+                                        aria-describedby={errors.phone ? 'book-a-tour-phone-error' : undefined}
+                                        className={getInputClassName(Boolean(errors.phone), fieldClass)}
                                     />
+                                    {errors.phone && (
+                                        <p id='book-a-tour-phone-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.phone}
+                                        </p>
+                                    )}
                                 </FormField>
                                 <FormField label='Date'>
                                     <div className='relative w-full max-w-[304px]'>
@@ -126,13 +259,25 @@ const BookATour = () => {
                                             type='date'
                                             name='date'
                                             placeholder='mm/dd/yyyy'
-                                            className={`${fieldClass} w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0`}
+                                            value={formValues.date}
+                                            onChange={handleChange}
+                                            aria-invalid={Boolean(errors.date)}
+                                            aria-describedby={errors.date ? 'book-a-tour-date-error' : undefined}
+                                            className={getInputClassName(
+                                                Boolean(errors.date),
+                                                `${fieldClass} w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0`,
+                                            )}
                                         />
                                         <Calendar
                                             className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500'
                                             aria-hidden
                                         />
                                     </div>
+                                    {errors.date && (
+                                        <p id='book-a-tour-date-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.date}
+                                        </p>
+                                    )}
                                 </FormField>
                             </div>
 
@@ -141,7 +286,11 @@ const BookATour = () => {
                                     <select
                                         name='destination'
                                         defaultValue=''
-                                        className={selectClass}
+                                        value={formValues.destination}
+                                        onChange={handleChange}
+                                        aria-invalid={Boolean(errors.destination)}
+                                        aria-describedby={errors.destination ? 'book-a-tour-destination-error' : undefined}
+                                        className={getInputClassName(Boolean(errors.destination), selectClass)}
                                         style={{ backgroundImage: chevronBg }}
                                     >
                                         <option value='' disabled>
@@ -152,12 +301,21 @@ const BookATour = () => {
                                         <option value='naran'>Naran</option>
                                         <option value='swat'>Swat</option>
                                     </select>
+                                    {errors.destination && (
+                                        <p id='book-a-tour-destination-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.destination}
+                                        </p>
+                                    )}
                                 </FormField>
                                 <FormField label='Select Persons'>
                                     <select
                                         name='persons'
                                         defaultValue=''
-                                        className={selectClass}
+                                        value={formValues.persons}
+                                        onChange={handleChange}
+                                        aria-invalid={Boolean(errors.persons)}
+                                        aria-describedby={errors.persons ? 'book-a-tour-persons-error' : undefined}
+                                        className={getInputClassName(Boolean(errors.persons), selectClass)}
                                         style={{ backgroundImage: chevronBg }}
                                     >
                                         <option value='' disabled>
@@ -168,6 +326,11 @@ const BookATour = () => {
                                         <option value='3'>3 Persons</option>
                                         <option value='4+'>4+ Persons</option>
                                     </select>
+                                    {errors.persons && (
+                                        <p id='book-a-tour-persons-error' className='mt-2 text-sm text-red-200'>
+                                            {errors.persons}
+                                        </p>
+                                    )}
                                 </FormField>
                             </div>
 
@@ -175,7 +338,11 @@ const BookATour = () => {
                                 <select
                                     name='category'
                                     defaultValue=''
-                                    className={selectClass}
+                                    value={formValues.category}
+                                    onChange={handleChange}
+                                    aria-invalid={Boolean(errors.category)}
+                                    aria-describedby={errors.category ? 'book-a-tour-category-error' : undefined}
+                                    className={getInputClassName(Boolean(errors.category), selectClass)}
                                     style={{ backgroundImage: chevronBg }}
                                 >
                                     <option value='' disabled>
@@ -186,6 +353,11 @@ const BookATour = () => {
                                     <option value='honeymoon'>Honeymoon</option>
                                     <option value='corporate'>Corporate</option>
                                 </select>
+                                {errors.category && (
+                                    <p id='book-a-tour-category-error' className='mt-2 text-sm text-red-200'>
+                                        {errors.category}
+                                    </p>
+                                )}
                             </FormField>
 
                             <FormField label='Special Request' className='block w-full'>
@@ -193,8 +365,17 @@ const BookATour = () => {
                                     name='specialRequest'
                                     rows={3}
                                     placeholder='Special Request'
-                                    className={`${textareaClass} !max-w-[624px] w-full`}
+                                    value={formValues.specialRequest}
+                                    onChange={handleChange}
+                                    aria-invalid={Boolean(errors.specialRequest)}
+                                    aria-describedby={errors.specialRequest ? 'book-a-tour-special-request-error' : undefined}
+                                    className={getInputClassName(Boolean(errors.specialRequest), `${textareaClass} !max-w-[624px] w-full`)}
                                 />
+                                {errors.specialRequest && (
+                                    <p id='book-a-tour-special-request-error' className='mt-2 text-sm text-red-200'>
+                                        {errors.specialRequest}
+                                    </p>
+                                )}
                             </FormField>
 
                             <Button
