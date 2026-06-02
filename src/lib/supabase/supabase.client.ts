@@ -1,4 +1,4 @@
-import { clientEnv } from '@/env'
+import { clientEnv } from '@/env/client'
 import { createBrowserClient } from '@supabase/ssr'
 
 export const createClientSupabase = createBrowserClient(

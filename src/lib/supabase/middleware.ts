@@ -1,4 +1,4 @@
-import { serverEnv } from '@/env'
+import { serverEnv } from '@/env/server'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
