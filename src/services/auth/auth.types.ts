@@ -13,6 +13,17 @@ export type LoginDTO = {
     password: string
 }
 
+// Forgot password DTO
+export type ForgotPasswordDTO = {
+    email: string
+    redirectTo: string
+}
+
+// Reset password DTO
+export type ResetPasswordDTO = {
+    password: string
+}
+
 
 // Signup DTO
 export type SignupDTO = {
