@@ -34,6 +34,20 @@ export const useSignup = () => {
     })
 }
 
+// FORGOT PASSWORD
+export const useForgotPassword = () => {
+    return useMutation({
+        mutationFn: auth.resetPassword,
+    })
+}
+
+// RESET PASSWORD
+export const useUpdatePassword = () => {
+    return useMutation({
+        mutationFn: auth.updatePassword,
+    })
+}
+
 
 // LOGOUT
 export const useLogout = () => {

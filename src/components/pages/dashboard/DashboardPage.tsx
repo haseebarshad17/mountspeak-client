@@ -6,6 +6,8 @@ import { z } from "zod"
 
 import { supabase } from "@/lib/supabase/supabase.client"
 
+import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
+
 const profileSchema = z.object({
   fullName: z
     .string()
@@ -36,6 +38,7 @@ export default function DashboardPage() {
   const [email, setEmail] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [location, setLocation] = useState("")
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -60,9 +63,13 @@ export default function DashboardPage() {
 
         const { data, error } = await supabase
           .from("users")
-          .select("full_name, phone_number, location, email")
+          .select("full_name, phone_number, location, email, avatar_url")
           .eq("id", id)
           .single()
+
+        const metadata = user.user_metadata as Record<string, string | undefined>
+        const fallbackAvatar =
+          metadata?.avatar_url || metadata?.picture || metadata?.avatar || null
 
         if (error) {
           // Profile row may not exist yet; keep UI empty but editable.
@@ -70,6 +77,7 @@ export default function DashboardPage() {
           setPhoneNumber("")
           setLocation("")
           setEmail(user.email ?? "")
+          setAvatarUrl(fallbackAvatar)
           setLoading(false)
           return
         }
@@ -79,6 +87,7 @@ export default function DashboardPage() {
         setPhoneNumber(data?.phone_number ?? "")
         setLocation(data?.location ?? "")
         setEmail(data?.email ?? user.email ?? "")
+        setAvatarUrl(data?.avatar_url || fallbackAvatar)
       } catch {
         // If auth/profile fails, still render the page.
       } finally {
@@ -151,9 +160,11 @@ export default function DashboardPage() {
 
         <div className="mt-8 border border-[#C0C8C9] bg-white p-6 md:px-10 md:pt-10 max-w-[856px] min-h-[564px]">
           <div className="grid gap-8 pl-[6px] pt-[14px] max-w-[774px] min-h-160px md:grid-cols-[236px_1fr] md:items-center">
-            <div className="flex w-[236px] justify-start">
-              <div className="h-[160px] w-[150px] bg-[radial-gradient(circle_at_25%_20%,#54606a,#212a32_72%)]" />
-            </div>
+            <ProfileAvatarUpload
+              userId={userId}
+              avatarUrl={avatarUrl}
+              onAvatarChange={setAvatarUrl}
+            />
             <div>
               <h2
                 className="text-[24px]  leading-[32px] text-[#00292C]"

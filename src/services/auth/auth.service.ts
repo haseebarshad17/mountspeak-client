@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
+    ForgotPasswordDTO,
     LoginDTO,
+    ResetPasswordDTO,
     SignupDTO
 } from './auth.types'
 
@@ -50,6 +52,27 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                     provider: 'google',
                     options: { redirectTo }
                 })
+
+            if (error) throw error
+
+            return data
+        },
+
+        // Forgot password
+        resetPassword: async (payload: ForgotPasswordDTO) => {
+            const { error } = await supabase.auth.resetPasswordForEmail(
+                payload.email,
+                { redirectTo: payload.redirectTo },
+            )
+
+            if (error) throw error
+        },
+
+        // Set new password (after email reset link)
+        updatePassword: async (payload: ResetPasswordDTO) => {
+            const { data, error } = await supabase.auth.updateUser({
+                password: payload.password,
+            })
 
             if (error) throw error
 
