@@ -21,10 +21,9 @@ export default function HeroFilters() {
     const toOptions = useMemo(() => LOCATIONS.filter(c => c !== from), [from])
 
     const triggerCls = cn(
-        "flex h-14 !w-full items-center justify-start gap-2.5 px-4 text-sm font-medium",
-        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left",
-        "rounded-none xl:bg-transparent xl:hover:bg-neutral-50/80",
-        "border border-layout-separator rounded-md xl:border-y-0 xl:border-l-0 xl:rounded-none"
+        "flex h-14 !w-full min-w-0 items-center justify-start gap-2.5 overflow-hidden px-4 text-sm font-medium",
+        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
+        "xl:h-[56px] xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:hover:bg-[#F8FAFB]"
     )
 
     const popCls = cn(
@@ -33,13 +32,13 @@ export default function HeroFilters() {
     )
 
     return (
-        <div className="overflow-hidden xl:rounded-2xl rounded-lg border border-neutral-200 bg-white p-2 shadow-md sm:p-3 xl:p-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 xl:gap-0 gap-1">
+        <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md sm:p-3 xl:mx-auto xl:max-w-[760px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0">
+            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_145px] xl:gap-0">
 
                 {/* FROM */}
                 <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
                     <PopoverTrigger>
-                        <Button variant="ghost" className={triggerCls} asChild>
+                        <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{from || "From"}</span>
                         </Button>
@@ -69,7 +68,7 @@ export default function HeroFilters() {
                 {/* TO */}
                 <Popover open={open === "to"} onOpenChange={(v) => setOpen(v ? "to" : null)}>
                     <PopoverTrigger>
-                        <Button variant="ghost" className={triggerCls} asChild>
+                        <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{to || "To"}</span>
                         </Button>
@@ -99,9 +98,9 @@ export default function HeroFilters() {
                 {/* DATE */}
                 <Popover open={open === "date"} onOpenChange={(v) => setOpen(v ? "date" : null)}>
                     <PopoverTrigger>
-                        <Button variant="ghost" className={triggerCls} asChild>
+                        <Button variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{date || "Date"}</span>
+                            <span className="truncate min-w-0 w-full">{date || "Date of stay"}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -122,9 +121,9 @@ export default function HeroFilters() {
                 {/* TRAVELERS */}
                 <Popover open={open === "trav"} onOpenChange={(v) => setOpen(v ? "trav" : null)}>
                     <PopoverTrigger>
-                        <Button variant="ghost" className={triggerCls} asChild>
+                        <Button variant="ghost" className={triggerCls}>
                             <User className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{travelers} · {travelClass}</span>
+                            <span className="truncate min-w-0 w-full">{travelers > 1 || travelClass !== "Economy" ? `${travelers} · ${travelClass}` : "Traveler - Class"}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -168,9 +167,12 @@ export default function HeroFilters() {
                 </Popover>
 
                 {/* SEARCH */}
-                <div className="sm:col-span-2 xl:col-span-1 xl:p-2">
-                    <Button className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[64px] xl:rounded-lg">
-                        Find Trip <Search className="ml-2 w-4 h-4 flex-shrink-0" />
+                <div className="sm:col-span-2 xl:col-span-1 xl:flex xl:items-center xl:pr-[6px]">
+                    <Button
+                        href="/search"
+                        className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[44px] xl:w-[145px] xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
+                    >
+                        Find trip now <Search className="ml-2 w-4 h-4 flex-shrink-0" />
                     </Button>
                 </div>
 
