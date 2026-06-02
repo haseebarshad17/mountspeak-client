@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,6 +11,7 @@ import {
   useLogout,
   useSignup,
 } from "@/services/auth/auth.queries";
+import { toast } from "sonner";
 
 type AuthMode = "login" | "register";
 
@@ -26,7 +27,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutateAsync: login, isPending: isLoginPending } = useLogin();
   const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
   const { mutateAsync: loginWithGoogle, isPending: isGooglePending } = useGoogleLogin();
@@ -36,15 +36,23 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const queryError = useMemo(() => {
     const error = searchParams.get("error");
+    const errorDescription = searchParams.get("error_description");
     if (error === "role_not_allowed") {
       return "Only CLIENT users can sign in on this site.";
     }
     if (error === "oauth_failed") {
-      return "Google sign-in failed. Please try again.";
+      return errorDescription
+        ? `Google sign-in failed: ${decodeURIComponent(errorDescription)}`
+        : "Google sign-in failed. Please try again.";
     }
 
     return null;
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!queryError) return;
+    toast.error(queryError);
+  }, [queryError]);
 
   const authSideImageSrc = encodeURI(
     "/images/pages/auth/Section - Image Side (Hidden on Mobile) (1).svg"
@@ -60,7 +68,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setErrorMessage(null);
 
     try {
       if (!email || !password) {
@@ -96,6 +103,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         await enforceClientRole(loginResult.user.id);
       }
 
+      toast.success(isLogin ? "Signed in successfully." : "Account created successfully.");
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
@@ -104,23 +112,22 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         : "Unable to create account. Please try again.";
 
       if (error instanceof Error) {
-        setErrorMessage(error.message || fallback);
+        toast.error(error.message || fallback);
       } else {
-        setErrorMessage(fallback);
+        toast.error(fallback);
       }
     }
   };
 
   const onGoogleSignIn = async () => {
-    setErrorMessage(null);
     try {
       const redirectTo = `${window.location.origin}/auth/callback`;
       await loginWithGoogle(redirectTo);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message);
       } else {
-        setErrorMessage("Unable to continue with Google.");
+        toast.error("Unable to continue with Google.");
       }
     }
   };
@@ -188,15 +195,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 ) : null}
               </Link>
             </div>
-
-            {(errorMessage || queryError) ? (
-              <p
-                className="mt-4 rounded border border-[#C0C8C966] bg-[#fff4f4] px-3 py-2 text-sm text-[#7A1A1A]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-              >
-                {errorMessage ?? queryError}
-              </p>
-            ) : null}
 
             <form onSubmit={onSubmit} className="mt-[33px] space-y-6">
               {!isLogin ? (
