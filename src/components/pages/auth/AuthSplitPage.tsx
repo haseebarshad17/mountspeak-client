@@ -12,6 +12,7 @@ import {
   useSignup,
 } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
+import AuthSidePanel from "./AuthSidePanel";
 
 type AuthMode = "login" | "register";
 
@@ -53,10 +54,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     if (!queryError) return;
     toast.error(queryError);
   }, [queryError]);
-
-  const authSideImageSrc = encodeURI(
-    "/images/pages/auth/Section - Image Side (Hidden on Mobile) (1).svg"
-  );
 
   const enforceClientRole = async (userId: string) => {
     const role = await getUserRole(userId);
@@ -135,32 +132,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   return (
     <section className="h-full  flex justify-center">
       <div className="flex h-full w-full max-w-[100%] border-none flex-col overflow-hidden  bg-white md:flex-row">
-        <div className="relative hidden overflow-hidden md:block md:w-1/2">
-          <Image
-            src={authSideImageSrc}
-            alt="Discover the rugged beauty"
-            fill
-            priority
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 flex items-end justify-center px-10 pb-[60px] text-[#111827]">
-            <div className="max-w-[512px]">
-              <h2
-                className="text-[48px] font-semibold leading-[56px]"
-                style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
-              >
-                Discover the rugged beauty.
-              </h2>
-              <p
-                className="mt-5 text-[18px] leading-[28px] text-[#1A1C1E]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-              >
-                Experience the raw grandeur of Pakistan&apos;s peaks with the world&apos;s
-                most trusted expedition partner.
-              </p>
-            </div>
-          </div>
-        </div>
+        <AuthSidePanel />
 
         <div className="flex w-full items-center justify-center bg-white px-6  sm:px-10 md:w-1/2 lg:px-[100px]">
           <div className="w-full max-w-[500px]">
@@ -305,36 +277,21 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
               <span className="h-px flex-1 bg-[#C0C8C966]" />
             </div>
 
-            <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={onGoogleSignIn}
-                disabled={isGooglePending}
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-                className="flex h-[54px] w-full max-w-[204px] items-center justify-center gap-2 border border-[#C0C8C966] bg-white text-xs font-medium uppercase text-[#1A1C1E] transition hover:border-[#0f3137]/40 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                <Image
-                  src="/images/pages/auth/SVG.svg"
-                  alt="Google icon"
-                  width={20}
-                  height={20}
-                />
-                <span>{isGooglePending ? "Please wait..." : "Google"}</span>
-              </button>
-              <button
-                type="button"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-                className="flex h-[54px] w-full max-w-[204px] items-center justify-center gap-2 border border-[#C0C8C966] bg-white text-xs font-medium uppercase text-[#1A1C1E] transition hover:border-[#0f3137]/40"
-              >
-                <Image
-                  src="/images/pages/auth/SVG.png"
-                  alt="Apple icon"
-                  width={20}
-                  height={20}
-                />
-                <span>Apple</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onGoogleSignIn}
+              disabled={isGooglePending}
+              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              className="flex h-[54px] w-full items-center justify-center gap-2 border border-[#C0C8C966] bg-white text-xs font-medium uppercase text-[#1A1C1E] transition hover:border-[#0f3137]/40 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <Image
+                src="/images/pages/auth/SVG.svg"
+                alt="Google icon"
+                width={20}
+                height={20}
+              />
+              <span>{isGooglePending ? "Please wait..." : "Google"}</span>
+            </button>
 
             <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
               Secure Authentication Protocol v4.2
