@@ -45,13 +45,13 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
                     </Button>
                 </div>
 
-                <div className='pt-8 sm:pt-10 lg:pt-12'>
+                <div className='overflow-x-hidden pt-8 sm:pt-10 lg:pt-12'>
                     {destinations.length > 0 ? (
                         <Swiper
                             key={activeFilter}
                             spaceBetween={37}
                             slidesPerView='auto'
-                            className='select-none !overflow-visible'
+                            className='select-none !overflow-hidden'
                         >
                             {destinations.map((destination) => (
                                 <SwiperSlide key={destination.id} className='!w-[520px] shrink-0'>

@@ -11,7 +11,7 @@ export type PopularDestinationProps = {
 const PopularDestination = ({ activeLabel, onLabelChange }: PopularDestinationProps) => {
     return (
         <section
-            className='bg-white pb-8 sm:pb-10 lg:pb-12'
+            className='overflow-hidden bg-white pb-8 sm:pb-10 lg:pb-12'
             aria-labelledby='popular-destination-heading'
         >
             <div className='agency-container'>

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { AlertOctagon, ShieldCheck } from "lucide-react";
 
 const BookingsPage = () => {
   const upcomingTours = [
@@ -44,7 +43,7 @@ const BookingsPage = () => {
 
   return (
     <main className="w-full pl-0 md:px-16 py-[128px]">
-      <section className="mx-auto w-full max-w-[1280px]">
+      <section className="mx-auto w-full max-w-[1280px] px-4">
         <h1
           className="text-[72px] font-bold leading-[80px] text-[#00292C]"
           style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
@@ -112,31 +111,50 @@ const BookingsPage = () => {
                     </h2>
 
                     <div
-                      className="mt-2 flex flex-wrap items-center gap-4 text-lg text-[#404849]"
+                      className={`mt-2 flex flex-wrap items-center gap-4 text-lg text-[#404849] ${tour.warning ? "" : "mb-[30px]"
+                        }`}
                       style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                     >
                       <span className="inline-flex items-center gap-1 text-lg">
                         <Image
-                          src="/images/pages/dashboard/booking.svg"
+                          src="/images/pages/dashboard/calendar.svg"
                           alt="Calendar icon"
-                          width={14}
-                          height={14}
+                          width={10}
+                          height={11}
+                          className="brightness-0 opacity-70"
                         />
                         {tour.schedule}
                       </span>
-                      <span className="text-lg">◊ {tour.location}</span>
+                      <span className="inline-flex items-center gap-1 text-lg">
+                        <Image
+                          src="/images/pages/booking/location.svg"
+                          alt="Location icon"
+                          width={9}
+                          height={11}
+                          className="brightness-0 opacity-70"
+                        />
+                        {tour.location}
+                      </span>
                     </div>
 
                     {tour.warning ? (
-                      <p
-                        className="mt-[14px] text-[16px] text-[#BA1A1A]"
-                        style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                      >
-                        {tour.warning}
-                      </p>
+                      <div className="mt-[14px] inline-flex items-center gap-2">
+                        <Image
+                          src="/images/pages/booking/warning.svg"
+                          alt="Warning icon"
+                          width={12}
+                          height={12}
+                        />
+                        <p
+                          className="text-[16px] text-[#BA1A1A]"
+                          style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                        >
+                          {tour.warning}
+                        </p>
+                      </div>
                     ) : null}
 
-                    <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
+                    <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
                       <button
                         type="button"
                         className="max-w-[173px] w-full bg-[#002a31] min-h-[42px] text-xs font-semibold uppercase tracking-[1.1px] text-white"
@@ -146,16 +164,17 @@ const BookingsPage = () => {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex h-11 items-center gap-2 border border-[#c9d2d7] px-5 text-xs font-semibold uppercase tracking-[1.1px] text-[#31444d]"
+                        className="flex justify-center items-center min-h-[42px] gap-1 w-full text-center  border border-[#00292C] max-w-[183px] text-xs font-medium uppercase tracking-[0.6px] text-[#00292C]"
                         style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                       >
                         <span>{tour.secondaryAction}</span>
                         {index === 1 ? (
                           <Image
-                            src="/images/pages/dashboard/arrow.svg"
+                            src="/images/pages/booking/arrow.svg"
                             alt="Arrow icon"
-                            width={14}
-                            height={14}
+                            width={9}
+                            height={9}
+                            className="brightness-0 opacity-80"
                           />
                         ) : null}
                       </button>
@@ -188,6 +207,12 @@ const BookingsPage = () => {
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 <span>Full Policy Details</span>
+                <Image
+                  src="/images/pages/booking/arrow.svg"
+                  alt="Arrow icon"
+                  width={14}
+                  height={14}
+                />
               </button>
             </section>
 
@@ -200,26 +225,44 @@ const BookingsPage = () => {
               </h3>
 
               <div className="mt-6 space-y-4 max-w-[280px]">
-                <div className="flex gap-3">
-                  <ShieldCheck className="mt-1 h-4 w-4 text-[#123f47]" />
+                <div className="flex gap-3 items-start">
+                  <Image
+                    src="/images/pages/booking/sheild.svg"
+                    alt="Shield icon"
+                    width={16}
+                    height={24}
+                    className="mt-1"
+                  />
                   <div  >
                     <p style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-base font-medium text-[#1A1C1E]">100% Refund</p>
                     <p  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-sm text-[#5f6870]">Cancel up to 30 days before departure.</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3" >
-                  <ShieldCheck className="mt-1 h-4 w-4 text-[#123f47]" />
+                <div className="flex gap-3 items-start" >
+                  <Image
+                    src="/images/pages/booking/redo.svg"
+                    alt="Redo icon"
+                    width={18}
+                    height={22}
+                    className="mt-1"
+                  />
                   <div>
-                    <p style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-base font-medium text-[#1A1C1E]">50% Credit</p>
+                    <p style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-base font-semibold text-[#1A1C1E]">50% Credit</p>
                     <p className="text-sm text-[#5f6870]" style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}>Cancel 15–29 days before departure.</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <AlertOctagon className="mt-1 h-4 w-4 text-[#123f47]" />
+                <div className="flex gap-3 items-start">
+                  <Image
+                    src="/images/pages/booking/star.svg"
+                    alt="Star icon"
+                    width={18}
+                    height={22}
+                    className="mt-1"
+                  />
                   <div>
-                    <p style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-base font-medium text-[#1A1C1E]">Emergency Cases</p>
+                    <p style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }} className="text-base font-semibold text-[#1A1C1E]">Emergency Cases</p>
                     <p className="text-sm text-[#5f6870]" style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}>Full credit for unforeseen political or weather events.</p>
                   </div>
                 </div>
@@ -271,15 +314,15 @@ const BookingsPage = () => {
 
                 <button
                   type="button"
-                  className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[1.2px] text-[#123740]"
+                  className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[1.2px] text-[#00292C]"
                   style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                 >
                   <span>{tour.action}</span>
                   <Image
-                    src="/images/pages/dashboard/arrow.svg"
-                    alt="Arrow icon"
-                    width={14}
-                    height={14}
+                    src={idx === 0 ? "/images/pages/booking/retry.svg" : "/images/pages/booking/done.svg"}
+                    alt={idx === 0 ? "Retry icon" : "Done icon"}
+                    width={11}
+                    height={11}
                   />
                 </button>
               </article>

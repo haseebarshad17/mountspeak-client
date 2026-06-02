@@ -95,7 +95,7 @@ const Header = () => {
                             alt='logo'
                             width={100}
                             height={100}
-                            className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xlw-[95px]'
+                            className='h-auto w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
                             priority
                             fetchPriority='high'
                             quality={100}
