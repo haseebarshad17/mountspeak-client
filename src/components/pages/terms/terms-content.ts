@@ -7,6 +7,7 @@ export type TermsSection = {
     paragraphs?: string[]
     items?: { icon: string; title: string; body: string }[]
     list?: { title: string; body: string }[]
+    cookieTable?: { type: string; purpose: string; duration: string }[]
 }
 
 export const termsSections: TermsSection[] = [
@@ -40,8 +41,8 @@ export const termsSections: TermsSection[] = [
             },
             {
                 icon: 'file',
-                title: 'Accurate Information',
-                body: 'You agree to provide accurate, current and complete information during the booking process. Pakistan Travel reserves the right to cancel bookings found to contain false or misleading information.',
+                title: 'Local Compliance',
+                body: 'Travelers must respect the local laws, customs, and environmental regulations of the regions visited. Failure to comply may result in immediate termination of travel services without refund.',
             },
         ],
     },
@@ -52,48 +53,31 @@ export const termsSections: TermsSection[] = [
         badge: 'Section 03',
         heading: 'Payment Terms',
         paragraphs: [
-            'All prices displayed on the Site are in Pakistani Rupees (PKR) unless otherwise stated. Pakistan Travel reserves the right to modify pricing at any time without prior notice.',
+            'All payments are processed via secure encryption. We accept major credit cards, bank transfers, and local digital payment methods prevalent in Pakistan.',
         ],
         list: [
             {
                 title: 'Booking Deposit',
-                body: 'A non-refundable deposit of 30% is required at the time of booking confirmation.',
+                body: 'A 25% non-refundable deposit is required at the time of booking to secure your itinerary and local guides.',
             },
             {
-                title: 'Full Payment',
-                body: 'Full payment must be received no later than 14 days before the scheduled departure date.',
-            },
-            {
-                title: 'Cancellation Fees',
-                body: 'Cancellations made within 7 days of departure are subject to a 100% cancellation fee.',
-            },
-            {
-                title: 'Accepted Methods',
-                body: 'We accept payments via bank transfer, JazzCash, EasyPaisa, and major credit/debit cards.',
-            },
+                title: 'Final Payment',
+                body: 'The remaining balance must be settled at least 30 days prior to the departure date. Failure to pay may result in cancellation.',
+            }
         ],
     },
     {
         id: 'data-protection',
         index: '04',
         label: 'Data Protection',
-        badge: 'Section 04',
+        badge: 'Privacy Policy',
         heading: 'Data Protection',
         paragraphs: [
-            'Pakistan Travel is committed to protecting your personal information. We collect, use, and share your data only as described in this Privacy Policy and in accordance with applicable data protection laws.',
-            'We collect personal information such as your name, email address, phone number, and payment details solely for the purpose of providing travel services. Your data will not be sold to third parties.',
-        ],
-        items: [
-            {
-                icon: 'lock',
-                title: 'Data Security',
-                body: 'We implement industry-standard encryption and security measures to protect your personal information from unauthorized access, alteration, or disclosure.',
-            },
-            {
-                icon: 'eye',
-                title: 'Your Rights',
-                body: 'You have the right to access, correct, or delete your personal data at any time by contacting our support team at privacy@pakistantravel.pk.',
-            },
+            'We are committed to protecting your personal data. We collect information only necessary to provide travel services, including your name, contact details, passport information, and travel preferences.',
+            'We do not sell your personal data to third-party marketers.',
+            'Data is shared only with essential service providers (airlines, hotels, local guides).',
+            'You have the right to request access to or deletion of your personal data at any time.',
+            'All data is stored on secure, encrypted servers following industry-standard protocols.',
         ],
     },
     {
@@ -102,9 +86,22 @@ export const termsSections: TermsSection[] = [
         label: 'Cookie Policy',
         badge: 'Section 05',
         heading: 'Cookie Policy',
-        paragraphs: [
-            'Our website uses cookies and similar tracking technologies to enhance your browsing experience, analyze site traffic, and personalize content. By continuing to use our website, you consent to our use of cookies.',
-            'You may control cookie settings through your browser. However, disabling certain cookies may impact the functionality of our website and services.',
+        cookieTable: [
+            {
+                type: 'Essential',
+                purpose: 'Used for account authentication and security.',
+                duration: 'Session',
+            },
+            {
+                type: 'Performance',
+                purpose: 'Helps us understand how visitors interact with the site.',
+                duration: '30 Days',
+            },
+            {
+                type: 'Preferences',
+                purpose: 'Remembers your language and currency settings.',
+                duration: '1 Year',
+            },
         ],
     },
     {
@@ -114,8 +111,8 @@ export const termsSections: TermsSection[] = [
         badge: 'Section 06',
         heading: 'Liability & Law',
         paragraphs: [
-            'Pakistan Travel acts as an intermediary between travelers and local service providers. We are not liable for any loss, injury, damage, or expenses arising from events beyond our control, including but not limited to natural disasters, political unrest, or acts of terrorism.',
-            'These Terms and Conditions are governed by and construed in accordance with the laws of the Islamic Republic of Pakistan. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Islamabad, Pakistan.',
+            'Pakistan Travel shall not be held responsible for events beyond our reasonable control (Force Majeure), including but not limited to natural disasters, political instability, or government-imposed travel restrictions.',
+            'These terms are governed by and construed in accordance with the laws of the Islamic Republic of Pakistan. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Islamabad.',
         ],
     },
 ]
