@@ -2,11 +2,13 @@
 import { z } from "zod";
 
 const serverEnvSchema = z.object({
-    // MONGODB_URI: z.string().url(),
+    supabaseUrl: z.string().url(),
+    supabaseKey: z.string().min(1),
 });
 
 export const serverEnv = serverEnvSchema.parse({
-    // MONGODB_URI: process.env.MONGODB_URI,
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

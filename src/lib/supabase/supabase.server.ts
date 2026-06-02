@@ -22,5 +22,3 @@ export async function createServerSupabase() {
         }
     )
 }
-
-export const supabase = await createServerSupabase()

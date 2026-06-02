@@ -1,5 +1,6 @@
 // User Role Enum 
 export type UserRoleEnum =
+    | 'CLIENT'
     | 'super_admin'
     | 'agency_admin'
     | 'agency_member'
