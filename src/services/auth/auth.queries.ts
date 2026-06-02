@@ -19,6 +19,13 @@ export const useLogin = () => {
     })
 }
 
+// GOOGLE LOGIN
+export const useGoogleLogin = () => {
+    return useMutation({
+        mutationFn: auth.loginWithGoogle
+    })
+}
+
 
 // SIGNUP
 export const useSignup = () => {
@@ -71,4 +78,8 @@ export const useUserProfile = () => {
             return profile;
         }
     })
+}
+
+export const getUserRole = async (userId: string) => {
+    return auth.getUserRole(userId)
 }

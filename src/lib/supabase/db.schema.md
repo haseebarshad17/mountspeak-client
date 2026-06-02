@@ -128,7 +128,7 @@ payments
         new.id,
         new.email,
         coalesce(new.raw_user_meta_data->>'full_name', ''),
-        coalesce(new.raw_user_meta_data->>'role', 'agency_client'),
+        coalesce(new.raw_user_meta_data->>'role', 'CLIENT'),
         coalesce(new.raw_user_meta_data->>'avatar_url', ''),
         now()
       );
