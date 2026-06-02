@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { FileText, Globe, Lock, Eye, Shield } from 'lucide-react'
+import Image from 'next/image'
 import { Montserrat_Alternates } from 'next/font/google'
 import { cn } from '@/lib/utils/clsxUtils'
 import { termsSections, type TermsSection } from './terms-content'
@@ -12,45 +12,140 @@ const montserratAlternates = Montserrat_Alternates({
     display: 'swap',
 })
 
-const ICON_MAP: Record<string, React.ReactNode> = {
-    shield: <Shield className='h-5 w-5' />,
-    globe: <Globe className='h-5 w-5' />,
-    file: <FileText className='h-5 w-5' />,
-    lock: <Lock className='h-5 w-5' />,
-    eye: <Eye className='h-5 w-5' />,
-}
+const SECTION_ITEM_ICONS = [
+    '/images/pages/terms/term3.svg',
+    '/images/pages/terms/term1.svg',
+    '/images/pages/terms/term2.svg',
+]
 
 function SectionContent({ section }: { section: TermsSection }) {
+    const sectionTopSpacing: Record<string, string> = {
+        'user-responsibilities': 'mt-[88px]',
+        'payment-terms': 'mt-[76px]',
+        'data-protection': 'mt-[76px]',
+        'cookie-policy': 'mt-[74px]',
+        'liability-law': 'mt-[76.5px]',
+    }
+    const renderParagraphsAfterList = Boolean(section.list && section.paragraphs?.length)
+    const isDataProtectionSection = section.id === 'data-protection'
+    const isCookiePolicySection = section.id === 'cookie-policy'
+
     return (
-        <div id={section.id} className='scroll-mt-8'>
-            <span className='inline-block rounded-full border border-neutral-300 bg-neutral-100 px-3 py-1 font-mono text-xs text-neutral-500'>
+        <div id={section.id} className={cn('scroll-mt-8', sectionTopSpacing[section.id])}>
+            <span className='justify-center rounded-[12px] border border-neutral-300 bg-[#0640451A] max-w-[110px] min-h-[24px] w-full text-center flex items-center font-mono text-xs text-[#7BABB1]'>
                 {section.badge}
             </span>
 
-            <h2 className='mt-3 font-heading text-[28px] font-semibold leading-tight text-neutral-900 sm:text-[34px] lg:text-[40px]'>
+            <h2 className='mt-3 font-heading text-[28px] font-semibold leading-tight text-neutral-900 sm:text-[34px] lg:text-[48px] lg:leading-[56px]'
+                style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}>
                 {section.heading}
             </h2>
 
-            {section.paragraphs && (
-                <div className='mt-4 space-y-4'>
+            {section.paragraphs && !renderParagraphsAfterList && !isDataProtectionSection && !isCookiePolicySection && (
+                <div className='mt-6 space-y-4'>
                     {section.paragraphs.map((p, i) => (
-                        <p key={i} className='text-sm leading-relaxed text-neutral-600 sm:text-base'>
+                        <p
+                            key={i}
+                            className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                        >
                             {p}
                         </p>
                     ))}
                 </div>
             )}
 
+            {section.cookieTable && (
+                <div className='mt-6 max-w-[832px] overflow-x-auto'>
+                    <div className='min-w-[760px] overflow-hidden rounded-[4px] border border-[#C0C8C9] bg-[#F7F8FA]'>
+                        <div className='grid grid-cols-[1fr_3fr_1fr] border-b border-[#C0C8C9] bg-[#EAECEE] px-4 py-4 md:pl-4 md:pr-10'>
+                            <p
+                                className='text-xs font-medium font-mono uppercase tracking-[0.6px] text-[#00292C]'
+                                style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                            >
+                                Cookie Type
+                            </p>
+                            <p
+                                className='text-xs font-medium font-mono uppercase tracking-[0.6px] text-[#00292C]'
+                                style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                            >
+                                Purpose
+                            </p>
+                            <p
+                                className='text-right text-xs font-medium font-mono uppercase tracking-[0.6px] text-[#00292C]'
+                                style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                            >
+                                Duration
+                            </p>
+                        </div>
+
+                        {section.cookieTable.map((row) => (
+                            <div
+                                key={row.type}
+                                className='grid grid-cols-[1fr_3fr_1fr] border-b border-[#C0C8C9] px-4 py-4 last:border-b-0 md:pl-4 md:pr-10'
+                            >
+                                <p
+                                    className='text-base font-medium leading-7 text-[#00292C]'
+                                    style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                                >
+                                    {row.type}
+                                </p>
+                                <p
+                                    className='text-base text-[#404849]'
+                                    style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                                >
+                                    {row.purpose}
+                                </p>
+                                <p
+                                    className='text-base text-[#404849] text-right'
+                                    style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
+                                >
+                                    {row.duration}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {section.paragraphs && isDataProtectionSection && (
+                <div className='mt-6 max-w-[832px]'>
+                    <p
+                        className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                        style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                    >
+                        {section.paragraphs[0]}
+                    </p>
+
+                    <div className='mt-4 space-y-2 pl-4'>
+                        {section.paragraphs.slice(1).map((p, i) => (
+                            <p
+                                key={i}
+                                className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                                style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                            >
+                                {p}
+                            </p>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {section.items && (
-                <div className='mt-6 space-y-5'>
-                    {section.items.map((item) => (
+                <div className='mt-6 max-w-[832px] space-y-5 border border-[#C0C8C9] bg-white p-8'>
+                    {section.items.map((item, index) => (
                         <div key={item.title} className='flex items-start gap-4'>
-                            <span className='mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary-200 bg-primary-50 text-primary-700'>
-                                {ICON_MAP[item.icon] ?? <Shield className='h-5 w-5' />}
+                            <span className='mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#064045]'>
+                                <Image
+                                    src={SECTION_ITEM_ICONS[index] ?? '/images/pages/terms/term1.svg'}
+                                    alt={`${item.title} icon`}
+                                    width={18}
+                                    height={20}
+                                />
                             </span>
                             <div>
-                                <p className='font-semibold text-neutral-800'>{item.title}</p>
-                                <p className='mt-1 text-sm leading-relaxed text-neutral-600'>
+                                <p className='font-semibold text-[#00292C] text-[20px] leading-7 max-w-[710px]' style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}>{item.title}</p>
+                                <p className='mt-2 text-base  text-[#404849]' style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>
                                     {item.body}
                                 </p>
                             </div>
@@ -60,15 +155,81 @@ function SectionContent({ section }: { section: TermsSection }) {
             )}
 
             {section.list && (
-                <div className='mt-6 divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-neutral-50'>
+                <div className='mt-6 grid gap-4 md:grid-cols-2'>
                     {section.list.map((item, i) => (
-                        <div key={i} className='px-5 py-4'>
-                            <p className='font-semibold text-neutral-800'>{item.title}</p>
-                            <p className='mt-1 text-sm leading-relaxed text-neutral-600'>{item.body}</p>
+                        <div
+                            key={i}
+                            className='border-l-4  max-w-[400px] w-full p-6 border-l-[#00292C] bg-[#EEEEF0] px-5 py-4'
+                        >
+                            <p
+                                className='text-xs font-medium font-mono uppercase text-[#00292C]'
+                                style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                            >
+                                {item.title}
+                            </p>
+                            <p
+                                className='mt-2 text-base text-[#404849]'
+                                style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                            >
+                                {item.body}
+                            </p>
                         </div>
                     ))}
                 </div>
             )}
+
+            {section.paragraphs && renderParagraphsAfterList && (
+                <div className='mt-6 space-y-4'>
+                    {section.paragraphs.map((p, i) => (
+                        <p
+                            key={i}
+                            className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                        >
+                            {p}
+                        </p>
+                    ))}
+                </div>
+            )}
+
+            {section.id === 'payment-terms' ? (
+                <div className='mt-[80px] max-w-[832px]'>
+                    <Image
+                        src='/images/pages/terms/mountain.svg'
+                        alt='Mountain landscape'
+                        width={832}
+                        height={280}
+                        className='h-auto w-full'
+                    />
+                </div>
+            ) : null}
+
+            {section.id === 'liability-law' ? (
+                <div className='mt-20 flex max-w-[832px] flex-col items-start justify-between gap-6 border border-[#D5DADD] bg-[#EEF1F3] px-6 py-6 sm:flex-row sm:items-center sm:p-10'>
+                    <div>
+                        <h3
+                            className='text-[24px] leading-[32px] text-[#00292C]'
+                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
+                        >
+                            Have questions about our terms?
+                        </h3>
+                        <p
+                            className='mt-2 text-base text-[#404849]'
+                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                        >
+                            Our legal team is here to provide clarity on any aspect of our service agreement.
+                        </p>
+                    </div>
+
+                    <button
+                        type='button'
+                        className='inline-flex min-h-[52px] items-center justify-center bg-[#00292C] px-7 text-xs font-semibold uppercase tracking-[1.2px] text-white'
+                        style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                    >
+                        Contact Support
+                    </button>
+                </div>
+            ) : null}
         </div>
     )
 }
@@ -109,30 +270,34 @@ export default function TermsPage() {
 
     return (
         <main className='min-h-screen bg-[#F7F8FA]'>
-            {/* Page header */}
-            <div className='bg-[#F7F8FA] pb-8 pt-12 sm:pt-14 lg:pt-16'>
+
+            <div className='bg-[#F7F8FA] pt-8 sm:pt-[40px] lg:pt-[55px]'>
                 <div className='mx-auto w-full max-w-[1182px] px-[15px]'>
-                    <h1 className='font-heading text-[36px] font-bold leading-tight text-[#00292C] sm:text-[48px] lg:text-[58px]'>
+                    <h1
+                        className='font-heading text-[36px] font-bold leading-tight text-[#00292C] sm:text-[48px] lg:text-[72px]'
+                        style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
+                    >
                         Legal Framework
                     </h1>
-                    <p className='mt-3 max-w-xl text-sm text-neutral-500 sm:text-base'>
+                    <p className='mt-4 max-w-2xl text-base text-[#404849] sm:text-xl leading-[28px]'>
                         Last Updated: May 24, 2024. Please read these terms carefully before booking
                         your adventure across Pakistan.
                     </p>
                 </div>
             </div>
 
-            <div className='mx-auto w-full max-w-[1182px] px-[15px] pb-20 pt-8'>
-                <div className='flex flex-col gap-10 lg:flex-row lg:gap-12 xl:gap-16'>
+            <div className='mx-auto w-full max-w-[1182px] px-[15px] pb-20 pt-16'>
+                <div className='flex flex-col gap-4 lg:flex-row lg:gap-8'>
 
                     {/* Sticky sidebar TOC */}
-                    <aside className='shrink-0 w-[288px]'>
-                        <div className='sticky top-10 rounded-[4px] border-2 border-[#C0C8C9] bg-[#fff] p-[33px] shadow-[0_2px_10px_rgba(20,20,31,0.05)]'>
+                    <aside className='w-full shrink-0 lg:w-[288px] lg:min-w-[288px] lg:max-w-[288px]'>
+                        <div className='sticky top-10 rounded-[4px] border border-[#C0C8C9] bg-[#fff] p-[33px] shadow-[0_2px_10px_rgba(20,20,31,0.05)]'>
                             <p
                                 className={cn(
                                     montserratAlternates.className,
-                                    'text-[12px] font-semibold uppercase leading-4 tracking-[1.2px] text-[#4A545A]',
+                                    'text-[12px] font-semibold uppercase leading-4 tracking-[1.2px] text-[#404849]',
                                 )}
+                                style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
                             >
                                 Contents
                             </p>
@@ -145,17 +310,17 @@ export default function TermsPage() {
                                         onClick={() => scrollTo(s.id)}
                                         className={cn(
                                             montserratAlternates.className,
-                                            'relative flex items-center gap-4 rounded pl-[16px] text-left text-[12px] font-medium leading-4 tracking-[0.01em] transition-colors',
+                                            'relative flex items-center gap-4 rounded pl-[16px]  text-left text-[12px] font-medium leading-4 tracking-[0.01em] transition-colors',
                                             activeId === s.id
                                                 ? 'text-[#00292C]'
                                                 : 'text-[#5E666C] hover:text-[#00292C]',
                                         )}
                                     >
                                         {activeId === s.id && (
-                                            <span className='absolute left-0 top-1/2 h-[16px] w-[2px] -translate-y-1/2 rounded-full bg-[#00292C]' />
+                                            <span className='absolute left-0 top-1/2 h-[16px] w-[2px] font-mono -translate-y-1/2 rounded-full bg-[#00292C]' />
                                         )}
                                         <span>{s.index}.</span>
-                                        <span>{s.label}</span>
+                                        <span className='font-mono '>{s.label}</span>
                                     </button>
                                 ))}
                             </div>
