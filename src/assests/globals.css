@@ -249,6 +249,13 @@
 
 /* Layer Utilities  */
 @layer utilities {
+    .font-noto {
+        font-family: var(--font-noto-serif), ui-serif, Georgia, serif;
+    }
+
+    .font-manrope {
+        font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+    }
 
     /* Scrollbar hide */
     .scrollbar-hide {

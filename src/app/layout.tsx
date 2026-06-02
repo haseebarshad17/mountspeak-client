@@ -4,7 +4,7 @@ import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
 import { defaultMeta } from "@/assests/meta";
-import { hankenGrotesk, jetBrainsMono, jost, notoSans, plusJakartaSans, redHatText, roboto } from "@/assests/fonts";
+import { hankenGrotesk, jetBrainsMono, jost, manrope, notoSans, notoSerif, plusJakartaSans, redHatText, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
 
@@ -34,6 +34,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 hankenGrotesk.variable,
                 plusJakartaSans.variable,
                 jetBrainsMono.variable,
+                notoSerif.variable,
+                manrope.variable,
             )}
         >
             <body className={cn(notoSans.variable)}>

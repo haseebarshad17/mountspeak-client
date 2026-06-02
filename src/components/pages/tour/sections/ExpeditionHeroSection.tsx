@@ -21,9 +21,9 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
     return (
         <section
             id={heroSection.id}
-            className="p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]"
+            className="px-2  sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:pt-[30px] xl:px-[18px]"
         >
-            <div className="relative min-h-[min(85vh,820px)] overflow-hidden rounded-[16px] sm:min-h-[82vh] lg:min-h-[min(88vh,900px)]">
+            <div className="relative min-h-[min(85vh,820px)] overflow-hidden rounded-[16px] sm:min-h-[82vh] lg:h-[631px] lg:min-h-[631px]">
                 <div className="absolute inset-0">
                     <Image
                         src={backgroundMedia.desktop}
@@ -45,22 +45,22 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     ) : null}
                 </div>
 
-                <div className="relative z-10 flex min-h-[min(85vh,820px)] flex-col justify-end pb-10 pt-32 sm:min-h-[82vh] sm:pb-14 sm:pt-40 lg:min-h-[min(88vh,900px)] lg:pb-16 lg:pt-44">
-                    <div className="agency-container">
+                <div className="relative z-10 flex min-h-[min(85vh,820px)] flex-col justify-end pb-10 pt-32 sm:min-h-[82vh] sm:pb-14 sm:pt-40 lg:min-h-[631px] lg:pb-16 lg:pt-44">
+                    <div className="agency-container !px-16">
                         <div className="max-w-3xl text-white">
                             {eyebrow ? (
-                                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/90">
+                                <p className="mb-3 font-manrope text-base font-semibold uppercase text-[#FFDBD0]">
                                     {eyebrow}
                                 </p>
                             ) : null}
                             <h1
-                                className="font-heading text-[40px] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[56px]"
+                                className="font-noto text-[40px] font-semibold leading-[1.05] tracking-tight lg:leading-[57px] max-w-[672px] w-full lg:text-[48px]"
                                 style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
                             >
                                 {title}
                             </h1>
                             {subtitle ? (
-                                <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+                                <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#FFFFFFCC] sm:text-base">
                                     {subtitle}
                                 </p>
                             ) : null}

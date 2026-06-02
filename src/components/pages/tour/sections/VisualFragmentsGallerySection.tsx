@@ -19,22 +19,22 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
     return (
         <section
             id={gallerySection.id}
-            className="py-16 sm:py-20 lg:py-24"
+            className="py-8 sm:py-10 min-h-[860px] lg:py-16"
             style={{ backgroundColor: '#091416', color: '#F5F5F2' }}
         >
-            <div className="agency-container">
+            <div className="agency-container !px-16">
                 <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+                        <p className="text-base font-manrope  uppercase  text-[#D2E9C7] ">
                             {gallerySection.eyebrow}
                         </p>
-                        <h2 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                        <h2 className="mt-4 font-heading text-3xl font-bold font-noto text-white sm:text-4xl">
                             {gallerySection.title}
                         </h2>
                     </div>
                     <Link
                         href={gallerySection.actionUrl}
-                        className="text-xs font-semibold uppercase tracking-[0.12em] text-white underline decoration-2 underline-offset-4 transition hover:text-white/90"
+                        className="text-base font-manrope uppercase text-white underline decoration-2 underline-offset-4 transition hover:text-white/90"
                         style={{ textDecorationColor: theme.secondaryColor }}
                     >
                         {gallerySection.actionLabel}

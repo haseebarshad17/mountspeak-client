@@ -93,7 +93,7 @@
             ],
             "sideCard": {
                 "type": "map",
-                "title": "EXPEDITION ROUTE MAP",
+                "title": "EXPEDITION ROUTE",
                 "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
                 "alt": "Hunza expedition route map"
             },
@@ -336,7 +336,7 @@
                     "style": "primary"
                 },
                 {
-                    "label": "CHECK AVAILABILITY",
+                    "label": "SPEAK WITH AN EXPERT",
                     "url": "/contact-us",
                     "style": "secondary"
                 }

@@ -14,10 +14,10 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
     return (
         <section
             id={itinerarySection.id}
-            className="border-t border-black/[0.06] bg-[#F0F0EC] py-16 sm:py-20 lg:py-24"
+            className=" bg-[#F3F4F3] py-8 sm:py-10 lg:pt-16 lg:pb-[112px]"
         >
             <div className="agency-container">
-                <h2 className="text-center font-heading text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
+                <h2 className="text-center font-heading font-noto text-3xl font-bold tracking-tight text-[#191C1C] sm:text-4xl">
                     {itinerarySection.title}
                 </h2>
 
@@ -27,7 +27,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                         aria-hidden
                     />
 
-                    <div className="space-y-16 lg:space-y-24">
+                    <div className="space-y-[40px] lg:space-y-[56px]">
                         {days.map((day, index) => {
                             const imageOnRight = index % 2 === 0
                             const isLast = index === days.length - 1
@@ -40,28 +40,28 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                     }`}
                                 >
                                     <span
-                                        className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white lg:hidden"
+                                        className="mb-4 inline-flex h-9 w-9 items-start justify-center rounded-full text-xs font-bold text-white lg:hidden"
                                         style={{ backgroundColor: theme.primaryColor }}
                                     >
                                         {dayLabel}
                                     </span>
-                                    <h3 className="font-heading text-xl font-semibold text-neutral-900 sm:text-2xl">
+                                    <h3 className="font-heading text-xl font-noto font-semibold text-neutral-900 sm:text-2xl">
                                         {day.title}
                                     </h3>
-                                    <p className="mt-4 max-w-md text-sm leading-relaxed text-neutral-600 sm:text-base">
+                                    <p className="mt-4 max-w-md text-sm font-manrope leading-relaxed text-[#434849] sm:text-base">
                                         {day.description}
                                     </p>
                                 </div>
                             )
 
                             const visual = (
-                                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl sm:aspect-[2/1]">
+                                <div className="relative h-[192px] w-full max-w-[516px] overflow-hidden rounded-2xl">
                                     <Image
                                         src={day.image}
                                         alt={day.alt}
                                         fill
                                         className="object-cover"
-                                        sizes="(max-width: 1024px) 100vw, 42vw"
+                                        sizes="(max-width: 1024px) 100vw, 516px"
                                     />
                                 </div>
                             )
@@ -69,12 +69,12 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                             return (
                                 <div
                                     key={day.day}
-                                    className="grid items-center gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-8"
+                                    className="grid gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-8"
                                 >
                                     {imageOnRight ? (
                                         <>
-                                            <div className="lg:pr-2">{textBlock}</div>
-                                            <div className="relative hidden flex-col items-center lg:flex">
+                                            <div className="w-full max-w-xl justify-self-start lg:pr-2">{textBlock}</div>
+                                            <div className="relative hidden flex-col items-center justify-self-center lg:flex">
                                                 <span
                                                     className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
                                                     style={{ backgroundColor: theme.primaryColor }}
@@ -85,12 +85,12 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                                     <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
                                                 ) : null}
                                             </div>
-                                            <div className="lg:pl-2">{visual}</div>
+                                            <div className="w-full max-w-xl justify-self-end lg:pl-2">{visual}</div>
                                         </>
                                     ) : (
                                         <>
-                                            <div className="order-2 lg:order-1 lg:pr-2">{visual}</div>
-                                            <div className="relative order-1 hidden flex-col items-center lg:order-2 lg:flex">
+                                                <div className="order-2 w-full max-w-xl justify-self-start lg:order-1 lg:pr-2">{visual}</div>
+                                                <div className="relative order-1 hidden flex-col items-center justify-self-center lg:order-2 lg:flex">
                                                 <span
                                                     className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
                                                     style={{ backgroundColor: theme.primaryColor }}
@@ -101,7 +101,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                                     <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
                                                 ) : null}
                                             </div>
-                                            <div className="order-3 lg:order-3 lg:pl-2">{textBlock}</div>
+                                                <div className="order-3 w-full max-w-xl justify-self-end lg:order-3 lg:pl-2">{textBlock}</div>
                                         </>
                                     )}
                                 </div>
