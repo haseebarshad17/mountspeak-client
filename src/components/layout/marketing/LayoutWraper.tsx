@@ -15,10 +15,11 @@ interface LayoutWrapperProps {
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const pathname = usePathname();
     const HeaderExcludeRoutes = [
-        "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*", "/dashboard", "/dashboard/*",
+        "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
         "/bookings", "/bookings/*",
+        "/detail", "/detail/*",
     ];
 
     const FooterExcludeRoutes = [
@@ -26,6 +27,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
         "/bookings", "/bookings/*",
+        "/detail", "/detail/*",
     ];
 
     const ShouldShowHeader = HeaderExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));

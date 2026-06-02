@@ -69,7 +69,7 @@ function SearchResultCard({
                     {title}
                 </h3>
                 <Link
-                    href="#"
+                    href="/detail"
                     className="mt-3 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white"
                 >
                     View All Place
