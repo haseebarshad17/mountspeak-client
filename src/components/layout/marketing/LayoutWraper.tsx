@@ -18,14 +18,12 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
-        "/bookings", "/bookings/*",
     ];
 
     const FooterExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*", "/dashboard", "/dashboard/*",
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
-        "/bookings", "/bookings/*",
     ];
 
     const ShouldShowHeader = HeaderExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));

@@ -14,7 +14,8 @@ const Header = () => {
     const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
     const isSearchPage = pathname === '/search' || pathname.startsWith('/search/')
     const isDashboardPage = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
-    const useLightNav = isTermsPage || isSearchPage || isDashboardPage
+    const isBookingsPage = pathname === '/bookings' || pathname.startsWith('/bookings/')
+    const useLightNav = isTermsPage || isSearchPage || isDashboardPage || isBookingsPage
     const { data: currentUser } = useUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
