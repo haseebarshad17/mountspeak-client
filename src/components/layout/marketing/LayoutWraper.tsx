@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Header from './header/header';
 import Footer from './footer/footer';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
+import { Toaster } from 'sonner';
 
 interface LayoutWrapperProps {
     readonly children: React.ReactNode;
@@ -40,6 +41,20 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
                 {ShouldShowHeader && <Header />}
                 {children}
                 {ShouldShowFooter && <Footer />}
+                <Toaster
+                    position='bottom-right'
+                    closeButton
+                    toastOptions={{
+                        classNames: {
+                            toast:
+                                'border border-white/20 bg-black/45 text-white backdrop-blur-lg shadow-xl shadow-black/30',
+                            title: 'text-sm font-semibold',
+                            description: 'text-xs text-white/80',
+                            error: 'border-[#ffb4b4]/40',
+                            success: 'border-[#86efac]/40',
+                        },
+                    }}
+                />
             </div>
         </TanstackQueryProvider>
     )
