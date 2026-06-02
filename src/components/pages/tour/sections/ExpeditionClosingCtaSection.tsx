@@ -38,7 +38,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                     'inline-flex min-h-12 min-w-[200px] items-center justify-center rounded-md px-8 text-xs font-bold uppercase tracking-wider transition-colors sm:text-sm',
                                     isPrimary
                                         ? 'text-white shadow-md'
-                                        : 'border-2 bg-transparent text-neutral-900 hover:bg-neutral-100'
+                                        : 'border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50'
                                 )}
                                 style={
                                     isPrimary
@@ -46,7 +46,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                               backgroundColor: theme.secondaryColor,
                                               borderColor: theme.secondaryColor,
                                           }
-                                        : { borderColor: theme.primaryColor, color: theme.primaryColor }
+                                        : undefined
                                 }
                             >
                                 {btn.label}

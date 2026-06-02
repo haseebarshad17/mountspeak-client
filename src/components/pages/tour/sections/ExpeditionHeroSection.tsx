@@ -1,14 +1,12 @@
 import React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { CalendarDays, MapPin, Mountain, type LucideIcon } from 'lucide-react'
-
-import { cn } from '@/lib/utils/clsxUtils'
+import { CalendarDays, CircleDollarSign, Mountain, type LucideIcon } from 'lucide-react'
 
 import type { TourPage } from './tour-page.types'
 
 const heroHighlightIcons: Record<string, LucideIcon> = {
     calendar: CalendarDays,
+    price: CircleDollarSign,
     mountain: Mountain,
 }
 
@@ -17,94 +15,70 @@ type ExpeditionHeroSectionProps = {
 }
 
 export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
-    const { heroSection, theme } = page
-    const { backgroundMedia, overlay, eyebrow, title, subtitle, tripHighlights, ctaGroup } = heroSection
+    const { heroSection } = page
+    const { backgroundMedia, overlay, eyebrow, title, subtitle, tripHighlights } = heroSection
 
     return (
         <section
             id={heroSection.id}
-            className="relative w-full overflow-hidden  min-h-[75vh]
-        sm:min-h-[82vh]
-        lg:min-h-[min(100vh,920px)]"
+            className="p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]"
         >
-            <div className="absolute inset-0">
-                <Image
-                    src={backgroundMedia.desktop}
-                    alt={backgroundMedia.alt}
-                    fill
-                    priority
-                    className="object-cover"
-                    sizes="100vw"
-                />
-                {overlay.enabled ? (
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            backgroundColor: overlay.color,
-                            opacity: overlay.opacity,
-                        }}
+            <div className="relative min-h-[min(85vh,820px)] overflow-hidden rounded-[16px] sm:min-h-[82vh] lg:min-h-[min(88vh,900px)]">
+                <div className="absolute inset-0">
+                    <Image
+                        src={backgroundMedia.desktop}
+                        alt={backgroundMedia.alt}
+                        fill
+                        priority
+                        className="object-cover"
+                        sizes="100vw"
                     />
-                ) : null}
-            </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
+                    {overlay.enabled ? (
+                        <div
+                            className="absolute inset-0"
+                            style={{
+                                backgroundColor: overlay.color,
+                                opacity: overlay.opacity,
+                            }}
+                        />
+                    ) : null}
+                </div>
 
-            <div className="relative z-10 flex  min-h-[75vh]
-        sm:min-h-[82vh]
-        lg:min-h-[min(100vh,920px)] flex-col justify-end pb-16 pt-32 sm:pb-20 sm:pt-40 lg:pb-28 lg:pt-48">
-                <div className="agency-container">
-                    <div className="max-w-3xl text-white">
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/90">
-                            {eyebrow}
-                        </p>
-                        <h1
-                            className="font-heading text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
-                            style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
-                        >
-                            {title}
-                        </h1>
-                        <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
-                            {subtitle}
-                        </p>
+                <div className="relative z-10 flex min-h-[min(85vh,820px)] flex-col justify-end pb-10 pt-32 sm:min-h-[82vh] sm:pb-14 sm:pt-40 lg:min-h-[min(88vh,900px)] lg:pb-16 lg:pt-44">
+                    <div className="agency-container">
+                        <div className="max-w-3xl text-white">
+                            {eyebrow ? (
+                                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/90">
+                                    {eyebrow}
+                                </p>
+                            ) : null}
+                            <h1
+                                className="font-heading text-[40px] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[56px]"
+                                style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
+                            >
+                                {title}
+                            </h1>
+                            {subtitle ? (
+                                <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+                                    {subtitle}
+                                </p>
+                            ) : null}
 
-                        {tripHighlights.length > 0 ? (
-                            <ul className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-white/95">
-                                {tripHighlights.map((item) => {
-                                    const Icon = heroHighlightIcons[item.icon] ?? MapPin
-                                    return (
-                                        <li key={item.label} className="flex items-center gap-2">
-                                            <Icon className="h-5 w-5 shrink-0 opacity-90" />
-                                            <span>{item.label}</span>
-                                        </li>
-                                    )
-                                })}
-                            </ul>
-                        ) : null}
-
-                        {ctaGroup.length > 0 ? (
-                            <div className="mt-10 flex flex-wrap gap-3">
-                                {ctaGroup.map((cta) => {
-                                    const isPrimary = cta.style === 'primary'
-                                    return (
-                                        <Link
-                                            key={cta.label}
-                                            href={cta.url}
-                                            className={cn(
-                                                'inline-flex min-h-11 items-center justify-center rounded-md px-6 text-sm font-semibold transition-colors',
-                                                isPrimary
-                                                    ? 'text-white shadow-lg shadow-black/20'
-                                                    : 'border border-white/70 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
-                                            )}
-                                            style={
-                                                isPrimary
-                                                    ? { backgroundColor: theme.secondaryColor }
-                                                    : undefined
-                                            }
-                                        >
-                                            {cta.label}
-                                        </Link>
-                                    )
-                                })}
-                            </div>
-                        ) : null}
+                            {tripHighlights.length > 0 ? (
+                                <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium text-white/95 sm:text-base">
+                                    {tripHighlights.map((item) => {
+                                        const Icon = heroHighlightIcons[item.icon] ?? CalendarDays
+                                        return (
+                                            <li key={item.label} className="flex items-center gap-2.5">
+                                                <Icon className="h-5 w-5 shrink-0 opacity-90" strokeWidth={1.75} />
+                                                <span>{item.label}</span>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            ) : null}
+                        </div>
                     </div>
                 </div>
             </div>
