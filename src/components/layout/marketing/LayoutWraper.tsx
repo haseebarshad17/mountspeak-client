@@ -18,6 +18,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
         "/bookings", "/bookings/*",
+        "/detail", "/detail/*",
     ];
 
     const FooterExcludeRoutes = [
@@ -25,6 +26,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
         "/bookings", "/bookings/*",
+        "/detail", "/detail/*",
     ];
 
     const ShouldShowHeader = HeaderExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));
