@@ -1,8 +1,16 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { getApiErrorMessage } from '@/lib/api/errors'
+import { usePakistanCities } from '@/services/cities/cities.queries'
+import {
+    BOOKING_REQUEST_CATEGORIES,
+    type BookingRequestCategory,
+} from '@/services/booking-requests/booking-requests.types'
+import { useCreateBookingRequest } from '@/services/booking-requests/booking-requests.queries'
 import { Calendar } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const fieldClass =
@@ -14,129 +22,101 @@ const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
-type BookATourFormValues = {
-    name: string
-    email: string
-    phone: string
-    date: string
-    destination: string
-    persons: string
-    category: string
-    specialRequest: string
-}
+const seatOptions = Array.from({ length: 11 }, (_, index) => index)
 
-type BookATourFormErrors = Partial<Record<keyof BookATourFormValues, string>>
-
-const initialFormValues: BookATourFormValues = {
-    name: '',
-    email: '',
-    phone: '',
-    date: '',
-    destination: '',
-    persons: '',
-    category: '',
-    specialRequest: '',
-}
-
-const bookATourSchema = z.object({
-    name: z.string().trim().min(1, 'Name is required').min(2, 'Name must be at least 2 characters').max(50, 'Name must be at most 50 characters'),
-    email: z.string().trim().min(1, 'Email is required').email('Please enter a valid email address'),
-    phone: z.string().trim().min(1, 'Phone number is required').min(10, 'Phone number must be at least 10 characters').max(20, 'Phone number must be at most 20 characters'),
-    date: z
+const bookingRequestSchema = z.object({
+    full_name: z.string().trim().min(2, 'Full name is required.'),
+    email: z.string().trim().email('Please enter a valid email.'),
+    phone: z
         .string()
         .trim()
-        .min(1, 'Date is required')
-        .refine((value) => {
-            const selectedDate = new Date(`${value}T00:00:00`)
-            const today = new Date()
-            today.setHours(0, 0, 0, 0)
-            return !Number.isNaN(selectedDate.getTime()) && selectedDate > today
-        }, 'Date must be in the future'),
-    destination: z.string().trim().min(1, 'Please select your destination'),
-    persons: z.string().trim().min(1, 'Please select number of people'),
-    category: z.string().trim().min(1, 'Please select category'),
-    specialRequest: z.string(),
+        .min(7, 'Phone number is required.')
+        .regex(/^\+?[0-9\s-]{7,20}$/, 'Enter a valid phone number.'),
+    travel_date: z.string().min(1, 'Travel date is required.'),
+    destination: z.string().min(1, 'Please select a destination.'),
+    male_seat: z.coerce.number().int().min(0).max(50),
+    female_seat: z.coerce.number().int().min(0).max(50),
+    category: z.enum(BOOKING_REQUEST_CATEGORIES),
+    request_message: z.string().trim().optional(),
+}).refine((data) => data.male_seat + data.female_seat >= 1, {
+    message: 'At least one seat is required.',
+    path: ['male_seat'],
 })
-
-const getFieldErrors = (error: z.ZodError<BookATourFormValues>): BookATourFormErrors => {
-    const flattenedErrors = error.flatten().fieldErrors
-
-    return {
-        name: flattenedErrors.name?.[0],
-        email: flattenedErrors.email?.[0],
-        phone: flattenedErrors.phone?.[0],
-        date: flattenedErrors.date?.[0],
-        destination: flattenedErrors.destination?.[0],
-        persons: flattenedErrors.persons?.[0],
-        category: flattenedErrors.category?.[0],
-        specialRequest: flattenedErrors.specialRequest?.[0],
-    }
-}
 
 function FormField({
     label,
     children,
     className,
+    error,
 }: {
     label: string
-    required?: boolean
     children: React.ReactNode
     className?: string
+    error?: string
 }) {
     return (
-        <label className={className}>
-            <span className='sr-only'>{label}</span>
-            {children}
-        </label>
+        <div className={className}>
+            <label>
+                <span className='sr-only'>{label}</span>
+                {children}
+            </label>
+            {error ? (
+                <p className='mt-1 font-roboto text-xs text-[#ffb4b4]' role='alert'>
+                    {error}
+                </p>
+            ) : null}
+        </div>
     )
 }
 
 const BookATour = () => {
-    const [formValues, setFormValues] = useState<BookATourFormValues>(initialFormValues)
-    const [errors, setErrors] = useState<BookATourFormErrors>({})
-    const [hasSubmitted, setHasSubmitted] = useState(false)
+    const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
+    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
-    const validateAndSetErrors = (values: BookATourFormValues) => {
-        const result = bookATourSchema.safeParse(values)
-        if (result.success) {
-            setErrors({})
-            return true
-        }
-
-        setErrors(getFieldErrors(result.error))
-        return false
-    }
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = event.target
-        const nextValues = {
-            ...formValues,
-            [name]: value,
-        } as BookATourFormValues
-
-        setFormValues(nextValues)
-
-        if (hasSubmitted) {
-            validateAndSetErrors(nextValues)
-        }
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        setHasSubmitted(true)
+        setFieldErrors({})
 
-        const isValid = validateAndSetErrors(formValues)
-        if (!isValid) {
+        const form = event.currentTarget
+        const formData = new FormData(form)
+        const raw = {
+            full_name: String(formData.get('full_name') ?? ''),
+            email: String(formData.get('email') ?? ''),
+            phone: String(formData.get('phone') ?? ''),
+            travel_date: String(formData.get('travel_date') ?? ''),
+            destination: String(formData.get('destination') ?? ''),
+            male_seat: formData.get('male_seat'),
+            female_seat: formData.get('female_seat'),
+            category: String(formData.get('category') ?? '') as BookingRequestCategory,
+            request_message: String(formData.get('request_message') ?? '').trim(),
+        }
+
+        const parsed = bookingRequestSchema.safeParse(raw)
+        if (!parsed.success) {
+            const nextErrors: Record<string, string> = {}
+            parsed.error.issues.forEach((issue) => {
+                const key = String(issue.path[0] ?? 'form')
+                if (!nextErrors[key]) nextErrors[key] = issue.message
+            })
+            setFieldErrors(nextErrors)
+            toast.error('Please fix the highlighted fields.')
             return
         }
 
-        setFormValues(initialFormValues)
-        setErrors({})
-        setHasSubmitted(false)
-    }
+        const payload = {
+            ...parsed.data,
+            request_message: parsed.data.request_message || undefined,
+        }
 
-    const getInputClassName = (hasError: boolean, className: string) =>
-        `${className} ${hasError ? 'ring-2 ring-red-400 focus:ring-red-400' : ''}`
+        try {
+            await createBookingRequest(payload)
+            toast.success('Booking request submitted successfully. We will contact you soon.')
+            form.reset()
+        } catch (error) {
+            toast.error(getApiErrorMessage(error, 'Unable to submit booking request. Please try again.'))
+        }
+    }
 
     return (
         <section
@@ -145,7 +125,6 @@ const BookATour = () => {
         >
             <div className='agency-container relative z-10 py-14 sm:py-16 lg:py-20 xl:py-24'>
                 <div className='grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16'>
-                    {/* Left — Online Booking */}
                     <div className='text-white'>
                         <div className='flex items-center gap-3'>
                             <span className='font-roboto text-[20px] leading-6 font-semibold uppercase tracking-[0.2em] text-white'>
@@ -167,7 +146,8 @@ const BookATour = () => {
                         <p className='pt-7 font-roboto text-base font-normal leading-7 text-white/90 sm:text-base sm:leading-8'>
                             Get{' '}
                             <span className='font-semibold text-[#F5D547]'>50% Off</span> on your first adventure trip
-                            with us. Book your tour today and enjoy unforgettable travel experiences at the best prices.
+                            with us. Submit your booking request today and enjoy unforgettable travel experiences at the
+                            best prices.
                         </p>
 
                         <Button
@@ -178,17 +158,15 @@ const BookATour = () => {
                         </Button>
                     </div>
 
-                    {/* Right — Form (Figma: 624px wide, 16px gaps, inputs 304×58) */}
                     <div className='w-full max-w-[624px] lg:justify-self-end'>
                         <h3
                             id='book-a-tour-heading'
                             className='font-jost text-[28px] font-medium leading-tight text-white sm:text-[32px] lg:text-[36px]'
                         >
-                            Book A Tour
+                            Booking Request
                         </h3>
                         <p className='pt-2 font-roboto text-base font-normal leading-6 tracking-normal text-white/90'>
-                            Get <span className='font-semibold text-[#F5D547]'>50% Off</span> On Your First Adventure
-                            Trip With North Trips &amp; Travel.
+                            Share your travel details and our team will confirm availability for your trip.
                         </p>
 
                         <form
@@ -197,193 +175,139 @@ const BookATour = () => {
                             noValidate
                         >
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Your Name' required>
+                                <FormField label='Full name' error={fieldErrors.full_name}>
                                     <input
                                         type='text'
-                                        name='name'
+                                        name='full_name'
                                         placeholder='Your Name *'
                                         required
-                                        value={formValues.name}
-                                        onChange={handleChange}
-                                        aria-invalid={Boolean(errors.name)}
-                                        aria-describedby={errors.name ? 'book-a-tour-name-error' : undefined}
-                                        className={getInputClassName(Boolean(errors.name), fieldClass)}
+                                        className={fieldClass}
                                     />
-                                    {errors.name && (
-                                        <p id='book-a-tour-name-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.name}
-                                        </p>
-                                    )}
                                 </FormField>
-                                <FormField label='Your Email' required>
+                                <FormField label='Email' error={fieldErrors.email}>
                                     <input
                                         type='email'
                                         name='email'
                                         placeholder='Your Email *'
                                         required
-                                        value={formValues.email}
-                                        onChange={handleChange}
-                                        aria-invalid={Boolean(errors.email)}
-                                        aria-describedby={errors.email ? 'book-a-tour-email-error' : undefined}
-                                        className={getInputClassName(Boolean(errors.email), fieldClass)}
+                                        className={fieldClass}
                                     />
-                                    {errors.email && (
-                                        <p id='book-a-tour-email-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.email}
-                                        </p>
-                                    )}
                                 </FormField>
                             </div>
 
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Your Phone'>
+                                <FormField label='Phone' error={fieldErrors.phone}>
                                     <input
                                         type='tel'
                                         name='phone'
-                                        placeholder='Your Phone'
-                                        value={formValues.phone}
-                                        onChange={handleChange}
-                                        aria-invalid={Boolean(errors.phone)}
-                                        aria-describedby={errors.phone ? 'book-a-tour-phone-error' : undefined}
-                                        className={getInputClassName(Boolean(errors.phone), fieldClass)}
+                                        placeholder='Your Phone *'
+                                        required
+                                        className={fieldClass}
                                     />
-                                    {errors.phone && (
-                                        <p id='book-a-tour-phone-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.phone}
-                                        </p>
-                                    )}
                                 </FormField>
-                                <FormField label='Date'>
+                                <FormField label='Travel date' error={fieldErrors.travel_date}>
                                     <div className='relative w-full max-w-[304px]'>
                                         <input
                                             type='date'
-                                            name='date'
-                                            placeholder='mm/dd/yyyy'
-                                            value={formValues.date}
-                                            onChange={handleChange}
-                                            aria-invalid={Boolean(errors.date)}
-                                            aria-describedby={errors.date ? 'book-a-tour-date-error' : undefined}
-                                            className={getInputClassName(
-                                                Boolean(errors.date),
-                                                `${fieldClass} w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0`,
-                                            )}
+                                            name='travel_date'
+                                            required
+                                            className={`${fieldClass} w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0`}
                                         />
                                         <Calendar
                                             className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500'
                                             aria-hidden
                                         />
                                     </div>
-                                    {errors.date && (
-                                        <p id='book-a-tour-date-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.date}
-                                        </p>
-                                    )}
                                 </FormField>
                             </div>
 
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Select Destination'>
+                                <FormField label='Destination' error={fieldErrors.destination}>
                                     <select
                                         name='destination'
                                         defaultValue=''
-                                        value={formValues.destination}
-                                        onChange={handleChange}
-                                        aria-invalid={Boolean(errors.destination)}
-                                        aria-describedby={errors.destination ? 'book-a-tour-destination-error' : undefined}
-                                        className={getInputClassName(Boolean(errors.destination), selectClass)}
+                                        required
+                                        disabled={isCitiesLoading}
+                                        className={selectClass}
                                         style={{ backgroundImage: chevronBg }}
                                     >
                                         <option value='' disabled>
-                                            Select Destination
+                                            {isCitiesLoading ? 'Loading cities...' : 'Select Destination'}
                                         </option>
-                                        <option value='skardu'>Skardu</option>
-                                        <option value='hunza'>Hunza</option>
-                                        <option value='naran'>Naran</option>
-                                        <option value='swat'>Swat</option>
+                                        {pakistanCities.map((city) => (
+                                            <option key={city} value={city}>
+                                                {city}
+                                            </option>
+                                        ))}
                                     </select>
-                                    {errors.destination && (
-                                        <p id='book-a-tour-destination-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.destination}
-                                        </p>
-                                    )}
                                 </FormField>
-                                <FormField label='Select Persons'>
+                                <FormField label='Category' error={fieldErrors.category}>
                                     <select
-                                        name='persons'
+                                        name='category'
                                         defaultValue=''
-                                        value={formValues.persons}
-                                        onChange={handleChange}
-                                        aria-invalid={Boolean(errors.persons)}
-                                        aria-describedby={errors.persons ? 'book-a-tour-persons-error' : undefined}
-                                        className={getInputClassName(Boolean(errors.persons), selectClass)}
+                                        required
+                                        className={selectClass}
                                         style={{ backgroundImage: chevronBg }}
                                     >
                                         <option value='' disabled>
-                                            Select Persons
+                                            Select Category
                                         </option>
-                                        <option value='1'>1 Person</option>
-                                        <option value='2'>2 Persons</option>
-                                        <option value='3'>3 Persons</option>
-                                        <option value='4+'>4+ Persons</option>
+                                        {BOOKING_REQUEST_CATEGORIES.map((category) => (
+                                            <option key={category} value={category}>
+                                                {category.charAt(0) + category.slice(1).toLowerCase()}
+                                            </option>
+                                        ))}
                                     </select>
-                                    {errors.persons && (
-                                        <p id='book-a-tour-persons-error' className='mt-2 text-sm text-red-200'>
-                                            {errors.persons}
-                                        </p>
-                                    )}
                                 </FormField>
                             </div>
 
-                            <FormField label='Select Category' className='block w-full max-w-[304px]'>
-                                <select
-                                    name='category'
-                                    defaultValue=''
-                                    value={formValues.category}
-                                    onChange={handleChange}
-                                    aria-invalid={Boolean(errors.category)}
-                                    aria-describedby={errors.category ? 'book-a-tour-category-error' : undefined}
-                                    className={getInputClassName(Boolean(errors.category), selectClass)}
-                                    style={{ backgroundImage: chevronBg }}
-                                >
-                                    <option value='' disabled>
-                                        Select Category
-                                    </option>
-                                    <option value='adventure'>Adventure</option>
-                                    <option value='family'>Family</option>
-                                    <option value='honeymoon'>Honeymoon</option>
-                                    <option value='corporate'>Corporate</option>
-                                </select>
-                                {errors.category && (
-                                    <p id='book-a-tour-category-error' className='mt-2 text-sm text-red-200'>
-                                        {errors.category}
-                                    </p>
-                                )}
-                            </FormField>
+                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                                <FormField label='Male seats' error={fieldErrors.male_seat}>
+                                    <select
+                                        name='male_seat'
+                                        defaultValue='0'
+                                        className={selectClass}
+                                        style={{ backgroundImage: chevronBg }}
+                                    >
+                                        {seatOptions.map((count) => (
+                                            <option key={`male-${count}`} value={count}>
+                                                {count} Male {count === 1 ? 'Seat' : 'Seats'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </FormField>
+                                <FormField label='Female seats' error={fieldErrors.female_seat}>
+                                    <select
+                                        name='female_seat'
+                                        defaultValue='0'
+                                        className={selectClass}
+                                        style={{ backgroundImage: chevronBg }}
+                                    >
+                                        {seatOptions.map((count) => (
+                                            <option key={`female-${count}`} value={count}>
+                                                {count} Female {count === 1 ? 'Seat' : 'Seats'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </FormField>
+                            </div>
 
-                            <FormField label='Special Request' className='block w-full'>
+                            <FormField label='Request message' className='block w-full' error={fieldErrors.request_message}>
                                 <textarea
-                                    name='specialRequest'
+                                    name='request_message'
                                     rows={3}
-                                    placeholder='Special Request'
-                                    value={formValues.specialRequest}
-                                    onChange={handleChange}
-                                    aria-invalid={Boolean(errors.specialRequest)}
-                                    aria-describedby={errors.specialRequest ? 'book-a-tour-special-request-error' : undefined}
-                                    className={getInputClassName(Boolean(errors.specialRequest), `${textareaClass} !max-w-[624px] w-full`)}
+                                    placeholder='Special Request (optional)'
+                                    className={`${textareaClass} !max-w-[624px] w-full`}
                                 />
-                                {errors.specialRequest && (
-                                    <p id='book-a-tour-special-request-error' className='mt-2 text-sm text-red-200'>
-                                        {errors.specialRequest}
-                                    </p>
-                                )}
                             </FormField>
 
                             <Button
                                 type='submit'
                                 variant='default'
-                                className='!flex h-[58px] w-full max-w-[624px] rounded-[100px] bg-[#276968] px-8 font-roboto text-base font-normal leading-6 tracking-normal text-white hover:bg-primary-700'
+                                disabled={isPending}
+                                className='!flex h-[58px] w-full max-w-[624px] rounded-[100px] bg-[#276968] px-8 font-roboto text-base font-normal leading-6 tracking-normal text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-70'
                             >
-                                Book Now
+                                {isPending ? 'Submitting...' : 'Submit Request'}
                             </Button>
                         </form>
                     </div>

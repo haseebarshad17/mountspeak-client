@@ -1,5 +1,5 @@
 import "@/assests/globals.css";
-import "@/env/index";
+import "@/env/client";
 import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";

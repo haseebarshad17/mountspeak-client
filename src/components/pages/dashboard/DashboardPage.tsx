@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
         const { data, error } = await supabase
           .from("users")
-          .select("full_name, phone_number, location, email, avatar_url")
+          .select("full_name, phone, location, email, avatar_url")
           .eq("id", id)
           .single()
 
@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
         if (!mounted) return
         setFullName(data?.full_name ?? "")
-        setPhoneNumber(data?.phone_number ?? "")
+        setPhoneNumber(data?.phone ?? "")
         setLocation(data?.location ?? "")
         setEmail(data?.email ?? user.email ?? "")
         setAvatarUrl(data?.avatar_url || fallbackAvatar)
@@ -127,7 +127,7 @@ export default function DashboardPage() {
       // Email should never be changed from this page.
       const payload = {
         full_name: parsed.data.fullName,
-        phone_number: parsed.data.phoneNumber,
+        phone: parsed.data.phoneNumber,
         location: parsed.data.location,
       }
 

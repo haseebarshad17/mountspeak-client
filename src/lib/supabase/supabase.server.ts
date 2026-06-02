@@ -1,4 +1,4 @@
-import { serverEnv } from '@/env'
+import { serverEnv } from '@/env/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
