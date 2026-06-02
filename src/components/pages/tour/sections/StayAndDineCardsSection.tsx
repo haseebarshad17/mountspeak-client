@@ -13,21 +13,18 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
     return (
         <section
             id={stayAndDineSection.id}
-            className="py-16 sm:py-20 lg:py-24"
-            style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
+            className="bg-white py-16 sm:py-20 lg:py-24"
+            style={{ color: theme.textColor }}
         >
             <div className="agency-container">
-                <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+                <h2 className="font-heading text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
                     {stayAndDineSection.title}
                 </h2>
 
-                <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                     {stayAndDineSection.properties.map((prop) => (
-                        <article
-                            key={prop.id}
-                            className="flex flex-col overflow-hidden rounded-xl border border-black/[0.06] bg-white shadow-sm"
-                        >
-                            <div className="relative aspect-[16/10] w-full">
+                        <article key={prop.id} className="flex flex-col">
+                            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
                                 <Image
                                     src={prop.thumbnail}
                                     alt={prop.name}
@@ -36,11 +33,8 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
                                     sizes="(max-width: 1024px) 100vw, 33vw"
                                 />
                             </div>
-                            <div className="flex flex-1 flex-col p-5">
-                                <p
-                                    className="text-[10px] font-bold uppercase tracking-[0.15em]"
-                                    style={{ color: theme.secondaryColor }}
-                                >
+                            <div className="flex flex-1 flex-col pt-5">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">
                                     {prop.type}
                                 </p>
                                 <h3 className="mt-2 font-heading text-xl font-semibold text-neutral-900">
@@ -50,18 +44,15 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
                                     {prop.description}
                                 </p>
                                 <div className="mt-4 flex flex-wrap gap-2">
-                                    {prop.amenities.slice(0, 4).map((a) => (
+                                    {prop.amenities.slice(0, 2).map((tag) => (
                                         <span
-                                            key={a}
-                                            className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-600"
+                                            key={tag}
+                                            className="rounded border border-neutral-300 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-600"
                                         >
-                                            {a}
+                                            {tag}
                                         </span>
                                     ))}
                                 </div>
-                                <p className="mt-4 text-sm font-medium text-neutral-800">
-                                    ★ {prop.rating.toFixed(1)}
-                                </p>
                             </div>
                         </article>
                     ))}
