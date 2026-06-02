@@ -15,7 +15,7 @@ interface LayoutWrapperProps {
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const pathname = usePathname();
     const HeaderExcludeRoutes = [
-        "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*", "/dashboard", "/dashboard/*",
+        "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
         "/bookings", "/bookings/*",

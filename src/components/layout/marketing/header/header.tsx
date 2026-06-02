@@ -2,19 +2,25 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/clsxUtils'
+import { useLogout, useUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const Header = () => {
     const pathname = usePathname()
+    const router = useRouter()
     const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
     const isSearchPage = pathname === '/search' || pathname.startsWith('/search/')
-    const useLightNav = isTermsPage || isSearchPage
+    const isDashboardPage = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
+    const useLightNav = isTermsPage || isSearchPage || isDashboardPage
+    const { data: currentUser } = useUser()
+    const { mutateAsync: logout } = useLogout()
+    const isLoggedIn = !!currentUser
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(isTermsPage)
+    const [isScrolled, setIsScrolled] = useState(useLightNav)
 
     const AgencyNavigationLinks = [
         {
@@ -37,7 +43,7 @@ const Header = () => {
 
 
     useEffect(() => {
-        if (isTermsPage) {
+        if (useLightNav) {
             setIsScrolled(true)
             return
         }
@@ -67,7 +73,7 @@ const Header = () => {
 
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [isTermsPage])
+    }, [useLightNav])
 
     useEffect(() => {
         document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -82,6 +88,13 @@ const Header = () => {
             }
         }
     }, [isMobileMenuOpen])
+
+    const handleLogout = async () => {
+        await logout()
+        setIsMobileMenuOpen(false)
+        router.push('/login')
+        router.refresh()
+    }
 
     return (
         <>
@@ -144,24 +157,39 @@ const Header = () => {
 
                         {/* Buttons  */}
                         <div className='flex items-center'>
-                            <Button
-                                variant='transparent'
-                                className={useLightNav ? 'text-[#00292C]' : 'text-white'}
-                                href='/login'
-                            >
-                                Login
-                            </Button>
-                            <Button
-                                variant='secondary'
-                                className={cn(
-                                    'w-max rounded-sm px-5',
-                                    useLightNav &&
-                                        'bg-[#00292C] text-white hover:bg-[#003d42]',
-                                )}
-                                href='/register'
-                            >
-                                Sign Up
-                            </Button>
+                            {isLoggedIn ? (
+                                <Button
+                                    variant='secondary'
+                                    className={cn(
+                                        'w-max rounded-sm px-5',
+                                        useLightNav && 'bg-[#00292C] text-white hover:bg-[#003d42]',
+                                    )}
+                                    onClick={handleLogout}
+                                >
+                                    Logout
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant='transparent'
+                                        className={useLightNav ? 'text-[#00292C]' : 'text-white'}
+                                        href='/login'
+                                    >
+                                        Login
+                                    </Button>
+                                    <Button
+                                        variant='secondary'
+                                        className={cn(
+                                            'w-max rounded-sm px-5',
+                                            useLightNav &&
+                                                'bg-[#00292C] text-white hover:bg-[#003d42]',
+                                        )}
+                                        href='/register'
+                                    >
+                                        Sign Up
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </nav>
 
@@ -254,20 +282,32 @@ const Header = () => {
                     </nav>
 
                     <div className='flex items-center gap-3 pt-4'>
-                        <Button
-                            variant='transparent'
-                            className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                            href='/login'
-                        >
-                            Login
-                        </Button>
-                        <Button
-                            variant='secondary'
-                            className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                            href='/register'
-                        >
-                            Sign Up
-                        </Button>
+                        {isLoggedIn ? (
+                            <Button
+                                variant='secondary'
+                                className='flex-1 !w-full rounded-md bg-white text-primary-700'
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        ) : (
+                            <>
+                                <Button
+                                    variant='transparent'
+                                    className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
+                                    href='/login'
+                                >
+                                    Login
+                                </Button>
+                                <Button
+                                    variant='secondary'
+                                    className='flex-1 !w-full rounded-md bg-white text-primary-700'
+                                    href='/register'
+                                >
+                                    Sign Up
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </aside>
             </div>
