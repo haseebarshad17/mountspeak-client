@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react'
 const Header = () => {
     const pathname = usePathname()
     const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
+    const isSearchPage = pathname === '/search' || pathname.startsWith('/search/')
+    const useLightNav = isTermsPage || isSearchPage
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(isTermsPage)
@@ -80,8 +82,6 @@ const Header = () => {
             }
         }
     }, [isMobileMenuOpen])
-
-    const useLightNav = isTermsPage
 
     return (
         <>
