@@ -3,22 +3,26 @@
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils/clsxUtils"
-import { Calendar, MapPin, Minus, Navigation, Plus, Search, User } from "lucide-react"
+import { usePakistanCities } from "@/services/cities/cities.queries"
+import { Calendar, MapPin, Navigation, Search } from "lucide-react"
 import { useMemo, useState } from "react"
 
-const LOCATIONS = ["Islamabad", "Lahore", "Karachi", "Peshawar", "Gilgit", "Skardu", "Hunza", "Swat", "Murree", "Naran"]
-const TRAVEL_CLASSES = ["Economy", "Premium economy", "Business", "First class"] as const
+// const TRAVEL_CLASSES = ["Economy", "Premium economy", "Business", "First class"] as const
 
 export default function HeroFilters() {
+    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [from, setFrom] = useState("")
     const [to, setTo] = useState("")
     const [date, setDate] = useState("")
-    const [travelers, setTravelers] = useState(1)
-    const [travelClass, setTravelClass] = useState("Economy")
+    // const [travelers, setTravelers] = useState(1)
+    // const [travelClass, setTravelClass] = useState("Economy")
 
     const [open, setOpen] = useState<string | null>(null)
 
-    const toOptions = useMemo(() => LOCATIONS.filter(c => c !== from), [from])
+    const toOptions = useMemo(
+        () => pakistanCities.filter((city) => city !== from),
+        [pakistanCities, from],
+    )
 
     const triggerCls = cn(
         "flex h-14 !w-full min-w-0 items-center justify-start gap-2.5 overflow-hidden px-4 text-sm font-medium",
@@ -33,7 +37,7 @@ export default function HeroFilters() {
 
     return (
         <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md sm:p-3 xl:mx-auto xl:max-w-[760px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0">
-            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_145px] xl:gap-0">
+            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_170px] xl:gap-0">
 
                 {/* FROM */}
                 <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
@@ -44,24 +48,30 @@ export default function HeroFilters() {
                         </Button>
                     </PopoverTrigger>
 
-                    <PopoverContent className={popCls} align="start">
-                        {LOCATIONS.map(city => (
-                            <Button
-                                key={city}
-                                variant="ghost"
-                                className={cn(
-                                    "w-full justify-start",
-                                    from === city && "bg-neutral-100"
-                                )}
-                                onClick={() => {
-                                    setFrom(city)
-                                    if (to === city) setTo("")
-                                    setOpen(null)
-                                }}
-                            >
-                                {city}
-                            </Button>
-                        ))}
+                    <PopoverContent className={cn(popCls, "max-h-60 overflow-y-auto")} align="start">
+                        {isCitiesLoading ? (
+                            <p className="px-3 py-2 text-sm text-neutral-500">Loading cities...</p>
+                        ) : pakistanCities.length === 0 ? (
+                            <p className="px-3 py-2 text-sm text-neutral-500">No cities available</p>
+                        ) : (
+                            pakistanCities.map((city) => (
+                                <Button
+                                    key={city}
+                                    variant="ghost"
+                                    className={cn(
+                                        "w-full justify-start",
+                                        from === city && "bg-neutral-100",
+                                    )}
+                                    onClick={() => {
+                                        setFrom(city)
+                                        if (to === city) setTo("")
+                                        setOpen(null)
+                                    }}
+                                >
+                                    {city}
+                                </Button>
+                            ))
+                        )}
                     </PopoverContent>
                 </Popover>
 
@@ -74,11 +84,15 @@ export default function HeroFilters() {
                         </Button>
                     </PopoverTrigger>
 
-                    <PopoverContent className={popCls} align="start">
-                        {toOptions.length === 0 ? (
+                    <PopoverContent className={cn(popCls, "max-h-60 overflow-y-auto")} align="start">
+                        {isCitiesLoading ? (
+                            <p className="px-3 py-2 text-sm text-neutral-500">Loading cities...</p>
+                        ) : !from ? (
                             <p className="px-3 py-2 text-sm text-neutral-500">Pick a departure first</p>
+                            ) : toOptions.length === 0 ? (
+                                <p className="px-3 py-2 text-sm text-neutral-500">No cities available</p>
                         ) : (
-                            toOptions.map(city => (
+                                        toOptions.map((city) => (
                                 <Button
                                     key={city}
                                     variant="ghost"
@@ -119,7 +133,7 @@ export default function HeroFilters() {
                 </Popover>
 
                 {/* TRAVELERS */}
-                <Popover open={open === "trav"} onOpenChange={(v) => setOpen(v ? "trav" : null)}>
+                {/* <Popover open={open === "trav"} onOpenChange={(v) => setOpen(v ? "trav" : null)}>
                     <PopoverTrigger asChild>
                         <Button variant="ghost" className={triggerCls}>
                             <User className="w-4 h-4 text-neutral-500 flex-shrink-0" />
@@ -164,13 +178,13 @@ export default function HeroFilters() {
                             ))}
                         </div>
                     </PopoverContent>
-                </Popover>
+                </Popover> */}
 
                 {/* SEARCH */}
-                <div className="sm:col-span-2 xl:col-span-1 xl:flex xl:items-center xl:pr-[6px]">
+                <div className="xl:col-span-1 xl:flex xl:items-center xl:px-[6px]">
                     <Button
                         href="/search"
-                        className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[44px] xl:w-[145px] xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
+                        className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[44px] xl:w-full xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
                     >
                         Find trip now <Search className="ml-2 w-4 h-4 flex-shrink-0" />
                     </Button>

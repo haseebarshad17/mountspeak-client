@@ -76,7 +76,9 @@ export type ButtonPropsType<C extends React.ElementType = "button"> =
     ButtonProps<C> &
     Omit<React.ComponentPropsWithoutRef<C>, keyof ButtonProps<C>>;
 
-export const Button = <C extends React.ElementType = "button">({
+type ButtonElement = HTMLButtonElement | HTMLAnchorElement | HTMLDivElement;
+
+export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     asChild,
     href,
     component,
@@ -89,7 +91,7 @@ export const Button = <C extends React.ElementType = "button">({
     showRipple = false,
     shouldScale = false,
     ...props
-}: ButtonProps<C> & Omit<React.ComponentPropsWithoutRef<C>, keyof ButtonProps<C>>) => {
+}, ref) => {
 
     const [ripples, setRipples] = React.useState<Ripple[]>([]);
     const [isPressed, setIsPressed] = React.useState(false);
@@ -100,17 +102,19 @@ export const Button = <C extends React.ElementType = "button">({
 
     const Component: React.ElementType =
         href ? Link : component ?? (asChild ? "div" : "button");
+    const onMouseDown = props.onMouseDown as React.MouseEventHandler<Element> | undefined;
+    const onMouseUp = props.onMouseUp as React.MouseEventHandler<Element> | undefined;
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (shouldScale) {
             pressStart.current = Date.now();
             setIsPressed(true);
         }
-        props.onMouseDown?.(e);
+        onMouseDown?.(e);
     };
 
     const handleMouseUp = (e: React.MouseEvent) => {
-        props.onMouseUp?.(e);
+        onMouseUp?.(e);
 
         if (shouldScale) {
             const duration = Date.now() - pressStart.current;
@@ -144,6 +148,7 @@ export const Button = <C extends React.ElementType = "button">({
 
     return (
         <Component
+            ref={ref}
             style={{
                 transform: shouldScale && isPressed ? "scale(0.94)" : "scale(1)",
                 transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
@@ -184,4 +189,6 @@ export const Button = <C extends React.ElementType = "button">({
             ))}
         </Component>
     );
-};
+});
+
+Button.displayName = "Button";
