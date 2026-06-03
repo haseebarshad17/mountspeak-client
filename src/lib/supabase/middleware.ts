@@ -7,7 +7,7 @@ export async function updateSession(
 ) {
     let response = NextResponse.next({ request })
     const pathname = request.nextUrl.pathname
-    const protectedPaths = ['/dashboard', '/bookings']
+    const protectedPaths = ['/dashboard', '/bookings', '/booking']
     const isProtectedPath = protectedPaths.some((path) =>
         pathname === path || pathname.startsWith(`${path}/`)
     )
@@ -49,6 +49,8 @@ export async function updateSession(
         const loginUrl = request.nextUrl.clone()
         loginUrl.pathname = '/login'
         loginUrl.search = ''
+        const returnPath = `${pathname}${request.nextUrl.search}`
+        loginUrl.searchParams.set('next', returnPath)
         return NextResponse.redirect(loginUrl)
     }
 

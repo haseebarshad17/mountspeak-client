@@ -120,7 +120,7 @@ export default function DashboardPage() {
           const key = issue.path[0] as string
           nextErrors[key] = issue.message
         })
-        setErrors(nextErrors as any)
+        setErrors(nextErrors)
         return
       }
 
@@ -133,7 +133,7 @@ export default function DashboardPage() {
 
       const { error } = await supabase.from("users").update(payload).eq("id", userId)
       if (error) {
-        setErrors({ location: "Unable to save changes. Please try again." } as any)
+        setErrors({ location: "Unable to save changes. Please try again." })
         return
       }
     } finally {

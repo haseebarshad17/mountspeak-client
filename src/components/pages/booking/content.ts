@@ -2,22 +2,17 @@ export const bookingStepsContent = [
     {
         titleLines: ['Begin Your Journey With Us'],
         description:
-            'We partner with select agencies who share our commitment to rugged luxury and absolute safety in the high mountains.',
+            'Share your travel details and seat preferences. We will confirm availability and guide you through secure payment for your expedition.',
         image: '/images/pages/partner/partner-hero.png',
         imageAlt: 'Mountain expedition at sunset',
         quote: "Excellence is the only standard when facing the world's highest peaks.",
     },
     {
-        titleLines: ['Partner Onboarding'],
+        titleLines: ['Complete Your Payment'],
         description:
-            'We join an elite network of adventure providers. Your credentials ensure the safety and prestige of the karakoram brand.',
-        image: '/images/pages/partner/partner-hero.png',
-        imageAlt: 'Mountain expedition',
-    },
-    {
-        titleLines: ['Partner Onboarding'],
-        description: 'Secure your position within the karakoram elite network.',
+            'Transfer the booking amount and upload your payment screenshot. Our team will confirm your reservation shortly.',
         image: '/images/pages/partner/partner-hero.png',
         imageAlt: 'Mountain basecamp',
+        quote: 'Secure your spot on the trail with a quick, verified payment.',
     },
 ] as const
