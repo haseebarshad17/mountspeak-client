@@ -1,0 +1,3 @@
+-- Bookings table schema is defined in Supabase (see src/lib/supabase/db.schema.md).
+-- Key columns: male_seat, female_seat, kids_seats, amount_total, booking_payment_screenshot.
+-- Tours child pricing: kids_discount (percent off kids seats only).

@@ -24,6 +24,17 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const isLogin = mode === "login";
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectAfterAuth = useMemo(() => {
+    const next = searchParams.get("next");
+    if (next?.startsWith("/")) return next;
+    return "/dashboard";
+  }, [searchParams]);
+
+  const nextQuery = useMemo(() => {
+    const next = searchParams.get("next");
+    if (!next?.startsWith("/")) return "";
+    return `?next=${encodeURIComponent(next)}`;
+  }, [searchParams]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -101,7 +112,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       }
 
       toast.success(isLogin ? "Signed in successfully." : "Account created successfully.");
-      router.push("/dashboard");
+      router.push(redirectAfterAuth);
       router.refresh();
     } catch (error) {
       const fallback = isLogin
@@ -118,7 +129,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onGoogleSignIn = async () => {
     try {
-      const redirectTo = `${window.location.origin}/auth/callback`;
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectAfterAuth)}`;
       await loginWithGoogle(redirectTo);
     } catch (error) {
       if (error instanceof Error) {
@@ -145,7 +156,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
             <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">
               <Link
-                href="/login"
+                href={`/login${nextQuery}`}
                 className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#0f3137]" : "text-[#8a8f95]"
                   }`}
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
@@ -156,7 +167,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 ) : null}
               </Link>
               <Link
-                href="/register"
+                href={`/register${nextQuery}`}
                 className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#8a8f95]" : "text-[#0f3137]"
                   }`}
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}

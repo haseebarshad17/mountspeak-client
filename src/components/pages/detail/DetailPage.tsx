@@ -1,9 +1,6 @@
-import TourPageContent from '@/components/pages/tour/TourPageContent'
+import { redirect } from 'next/navigation'
 
+/** @deprecated Use /tours/[slug] instead */
 export default function DetailPage() {
-    return (
-        <main className="detail-page bg-white">
-            <TourPageContent tourSlug="hunza-valley-fairy-meadows" />
-        </main>
-    )
+    redirect('/tours/hunza-fairy-meadows')
 }

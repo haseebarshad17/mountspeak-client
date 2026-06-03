@@ -1,7 +1,6 @@
 import React from 'react'
-import { notFound } from 'next/navigation'
 
-import tourDocument from './tour-content.json'
+import type { TourPage } from './sections/tour-page.types'
 import { DayByDayItinerarySection } from './sections/DayByDayItinerarySection'
 import { ExpeditionClosingCtaSection } from './sections/ExpeditionClosingCtaSection'
 import { ExpeditionHeroSection } from './sections/ExpeditionHeroSection'
@@ -13,16 +12,10 @@ import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
 
 type TourPageContentProps = {
-    tourSlug: string
+    page: TourPage
 }
 
-const TourPageContent = ({ tourSlug }: TourPageContentProps) => {
-    const page = tourDocument.page
-
-    if (page.slug !== tourSlug) {
-        notFound()
-    }
-
+const TourPageContent = ({ page }: TourPageContentProps) => {
     const { theme } = page
 
     return (

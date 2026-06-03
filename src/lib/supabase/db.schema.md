@@ -69,26 +69,60 @@ subscriptions
 
 tours
 
-- id: uuid (PK, default: gen_random_uuid())
-- agency_id: uuid (FK → agencies.id)
+- id: uuid (PK)
+- agency_id: uuid (FK → agencies.id, nullable)
+- driver_id: uuid (nullable)
 - title: text
-- description: text
-- price: numeric
-- location: text
-- images: text[]
-- theme_config: jsonb
-- is_published: boolean (default: false)
-- created_at: timestamp (default: now())
+- slug: text (unique) — detail URL: `/tours/{slug}`
+- from_location, to_location: text
+- start_date, end_date: date
+- price_per_seat: numeric
+- discount_percent: numeric — card badge (`10` → `10.00% Off`)
+- kids_discount: numeric — percent off each child seat (ages 4–8)
+- capacity_total: integer
+- publication_status: enum `tour_publication_status` — `PUBLISHED` | `UNPUBLISHED`
+- header: jsonb — `{ tag, title, subtitle, hero_image_url, day_count, night_count }`
+- overview: jsonb — `{ title, body, elevation_m, difficulty, image_url }`
+- highlights: jsonb — `[{ icon, title, description }]`
+- route: jsonb — `{ section_title, segments: [{ title, description }] }`
+- places_visited: jsonb — `[{ name, location_label, image_url }]`
+- journey: jsonb — `[{ day, title, description, image_url }]`
+- stay_and_dine: jsonb — `[{ category, name, description, image_url, amenities }]`
+- expedition_perks: jsonb — `[{ icon, title, description }]`
+- visual_fragments: jsonb — `string[]` storage paths
+- created_at: timestamp
+
+Storage paths (e.g. `agency-id/tour-id/hero.webp`) → public URL via bucket `tour-media` (`NEXT_PUBLIC_SUPABASE_TOUR_STORAGE_BUCKET`).
+
+Public read: RLS `publication_status = 'PUBLISHED'` (see `supabase/migrations/20260603_tours_marketing_columns.sql`)
 
 
 bookings
 
-- id: uuid (PK, default: gen_random_uuid())
-- tour_id: uuid (FK → tours.id)
-- customer_id: uuid (FK → profiles.id)
-- status: text (pending | confirmed | canceled)
-- booking_date: timestamp
-- created_at: timestamp (default: now())
+Insert payload (expedition booking form):
+
+```json
+{
+  "tour_id": "uuid",
+  "male_seat": 8,
+  "female_seat": 2,
+  "kids_seats": 0,
+  "amount_total": "9960.00",
+  "notes": null,
+  "name": "First Last",
+  "email": "user@example.com",
+  "cnic": "12345-1234567-1",
+  "phone": "+923001234567",
+  "emergency_phone": "+923009876543",
+  "booking_payment_screenshot": null
+}
+```
+
+Columns: `id`, `tour_id`, `agency_id`, `name`, `email`, `phone`, `emergency_phone`, `cnic`, `male_seat`, `female_seat`, `kids_seats`, `amount_total`, `notes`, `booking_payment_screenshot`, `status`, `created_at`, `updated_at`.
+
+Payment screenshot: upload to bucket `booking-payment-screenshots` at `{agency_id}/{booking_id}/payment.{ext}`, then set `booking_payment_screenshot` to the public URL.
+
+Child pricing on tours uses `kids_discount` (percent off kids seats only).
 
 
 payments

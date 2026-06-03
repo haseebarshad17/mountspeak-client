@@ -5,7 +5,11 @@ import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 // import { useLogin, useLogout, useSignup, useUser, useUserProfile } from '@/services/auth/auth.queries';
 // import { usePlans } from '@/services/plans/plan.queries';
 
-const Hero = () => {
+type HeroProps = {
+    tourLocations?: string[]
+}
+
+const Hero = ({ tourLocations = [] }: HeroProps) => {
 
     // const { refetch: refetchUser } = useUser();
     // const { refetch: refetchUserProfile } = useUserProfile();
@@ -78,7 +82,7 @@ const Hero = () => {
                             </div>
 
                             <div className='mx-auto w-full max-w-[867px] pt-10 sm:pt-14 md:pt-20 lg:pt-24 xl:pt-[180px]'>
-                                <HeroFilters />
+                                <HeroFilters tourLocations={tourLocations} />
                             </div>
                         </div>
                     </main>
