@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { homepage } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
@@ -22,25 +23,8 @@ const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(useLightNav)
 
-    const AgencyNavigationLinks = [
-        {
-            label: 'Home',
-            href: '/',
-        },
-        {
-            label: 'Discover',
-            href: '/discover',
-        },
-        {
-            label: 'About Us',
-            href: '/about-us',
-        },
-        {
-            label: 'Contact',
-            href: '/contact-us',
-        },
-    ]
-
+    const { header, branding, theme } = homepage
+    const { colors, buttons } = theme
 
     useEffect(() => {
         if (useLightNav) {
@@ -124,12 +108,12 @@ const Header = () => {
                         <Image
                             src={
                                 useLightNav
-                                    ? '/images/generic/agency-logo.svg'
-                                    : '/images/generic/agency-logo-white.svg'
+                                    ? branding.logo.default.src
+                                    : branding.logo.onDark.src
                             }
-                            alt='logo'
-                            width={100}
-                            height={100}
+                            alt={branding.logo.default.alt}
+                            width={branding.logo.default.width}
+                            height={branding.logo.default.height}
                             className='h-auto w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
                             priority
                             fetchPriority='high'
@@ -140,14 +124,15 @@ const Header = () => {
                     {/* Navigations + Buttons  */}
                     <nav className='hidden flex-1 items-center justify-end lg:flex'>
                         <div className='flex items-center gap-[54px] xl:pr-[144px] pr-[70px]'>
-                            {AgencyNavigationLinks.map((link) => (
+                            {header.navigation.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={cn(
-                                        'text-sm font-normal xl:text-base',
-                                        useLightNav ? 'text-[#00292C]' : 'text-white',
-                                    )}
+                                    className='text-sm font-normal xl:text-base'
+                                    style={{
+                                        color: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                        fontFamily: 'var(--hp-font-body)',
+                                    }}
                                 >
                                     {link.label}
                                 </Link>
@@ -160,33 +145,45 @@ const Header = () => {
                             {isLoggedIn ? (
                                 <Button
                                     variant='secondary'
-                                    className={cn(
-                                        'w-max rounded-sm px-5',
-                                        useLightNav && 'bg-[#00292C] text-white hover:bg-[#003d42]',
-                                    )}
+                                    className='w-max rounded-sm px-5'
+                                    style={
+                                        useLightNav
+                                            ? {
+                                                  backgroundColor: buttons.navCta.background,
+                                                  color: buttons.navCta.text,
+                                              }
+                                            : undefined
+                                    }
                                     onClick={handleLogout}
                                 >
-                                    Logout
+                                    {header.auth.logout.label}
                                 </Button>
                             ) : (
                                 <>
                                     <Button
                                         variant='transparent'
-                                        className={useLightNav ? 'text-[#00292C]' : 'text-white'}
-                                        href='/login'
+                                        className='w-max'
+                                        style={{
+                                            color: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                        }}
+                                        href={header.auth.login.href}
                                     >
-                                        Login
+                                        {header.auth.login.label}
                                     </Button>
                                     <Button
                                         variant='secondary'
-                                        className={cn(
-                                            'w-max rounded-sm px-5',
-                                            useLightNav &&
-                                                'bg-[#00292C] text-white hover:bg-[#003d42]',
-                                        )}
-                                        href='/register'
+                                        className='w-max rounded-sm px-5'
+                                        style={
+                                            useLightNav
+                                                ? {
+                                                      backgroundColor: buttons.navCta.background,
+                                                      color: buttons.navCta.text,
+                                                  }
+                                                : undefined
+                                        }
+                                        href={header.auth.signUp.href}
                                     >
-                                        Sign Up
+                                        {header.auth.signUp.label}
                                     </Button>
                                 </>
                             )}
@@ -196,28 +193,26 @@ const Header = () => {
                     {/* Mobile menu trigger */}
                     <button
                         type='button'
-                        aria-label='Open menu'
+                        aria-label={header.mobileMenu.openLabel}
                         aria-expanded={isMobileMenuOpen}
                         onClick={() => setIsMobileMenuOpen(true)}
                         className={cn(
                             'group flex h-10 w-10 items-center justify-center rounded-md transition lg:hidden',
-                            useLightNav
-                                ? 'bg-[#00292C]/10 hover:bg-[#00292C]/15'
-                                : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
+                            useLightNav ? 'hover:opacity-90' : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
                         )}
                     >
                         <span className='flex flex-col items-end gap-[5px]'>
                             <span
-                                className={cn(
-                                    'h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]',
-                                    useLightNav ? 'bg-[#00292C]' : 'bg-white',
-                                )}
+                                className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
+                                style={{
+                                    backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                }}
                             />
                             <span
-                                className={cn(
-                                    'h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]',
-                                    useLightNav ? 'bg-[#00292C]' : 'bg-white',
-                                )}
+                                className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
+                                style={{
+                                    backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                }}
                             />
                         </span>
                     </button>
@@ -234,7 +229,7 @@ const Header = () => {
             >
                 <button
                     type='button'
-                    aria-label='Close menu overlay'
+                    aria-label={header.mobileMenu.overlayCloseLabel}
                     className='absolute inset-0 bg-black/45 backdrop-blur-[2px]'
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
@@ -247,20 +242,16 @@ const Header = () => {
                 >
                     <div className='flex items-center justify-between'>
                         <Image
-                            src={
-                                useLightNav
-                                    ? '/images/generic/agency-logo.svg'
-                                    : '/images/generic/agency-logo-white.svg'
-                            }
-                            alt='logo'
-                            width={100}
-                            height={100}
-                           className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xlw-[95px]'
+                            src={branding.logo.onDark.src}
+                            alt={branding.logo.onDark.alt}
+                            width={branding.logo.onDark.width}
+                            height={branding.logo.onDark.height}
+                            className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xl:w-[95px]'
                             quality={100}
                         />
                         <button
                             type='button'
-                            aria-label='Close menu'
+                            aria-label={header.mobileMenu.closeLabel}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className='flex h-9 w-9 items-center justify-center rounded-md bg-white/15 text-white transition hover:bg-white/25'
                         >
@@ -269,7 +260,7 @@ const Header = () => {
                     </div>
 
                     <nav className='mt-10 flex flex-1 flex-col gap-2'>
-                        {AgencyNavigationLinks.map((link) => (
+                        {header.navigation.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
@@ -288,23 +279,23 @@ const Header = () => {
                                 className='flex-1 !w-full rounded-md bg-white text-primary-700'
                                 onClick={handleLogout}
                             >
-                                Logout
+                                {header.auth.logout.label}
                             </Button>
                         ) : (
                             <>
                                 <Button
                                     variant='transparent'
                                     className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                    href='/login'
+                                    href={header.auth.login.href}
                                 >
-                                    Login
+                                    {header.auth.login.label}
                                 </Button>
                                 <Button
                                     variant='secondary'
                                     className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                    href='/register'
+                                    href={header.auth.signUp.href}
                                 >
-                                    Sign Up
+                                    {header.auth.signUp.label}
                                 </Button>
                             </>
                         )}

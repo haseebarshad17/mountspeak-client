@@ -6,8 +6,12 @@ import { cn } from "@/lib/utils/clsxUtils"
 import { usePakistanCities } from "@/services/cities/cities.queries"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
 import { Calendar, MapPin, Navigation, Search } from "lucide-react"
+import { homepage } from "@/data/homepage"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
+
+const heroSearch = homepage.sections.hero.searchFilters
+const heroSearchButton = homepage.theme.buttons.heroSearch
 
 export type HeroFiltersValues = {
     from?: string
@@ -79,15 +83,15 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{from || "From"}</span>
+                            <span className="truncate min-w-0 w-full">{from || heroSearch.fromPlaceholder}</span>
                         </Button>
                     </PopoverTrigger>
 
                     <PopoverContent className={cn(popCls, "max-h-60 overflow-y-auto")} align="start">
                         {isCitiesLoading ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">Loading cities...</p>
+                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
                         ) : cityOptions.length === 0 ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">No cities available</p>
+                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
                         ) : (
                             <div className="flex flex-col gap-0.5">
                                 {cityOptions.map((city) => (
@@ -117,17 +121,17 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{to || "To"}</span>
+                            <span className="truncate min-w-0 w-full">{to || heroSearch.toPlaceholder}</span>
                         </Button>
                     </PopoverTrigger>
 
                     <PopoverContent className={cn(popCls, "max-h-60 overflow-y-auto")} align="start">
                         {isCitiesLoading ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">Loading cities...</p>
+                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
                         ) : !from ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">Pick a departure first</p>
+                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.pickDepartureFirst}</p>
                         ) : toOptions.length === 0 ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">No cities available</p>
+                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
                         ) : (
                             <div className="flex flex-col gap-0.5">
                                 {toOptions.map((city) => (
@@ -156,7 +160,7 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
                             <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{date || "Date of stay"}</span>
+                            <span className="truncate min-w-0 w-full">{date || heroSearch.datePlaceholder}</span>
                         </Button>
                     </PopoverTrigger>
 
@@ -170,10 +174,10 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
                         />
                         <div className="flex justify-end gap-2 mt-2">
                             <Button type="button" size="sm" variant="outline" onClick={() => setDate("")}>
-                                Clear
+                                {heroSearch.clearDate}
                             </Button>
                             <Button type="button" size="sm" onClick={() => setOpen(null)}>
-                                Done
+                                {heroSearch.doneDate}
                             </Button>
                         </div>
                     </PopoverContent>
@@ -182,9 +186,13 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
                 <div className="xl:col-span-1 xl:flex xl:items-center xl:px-[6px]">
                     <Button
                         type="submit"
-                        className="h-14 w-full rounded-xl bg-[#2D6A6A] text-white hover:bg-[#255a5a] xl:h-[44px] xl:w-full xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
+                        className="h-14 w-full rounded-xl xl:h-[44px] xl:w-full xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
+                        style={{
+                            backgroundColor: heroSearchButton.background,
+                            color: heroSearchButton.text,
+                        }}
                     >
-                        Find trip now <Search className="ml-2 w-4 h-4 flex-shrink-0" />
+                        {heroSearch.searchButtonLabel} <Search className="ml-2 w-4 h-4 flex-shrink-0" />
                     </Button>
                 </div>
 

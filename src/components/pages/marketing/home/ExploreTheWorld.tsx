@@ -1,6 +1,10 @@
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
+import { homepage } from '@/data/homepage'
 import { fetchPublishedTours } from '@/services/tours/tours.server'
+
+const section = homepage.sections.exploreTheWorld
+const { colors } = homepage.theme
 
 const ExploreTheWorld = async () => {
     const tours = await fetchPublishedTours()
@@ -12,16 +16,19 @@ const ExploreTheWorld = async () => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name='Explore Tour' />
+                    <SectionEyebrow name={section.eyebrow} />
                     <h2
                         id='explore-the-world-heading'
-                        className='agency-section-heading pt-2 text-[28px] font-medium leading-tight text-[#14141F] sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
+                        className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
+                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
-                        The World
+                        {section.title}
                     </h2>
-                    <p className='mx-auto max-w-[861px] pt-3 font-roboto text-sm font-normal leading-6 text-neutral-600 sm:pt-4 sm:text-base sm:leading-7 md:pt-5 md:text-lg md:leading-8'>
-                        Discover amazing national and international tour packages tailored to your travel preferences.
-                        From weekend getaways to international adventures, we have the perfect tour for every traveler.
+                    <p
+                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-7 md:pt-5 md:text-lg md:leading-8'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        {section.paragraph}
                     </p>
                 </header>
 
@@ -38,8 +45,11 @@ const ExploreTheWorld = async () => {
                         ))}
                     </div>
                 ) : (
-                    <p className='mx-auto max-w-xl pt-10 text-center font-roboto text-base text-neutral-500'>
-                        Tours will appear here once they are published.
+                    <p
+                        className='mx-auto max-w-xl pt-10 text-center text-base'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        {section.emptyMessage}
                     </p>
                 )}
             </div>

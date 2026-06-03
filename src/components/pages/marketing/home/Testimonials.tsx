@@ -1,37 +1,17 @@
 'use client'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
+import { homepage } from '@/data/homepage'
+import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper/types'
 import 'swiper/css'
-import { cn } from '@/lib/utils/clsxUtils'
 
-const testimonials = [
-    {
-        name: 'Eqrah Mir',
-        location: 'lahore',
-        quote:
-            "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
-        avatar: 'https://i.pravatar.cc/150?img=32',
-    },
-    {
-        name: 'Maher Awais',
-        location: 'Lahore',
-        quote:
-            'Asif bhi bht acha tour raha apky sath MashaAllah bht enjoy kia,, All the services were EXCELLENT!! HIGHLY Recommended ❤️❤️❤️',
-        avatar: 'https://i.pravatar.cc/150?img=11',
-    },
-    {
-        name: 'Eqrah Mir',
-        location: 'lahore',
-        quote:
-            "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
-        avatar: 'https://i.pravatar.cc/150?img=47',
-    },
-] as const
+const section = homepage.sections.testimonials
+const { colors } = homepage.theme
 
 const DOT_COUNT = 32
 const DOT_RADIUS = 46
@@ -47,18 +27,16 @@ function DottedAvatarFrame({ src, alt, clipId }: { src: string; alt: string; cli
 
     return (
         <div className='relative h-[92px] w-[92px] sm:h-[100px] sm:w-[100px]'>
-            {/* Inactive: full gold dot ring */}
             <svg
                 className='testimonial-dots-full absolute inset-0 h-full w-full'
                 viewBox='0 0 100 100'
                 aria-hidden
             >
                 {dots.map((dot, i) => (
-                    <circle key={`gold-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill='#F5D547' />
+                    <circle key={`gold-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill={colors.accent} />
                 ))}
             </svg>
 
-            {/* Active: white dots on top semicircle only */}
             <svg
                 className='testimonial-dots-arc absolute inset-0 hidden h-full w-full'
                 viewBox='0 0 100 100'
@@ -101,8 +79,11 @@ function TestimonialCard({
 }) {
     return (
         <div className='flex flex-col items-center px-2 pb-4 pt-2'>
-            <div className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl bg-[#F2F2F2] px-5 pb-16 pt-8 text-center text-[#4B5563] transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'>
-                <p className='font-roboto text-sm font-normal leading-7 sm:text-base'>{quote}</p>
+            <div
+                className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
+                style={{ backgroundColor: colors.quoteBackground, color: colors.textBody, fontFamily: 'var(--hp-font-body)' }}
+            >
+                <p className='text-sm font-normal leading-7 sm:text-base'>{quote}</p>
 
                 <div className='testimonial-avatar-wrap absolute -bottom-11 left-1/2 -translate-x-1/2 sm:-bottom-12'>
                     <DottedAvatarFrame src={avatar} alt={name} clipId={clipId} />
@@ -110,11 +91,21 @@ function TestimonialCard({
             </div>
 
             <div className='mt-14 text-center sm:mt-16'>
-                <h3 className='font-roboto text-base font-semibold text-[#111827] sm:text-xl'>{name}</h3>
-                <p className='pt-0.5 font-roboto text-base font-normal capitalize text-[#9CA3AF]'>{location}</p>
+                <h3
+                    className='text-base font-semibold sm:text-xl'
+                    style={{ color: colors.cardTitle, fontFamily: 'var(--hp-font-body)' }}
+                >
+                    {name}
+                </h3>
+                <p
+                    className='pt-0.5 text-base font-normal capitalize'
+                    style={{ color: colors.textNeutral, fontFamily: 'var(--hp-font-body)' }}
+                >
+                    {location}
+                </p>
                 <div className='mt-2 flex items-center justify-center gap-1'>
                     {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className='h-4 w-4 fill-[#F5D547] text-[#F5D547]' aria-hidden />
+                        <Star key={i} className='h-4 w-4' style={{ fill: colors.accent, color: colors.accent }} aria-hidden />
                     ))}
                 </div>
             </div>
@@ -130,12 +121,13 @@ const Testimonials = () => {
         <section className='overflow-hidden bg-white pb-16 sm:pb-20 lg:pb-[112px]' aria-labelledby='testimonials-heading'>
             <div className='agency-container py-10 sm:py-12 lg:py-14'>
                 <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name='Testimonial' />
+                    <SectionEyebrow name={section.eyebrow} />
                     <h2
                         id='testimonials-heading'
-                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] text-[#14141F] sm:pt-4'
+                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
+                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
-                        Our Clients Say!!!
+                        {section.title}
                     </h2>
                 </header>
 
@@ -158,7 +150,7 @@ const Testimonials = () => {
                         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
                         className='testimonials-swiper !overflow-visible px-2'
                     >
-                        {testimonials.map((item, index) => (
+                        {section.items.map((item, index) => (
                             <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
                                 <TestimonialCard {...item} clipId={`testimonial-arc-${index}`} />
                             </SwiperSlide>
@@ -167,7 +159,7 @@ const Testimonials = () => {
                 </div>
 
                 <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
-                    {testimonials.map((_, idx) => (
+                    {section.items.map((_, idx) => (
                         <button
                             key={idx}
                             type='button'
@@ -176,9 +168,14 @@ const Testimonials = () => {
                             className={cn(
                                 'transition-all duration-300',
                                 idx === activeIndex
-                                    ? 'h-2 w-10 rounded-full bg-[#276968]'
-                                    : 'h-2.5 w-2.5 rounded-full border-2 border-[#F5D547] bg-transparent',
+                                    ? 'h-2 w-10 rounded-full'
+                                    : 'h-2.5 w-2.5 rounded-full border-2 bg-transparent',
                             )}
+                            style={
+                                idx === activeIndex
+                                    ? { backgroundColor: colors.primary }
+                                    : { borderColor: colors.accent }
+                            }
                         />
                     ))}
                 </div>

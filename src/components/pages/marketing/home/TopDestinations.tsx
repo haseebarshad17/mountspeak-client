@@ -2,14 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import { filterDestinationCards } from '@/data/popular-destinations'
+import { homepage } from '@/data/homepage'
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-const avatars = [
-    'https://i.pravatar.cc/100?img=12',
-    'https://i.pravatar.cc/100?img=20',
-]
+const section = homepage.sections.popularDestination.topDestinations
+const { colors, buttons } = homepage.theme
 
 type TopDestinationsProps = {
     activeFilter: string
@@ -26,22 +26,32 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
             <div className='agency-container'>
                 <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end'>
                     <div>
-                        <span className='font-roboto text-base font-normal leading-6 text-[#276968]'>
-                            Top Destinations
+                        <span
+                            className='text-base font-normal leading-6'
+                            style={{ color: colors.primary, fontFamily: 'var(--hp-font-body)' }}
+                        >
+                            {section.subtitle}
                         </span>
                         <h2
                             id='top-destinations-heading'
-                            className='agency-section-heading pt-1 text-[40px] font-medium leading-[48px] text-[#14141F]'
+                            className='agency-section-heading pt-1 text-[40px] font-medium leading-[48px]'
+                            style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
-                            Discover your love
+                            {section.title}
                         </h2>
                     </div>
 
                     <Button
                         variant='outline'
-                        className='h-10 w-max rounded-md border border-neutral-300 bg-white px-5 text-sm font-normal text-[#14141F] hover:bg-neutral-50'
+                        className='h-10 w-max rounded-md border px-5 text-sm font-normal'
+                        style={{
+                            backgroundColor: buttons.outline.background,
+                            borderColor: buttons.outline.border,
+                            color: buttons.outline.text,
+                        }}
+                        asChild
                     >
-                        See all
+                        <Link href={section.seeAllHref}>{section.seeAllLabel}</Link>
                     </Button>
                 </div>
 
@@ -67,12 +77,15 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
                                         </div>
 
                                         <div className='flex items-center justify-between gap-3 px-1 pb-1 pt-4'>
-                                            <h3 className='font-jost text-[28px] font-medium leading-8 text-[#276968] sm:text-[32px]'>
+                                            <h3
+                                                className='font-jost text-[28px] font-medium leading-8 sm:text-[32px]'
+                                                style={{ color: colors.primary, fontFamily: 'var(--hp-font-heading)' }}
+                                            >
                                                 {destination.name}
                                             </h3>
 
                                             <div className='flex shrink-0 items-center'>
-                                                {avatars.map((avatar, idx) => (
+                                                {section.avatars.map((avatar, idx) => (
                                                     <div
                                                         key={avatar}
                                                         className='relative h-9 w-9 overflow-hidden rounded-full border-2 border-white'
@@ -87,8 +100,11 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
                                                         />
                                                     </div>
                                                 ))}
-                                                <span className='-ml-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#FF7875] text-xs font-semibold text-white ring-2 ring-white'>
-                                                    +10
+                                                <span
+                                                    className='-ml-2 inline-flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white ring-2 ring-white'
+                                                    style={{ backgroundColor: colors.avatarBadge }}
+                                                >
+                                                    {section.moreTravelersLabel}
                                                 </span>
                                             </div>
                                         </div>
@@ -97,8 +113,11 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
                             ))}
                         </Swiper>
                     ) : (
-                        <p className='py-12 text-center font-roboto text-base text-neutral-500'>
-                            No destinations found for this filter.
+                        <p
+                            className='py-12 text-center text-base'
+                            style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                        >
+                            {section.emptyMessage}
                         </p>
                     )}
                 </div>
