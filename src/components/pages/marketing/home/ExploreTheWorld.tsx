@@ -1,0 +1,81 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+
+import { SectionEyebrow } from '@/components/ui/section-eyebrow'
+import { TourExploreCard } from '@/components/tours/TourExploreCard'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { supabase } from '@/lib/supabase/supabase.client'
+import { toursService } from '@/services/tours/tours.service'
+import { toTourListItem } from '@/services/tours/tours.utils'
+
+const ExploreTheWorld = ({ page }: HomepagePageProps) => {
+    const section = page.sections.exploreTheWorld
+    const { colors } = page.theme
+
+    const { data: tours = [], isLoading } = useQuery({
+        queryKey: ['published-tours'],
+        queryFn: async () => {
+            const api = toursService({ supabase })
+            const rows = await api.getPublishedTours()
+            return rows.map(toTourListItem)
+        },
+        staleTime: 60_000,
+    })
+
+    return (
+        <section
+            className='overflow-hidden bg-white pb-12 sm:pb-16 md:pb-20 lg:pb-[112px]'
+            aria-labelledby='explore-the-world-heading'
+        >
+            <div className='agency-container'>
+                <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
+                    <h2
+                        id='explore-the-world-heading'
+                        className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
+                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                    >
+                        {section.title}
+                    </h2>
+                    <p
+                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-7 md:pt-5 md:text-lg md:leading-8'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        {section.paragraph}
+                    </p>
+                </header>
+
+                {isLoading ? (
+                    <p
+                        className='mx-auto max-w-xl pt-10 text-center text-base'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        Loading tours…
+                    </p>
+                ) : tours.length > 0 ? (
+                    <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
+                        {tours.map((tour) => (
+                            <TourExploreCard
+                                key={tour.id}
+                                slug={tour.slug}
+                                discount={tour.discountLabel}
+                                title={tour.title}
+                                image={tour.image}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p
+                        className='mx-auto max-w-xl pt-10 text-center text-base'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        {section.emptyMessage}
+                    </p>
+                )}
+            </div>
+        </section>
+    )
+}
+
+export default ExploreTheWorld

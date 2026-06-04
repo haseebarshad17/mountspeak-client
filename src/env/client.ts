@@ -2,11 +2,13 @@
 import { z } from "zod";
 
 const clientEnvSchema = z.object({
-    // API_BASE_URL: z.string().url(),
+    supabaseUrl: z.string().url(),
+    supabaseKey: z.string().min(1),
 });
 
 export const clientEnv = clientEnvSchema.parse({
-    // API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 });
 
 export type ClientEnv = z.infer<typeof clientEnvSchema>;

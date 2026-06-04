@@ -249,6 +249,30 @@
 
 /* Layer Utilities  */
 @layer utilities {
+    .font-noto {
+        font-family: var(--font-noto-serif), ui-serif, Georgia, serif;
+    }
+
+    .font-manrope {
+        font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    /* /detail — match homepage typography (heading + roboto body) */
+    .detail-page {
+        font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .detail-page :is(h1, h2, h3, h4, h5, h6),
+    .detail-page .font-heading,
+    .detail-page .font-noto {
+        font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .detail-page :is(p, li, span, a, button, label, dt, dd, input, textarea),
+    .detail-page .font-body,
+    .detail-page .font-manrope {
+        font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+    }
 
     /* Scrollbar hide */
     .scrollbar-hide {
@@ -316,6 +340,32 @@
 
     .agency-section-heading {
         @apply text-[32px] font-semibold  leading-none
+    }
+
+    .testimonials-swiper .swiper-slide-active .testimonial-quote {
+        @apply bg-[#276968] text-white;
+    }
+
+    .testimonials-swiper .swiper-slide-active .testimonial-dots-full {
+        display: none;
+    }
+
+    .testimonials-swiper .swiper-slide-active .testimonial-dots-arc {
+        display: block;
+    }
+
+    /* Booking / partner onboarding — marketing reference palette (#043263) */
+    .booking-flow {
+        --color-primary-50: 241 247 255;
+        --color-primary-100: 221 235 252;
+        --color-primary-200: 186 214 245;
+        --color-primary-300: 145 186 230;
+        --color-primary-400: 103 151 204;
+        --color-primary-500: 58 112 168;
+        --color-primary-600: 24 78 132;
+        --color-primary-700: 4 50 99;
+        --color-primary-800: 3 42 84;
+        --color-primary-900: 2 28 56;
     }
 
 }
