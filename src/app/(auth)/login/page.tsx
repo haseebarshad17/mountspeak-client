@@ -1,7 +1,11 @@
-import AuthSplitPage from "@/components/pages/auth/AuthSplitPage";
+import { Suspense } from 'react'
 
-const Page = () => {
-  return <AuthSplitPage mode="login" />;
-};
+import AuthSplitPage from '@/components/pages/auth/AuthSplitPage'
 
-export default Page;
+export default function Page() {
+    return (
+        <Suspense fallback={<div className='min-h-dvh bg-white' aria-hidden />}>
+            <AuthSplitPage mode='login' />
+        </Suspense>
+    )
+}
