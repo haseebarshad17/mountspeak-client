@@ -1,14 +1,19 @@
 import type { CSSProperties } from 'react'
-import homepageDocument from './homepage-content.json'
 
-export type HomepageDocument = typeof homepageDocument
-export type HomepagePage = HomepageDocument['page']
-export type HomepageTheme = HomepagePage['theme']
-export type HomepageSectionKey = keyof HomepagePage['sections']
+import type {
+    HomepageDocument,
+    Page as HomepagePage,
+    Sections,
+    Theme as HomepageTheme,
+} from '@/services/homepage/homepage.page.types'
 
-export const homepage = homepageDocument.page
+export type { HomepageDocument, HomepagePage, HomepageTheme }
 
-export function getHomepageThemeCssVars(theme: HomepageTheme = homepage.theme): CSSProperties {
+export type HomepageSectionKey = keyof Sections
+
+export type HomepageContentSchema = HomepageDocument
+
+export function getHomepageThemeCssVars(theme: HomepageTheme): CSSProperties {
     const { colors } = theme
     return {
         '--hp-color-primary': colors.primary,
@@ -23,8 +28,11 @@ export function getHomepageThemeCssVars(theme: HomepageTheme = homepage.theme): 
     } as CSSProperties
 }
 
-export function filterHomepageDestinationCards(activeFilter: string) {
-    const { cards } = homepage.sections.popularDestination
+export function filterHomepageDestinationCards(
+    page: HomepagePage,
+    activeFilter: string,
+) {
+    const { cards } = page.sections.popularDestination
     if (activeFilter === 'All') return cards
     return cards.filter((card) => card.region === activeFilter)
 }

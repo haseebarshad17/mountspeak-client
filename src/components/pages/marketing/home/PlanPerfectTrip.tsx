@@ -1,11 +1,12 @@
+'use client'
+
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import Image from 'next/image'
 import React from 'react'
-import { homepage } from '@/data/homepage'
 
-const section = homepage.sections.planPerfectTrip
-const { colors } = homepage.theme
-
-const PlanPerfectTrip = () => {
+const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
+    const section = page.sections.planPerfectTrip
+    const { colors } = page.theme
     return (
         <section
             className='pb-16 sm:pb-20 lg:pb-[112px]'

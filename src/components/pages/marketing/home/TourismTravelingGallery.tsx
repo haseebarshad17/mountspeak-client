@@ -2,12 +2,9 @@
 
 import { FilterPills } from '@/components/pages/marketing/home/filter-pills'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import Image from 'next/image'
 import React, { useMemo, useState } from 'react'
-
-const section = homepage.sections.tourismGallery
-const { colors } = homepage.theme
 
 function GalleryImageCard({ src, alt }: { src: string; alt: string }) {
     return (
@@ -23,7 +20,9 @@ function GalleryImageCard({ src, alt }: { src: string; alt: string }) {
     )
 }
 
-const TourismTravelingGallery = () => {
+const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
+    const section = page.sections.tourismGallery
+    const { colors } = page.theme
     const [activeFilter, setActiveFilter] = useState('All')
 
     const filteredImages = useMemo(() => {
@@ -38,7 +37,7 @@ const TourismTravelingGallery = () => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='tourism-gallery-heading'
                         className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'

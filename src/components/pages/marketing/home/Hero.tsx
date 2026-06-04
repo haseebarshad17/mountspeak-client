@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
 import React from 'react'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 
-type HeroProps = {
+type HeroProps = HomepagePageProps & {
     tourLocations?: string[]
 }
 
-const { hero } = homepage.sections
-const { colors } = homepage.theme
+const Hero = ({ page, tourLocations = [] }: HeroProps) => {
+    const { hero } = page.sections
+    const { colors } = page.theme
 
-const Hero = ({ tourLocations = [] }: HeroProps) => {
     return (
         <section className='p-2 pb-14 sm:p-3 sm:pb-16 md:p-4 lg:p-5 lg:pb-20 xl:p-[30px] xl:pb-[112px]'>
             <div
@@ -36,7 +36,7 @@ const Hero = ({ tourLocations = [] }: HeroProps) => {
                         </div>
 
                         <div className='mx-auto w-full max-w-[867px] pt-10 sm:pt-14 md:pt-20 lg:pt-24 xl:pt-[180px]'>
-                            <HeroFilters tourLocations={tourLocations} />
+                            <HeroFilters page={page} tourLocations={tourLocations} />
                         </div>
                     </div>
                 </main>

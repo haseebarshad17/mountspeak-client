@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { homepage } from '@/data/homepage'
+import type { HomepagePage } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
@@ -9,7 +9,11 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
-const Header = () => {
+type HeaderProps = {
+    page: HomepagePage
+}
+
+const Header = ({ page }: HeaderProps) => {
     const pathname = usePathname()
     const router = useRouter()
     const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
@@ -23,7 +27,7 @@ const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(useLightNav)
 
-    const { header, branding, theme } = homepage
+    const { header, branding, theme } = page
     const { colors, buttons } = theme
 
     useEffect(() => {
@@ -127,7 +131,7 @@ const Header = () => {
                             {header.navigation.map((link) => (
                                 <Link
                                     key={link.href}
-                                    href={link.href}
+                                    href={link.href ?? '/'}
                                     className='text-sm font-normal xl:text-base'
                                     style={{
                                         color: useLightNav ? colors.primaryDark : colors.textOnDark,
@@ -166,7 +170,7 @@ const Header = () => {
                                         style={{
                                             color: useLightNav ? colors.primaryDark : colors.textOnDark,
                                         }}
-                                        href={header.auth.login.href}
+                                        href={header.auth.login.href ?? '/login'}
                                     >
                                         {header.auth.login.label}
                                     </Button>
@@ -181,7 +185,7 @@ const Header = () => {
                                                   }
                                                 : undefined
                                         }
-                                        href={header.auth.signUp.href}
+                                        href={header.auth.signUp.href ?? '/register'}
                                     >
                                         {header.auth.signUp.label}
                                     </Button>
@@ -263,7 +267,7 @@ const Header = () => {
                         {header.navigation.map((link) => (
                             <Link
                                 key={link.href}
-                                href={link.href}
+                                href={link.href ?? '/'}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className='rounded-lg px-3 py-3 text-base font-medium text-white transition hover:bg-white/15'
                             >
@@ -286,14 +290,14 @@ const Header = () => {
                                 <Button
                                     variant='transparent'
                                     className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                    href={header.auth.login.href}
+                                    href={header.auth.login.href ?? '/login'}
                                 >
                                     {header.auth.login.label}
                                 </Button>
                                 <Button
                                     variant='secondary'
                                     className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                    href={header.auth.signUp.href}
+                                    href={header.auth.signUp.href ?? '/register'}
                                 >
                                     {header.auth.signUp.label}
                                 </Button>

@@ -3,10 +3,16 @@ import "@/env/client";
 import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
+import type { CSSProperties } from "react";
 import { defaultMeta } from "@/assests/meta";
 import { hankenGrotesk, jetBrainsMono, jost, manrope, notoSans, notoSerif, plusJakartaSans, redHatText, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
+import HomepageBootstrap from "@/components/providers/HomepageBootstrap";
+import HomepageThemeSync from "@/components/providers/HomepageThemeSync";
+import StoreProvider from "@/store/StoreProvider";
+import { getHomepageThemeCssVars } from "@/data/homepage";
+import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 
 export const metadata: Metadata = defaultMeta;
 
@@ -22,7 +28,16 @@ interface RootLayoutProps {
     readonly children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+    let bodyThemeStyle: CSSProperties | undefined
+
+    try {
+        const agencyHomepage = await fetchAgencyHomepage()
+        bodyThemeStyle = getHomepageThemeCssVars(agencyHomepage.page.theme)
+    } catch {
+        bodyThemeStyle = undefined
+    }
+
     return (
         <html
             lang="en"
@@ -38,8 +53,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 manrope.variable,
             )}
         >
-            <body className={cn(notoSans.variable)}>
-                <LayoutWrapper>{children}</LayoutWrapper>
+            <body
+                className={cn(notoSans.variable)}
+                style={bodyThemeStyle}
+            >
+                <StoreProvider>
+                    <HomepageBootstrap />
+                    <HomepageThemeSync />
+                    <LayoutWrapper>
+                        {children}
+                    </LayoutWrapper>
+                </StoreProvider>
             </body>
         </html>
     );

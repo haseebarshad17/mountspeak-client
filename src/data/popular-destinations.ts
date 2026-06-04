@@ -1,18 +1,23 @@
-import { filterHomepageDestinationCards, homepage } from '@/data/homepage'
+import type { HomepagePage } from '@/data/homepage'
+import { filterHomepageDestinationCards } from '@/data/homepage'
 
-export const popularDestinationFilters = homepage.sections.popularDestination.filters
-
-export type PopularDestinationFilter = (typeof popularDestinationFilters)[number]
+export type PopularDestinationFilter = string
 
 export type DestinationCard = {
     id: string
     name: string
     image: string
-    region: Exclude<PopularDestinationFilter, 'All'>
+    region: string
 }
 
-export const destinationCards = homepage.sections.popularDestination.cards as DestinationCard[]
+export function getPopularDestinationFilters(page: HomepagePage) {
+    return page.sections.popularDestination.filters
+}
 
-export function filterDestinationCards(activeFilter: string) {
-    return filterHomepageDestinationCards(activeFilter) as DestinationCard[]
+export function getDestinationCards(page: HomepagePage) {
+    return page.sections.popularDestination.cards as DestinationCard[]
+}
+
+export function filterDestinationCards(page: HomepagePage, activeFilter: string) {
+    return filterHomepageDestinationCards(page, activeFilter) as DestinationCard[]
 }

@@ -1,13 +1,27 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
-import { homepage } from '@/data/homepage'
-import { fetchPublishedTours } from '@/services/tours/tours.server'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { supabase } from '@/lib/supabase/supabase.client'
+import { toursService } from '@/services/tours/tours.service'
+import { toTourListItem } from '@/services/tours/tours.utils'
 
-const section = homepage.sections.exploreTheWorld
-const { colors } = homepage.theme
+const ExploreTheWorld = ({ page }: HomepagePageProps) => {
+    const section = page.sections.exploreTheWorld
+    const { colors } = page.theme
 
-const ExploreTheWorld = async () => {
-    const tours = await fetchPublishedTours()
+    const { data: tours = [], isLoading } = useQuery({
+        queryKey: ['published-tours'],
+        queryFn: async () => {
+            const api = toursService({ supabase })
+            const rows = await api.getPublishedTours()
+            return rows.map(toTourListItem)
+        },
+        staleTime: 60_000,
+    })
 
     return (
         <section
@@ -16,7 +30,7 @@ const ExploreTheWorld = async () => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='explore-the-world-heading'
                         className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
@@ -32,7 +46,14 @@ const ExploreTheWorld = async () => {
                     </p>
                 </header>
 
-                {tours.length > 0 ? (
+                {isLoading ? (
+                    <p
+                        className='mx-auto max-w-xl pt-10 text-center text-base'
+                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    >
+                        Loading tours…
+                    </p>
+                ) : tours.length > 0 ? (
                     <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
                         {tours.map((tour) => (
                             <TourExploreCard

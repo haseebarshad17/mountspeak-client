@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import Link from 'next/link'
 import { usePakistanCities } from '@/services/cities/cities.queries'
@@ -25,10 +25,6 @@ const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
 const seatOptions = Array.from({ length: 11 }, (_, index) => index)
-
-const section = homepage.sections.bookATour
-const { colors, buttons } = homepage.theme
-const formCopy = section.form
 
 const bookingRequestSchema = z.object({
     full_name: z.string().trim().min(2, 'Full name is required.'),
@@ -54,11 +50,13 @@ function FormField({
     children,
     className,
     error,
+    errorColor,
 }: {
     label: string
     children: React.ReactNode
     className?: string
     error?: string
+    errorColor: string
 }) {
     return (
         <div className={className}>
@@ -67,7 +65,7 @@ function FormField({
                 {children}
             </label>
             {error ? (
-                <p className='mt-1 font-roboto text-xs' style={{ color: colors.error }} role='alert'>
+                <p className='mt-1 font-roboto text-xs' style={{ color: errorColor }} role='alert'>
                     {error}
                 </p>
             ) : null}
@@ -75,7 +73,11 @@ function FormField({
     )
 }
 
-const BookATour = () => {
+const BookATour = ({ page }: HomepagePageProps) => {
+    const section = page.sections.bookATour
+    const { colors, buttons } = page.theme
+    const formCopy = section.form
+
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -183,7 +185,7 @@ const BookATour = () => {
                             }}
                             asChild
                         >
-                            <Link href={section.cta.href}>{section.cta.label}</Link>
+                            <Link href={section.cta.href ?? '/search'}>{section.cta.label}</Link>
                         </Button>
                     </div>
 
@@ -208,7 +210,7 @@ const BookATour = () => {
                             noValidate
                         >
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Full name' error={fieldErrors.full_name}>
+                                <FormField errorColor={colors.error} label='Full name' error={fieldErrors.full_name}>
                                     <input
                                         type='text'
                                         name='full_name'
@@ -217,7 +219,7 @@ const BookATour = () => {
                                         className={fieldClass}
                                     />
                                 </FormField>
-                                <FormField label='Email' error={fieldErrors.email}>
+                                <FormField errorColor={colors.error} label='Email' error={fieldErrors.email}>
                                     <input
                                         type='email'
                                         name='email'
@@ -229,7 +231,7 @@ const BookATour = () => {
                             </div>
 
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Phone' error={fieldErrors.phone}>
+                                <FormField errorColor={colors.error} label='Phone' error={fieldErrors.phone}>
                                     <input
                                         type='tel'
                                         name='phone'
@@ -238,7 +240,7 @@ const BookATour = () => {
                                         className={fieldClass}
                                     />
                                 </FormField>
-                                <FormField label='Travel date' error={fieldErrors.travel_date}>
+                                <FormField errorColor={colors.error} label='Travel date' error={fieldErrors.travel_date}>
                                     <div className='relative w-full max-w-[304px]'>
                                         <input
                                             type='date'
@@ -255,7 +257,7 @@ const BookATour = () => {
                             </div>
 
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Destination' error={fieldErrors.destination}>
+                                <FormField errorColor={colors.error} label='Destination' error={fieldErrors.destination}>
                                     <select
                                         name='destination'
                                         defaultValue=''
@@ -276,7 +278,7 @@ const BookATour = () => {
                                         ))}
                                     </select>
                                 </FormField>
-                                <FormField label='Category' error={fieldErrors.category}>
+                                <FormField errorColor={colors.error} label='Category' error={fieldErrors.category}>
                                     <select
                                         name='category'
                                         defaultValue=''
@@ -297,7 +299,7 @@ const BookATour = () => {
                             </div>
 
                             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField label='Male seats' error={fieldErrors.male_seat}>
+                                <FormField errorColor={colors.error} label='Male seats' error={fieldErrors.male_seat}>
                                     <select
                                         name='male_seat'
                                         defaultValue='0'
@@ -311,7 +313,7 @@ const BookATour = () => {
                                         ))}
                                     </select>
                                 </FormField>
-                                <FormField label='Female seats' error={fieldErrors.female_seat}>
+                                <FormField errorColor={colors.error} label='Female seats' error={fieldErrors.female_seat}>
                                     <select
                                         name='female_seat'
                                         defaultValue='0'
@@ -327,7 +329,7 @@ const BookATour = () => {
                                 </FormField>
                             </div>
 
-                            <FormField label='Request message' className='block w-full' error={fieldErrors.request_message}>
+                            <FormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
                                 <textarea
                                     name='request_message'
                                     rows={3}
