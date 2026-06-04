@@ -1,16 +1,23 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import type { HomepagePage } from '@/data/homepage'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-const section = homepage.sections.ourServices
-const { colors, buttons } = homepage.theme
+type ServiceItem = HomepagePage['sections']['ourServices']['items'][number]
 
-type ServiceItem = (typeof section.items)[number]
-
-function ServiceCard({ title, description, iconSrc, iconAlt, iconPosition }: ServiceItem) {
+function ServiceCard({
+    title,
+    description,
+    iconSrc,
+    iconAlt,
+    iconPosition,
+    colors,
+}: ServiceItem & { colors: HomepagePage['theme']['colors'] }) {
     const iconBlock = (
         <div className='relative h-16 w-16 shrink-0'>
             <Image
@@ -56,7 +63,10 @@ function ServiceCard({ title, description, iconSrc, iconAlt, iconPosition }: Ser
     )
 }
 
-const OurServices = () => {
+const OurServices = ({ page }: HomepagePageProps) => {
+    const section = page.sections.ourServices
+    const { colors, buttons } = page.theme
+
     return (
         <section
             className='py-16 sm:py-20 lg:py-[96px] mb-[342px]'
@@ -65,7 +75,7 @@ const OurServices = () => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-2xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='our-services-heading'
                         className='agency-section-heading text-[40px] leading-[48px] font-medium pt-3 sm:pt-4'
@@ -77,7 +87,7 @@ const OurServices = () => {
 
                 <div className='mx-auto grid w-full max-w-[1312px] grid-cols-1 gap-4 pt-8 sm:gap-5 sm:pt-8 md:grid-cols-2 md:pt-10 lg:gap-6 lg:pt-12'>
                     {section.items.map((service) => (
-                        <ServiceCard key={service.title} {...service} />
+                        <ServiceCard key={service.title} {...service} colors={colors} />
                     ))}
                 </div>
 
@@ -92,7 +102,7 @@ const OurServices = () => {
                         }}
                         asChild
                     >
-                        <Link href={section.cta.href}>{section.cta.label}</Link>
+                        <Link href={section.cta.href ?? '/discover'}>{section.cta.label}</Link>
                     </Button>
                 </div>
             </div>

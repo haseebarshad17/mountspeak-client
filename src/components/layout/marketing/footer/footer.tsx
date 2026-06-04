@@ -1,12 +1,14 @@
-import { cn } from '@/lib/utils/clsxUtils';
-import { homepage } from '@/data/homepage';
-import Image from 'next/image';
-import Link from 'next/link';
+import { cn } from '@/lib/utils/clsxUtils'
+import type { HomepagePage } from '@/data/homepage'
+import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
-const { footer } = homepage
+type FooterProps = {
+    footer: HomepagePage['footer']
+}
 
-const Footer = () => {
+const Footer = ({ footer }: FooterProps) => {
     return (
         <footer style={{ backgroundColor: footer.backgroundColor }}>
             <div className='agency-container'>
@@ -29,20 +31,35 @@ const Footer = () => {
                                 <h3 className='pb-3 text-base font-semibold sm:pb-4 sm:text-lg'>{item.title}</h3>
                                 <ul className='flex flex-col gap-3'>
                                     {'links' in item && item.links
-                                        ? item.links.map((category, linkIdx) => (
-                                              <li key={linkIdx}>
-                                                  <Link
-                                                      href={category.href}
-                                                      className={cn(
-                                                          'text-sm font-normal opacity-80 sm:text-base',
-                                                          'hover:opacity-100 w-max',
-                                                      )}
-                                                  >
-                                                      {category.label}
-                                                  </Link>
-                                              </li>
-                                          ))
-                                        : item.items.map((category, linkIdx) => {
+                                        ? item.links.map((category, linkIdx) => {
+                                              if (!category.href) {
+                                                  return (
+                                                      <li
+                                                          key={linkIdx}
+                                                          className={cn(
+                                                              'text-sm font-normal opacity-80 sm:text-base',
+                                                          )}
+                                                      >
+                                                          {category.label}
+                                                      </li>
+                                                  )
+                                              }
+
+                                              return (
+                                                  <li key={linkIdx}>
+                                                      <Link
+                                                          href={category.href}
+                                                          className={cn(
+                                                              'text-sm font-normal opacity-80 sm:text-base',
+                                                              'hover:opacity-100 w-max',
+                                                          )}
+                                                      >
+                                                          {category.label}
+                                                      </Link>
+                                                  </li>
+                                              )
+                                          })
+                                        : (item.items ?? []).map((category, linkIdx) => {
                                               if (!category.href) {
                                                   return (
                                                       <li

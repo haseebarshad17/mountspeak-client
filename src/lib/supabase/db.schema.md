@@ -36,6 +36,19 @@ agencies
 - created_at: timestamp (default: now())
 
 
+agency_site_theme
+
+Marketing homepage config per agency (see `src/services/homepage/homepage.page.types.ts`).
+
+- id: uuid (PK)
+- agency_id: uuid (FK → agencies.id)
+- site_url: text — e.g. `http:localhost:3000` or `https://adventurehq.example.com` (PostgREST: `site_url=eq.{value}`)
+- theme: jsonb — `{ "page": { ... } }` (shape in `homepage.page.types.ts`)
+- created_at, updated_at: timestamp
+
+Public read via RLS. App calls `GET /rest/v1/agency_site_theme?site_url=eq.{url}` with URL candidates built from the request `Host` header.
+
+
 agency_members
 
 - id: uuid (PK, default: gen_random_uuid())

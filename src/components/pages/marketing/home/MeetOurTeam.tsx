@@ -1,12 +1,20 @@
+'use client'
+
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import type { HomepagePage } from '@/data/homepage'
+import type { Member } from '@/services/homepage/homepage.page.types'
 import Image from 'next/image'
 import React from 'react'
 
-const section = homepage.sections.meetOurTeam
-const { colors } = homepage.theme
-
-function TeamCard({ name, role, image }: (typeof section.members)[number]) {
+function TeamCard({
+    name,
+    role,
+    image,
+    colors,
+}: Member & {
+    colors: HomepagePage['theme']['colors']
+}) {
     return (
         <article className='overflow-hidden rounded-2xl bg-neutral-100 shadow-sm max-w-[306px] w-full h-[424px]'>
             <div className='relative aspect-[3/4] w-full bg-neutral-200 h-[300px]'>
@@ -39,12 +47,15 @@ function TeamCard({ name, role, image }: (typeof section.members)[number]) {
     )
 }
 
-const MeetOurTeam = () => {
+const MeetOurTeam = ({ page }: HomepagePageProps) => {
+    const section = page.sections.meetOurTeam
+    const { colors } = page.theme
+
     return (
         <section className='bg-white pb-16 sm:pb-20 lg:pb-[192px]' aria-labelledby='meet-our-team-heading'>
             <div className='agency-container'>
                 <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='meet-our-team-heading'
                         className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
@@ -55,8 +66,8 @@ const MeetOurTeam = () => {
                 </header>
 
                 <div className='mx-auto grid max-w-[1200px] grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-8 sm:pt-12 lg:grid-cols-4 lg:gap-8 lg:pt-14'>
-                    {section.members.map((member) => (
-                        <TeamCard key={member.name} {...member} />
+                    {(section.members ?? []).map((member) => (
+                        <TeamCard key={member.name} {...member} colors={colors} />
                     ))}
                 </div>
             </div>

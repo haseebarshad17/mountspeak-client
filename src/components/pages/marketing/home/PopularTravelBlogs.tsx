@@ -1,15 +1,31 @@
+'use client'
+
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { Button } from '@/components/ui/button'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import type { HomepagePage } from '@/data/homepage'
 import { Calendar, MessageCircle, ThumbsUp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-const section = homepage.sections.popularTravelBlogs
-const { colors, buttons } = homepage.theme
-
-function BlogCard({ title, author, date, likes, comments, excerpt, image, href }: (typeof section.posts)[number]) {
+function BlogCard({
+    title,
+    author,
+    date,
+    likes,
+    comments,
+    excerpt,
+    image,
+    href,
+    section,
+    colors,
+    buttons,
+}: HomepagePage['sections']['popularTravelBlogs']['posts'][number] & {
+    section: HomepagePage['sections']['popularTravelBlogs']
+    colors: HomepagePage['theme']['colors']
+    buttons: HomepagePage['theme']['buttons']
+}) {
     return (
         <article
             className='flex h-full w-full flex-col overflow-hidden rounded-xl border bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]'
@@ -70,19 +86,22 @@ function BlogCard({ title, author, date, likes, comments, excerpt, image, href }
                         color: buttons.primary.text,
                     }}
                 >
-                    <Link href={href}>{section.readMoreLabel}</Link>
+                    <Link href={href || '#'}>{section.readMoreLabel}</Link>
                 </Button>
             </div>
         </article>
     )
 }
 
-const PopularTravelBlogs = () => {
+const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
+    const section = page.sections.popularTravelBlogs
+    const { colors, buttons } = page.theme
+
     return (
         <section className='bg-white pb-16 sm:pb-20 lg:pb-[149px]' aria-labelledby='popular-travel-blogs-heading'>
             <div className='agency-container'>
                 <header className='mx-auto max-w-[861px] text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='popular-travel-blogs-heading'
                         className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
@@ -100,7 +119,13 @@ const PopularTravelBlogs = () => {
 
                 <div className='mx-auto grid max-w-[1280px] grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
                     {section.posts.map((post) => (
-                        <BlogCard key={post.title} {...post} />
+                        <BlogCard
+                            key={post.title}
+                            {...post}
+                            section={section}
+                            colors={colors}
+                            buttons={buttons}
+                        />
                     ))}
                 </div>
             </div>

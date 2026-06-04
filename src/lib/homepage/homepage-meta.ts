@@ -1,16 +1,16 @@
-import { homepage } from '@/data/homepage'
+import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 import type { Metadata } from 'next'
 
-const { seo, branding } = homepage
+export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
+    const { seo, branding } = homepage.page
+    const siteUrl = homepage.siteUrl
 
-function resolveSiteUrl() {
-    const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
-    if (fromEnv) return fromEnv
-    return 'https://phnestravels.com'
-}
+    if (!siteUrl) {
+        throw new Error(
+            `agency_site_theme.site_url is required for SEO metadata (agency ${homepage.agencyId}).`,
+        )
+    }
 
-export function getHomepageMetadata(): Metadata {
-    const siteUrl = resolveSiteUrl()
     const ogImage = seo.ogImage.startsWith('http') ? seo.ogImage : `${siteUrl}${seo.ogImage}`
 
     return {
@@ -39,7 +39,7 @@ export function getHomepageMetadata(): Metadata {
             type: 'website',
         },
         twitter: {
-            card: seo.twitterCard,
+            card: seo.twitterCard as 'summary_large_image',
             title: seo.title,
             description: seo.description,
             images: [ogImage],

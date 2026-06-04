@@ -6,12 +6,15 @@ import { cn } from "@/lib/utils/clsxUtils"
 import { usePakistanCities } from "@/services/cities/cities.queries"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
 import { Calendar, MapPin, Navigation, Search } from "lucide-react"
-import { homepage } from "@/data/homepage"
+import type { HomepagePage } from '@/data/homepage'
+import {
+    DEFAULT_HERO_SEARCH_BUTTON,
+    DEFAULT_HERO_SEARCH_FILTERS,
+} from '@/components/pages/marketing/home/hero-search.defaults'
+import { selectHomepagePage } from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
-
-const heroSearch = homepage.sections.hero.searchFilters
-const heroSearchButton = homepage.theme.buttons.heroSearch
 
 export type HeroFiltersValues = {
     from?: string
@@ -20,11 +23,14 @@ export type HeroFiltersValues = {
 }
 
 type HeroFiltersProps = {
+    page?: HomepagePage
     initialValues?: HeroFiltersValues
     tourLocations?: string[]
 }
 
-export default function HeroFilters({ initialValues, tourLocations = [] }: HeroFiltersProps) {
+export default function HeroFilters({ page: pageProp, initialValues, tourLocations = [] }: HeroFiltersProps) {
+    const pageFromStore = useAppSelector(selectHomepagePage)
+    const page = pageProp ?? pageFromStore
     const router = useRouter()
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [from, setFrom] = useState(initialValues?.from ?? "")
@@ -68,6 +74,9 @@ export default function HeroFilters({ initialValues, tourLocations = [] }: HeroF
 
     const dropdownItemCls =
         "!flex !h-auto !w-full min-w-0 justify-start rounded-md !px-3 py-2.5 text-left sm:!flex sm:!w-full"
+
+    const heroSearch = page?.sections.hero.searchFilters ?? DEFAULT_HERO_SEARCH_FILTERS
+    const heroSearchButton = page?.theme.buttons.heroSearch ?? DEFAULT_HERO_SEARCH_BUTTON
 
     return (
         <form

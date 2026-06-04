@@ -1,7 +1,8 @@
 'use client'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
-import { homepage } from '@/data/homepage'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import type { HomepagePage } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
 import Image from 'next/image'
@@ -10,14 +11,21 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper/types'
 import 'swiper/css'
 
-const section = homepage.sections.testimonials
-const { colors } = homepage.theme
-
 const DOT_COUNT = 32
 const DOT_RADIUS = 46
 const DOT_SIZE = 2.2
 
-function DottedAvatarFrame({ src, alt, clipId }: { src: string; alt: string; clipId: string }) {
+function DottedAvatarFrame({
+    src,
+    alt,
+    clipId,
+    accentColor,
+}: {
+    src: string
+    alt: string
+    clipId: string
+    accentColor: string
+}) {
     const dots = Array.from({ length: DOT_COUNT }, (_, i) => {
         const angle = (i / DOT_COUNT) * Math.PI * 2 - Math.PI / 2
         const cx = 50 + DOT_RADIUS * Math.cos(angle)
@@ -33,7 +41,7 @@ function DottedAvatarFrame({ src, alt, clipId }: { src: string; alt: string; cli
                 aria-hidden
             >
                 {dots.map((dot, i) => (
-                    <circle key={`gold-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill={colors.accent} />
+                    <circle key={`gold-${i}`} cx={dot.cx} cy={dot.cy} r={DOT_SIZE} fill={accentColor} />
                 ))}
             </svg>
 
@@ -70,12 +78,14 @@ function TestimonialCard({
     location,
     avatar,
     clipId,
+    colors,
 }: {
     quote: string
     name: string
     location: string
     avatar: string
     clipId: string
+    colors: HomepagePage['theme']['colors']
 }) {
     return (
         <div className='flex flex-col items-center px-2 pb-4 pt-2'>
@@ -86,7 +96,12 @@ function TestimonialCard({
                 <p className='text-sm font-normal leading-7 sm:text-base'>{quote}</p>
 
                 <div className='testimonial-avatar-wrap absolute -bottom-11 left-1/2 -translate-x-1/2 sm:-bottom-12'>
-                    <DottedAvatarFrame src={avatar} alt={name} clipId={clipId} />
+                    <DottedAvatarFrame
+                        src={avatar}
+                        alt={name}
+                        clipId={clipId}
+                        accentColor={colors.accent}
+                    />
                 </div>
             </div>
 
@@ -113,7 +128,10 @@ function TestimonialCard({
     )
 }
 
-const Testimonials = () => {
+const Testimonials = ({ page }: HomepagePageProps) => {
+    const section = page.sections.testimonials
+    const { colors } = page.theme
+
     const swiperRef = useRef<SwiperType | null>(null)
     const [activeIndex, setActiveIndex] = useState(1)
 
@@ -121,7 +139,7 @@ const Testimonials = () => {
         <section className='overflow-hidden bg-white pb-16 sm:pb-20 lg:pb-[112px]' aria-labelledby='testimonials-heading'>
             <div className='agency-container py-10 sm:py-12 lg:py-14'>
                 <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='testimonials-heading'
                         className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
@@ -150,16 +168,20 @@ const Testimonials = () => {
                         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
                         className='testimonials-swiper !overflow-visible px-2'
                     >
-                        {section.items.map((item, index) => (
+                        {(section.items ?? []).map((item, index) => (
                             <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
-                                <TestimonialCard {...item} clipId={`testimonial-arc-${index}`} />
+                                <TestimonialCard
+                                    {...item}
+                                    clipId={`testimonial-arc-${index}`}
+                                    colors={colors}
+                                />
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
 
                 <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
-                    {section.items.map((_, idx) => (
+                    {(section.items ?? []).map((_, idx) => (
                         <button
                             key={idx}
                             type='button'

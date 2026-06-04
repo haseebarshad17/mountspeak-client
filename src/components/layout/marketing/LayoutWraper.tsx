@@ -3,16 +3,18 @@
 import React from 'react'
 import { usePathname } from 'next/navigation';
 import Header from './header/header';
-import Footer from './footer/footer';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { Toaster } from 'sonner';
+import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
+import { selectHomepagePage } from '@/store/homepage/homepage.selectors';
+import { useAppSelector } from '@/store/hooks';
 
 interface LayoutWrapperProps {
     readonly children: React.ReactNode;
 }
 
-
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
+    const page = useAppSelector(selectHomepagePage);
     const pathname = usePathname();
     const HeaderExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
@@ -29,16 +31,15 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const ShouldShowHeader = HeaderExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));
     const ShouldShowFooter = FooterExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));
 
-
     return (
         <TanstackQueryProvider>
             <div
                 id='app-scroll-container'
                 className='w-full h-dvh overflow-y-auto scrollbar-content'
             >
-                {ShouldShowHeader && <Header />}
+                {ShouldShowHeader && page && <Header page={page} />}
                 {children}
-                {ShouldShowFooter && <Footer />}
+                {ShouldShowFooter && <MarketingFooter />}
                 <Toaster
                     position='bottom-right'
                     closeButton

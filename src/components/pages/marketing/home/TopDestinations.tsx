@@ -1,24 +1,24 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { filterDestinationCards } from '@/data/popular-destinations'
-import { homepage } from '@/data/homepage'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-const section = homepage.sections.popularDestination.topDestinations
-const { colors, buttons } = homepage.theme
-
-type TopDestinationsProps = {
+type TopDestinationsProps = HomepagePageProps & {
     activeFilter: string
 }
 
-const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
+const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
+    const section = page.sections.popularDestination.topDestinations
+    const { colors, buttons } = page.theme
+
     const destinations = useMemo(
-        () => filterDestinationCards(activeFilter),
-        [activeFilter],
+        () => filterDestinationCards(page, activeFilter),
+        [page, activeFilter],
     )
 
     return (
@@ -51,7 +51,7 @@ const TopDestinations = ({ activeFilter }: TopDestinationsProps) => {
                         }}
                         asChild
                     >
-                        <Link href={section.seeAllHref}>{section.seeAllLabel}</Link>
+                        <Link href={section.seeAllHref ?? '/search'}>{section.seeAllLabel}</Link>
                     </Button>
                 </div>
 
