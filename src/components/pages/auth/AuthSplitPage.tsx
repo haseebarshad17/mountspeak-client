@@ -11,6 +11,8 @@ import {
   useLogout,
   useSignup,
 } from "@/services/auth/auth.queries";
+import { isEmailVerified } from "@/lib/auth/email-verification";
+import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
 
@@ -74,6 +76,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     }
   };
 
+  const redirectToVerifyEmail = (userEmail: string) => {
+    const params = new URLSearchParams({ email: userEmail });
+    router.push(`/verify-email?${params.toString()}`);
+    router.refresh();
+  };
+
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -81,6 +89,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       if (!email || !password) {
         throw new Error("Email and password are required.");
       }
+
+      const siteUrl = getClientSiteUrl();
+      const emailRedirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
+      let authenticatedUser = null;
 
       if (!isLogin) {
         if (!fullName.trim()) {
@@ -97,10 +109,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           full_name: fullName.trim(),
           role: "CLIENT",
           avatar_url: "",
+          emailRedirectTo,
         });
 
         if (signupResult.user) {
           await enforceClientRole(signupResult.user.id);
+          authenticatedUser = signupResult.user;
         }
       } else {
         const loginResult = await login({ email, password });
@@ -109,6 +123,17 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         }
 
         await enforceClientRole(loginResult.user.id);
+        authenticatedUser = loginResult.user;
+      }
+
+      if (authenticatedUser && !isEmailVerified(authenticatedUser)) {
+        toast.success(
+          isLogin
+            ? "Please verify your email before accessing your account."
+            : "Account created. Check your inbox to verify your email."
+        );
+        redirectToVerifyEmail(authenticatedUser.email ?? email);
+        return;
       }
 
       toast.success(isLogin ? "Signed in successfully." : "Account created successfully.");
@@ -129,7 +154,8 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onGoogleSignIn = async () => {
     try {
-      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectAfterAuth)}`;
+      const siteUrl = getClientSiteUrl();
+      const redirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
       await loginWithGoogle(redirectTo);
     } catch (error) {
       if (error instanceof Error) {

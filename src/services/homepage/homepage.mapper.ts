@@ -1,4 +1,5 @@
 import type { HomepagePage } from '@/data/homepage'
+import { resolveStorageUrlsDeep } from '@/lib/supabase/resolve-storage-urls'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
 import type { AgencyHomepage, AgencySiteThemeRow } from './homepage.types'
 
@@ -63,7 +64,7 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
     return {
         agencyId: row.agency_id,
         siteUrl: normalizeSiteUrl(row.site_url),
-        page,
+        page: resolveStorageUrlsDeep(page),
     }
 }
 

@@ -3,7 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
+import {
+    BOOKING_CLOSED_MESSAGE,
+    BOOKING_SOLD_OUT_MESSAGE,
+    isTourBookable,
+    validateSeatCapacity,
+} from '@/lib/booking/tour-booking-rules'
+import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { getClientSiteUrl } from '@/lib/utils/site-url'
+import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import { buildCreateBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
     updateBookingPaymentScreenshot,
@@ -136,6 +145,31 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
             return
         }
 
+        if (!isTourBookable(selectedTour)) {
+            toast.error(
+                selectedTour.isBookingClosed
+                    ? BOOKING_CLOSED_MESSAGE
+                    : BOOKING_SOLD_OUT_MESSAGE,
+            )
+            setActiveStep(0)
+            persistDraft({ activeStep: 0 })
+            return
+        }
+
+        const seatError = validateSeatCapacity({
+            maleSeats: details.maleSeats,
+            femaleSeats: details.femaleSeats,
+            kidsSeats: details.kidsSeats,
+            availableSeats: selectedTour.availableSeats,
+        })
+
+        if (seatError) {
+            toast.error(seatError)
+            setActiveStep(0)
+            persistDraft({ activeStep: 0 })
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
@@ -175,6 +209,25 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
 
             await updateBookingPaymentScreenshot(booking.id, screenshotUrl)
 
+            void sendBookingConfirmationEmail({
+                toEmail: user.email ?? '',
+                toName: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
+                bookingId: booking.id,
+                tourTitle: selectedTour.title,
+                tourSlug: selectedTour.slug,
+                maleSeats: details.maleSeats,
+                femaleSeats: details.femaleSeats,
+                kidsSeats: details.kidsSeats,
+                amountTotal: totalAmount,
+                phone: details.phone.trim(),
+                emergencyPhone: details.emergencyPhone.trim(),
+                cnic: details.cnic.trim(),
+                notes: details.note,
+                siteUrl: getClientSiteUrl(),
+            }).catch(() => {
+                // Booking succeeded; email is best-effort and should not block the user.
+            })
+
             clearBookingDraft()
             setIsSuccess(true)
             toast.success('Your expedition booking was submitted successfully.')
@@ -203,6 +256,36 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
                 <BookingHeaderSection />
                 <div className='agency-container flex min-h-[40vh] items-center justify-center py-20'>
                     <p className='text-sm text-neutral-500'>Checking your session…</p>
+                </div>
+            </>
+        )
+    }
+
+    const lockedTourUnavailable =
+        lockedTour != null && !isTourBookable(lockedTour)
+
+    if (lockedTourUnavailable) {
+        return (
+            <>
+                <BookingHeaderSection />
+                <div className='agency-container py-20 text-center'>
+                    <h2
+                        className='text-3xl font-semibold text-neutral-800'
+                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
+                    >
+                        Booking unavailable
+                    </h2>
+                    <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
+                        {lockedTour.isBookingClosed
+                            ? BOOKING_CLOSED_MESSAGE
+                            : BOOKING_SOLD_OUT_MESSAGE}
+                    </p>
+                    <Button
+                        href='/search'
+                        className='mt-8 inline-flex h-12 items-center justify-center rounded-full bg-primary-700 px-10 text-base text-white hover:bg-primary-800'
+                    >
+                        Browse other tours
+                    </Button>
                 </div>
             </>
         )

@@ -3,65 +3,9 @@
 import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import type { HomepagePage } from '@/data/homepage'
-import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-
-type ServiceItem = HomepagePage['sections']['ourServices']['items'][number]
-
-function ServiceCard({
-    title,
-    description,
-    iconSrc,
-    iconAlt,
-    iconPosition,
-    colors,
-}: ServiceItem & { colors: HomepagePage['theme']['colors'] }) {
-    const iconBlock = (
-        <div className='relative h-16 w-16 shrink-0'>
-            <Image
-                src={iconSrc}
-                alt={iconAlt}
-                width={64}
-                height={64}
-                className='h-16 w-16 object-contain'
-            />
-        </div>
-    )
-
-    const textAlign = iconPosition === 'end' ? 'text-right' : 'text-left'
-
-    const textBlock = (
-        <div className={`min-w-0 flex-1 ${textAlign}`}>
-            <h3
-                className='font-jost text-[20px] font-medium leading-6 tracking-normal pb-[26px]'
-                style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
-            >
-                {title}
-            </h3>
-            <p
-                className='pt-1 font-roboto text-base font-normal leading-6 tracking-normal'
-                style={{ color: colors.text, fontFamily: 'var(--hp-font-body)' }}
-            >
-                {description}
-            </p>
-        </div>
-    )
-
-    return (
-        <article
-            className='mx-auto flex w-full max-w-[636px] min-h-[162px] items-center rounded-[10px] border bg-white px-[24px] py-4 shadow-sm'
-            style={{ borderColor: colors.border }}
-        >
-            <div className='flex w-full items-center gap-6'>
-                {iconPosition === 'start' && iconBlock}
-                {textBlock}
-                {iconPosition === 'end' && iconBlock}
-            </div>
-        </article>
-    )
-}
+import { ServiceCard } from './ServiceCard'
 
 const OurServices = ({ page }: HomepagePageProps) => {
     const section = page.sections.ourServices
@@ -69,7 +13,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='py-16 sm:py-20 lg:py-[96px] mb-[342px]'
+            className='mb-[342px] py-16 sm:py-20 lg:py-[96px]'
             style={{ backgroundColor: section.backgroundColor }}
             aria-labelledby='our-services-heading'
         >
@@ -78,7 +22,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
                     <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
                         id='our-services-heading'
-                        className='agency-section-heading text-[40px] leading-[48px] font-medium pt-3 sm:pt-4'
+                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
                         style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
@@ -102,7 +46,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
                         }}
                         asChild
                     >
-                        <Link href={section.cta.href ?? '/discover'}>{section.cta.label}</Link>
+                        <Link href={section.cta.href ?? '/discover#services'}>{section.cta.label}</Link>
                     </Button>
                 </div>
             </div>

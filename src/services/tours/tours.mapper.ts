@@ -63,7 +63,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             ? [
                   {
                       icon: 'price' as const,
-                      label: `FROM $${Number(row.price_per_seat).toLocaleString()} / SEAT`,
+                      label: `FROM PKR ${Number(row.price_per_seat).toLocaleString()} / SEAT`,
                   },
               ]
             : []),
