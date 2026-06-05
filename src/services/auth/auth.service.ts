@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
     ForgotPasswordDTO,
     LoginDTO,
+    ResendVerificationDTO,
     ResetPasswordDTO,
     SignupDTO
 } from './auth.types'
@@ -56,6 +57,16 @@ export const authService = ({ supabase }: AuthServiceProps) => {
             if (error) throw error
 
             return data
+        },
+
+        resendVerificationEmail: async (payload: ResendVerificationDTO) => {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: payload.email,
+                options: { emailRedirectTo: payload.emailRedirectTo },
+            })
+
+            if (error) throw error
         },
 
         // Forgot password

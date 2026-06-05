@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { getClientSiteUrl } from "@/lib/utils/site-url";
 import { useForgotPassword } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
@@ -22,7 +23,7 @@ export default function ForgotPasswordPage() {
     try {
       await sendResetLink({
         email: email.trim(),
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${getClientSiteUrl()}/reset-password`,
       });
       setSent(true);
       toast.success("Reset link sent. Please check your email.");

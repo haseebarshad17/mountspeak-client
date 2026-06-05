@@ -11,7 +11,13 @@ export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
         )
     }
 
-    const ogImage = seo.ogImage.startsWith('http') ? seo.ogImage : `${siteUrl}${seo.ogImage}`
+    const ogImage =
+        seo.ogImage.startsWith('http://') ||
+        seo.ogImage.startsWith('https://')
+            ? seo.ogImage
+            : seo.ogImage.startsWith('/')
+              ? `${siteUrl}${seo.ogImage}`
+              : seo.ogImage
 
     return {
         title: {

@@ -34,6 +34,13 @@ export const useSignup = () => {
     })
 }
 
+// RESEND VERIFICATION EMAIL
+export const useResendVerificationEmail = () => {
+    return useMutation({
+        mutationFn: auth.resendVerificationEmail,
+    })
+}
+
 // FORGOT PASSWORD
 export const useForgotPassword = () => {
     return useMutation({

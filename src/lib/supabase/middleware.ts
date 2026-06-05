@@ -55,6 +55,16 @@ export async function updateSession(
     }
 
     if (isProtectedPath && user) {
+        if (!user.email_confirmed_at) {
+            const verifyUrl = request.nextUrl.clone()
+            verifyUrl.pathname = '/verify-email'
+            verifyUrl.search = ''
+            if (user.email) {
+                verifyUrl.searchParams.set('email', user.email)
+            }
+            return NextResponse.redirect(verifyUrl)
+        }
+
         const { data: profile } = await supabase
             .from('users')
             .select('role')

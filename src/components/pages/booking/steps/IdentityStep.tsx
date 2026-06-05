@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import {
+    BOOKING_CLOSED_MESSAGE,
+    validateSeatCapacity,
+} from '@/lib/booking/tour-booking-rules'
 import { supabase } from '@/lib/supabase/supabase.client'
 
 import { BookingPriceSummary } from '../BookingPriceSummary'
@@ -20,6 +24,11 @@ type IdentityStepProps = {
     initialDetails: BookingDetailsForm
     onDetailsChange?: (details: BookingDetailsForm) => void
     onContinue: (details: BookingDetailsForm, totalAmount: number) => void
+}
+
+function buildSeatSelectOptions(maxSeats: number) {
+    const safeMax = Math.max(0, Math.min(10, maxSeats))
+    return SEAT_OPTIONS.filter((option) => Number(option.value) <= safeMax)
 }
 
 export function IdentityStep({
@@ -46,6 +55,15 @@ export function IdentityStep({
             if (!keys.some((key) => prev[key])) return prev
             const next = { ...prev }
             keys.forEach((key) => delete next[key])
+            return next
+        })
+    }
+
+    const setFieldError = (key: string, message?: string) => {
+        setFieldErrors((prev) => {
+            const next = { ...prev }
+            if (message) next[key] = message
+            else delete next[key]
             return next
         })
     }
@@ -140,9 +158,74 @@ export function IdentityStep({
     const adultSeats = Number(maleSeats) + Number(femaleSeats)
     const totalTravelers = adultSeats + kidsSeats
 
+    const availableSeats = selectedTour?.availableSeats ?? null
+
+    const seatCapacityError = useMemo(() => {
+        if (!selectedTour) return null
+
+        if (selectedTour.isBookingClosed) {
+            return BOOKING_CLOSED_MESSAGE
+        }
+
+        return validateSeatCapacity({
+            maleSeats: Number(maleSeats) || 0,
+            femaleSeats: Number(femaleSeats) || 0,
+            kidsSeats,
+            availableSeats,
+        })
+    }, [availableSeats, femaleSeats, kidsSeats, maleSeats, selectedTour])
+
+    useEffect(() => {
+        if (selectedTour?.isBookingClosed) {
+            setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
+            return
+        }
+
+        setFieldError('tourId')
+    }, [selectedTour])
+
+    useEffect(() => {
+        setFieldError('seatCapacity', seatCapacityError ?? undefined)
+    }, [seatCapacityError])
+
     const totalSeatsDisplay = useMemo(() => {
-        return `Adults(${adultSeats}) - kids(${kidsSeats})`
-    }, [adultSeats, kidsSeats])
+        const summary = `Adults(${adultSeats}) - kids(${kidsSeats})`
+        if (availableSeats == null) return summary
+        return `${summary} — ${availableSeats} seat${availableSeats === 1 ? '' : 's'} available`
+    }, [adultSeats, availableSeats, kidsSeats])
+
+    const maxMaleSeats = useMemo(() => {
+        if (availableSeats == null) return 10
+        return Math.max(0, availableSeats - Number(femaleSeats) - kidsSeats)
+    }, [availableSeats, femaleSeats, kidsSeats])
+
+    const maxFemaleSeats = useMemo(() => {
+        if (availableSeats == null) return 10
+        return Math.max(0, availableSeats - Number(maleSeats) - kidsSeats)
+    }, [availableSeats, maleSeats, kidsSeats])
+
+    const maxKidsSeats = useMemo(() => {
+        if (availableSeats == null) return 10
+        return Math.max(0, availableSeats - adultSeats)
+    }, [adultSeats, availableSeats])
+
+    useEffect(() => {
+        if (Number(maleSeats) > maxMaleSeats) {
+            setMaleSeats(String(maxMaleSeats))
+        }
+    }, [maleSeats, maxMaleSeats])
+
+    useEffect(() => {
+        if (Number(femaleSeats) > maxFemaleSeats) {
+            setFemaleSeats(String(maxFemaleSeats))
+        }
+    }, [femaleSeats, maxFemaleSeats])
+
+    useEffect(() => {
+        if (kidsSeats > maxKidsSeats) {
+            setKidsSeats(maxKidsSeats)
+        }
+    }, [kidsSeats, maxKidsSeats])
 
     const priceBreakdown = useMemo(() => {
         if (!selectedTour || totalTravelers <= 0) {
@@ -180,6 +263,18 @@ export function IdentityStep({
     }, [lockedTour, tourOptions])
 
     const handleContinue = () => {
+        if (selectedTour?.isBookingClosed) {
+            setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
+            toast.error(BOOKING_CLOSED_MESSAGE)
+            return
+        }
+
+        if (seatCapacityError) {
+            setFieldError('seatCapacity', seatCapacityError)
+            toast.error(seatCapacityError)
+            return
+        }
+
         const parsed = bookingDetailsSchema.safeParse({
             firstName,
             lastName,
@@ -199,8 +294,8 @@ export function IdentityStep({
                 const key = String(issue.path[0] ?? 'form')
                 if (!nextErrors[key]) nextErrors[key] = issue.message
             })
-            setFieldErrors(nextErrors)
-            toast.error('Please fix the highlighted fields.')
+            setFieldErrors((prev) => ({ ...prev, ...nextErrors }))
+            toast.error('Please fill all the required fields.')
             return
         }
 
@@ -317,13 +412,13 @@ export function IdentityStep({
                     required
                     value={maleSeats}
                     staticField={false}
-                    options={SEAT_OPTIONS.map((opt) => ({
+                    options={buildSeatSelectOptions(maxMaleSeats).map((opt) => ({
                         value: opt.value,
                         label: `${opt.label} Male ${opt.label === '1' ? 'Seat' : 'Seats'}`,
                     }))}
                     onChange={(event) => {
                         setMaleSeats(event.target.value)
-                        clearFieldErrors('maleSeats', 'femaleSeats')
+                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
                     }}
                     error={fieldErrors.maleSeats}
                 />
@@ -333,22 +428,23 @@ export function IdentityStep({
                     required
                     value={femaleSeats}
                     staticField={false}
-                    options={SEAT_OPTIONS.map((opt) => ({
+                    options={buildSeatSelectOptions(maxFemaleSeats).map((opt) => ({
                         value: opt.value,
                         label: `${opt.label} Female ${opt.label === '1' ? 'Seat' : 'Seats'}`,
                     }))}
                     onChange={(event) => {
                         setFemaleSeats(event.target.value)
-                        clearFieldErrors('maleSeats', 'femaleSeats')
+                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
                     }}
                     error={fieldErrors.femaleSeats}
                 />
                 <QuantityStepper
                     label='Total Number Children (4 to 8 years):'
                     value={kidsSeats}
+                    max={maxKidsSeats}
                     onChange={(value) => {
                         setKidsSeats(value)
-                        clearFieldErrors('maleSeats', 'femaleSeats')
+                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
                     }}
                     className='sm:col-span-2'
                 />
@@ -358,6 +454,7 @@ export function IdentityStep({
                     readOnly
                     staticField
                     aria-readonly
+                    error={fieldErrors.seatCapacity}
                     className='sm:col-span-2'
                 />
                 <FormInput
@@ -384,7 +481,11 @@ export function IdentityStep({
                     variant='default'
                     type='button'
                     onClick={handleContinue}
-                    disabled={tourOptions.length === 0 && !lockedTour}
+                    disabled={
+                        (tourOptions.length === 0 && !lockedTour) ||
+                        !!seatCapacityError ||
+                        !!selectedTour?.isBookingClosed
+                    }
                     className='w-full rounded-full bg-primary-700 px-12 hover:bg-primary-800 sm:w-auto'
                 >
                     Continue
