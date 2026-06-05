@@ -13,6 +13,19 @@ type HeaderProps = {
     page: HomepagePage
 }
 
+function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
+    if (!href) return false
+    if (href === '/') return pathname === '/'
+    return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+const navLinkClassName = (isActive: boolean, useLightNav: boolean) =>
+    cn(
+        'group relative inline-block pb-1 text-sm font-normal transition duration-200 xl:text-base',
+        useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
+        isActive && 'font-medium',
+    )
+
 const Header = ({ page }: HeaderProps) => {
     const pathname = usePathname()
     const router = useRouter()
@@ -128,19 +141,38 @@ const Header = ({ page }: HeaderProps) => {
                     {/* Navigations + Buttons  */}
                     <nav className='hidden flex-1 items-center justify-end lg:flex'>
                         <div className='flex items-center gap-[54px] xl:pr-[144px] pr-[70px]'>
-                            {header.navigation.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href ?? '/'}
-                                    className='text-sm font-normal xl:text-base'
-                                    style={{
-                                        color: useLightNav ? colors.primaryDark : colors.textOnDark,
-                                        fontFamily: 'var(--hp-font-body)',
-                                    }}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
+                            {header.navigation.map((link) => {
+                                const href = link.href ?? '/'
+                                const isActive = isNavLinkActive(pathname, href)
+
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={href}
+                                        className={navLinkClassName(isActive, useLightNav)}
+                                        style={{
+                                            color: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                            fontFamily: 'var(--hp-font-body)',
+                                        }}
+                                    >
+                                        <span
+                                            aria-hidden
+                                            className={cn(
+                                                'absolute bottom-0 left-0 h-[2px] w-full origin-left transition-transform duration-200',
+                                                isActive
+                                                    ? 'scale-x-100'
+                                                    : 'scale-x-0 group-hover:scale-x-100',
+                                            )}
+                                            style={{
+                                                backgroundColor: useLightNav
+                                                    ? colors.primaryDark
+                                                    : colors.textOnDark,
+                                            }}
+                                        />
+                                        {link.label}
+                                    </Link>
+                                )
+                            })}
                         </div>
 
 

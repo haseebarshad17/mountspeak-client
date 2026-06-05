@@ -7,6 +7,11 @@ export type BookingTourOption = {
     discountPercent: number
     /** From `tours.kids_discount` — percent off kids seats only (ages 4–8). */
     kidsDiscountPercent: number
+    startDate: string | null
+    capacityTotal: number | null
+    confirmedSeats: number
+    availableSeats: number | null
+    isBookingClosed: boolean
 }
 
 export type BookingDetailsForm = {

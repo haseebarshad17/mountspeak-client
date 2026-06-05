@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { buildClientLoginUrlForBooking } from '@/lib/auth/booking-auth'
+import { isEmailVerified } from '@/lib/auth/email-verification'
 import { supabase } from '@/lib/supabase/supabase.client'
 
 export function useBookingAuth() {
@@ -13,6 +14,11 @@ export function useBookingAuth() {
 
     const redirectToLogin = useCallback(() => {
         router.push(buildClientLoginUrlForBooking())
+    }, [router])
+
+    const redirectToVerifyEmail = useCallback((userEmail: string) => {
+        const params = new URLSearchParams({ email: userEmail })
+        router.push(`/verify-email?${params.toString()}`)
     }, [router])
 
     const resolveUser = useCallback(async () => {
@@ -49,6 +55,11 @@ export function useBookingAuth() {
                 return
             }
 
+            if (!isEmailVerified(user)) {
+                redirectToVerifyEmail(user.email ?? '')
+                return
+            }
+
             setUserId(user.id)
             setAuthReady(true)
         }
@@ -65,6 +76,13 @@ export function useBookingAuth() {
                 return
             }
 
+            if (!isEmailVerified(session.user)) {
+                setUserId(null)
+                setAuthReady(false)
+                redirectToVerifyEmail(session.user.email ?? '')
+                return
+            }
+
             setUserId(session.user.id)
             setAuthReady(true)
         })
@@ -73,7 +91,7 @@ export function useBookingAuth() {
             mounted = false
             subscription.unsubscribe()
         }
-    }, [redirectToLogin, resolveUser])
+    }, [redirectToLogin, redirectToVerifyEmail, resolveUser])
 
     const requireUser = useCallback(async () => {
         const user = await resolveUser()
@@ -83,8 +101,13 @@ export function useBookingAuth() {
             return null
         }
 
+        if (!isEmailVerified(user)) {
+            redirectToVerifyEmail(user.email ?? '')
+            return null
+        }
+
         return user
-    }, [redirectToLogin, resolveUser])
+    }, [redirectToLogin, redirectToVerifyEmail, resolveUser])
 
     return { userId, authReady, requireUser, redirectToLogin }
 }

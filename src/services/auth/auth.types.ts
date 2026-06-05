@@ -19,6 +19,12 @@ export type ForgotPasswordDTO = {
     redirectTo: string
 }
 
+// Resend verification email DTO
+export type ResendVerificationDTO = {
+    email: string
+    emailRedirectTo: string
+}
+
 // Reset password DTO
 export type ResetPasswordDTO = {
     password: string
@@ -34,5 +40,6 @@ export type SignupDTO = {
     role: UserRoleEnum
 
     avatar_url?: string
+    emailRedirectTo?: string
 }
 
