@@ -3,11 +3,10 @@
 import { useEffect } from 'react'
 
 import { getHomepageThemeCssVars } from '@/data/homepage'
-import { selectHomepagePage } from '@/store/homepage/homepage.selectors'
-import { useAppSelector } from '@/store/hooks'
+import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 
 export default function HomepageThemeSync() {
-    const page = useAppSelector(selectHomepagePage)
+    const page = useHomepagePageWithFallback()
 
     useEffect(() => {
         if (!page) return

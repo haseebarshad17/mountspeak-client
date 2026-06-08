@@ -6,8 +6,9 @@ import { fetchTourLocationOptions } from '@/services/tours/tours.server'
 import type { Metadata, Viewport } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
+    const agencyHomepage = await fetchAgencyHomepage()
+
     try {
-        const agencyHomepage = await fetchAgencyHomepage()
         return getHomepageMetadata(agencyHomepage)
     } catch {
         return defaultMeta
@@ -15,15 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export async function generateViewport(): Promise<Viewport> {
-    try {
-        const agencyHomepage = await fetchAgencyHomepage()
-        return {
-            themeColor: agencyHomepage.page.seo.themeColor,
-        }
-    } catch {
-        return {
-            themeColor: '#003B95',
-        }
+    const agencyHomepage = await fetchAgencyHomepage()
+
+    return {
+        themeColor: agencyHomepage.page.seo.themeColor,
     }
 }
 

@@ -8,10 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    try {
-        const homepage = await fetchAgencyHomepage()
-        return <DiscoverPage page={homepage.page} />
-    } catch {
-        return <DiscoverPage />
-    }
+    const homepage = await fetchAgencyHomepage()
+    return <DiscoverPage page={homepage.page} />
 }

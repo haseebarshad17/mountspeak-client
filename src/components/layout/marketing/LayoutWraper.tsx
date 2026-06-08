@@ -6,15 +6,14 @@ import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { Toaster } from 'sonner';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
-import { selectHomepagePage } from '@/store/homepage/homepage.selectors';
-import { useAppSelector } from '@/store/hooks';
+import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
 
 interface LayoutWrapperProps {
     readonly children: React.ReactNode;
 }
 
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
-    const page = useAppSelector(selectHomepagePage);
+    const page = useHomepagePageWithFallback();
     const pathname = usePathname();
     const HeaderExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
