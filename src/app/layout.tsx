@@ -3,7 +3,6 @@ import "@/env/client";
 import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
-import type { CSSProperties } from "react";
 import { defaultMeta } from "@/assests/meta";
 import { hankenGrotesk, jetBrainsMono, jost, manrope, notoSans, notoSerif, plusJakartaSans, redHatText, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
@@ -29,14 +28,8 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-    let bodyThemeStyle: CSSProperties | undefined
-
-    try {
-        const agencyHomepage = await fetchAgencyHomepage()
-        bodyThemeStyle = getHomepageThemeCssVars(agencyHomepage.page.theme)
-    } catch {
-        bodyThemeStyle = undefined
-    }
+    const agencyHomepage = await fetchAgencyHomepage()
+    const bodyThemeStyle = getHomepageThemeCssVars(agencyHomepage.page.theme)
 
     return (
         <html
