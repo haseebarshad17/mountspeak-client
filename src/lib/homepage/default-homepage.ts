@@ -5,7 +5,7 @@ import { resolveStorageUrlsDeep } from '@/lib/supabase/resolve-storage-urls'
 import { normalizeSiteUrl } from '@/services/homepage/homepage.mapper'
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 
-const DEFAULT_AGENCY_ID = '00000000-0000-0000-0000-000000000000'
+export const DEFAULT_AGENCY_ID = '00000000-0000-0000-0000-000000000000'
 
 export const DUMMY_HOMEPAGE_PAGE = homepageDefaultsDocument.page as HomepagePage
 
@@ -26,6 +26,7 @@ export function createDefaultAgencyHomepage(requestHost: string): AgencyHomepage
     return {
         agencyId: DEFAULT_AGENCY_ID,
         siteUrl: resolveFallbackSiteUrl(requestHost),
+        isAgencySite: false,
         page: resolveStorageUrlsDeep(page),
     }
 }

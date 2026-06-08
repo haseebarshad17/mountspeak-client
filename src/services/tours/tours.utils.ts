@@ -1,6 +1,9 @@
+import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
 import type { TourListItem, TourRow } from './tours.types'
+
+export { DEMO_TOUR_DETAIL_PATH }
 
 export function formatTourDiscount(percent: number | null | undefined): string {
     if (percent == null || Number.isNaN(Number(percent))) {
@@ -34,6 +37,10 @@ export function toTourListItem(tour: TourRow): TourListItem {
     }
 }
 
-export function tourDetailPath(slug: string): string {
+export function tourDetailPath(slug: string, options?: { demo?: boolean }): string {
+    if (options?.demo) {
+        return DEMO_TOUR_DETAIL_PATH
+    }
+
     return `/tours/${slug}`
 }

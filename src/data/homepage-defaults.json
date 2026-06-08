@@ -181,7 +181,7 @@
         {
           "title": "Our Activities",
           "links": [
-            { "label": "Tour", "href": "/tour" },
+            { "label": "Tour", "href": "/details" },
             { "label": "Kayaking", "href": "/kayaking" },
             { "label": "Cruising & Sailing", "href": "/cruising-sailing" },
             { "label": "Multi-activities", "href": "/multi-activities" }

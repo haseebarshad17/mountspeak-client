@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import type { HomepagePage } from '@/data/homepage'
+import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
@@ -33,9 +34,11 @@ const Header = ({ page }: HeaderProps) => {
     const isDashboardPage = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
     const isBookingsPage = pathname === '/bookings' || pathname.startsWith('/bookings/')
     const useLightNav = isTermsPage || isDashboardPage || isBookingsPage
+    const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
+    const showAuthActions = isAgencySite === true
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(useLightNav)
@@ -177,35 +180,9 @@ const Header = ({ page }: HeaderProps) => {
 
 
                         {/* Buttons  */}
-                        <div className='flex items-center'>
-                            {isLoggedIn ? (
-                                <Button
-                                    variant='secondary'
-                                    className='w-max rounded-sm px-5'
-                                    style={
-                                        useLightNav
-                                            ? {
-                                                  backgroundColor: buttons.navCta.background,
-                                                  color: buttons.navCta.text,
-                                              }
-                                            : undefined
-                                    }
-                                    onClick={handleLogout}
-                                >
-                                    {header.auth.logout.label}
-                                </Button>
-                            ) : (
-                                <>
-                                    <Button
-                                        variant='transparent'
-                                        className='w-max'
-                                        style={{
-                                            color: useLightNav ? colors.primaryDark : colors.textOnDark,
-                                        }}
-                                        href={header.auth.login.href ?? '/login'}
-                                    >
-                                        {header.auth.login.label}
-                                    </Button>
+                        {showAuthActions ? (
+                            <div className='flex items-center'>
+                                {isLoggedIn ? (
                                     <Button
                                         variant='secondary'
                                         className='w-max rounded-sm px-5'
@@ -217,13 +194,41 @@ const Header = ({ page }: HeaderProps) => {
                                                   }
                                                 : undefined
                                         }
-                                        href={header.auth.signUp.href ?? '/register'}
+                                        onClick={handleLogout}
                                     >
-                                        {header.auth.signUp.label}
+                                        {header.auth.logout.label}
                                     </Button>
-                                </>
-                            )}
-                        </div>
+                                ) : (
+                                    <>
+                                        <Button
+                                            variant='transparent'
+                                            className='w-max'
+                                            style={{
+                                                color: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                            }}
+                                            href={header.auth.login.href ?? '/login'}
+                                        >
+                                            {header.auth.login.label}
+                                        </Button>
+                                        <Button
+                                            variant='secondary'
+                                            className='w-max rounded-sm px-5'
+                                            style={
+                                                useLightNav
+                                                    ? {
+                                                          backgroundColor: buttons.navCta.background,
+                                                          color: buttons.navCta.text,
+                                                      }
+                                                    : undefined
+                                            }
+                                            href={header.auth.signUp.href ?? '/register'}
+                                        >
+                                            {header.auth.signUp.label}
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        ) : null}
                     </nav>
 
                     {/* Mobile menu trigger */}
@@ -308,34 +313,36 @@ const Header = ({ page }: HeaderProps) => {
                         ))}
                     </nav>
 
-                    <div className='flex items-center gap-3 pt-4'>
-                        {isLoggedIn ? (
-                            <Button
-                                variant='secondary'
-                                className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                onClick={handleLogout}
-                            >
-                                {header.auth.logout.label}
-                            </Button>
-                        ) : (
-                            <>
-                                <Button
-                                    variant='transparent'
-                                    className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                    href={header.auth.login.href ?? '/login'}
-                                >
-                                    {header.auth.login.label}
-                                </Button>
+                    {showAuthActions ? (
+                        <div className='flex items-center gap-3 pt-4'>
+                            {isLoggedIn ? (
                                 <Button
                                     variant='secondary'
                                     className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                    href={header.auth.signUp.href ?? '/register'}
+                                    onClick={handleLogout}
                                 >
-                                    {header.auth.signUp.label}
+                                    {header.auth.logout.label}
                                 </Button>
-                            </>
-                        )}
-                    </div>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant='transparent'
+                                        className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
+                                        href={header.auth.login.href ?? '/login'}
+                                    >
+                                        {header.auth.login.label}
+                                    </Button>
+                                    <Button
+                                        variant='secondary'
+                                        className='flex-1 !w-full rounded-md bg-white text-primary-700'
+                                        href={header.auth.signUp.href ?? '/register'}
+                                    >
+                                        {header.auth.signUp.label}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    ) : null}
                 </aside>
             </div>
         </>
