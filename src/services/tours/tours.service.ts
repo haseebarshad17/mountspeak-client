@@ -33,16 +33,27 @@ const tourColumns = [
 
 type ToursServiceProps = {
     supabase: SupabaseClient
+    agencyId?: string
 }
 
-export const toursService = ({ supabase }: ToursServiceProps) => {
+export const toursService = ({ supabase, agencyId }: ToursServiceProps) => {
+    const applyAgencyFilter = <T extends { eq: (column: string, value: string) => T }>(query: T) => {
+        if (agencyId) {
+            return query.eq('agency_id', agencyId)
+        }
+        return query
+    }
+
     return {
         getPublishedTours: async (): Promise<TourRow[]> => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('tours')
                 .select(tourColumns)
                 .eq('publication_status', TOUR_PUBLICATION_STATUS.published)
-                .order('created_at', { ascending: false })
+
+            query = applyAgencyFilter(query)
+
+            const { data, error } = await query.order('created_at', { ascending: false })
 
             if (error) throw error
 
@@ -54,6 +65,8 @@ export const toursService = ({ supabase }: ToursServiceProps) => {
                 .from('tours')
                 .select(tourColumns)
                 .eq('publication_status', TOUR_PUBLICATION_STATUS.published)
+
+            query = applyAgencyFilter(query)
 
             const from = filters.from?.trim()
             const to = filters.to?.trim()
@@ -86,10 +99,14 @@ export const toursService = ({ supabase }: ToursServiceProps) => {
         },
 
         getPublishedTourLocations: async (): Promise<string[]> => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('tours')
                 .select('from_location, to_location')
                 .eq('publication_status', TOUR_PUBLICATION_STATUS.published)
+
+            query = applyAgencyFilter(query)
+
+            const { data, error } = await query
 
             if (error) throw error
 
@@ -104,12 +121,15 @@ export const toursService = ({ supabase }: ToursServiceProps) => {
         },
 
         getPublishedTourBySlug: async (slug: string): Promise<TourRow | null> => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('tours')
                 .select(tourColumns)
                 .eq('slug', slug)
                 .eq('publication_status', TOUR_PUBLICATION_STATUS.published)
-                .maybeSingle()
+
+            query = applyAgencyFilter(query)
+
+            const { data, error } = await query.maybeSingle()
 
             if (error) throw error
 

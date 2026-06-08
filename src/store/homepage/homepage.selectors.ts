@@ -5,6 +5,9 @@ export const selectHomepageState = (state: RootState) => state.homepage
 
 export const selectHomepageData = (state: RootState) => state.homepage.data
 
+export const selectHomepageAgencyId = (state: RootState): string | null =>
+    state.homepage.data?.agencyId ?? null
+
 export const selectHomepagePage = (state: RootState): HomepagePage | null =>
     state.homepage.data?.page ?? null
 
@@ -14,3 +17,12 @@ export const selectHomepageError = (state: RootState) => state.homepage.error
 
 export const selectHomepageIsLoading = (state: RootState) =>
     state.homepage.status === 'idle' || state.homepage.status === 'loading'
+
+/** null while homepage is still loading */
+export const selectIsAgencySite = (state: RootState): boolean | null => {
+    if (state.homepage.status === 'idle' || state.homepage.status === 'loading') {
+        return null
+    }
+
+    return state.homepage.data?.isAgencySite ?? false
+}

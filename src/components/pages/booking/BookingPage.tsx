@@ -54,9 +54,14 @@ const emptyDetails: BookingDetailsForm = {
 type BookingPageProps = {
     tourOptions: BookingTourOption[]
     lockedTour: BookingTourOption | null
+    isDemoMode?: boolean
 }
 
-export default function BookingPage({ tourOptions, lockedTour }: BookingPageProps) {
+export default function BookingPage({
+    tourOptions,
+    lockedTour,
+    isDemoMode = false,
+}: BookingPageProps) {
     const [draftReady, setDraftReady] = useState(false)
     const [identityFormKey, setIdentityFormKey] = useState(0)
     const [activeStep, setActiveStep] = useState(0)
@@ -69,7 +74,7 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { mutateAsync: createTourBooking } = useCreateTourBooking()
-    const { authReady, requireUser } = useBookingAuth()
+    const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
 
     useEffect(() => {
         const draft = loadBookingDraft()
@@ -130,6 +135,11 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
     }
 
     const handleSubmit = async () => {
+        if (isDemoMode) {
+            toast.info('This is a preview booking form. Connect your site URL to enable live bookings.')
+            return
+        }
+
         const paymentParsed = bookingPaymentSchema.safeParse({ paymentScreenshot })
 
         if (!paymentParsed.success) {
@@ -262,7 +272,7 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
     }
 
     const lockedTourUnavailable =
-        lockedTour != null && !isTourBookable(lockedTour)
+        !isDemoMode && lockedTour != null && !isTourBookable(lockedTour)
 
     if (lockedTourUnavailable) {
         return (
@@ -338,6 +348,7 @@ export default function BookingPage({ tourOptions, lockedTour }: BookingPageProp
                                 initialDetails={details}
                                 onDetailsChange={handleDetailsChange}
                                 onContinue={handleDetailsContinue}
+                                skipValidation={isDemoMode}
                             />
                         )}
                         {activeStep === 1 && (

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 import TourPageContent from '@/components/pages/tour/TourPageContent'
+import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { fetchPublishedTourBySlug, fetchTourPageBySlug } from '@/services/tours/tours.server'
 
 type TourDetailPageProps = {
@@ -31,6 +33,12 @@ export async function generateMetadata({ params }: TourDetailPageProps): Promise
 }
 
 export default async function TourDetailPage({ params }: TourDetailPageProps) {
+    const homepage = await fetchAgencyHomepage()
+
+    if (!homepage.isAgencySite) {
+        redirect(DEMO_TOUR_DETAIL_PATH)
+    }
+
     const { slug } = await params
     const row = await fetchPublishedTourBySlug(slug)
 

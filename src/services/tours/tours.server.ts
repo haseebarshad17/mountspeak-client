@@ -3,7 +3,9 @@ import {
     isTourBookingClosed,
     isTourBookable,
 } from '@/lib/booking/tour-booking-rules'
+import { DEMO_BOOKING_TOUR_OPTION } from '@/lib/booking/demo-booking'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 
 import { mapTourRecordToPage } from './tours.mapper'
@@ -15,13 +17,33 @@ import type { BookingTourOption } from '@/components/pages/booking/booking.types
 import type { TourListItem, TourRow } from './tours.types'
 import { toTourListItem } from './tours.utils'
 
-async function getToursApi() {
+type AgencyTourScope = {
+    isAgencySite: boolean
+    agencyId: string | null
+}
+
+async function getAgencyTourScope(): Promise<AgencyTourScope> {
+    const homepage = await fetchAgencyHomepage()
+
+    return {
+        isAgencySite: homepage.isAgencySite,
+        agencyId: homepage.isAgencySite ? homepage.agencyId : null,
+    }
+}
+
+async function getToursApi(scope: AgencyTourScope) {
     const supabase = await createServerSupabase()
-    return toursService({ supabase })
+    return toursService({
+        supabase,
+        agencyId: scope.agencyId ?? undefined,
+    })
 }
 
 export async function fetchPublishedTours(): Promise<TourListItem[]> {
-    const tours = await getToursApi()
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return []
+
+    const tours = await getToursApi(scope)
     const rows = await tours.getPublishedTours()
     return rows.map(toTourListItem)
 }
@@ -29,7 +51,10 @@ export async function fetchPublishedTours(): Promise<TourListItem[]> {
 export async function searchPublishedTours(
     filters: TourSearchFilters = {},
 ): Promise<TourListItem[]> {
-    const tours = await getToursApi()
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return []
+
+    const tours = await getToursApi(scope)
     const rows = hasTourSearchFilters(filters)
         ? await tours.searchPublishedTours(filters)
         : await tours.getPublishedTours()
@@ -38,12 +63,18 @@ export async function searchPublishedTours(
 }
 
 export async function fetchTourLocationOptions(): Promise<string[]> {
-    const tours = await getToursApi()
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return []
+
+    const tours = await getToursApi(scope)
     return tours.getPublishedTourLocations()
 }
 
 export async function fetchPublishedTourBySlug(slug: string): Promise<TourRow | null> {
-    const tours = await getToursApi()
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return null
+
+    const tours = await getToursApi(scope)
     return tours.getPublishedTourBySlug(slug)
 }
 
@@ -128,8 +159,13 @@ async function mapRowsToBookingTourOptions(rows: TourRow[]): Promise<BookingTour
 }
 
 export async function fetchPublishedToursForBooking(): Promise<BookingTourOption[]> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) {
+        return [DEMO_BOOKING_TOUR_OPTION]
+    }
+
     try {
-        const tours = await getToursApi()
+        const tours = await getToursApi(scope)
         const rows = await tours.getPublishedTours()
         return mapRowsToBookingTourOptions(rows)
     } catch {
@@ -138,6 +174,14 @@ export async function fetchPublishedToursForBooking(): Promise<BookingTourOption
 }
 
 export async function fetchBookingTourBySlug(slug: string): Promise<BookingTourOption | null> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) {
+        if (slug === DEMO_BOOKING_TOUR_OPTION.slug) {
+            return DEMO_BOOKING_TOUR_OPTION
+        }
+        return null
+    }
+
     try {
         const row = await fetchPublishedTourBySlug(slug)
         if (!row) return null
