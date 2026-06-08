@@ -15,5 +15,7 @@ export type AgencySiteRow = AgencySiteThemeRow
 export type AgencyHomepage = {
     agencyId: string
     siteUrl: string | null
+    /** True when request host matches a configured agency_site_theme.site_url */
+    isAgencySite: boolean
     page: HomepagePage
 }

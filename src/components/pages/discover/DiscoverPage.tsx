@@ -4,11 +4,8 @@ import { ServiceCard } from '@/components/pages/marketing/home/ServiceCard'
 import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePage } from '@/data/homepage'
-import {
-    selectHomepageError,
-    selectHomepageIsLoading,
-    selectHomepagePage,
-} from '@/store/homepage/homepage.selectors'
+import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { selectHomepageIsLoading } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import Link from 'next/link'
 
@@ -17,17 +14,14 @@ type DiscoverPageProps = {
 }
 
 export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps) {
-    const pageFromStore = useAppSelector(selectHomepagePage)
+    const pageFromStore = useHomepagePageWithFallback()
     const isLoading = useAppSelector(selectHomepageIsLoading)
-    const error = useAppSelector(selectHomepageError)
     const page = pageFromServer ?? pageFromStore
 
-    if (!page) {
+    if (isLoading || !page) {
         return (
             <div className='flex min-h-[50vh] items-center justify-center px-4'>
-                <p className='text-sm text-neutral-500'>
-                    {isLoading ? 'Loading services…' : (error ?? 'Services content is unavailable.')}
-                </p>
+                <p className='text-sm text-neutral-500'>Loading services…</p>
             </div>
         )
     }

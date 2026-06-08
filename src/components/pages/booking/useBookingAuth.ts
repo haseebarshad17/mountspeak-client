@@ -7,10 +7,14 @@ import { buildClientLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { isEmailVerified } from '@/lib/auth/email-verification'
 import { supabase } from '@/lib/supabase/supabase.client'
 
-export function useBookingAuth() {
+type UseBookingAuthOptions = {
+    skipAuth?: boolean
+}
+
+export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {}) {
     const router = useRouter()
     const [userId, setUserId] = useState<string | null>(null)
-    const [authReady, setAuthReady] = useState(false)
+    const [authReady, setAuthReady] = useState(skipAuth)
 
     const redirectToLogin = useCallback(() => {
         router.push(buildClientLoginUrlForBooking())
@@ -43,6 +47,11 @@ export function useBookingAuth() {
     }, [])
 
     useEffect(() => {
+        if (skipAuth) {
+            setAuthReady(true)
+            return
+        }
+
         let mounted = true
 
         async function verifySession() {
@@ -91,9 +100,13 @@ export function useBookingAuth() {
             mounted = false
             subscription.unsubscribe()
         }
-    }, [redirectToLogin, redirectToVerifyEmail, resolveUser])
+    }, [redirectToLogin, redirectToVerifyEmail, resolveUser, skipAuth])
 
     const requireUser = useCallback(async () => {
+        if (skipAuth) {
+            return null
+        }
+
         const user = await resolveUser()
 
         if (!user) {
@@ -107,7 +120,7 @@ export function useBookingAuth() {
         }
 
         return user
-    }, [redirectToLogin, redirectToVerifyEmail, resolveUser])
+    }, [redirectToLogin, redirectToVerifyEmail, resolveUser, skipAuth])
 
     return { userId, authReady, requireUser, redirectToLogin }
 }

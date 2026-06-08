@@ -5,23 +5,33 @@ import { useQuery } from '@tanstack/react-query'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { useIsAgencySite } from '@/hooks/useIsAgencySite'
+import { DEMO_TOUR_DETAIL_PATH, DEMO_TOUR_LIST_ITEM } from '@/lib/tours/default-tour-page'
 import { supabase } from '@/lib/supabase/supabase.client'
+import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { toTourListItem } from '@/services/tours/tours.utils'
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
     const { colors } = page.theme
+    const isAgencySite = useIsAgencySite()
+    const agencyId = useAppSelector(selectHomepageAgencyId)
 
     const { data: tours = [], isLoading } = useQuery({
-        queryKey: ['published-tours'],
+        queryKey: ['published-tours', isAgencySite, agencyId],
+        enabled: isAgencySite === true && !!agencyId,
         queryFn: async () => {
-            const api = toursService({ supabase })
+            const api = toursService({ supabase, agencyId: agencyId ?? undefined })
             const rows = await api.getPublishedTours()
             return rows.map(toTourListItem)
         },
         staleTime: 60_000,
     })
+
+    const displayTours = isAgencySite === false ? [DEMO_TOUR_LIST_ITEM] : tours
+    const showLoading = isAgencySite === null || (isAgencySite === true && isLoading)
 
     return (
         <section
@@ -46,22 +56,25 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     </p>
                 </header>
 
-                {isLoading ? (
+                {showLoading ? (
                     <p
                         className='mx-auto max-w-xl pt-10 text-center text-base'
                         style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         Loading tours…
                     </p>
-                ) : tours.length > 0 ? (
+                ) : displayTours.length > 0 ? (
                     <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
-                        {tours.map((tour) => (
+                        {displayTours.map((tour) => (
                             <TourExploreCard
                                 key={tour.id}
                                 slug={tour.slug}
                                 discount={tour.discountLabel}
                                 title={tour.title}
                                 image={tour.image}
+                                detailHref={
+                                    isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
+                                }
                             />
                         ))}
                     </div>

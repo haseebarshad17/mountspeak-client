@@ -9,9 +9,16 @@ type TourExploreCardProps = {
     discount: string
     title: string
     image: string
+    detailHref?: string
 }
 
-export function TourExploreCard({ slug, discount, title, image }: TourExploreCardProps) {
+export function TourExploreCard({
+    slug,
+    discount,
+    title,
+    image,
+    detailHref,
+}: TourExploreCardProps) {
     return (
         <article className='group relative mx-auto w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'>
             <Image
@@ -36,7 +43,7 @@ export function TourExploreCard({ slug, discount, title, image }: TourExploreCar
                     {title}
                 </h3>
                 <Link
-                    href={tourDetailPath(slug)}
+                    href={detailHref ?? tourDetailPath(slug)}
                     className='mt-2 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
                 >
                     View All Place

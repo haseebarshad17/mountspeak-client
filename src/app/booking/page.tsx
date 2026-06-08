@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import BookingPage from '@/components/pages/booking/BookingPage'
 import { buildBookingReturnPath, buildLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import {
     fetchBookingTourBySlug,
     fetchPublishedToursForBooking,
@@ -21,22 +22,26 @@ type BookingRoutePageProps = {
 export default async function Page({ searchParams }: BookingRoutePageProps) {
     const { tour: tourSlug } = await searchParams
     const returnPath = buildBookingReturnPath(tourSlug)
+    const agencyHomepage = await fetchAgencyHomepage()
+    const isAgencySite = agencyHomepage.isAgencySite
 
-    const supabase = await createServerSupabase()
-    const { data: authData } = await supabase.auth.getUser()
+    if (isAgencySite) {
+        const supabase = await createServerSupabase()
+        const { data: authData } = await supabase.auth.getUser()
 
-    if (!authData.user) {
-        redirect(buildLoginUrlForBooking(returnPath))
-    }
+        if (!authData.user) {
+            redirect(buildLoginUrlForBooking(returnPath))
+        }
 
-    const { data: profile } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', authData.user.id)
-        .single()
+        const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', authData.user.id)
+            .single()
 
-    if (profile?.role !== 'CLIENT') {
-        redirect('/login?error=role_not_allowed')
+        if (profile?.role !== 'CLIENT') {
+            redirect('/login?error=role_not_allowed')
+        }
     }
 
     let tourOptions: Awaited<ReturnType<typeof fetchPublishedToursForBooking>> = []
@@ -57,6 +62,7 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         <BookingPage
             tourOptions={tourOptions}
             lockedTour={lockedTour}
+            isDemoMode={!isAgencySite}
         />
     )
 }

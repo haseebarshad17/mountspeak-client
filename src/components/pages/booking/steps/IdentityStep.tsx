@@ -24,6 +24,7 @@ type IdentityStepProps = {
     initialDetails: BookingDetailsForm
     onDetailsChange?: (details: BookingDetailsForm) => void
     onContinue: (details: BookingDetailsForm, totalAmount: number) => void
+    skipValidation?: boolean
 }
 
 function buildSeatSelectOptions(maxSeats: number) {
@@ -37,6 +38,7 @@ export function IdentityStep({
     initialDetails,
     onDetailsChange,
     onContinue,
+    skipValidation = false,
 }: IdentityStepProps) {
     const [firstName, setFirstName] = useState(initialDetails.firstName)
     const [lastName, setLastName] = useState(initialDetails.lastName)
@@ -161,7 +163,7 @@ export function IdentityStep({
     const availableSeats = selectedTour?.availableSeats ?? null
 
     const seatCapacityError = useMemo(() => {
-        if (!selectedTour) return null
+        if (skipValidation || !selectedTour) return null
 
         if (selectedTour.isBookingClosed) {
             return BOOKING_CLOSED_MESSAGE
@@ -173,16 +175,21 @@ export function IdentityStep({
             kidsSeats,
             availableSeats,
         })
-    }, [availableSeats, femaleSeats, kidsSeats, maleSeats, selectedTour])
+    }, [availableSeats, femaleSeats, kidsSeats, maleSeats, selectedTour, skipValidation])
 
     useEffect(() => {
+        if (skipValidation) {
+            setFieldError('tourId')
+            return
+        }
+
         if (selectedTour?.isBookingClosed) {
             setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
             return
         }
 
         setFieldError('tourId')
-    }, [selectedTour])
+    }, [selectedTour, skipValidation])
 
     useEffect(() => {
         setFieldError('seatCapacity', seatCapacityError ?? undefined)
@@ -263,60 +270,72 @@ export function IdentityStep({
     }, [lockedTour, tourOptions])
 
     const handleContinue = () => {
-        if (selectedTour?.isBookingClosed) {
-            setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
-            toast.error(BOOKING_CLOSED_MESSAGE)
-            return
+        if (!skipValidation) {
+            if (selectedTour?.isBookingClosed) {
+                setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
+                toast.error(BOOKING_CLOSED_MESSAGE)
+                return
+            }
+
+            if (seatCapacityError) {
+                setFieldError('seatCapacity', seatCapacityError)
+                toast.error(seatCapacityError)
+                return
+            }
         }
 
-        if (seatCapacityError) {
-            setFieldError('seatCapacity', seatCapacityError)
-            toast.error(seatCapacityError)
-            return
-        }
+        const snapshot = buildDetailsSnapshot()
 
-        const parsed = bookingDetailsSchema.safeParse({
-            firstName,
-            lastName,
-            phone,
-            emergencyPhone,
-            cnic,
-            tourId: lockedTour?.id ?? tourId,
-            maleSeats,
-            femaleSeats,
-            kidsSeats,
-            note: note || undefined,
-        })
-
-        if (!parsed.success) {
-            const nextErrors: Record<string, string> = {}
-            parsed.error.issues.forEach((issue) => {
-                const key = String(issue.path[0] ?? 'form')
-                if (!nextErrors[key]) nextErrors[key] = issue.message
+        if (!skipValidation) {
+            const parsed = bookingDetailsSchema.safeParse({
+                firstName,
+                lastName,
+                phone,
+                emergencyPhone,
+                cnic,
+                tourId: lockedTour?.id ?? tourId,
+                maleSeats,
+                femaleSeats,
+                kidsSeats,
+                note: note || undefined,
             })
-            setFieldErrors((prev) => ({ ...prev, ...nextErrors }))
-            toast.error('Please fill all the required fields.')
-            return
-        }
 
-        if (!selectedTour || totalAmount <= 0) {
-            toast.error('Select seats and a valid tour plan to continue.')
+            if (!parsed.success) {
+                const nextErrors: Record<string, string> = {}
+                parsed.error.issues.forEach((issue) => {
+                    const key = String(issue.path[0] ?? 'form')
+                    if (!nextErrors[key]) nextErrors[key] = issue.message
+                })
+                setFieldErrors((prev) => ({ ...prev, ...nextErrors }))
+                toast.error('Please fill all the required fields.')
+                return
+            }
+
+            if (!selectedTour || totalAmount <= 0) {
+                toast.error('Select seats and a valid tour plan to continue.')
+                return
+            }
+
+            onContinue(
+                {
+                    firstName: parsed.data.firstName,
+                    lastName: parsed.data.lastName,
+                    phone: parsed.data.phone,
+                    emergencyPhone: parsed.data.emergencyPhone,
+                    cnic: parsed.data.cnic,
+                    tourId: parsed.data.tourId,
+                    maleSeats: parsed.data.maleSeats,
+                    femaleSeats: parsed.data.femaleSeats,
+                    kidsSeats: parsed.data.kidsSeats,
+                    note: parsed.data.note ?? '',
+                },
+                totalAmount,
+            )
             return
         }
 
         onContinue(
-            {
-                firstName: parsed.data.firstName,
-                lastName: parsed.data.lastName,
-                phone: parsed.data.phone,
-                emergencyPhone: parsed.data.emergencyPhone,
-                cnic: parsed.data.cnic,
-                tourId: parsed.data.tourId,
-                maleSeats: parsed.data.maleSeats,
-                femaleSeats: parsed.data.femaleSeats,
-                kidsSeats: parsed.data.kidsSeats,
-                note: parsed.data.note ?? '',
-            },
+            snapshot,
             totalAmount,
         )
     }
