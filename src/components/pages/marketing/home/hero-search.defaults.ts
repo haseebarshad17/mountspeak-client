@@ -7,6 +7,8 @@ export const DEFAULT_HERO_SEARCH_FILTERS: HomepagePage['sections']['hero']['sear
     datePlaceholder: 'Date of stay',
     searchButtonLabel: 'Find trip now',
     loadingCities: 'Loading cities...',
+    searchCitiesPlaceholder: 'Search location...',
+    noMatchingCities: 'No matching cities',
     noCities: 'No cities available',
     pickDepartureFirst: 'Pick a departure first',
     clearDate: 'Clear',

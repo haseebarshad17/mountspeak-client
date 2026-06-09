@@ -8,15 +8,15 @@ type OnboardStepperProps = {
 
 export function OnboardStepper({ activeStep, steps }: OnboardStepperProps) {
     return (
-        <div className='mx-auto w-full max-w-[620px]'>
-            <div className='grid grid-cols-[minmax(58px,1fr)_minmax(32px,70px)_minmax(58px,1fr)_minmax(32px,70px)_minmax(58px,1fr)] items-start'>
+        <div className='flex w-full justify-center'>
+            <div className='flex items-start'>
                 {steps.map((step, index) => {
                     const isCompleted = index < activeStep
                     const isActive = index === activeStep
 
                     return (
-                        <div key={step} className='contents'>
-                            <div className='flex flex-col items-center gap-2 text-center'>
+                        <div key={step} className='flex items-start'>
+                            <div className='flex w-[88px] flex-col items-center gap-2 text-center sm:w-[104px]'>
                                 <span
                                     className={cn(
                                         'flex h-8 w-8 items-center justify-center rounded-[9px] border text-sm transition-colors',
@@ -40,7 +40,7 @@ export function OnboardStepper({ activeStep, steps }: OnboardStepperProps) {
                             {index < steps.length - 1 && (
                                 <div
                                     className={cn(
-                                        'mt-4 h-px w-full',
+                                        'mt-4 h-px w-16 sm:w-24 md:w-32',
                                         index < activeStep ? 'bg-primary-700' : 'bg-neutral-300',
                                     )}
                                 />
