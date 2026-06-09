@@ -104,3 +104,7 @@ export const useUserProfile = () => {
 export const getUserRole = async (userId: string) => {
     return auth.getUserRole(userId)
 }
+
+export const persistUserAgencyId = async (userId: string, agencyId: string) => {
+    return auth.persistUserAgencyId(userId, agencyId)
+}

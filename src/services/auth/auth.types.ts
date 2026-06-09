@@ -31,6 +31,12 @@ export type ResetPasswordDTO = {
 }
 
 
+// Google OAuth DTO
+export type GoogleLoginDTO = {
+    redirectTo: string
+    agency_id?: string
+}
+
 // Signup DTO
 export type SignupDTO = {
     email: string
@@ -41,5 +47,7 @@ export type SignupDTO = {
 
     avatar_url?: string
     emailRedirectTo?: string
+    /** Agency the user is signing up under (from agency site theme). */
+    agency_id?: string
 }
 

@@ -1,5 +1,7 @@
+import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { createServerSupabase } from "@/lib/supabase/supabase.server";
 import { getServerSiteUrl } from "@/lib/utils/site-url";
+import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -40,6 +42,28 @@ export async function GET(request: NextRequest) {
   if (!user) {
     loginUrl.searchParams.set("error", "oauth_failed");
     return NextResponse.redirect(loginUrl);
+  }
+
+  const homepage = await fetchAgencyHomepage();
+  const agencyId =
+    homepage.isAgencySite &&
+    homepage.agencyId &&
+    homepage.agencyId !== DEFAULT_AGENCY_ID
+      ? homepage.agencyId
+      : null;
+
+  if (agencyId) {
+    if (!user.user_metadata?.agency_id) {
+      await supabase.auth.updateUser({
+        data: { agency_id: agencyId },
+      });
+    }
+
+    await supabase
+      .from("users")
+      .update({ agency_id: agencyId })
+      .eq("id", user.id)
+      .is("agency_id", null);
   }
 
   if (!user.email_confirmed_at) {

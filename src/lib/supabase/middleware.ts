@@ -8,7 +8,11 @@ export async function updateSession(
     let response = NextResponse.next({ request })
     const pathname = request.nextUrl.pathname
     const protectedPaths = ['/dashboard', '/bookings', '/booking']
+    const guestOnlyPaths = ['/login', '/register']
     const isProtectedPath = protectedPaths.some((path) =>
+        pathname === path || pathname.startsWith(`${path}/`)
+    )
+    const isGuestOnlyPath = guestOnlyPaths.some((path) =>
         pathname === path || pathname.startsWith(`${path}/`)
     )
 
@@ -44,6 +48,19 @@ export async function updateSession(
 
     const { data: authData } = await supabase.auth.getUser()
     const user = authData.user
+
+    if (isGuestOnlyPath && user) {
+        const homeUrl = request.nextUrl.clone()
+        homeUrl.pathname = '/'
+        homeUrl.search = ''
+        const redirectResponse = NextResponse.redirect(homeUrl)
+
+        response.cookies.getAll().forEach(({ name, value, ...options }) => {
+            redirectResponse.cookies.set(name, value, options)
+        })
+
+        return redirectResponse
+    }
 
     if (isProtectedPath && !user) {
         const loginUrl = request.nextUrl.clone()

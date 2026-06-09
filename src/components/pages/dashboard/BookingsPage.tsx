@@ -42,7 +42,7 @@ const BookingsPage = () => {
   ];
 
   return (
-    <main className="w-full pl-0 md:px-16 py-[128px]">
+    <main className="w-full px-4 py-10 md:px-16 md:py-12">
       <section className="mx-auto w-full max-w-[1280px] px-4">
         <h1
           className="text-[72px] font-bold leading-[80px] text-[#00292C]"

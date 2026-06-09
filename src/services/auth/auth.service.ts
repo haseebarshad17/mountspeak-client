@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type {
     ForgotPasswordDTO,
+    GoogleLoginDTO,
     LoginDTO,
     ResendVerificationDTO,
     ResetPasswordDTO,
@@ -20,10 +21,12 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                     password: payload.password,
 
                     options: {
+                        emailRedirectTo: payload.emailRedirectTo,
                         data: {
                             full_name: payload.full_name,
                             role: payload.role,
-                            avatar_url: payload.avatar_url ?? ""
+                            avatar_url: payload.avatar_url ?? "",
+                            ...(payload.agency_id ? { agency_id: payload.agency_id } : {}),
                         }
                     }
                 })
@@ -47,11 +50,16 @@ export const authService = ({ supabase }: AuthServiceProps) => {
         },
 
         // Google OAuth Login
-        loginWithGoogle: async (redirectTo: string) => {
+        loginWithGoogle: async ({ redirectTo, agency_id }: GoogleLoginDTO) => {
             const { data, error } =
                 await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo }
+                    options: {
+                        redirectTo,
+                        ...(agency_id
+                            ? { data: { agency_id } }
+                            : {}),
+                    }
                 })
 
             if (error) throw error
@@ -128,6 +136,15 @@ export const authService = ({ supabase }: AuthServiceProps) => {
             if (error) throw error
 
             return data.role as string
-        }
+        },
+
+        persistUserAgencyId: async (userId: string, agencyId: string) => {
+            const { error } = await supabase
+                .from('users')
+                .update({ agency_id: agencyId })
+                .eq('id', userId)
+
+            if (error) throw error
+        },
     }
 }

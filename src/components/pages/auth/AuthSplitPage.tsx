@@ -7,13 +7,22 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   getUserRole,
+  persistUserAgencyId,
   useGoogleLogin,
   useLogin,
   useLogout,
   useSignup,
 } from "@/services/auth/auth.queries";
 import { isEmailVerified } from "@/lib/auth/email-verification";
+import { fetchSignupAgencyId } from "@/lib/auth/resolve-signup-agency-id";
+import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
+import {
+  selectHomepageAgencyId,
+  selectIsAgencySite,
+} from "@/store/homepage/homepage.selectors";
+import { useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
 
@@ -86,6 +95,15 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
   const { mutateAsync: loginWithGoogle, isPending: isGooglePending } = useGoogleLogin();
   const { mutateAsync: logout } = useLogout();
+  const agencyId = useAppSelector(selectHomepageAgencyId);
+  const isAgencySite = useAppSelector(selectIsAgencySite);
+
+  const signupAgencyId = useMemo(() => {
+    if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
+      return undefined;
+    }
+    return agencyId;
+  }, [agencyId, isAgencySite]);
 
   const isSubmitting = isLogin ? isLoginPending : isSignupPending;
 
@@ -108,6 +126,27 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     if (!queryError) return;
     toast.error(queryError);
   }, [queryError]);
+
+  useEffect(() => {
+    let active = true;
+
+    const redirectAuthenticatedUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (active && user) {
+        router.replace("/");
+        router.refresh();
+      }
+    };
+
+    void redirectAuthenticatedUser();
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
   const enforceClientRole = async (userId: string) => {
     const role = await getUserRole(userId);
@@ -144,6 +183,9 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           throw new Error("Password and confirm password do not match.");
         }
 
+        const resolvedAgencyId =
+          signupAgencyId ?? (await fetchSignupAgencyId());
+
         const signupResult = await signup({
           email,
           password,
@@ -151,9 +193,18 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           role: "CLIENT",
           avatar_url: "",
           emailRedirectTo,
+          ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
         });
 
         if (signupResult.user) {
+          if (resolvedAgencyId) {
+            try {
+              await persistUserAgencyId(signupResult.user.id, resolvedAgencyId);
+            } catch {
+              // DB trigger may persist agency_id from auth metadata
+            }
+          }
+
           await enforceClientRole(signupResult.user.id);
           authenticatedUser = signupResult.user;
         }
@@ -197,7 +248,13 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     try {
       const siteUrl = getClientSiteUrl();
       const redirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
-      await loginWithGoogle(redirectTo);
+      const resolvedAgencyId =
+        signupAgencyId ?? (await fetchSignupAgencyId());
+
+      await loginWithGoogle({
+        redirectTo,
+        ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+      });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
