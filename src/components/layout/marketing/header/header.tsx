@@ -5,7 +5,7 @@ import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
-import { useLogout, useUser } from '@/services/auth/auth.queries'
+import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -36,7 +36,7 @@ const Header = ({ page }: HeaderProps) => {
     const isBookingsPage = pathname === '/bookings' || pathname.startsWith('/bookings/')
     const useLightNav = isTermsPage || isDashboardPage || isBookingsPage
     const isAgencySite = useIsAgencySite()
-    const { data: currentUser } = useUser()
+    const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
     const showAuthActions = isAgencySite === true
@@ -133,7 +133,7 @@ const Header = ({ page }: HeaderProps) => {
         <>
             <header
                 className={cn(
-                    'z-50 ease duration-300',
+                    'pointer-events-auto relative z-[100] ease duration-300',
                     useLightNav
                         ? 'relative top-0 left-0 right-0 w-full border-b'
                         : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
