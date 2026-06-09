@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   getUserRole,
@@ -20,6 +21,46 @@ type AuthMode = "login" | "register";
 
 interface AuthSplitPageProps {
   mode: AuthMode;
+}
+
+type PasswordFieldProps = {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  borderClassName?: string;
+};
+
+function PasswordField({
+  id,
+  value,
+  onChange,
+  placeholder = "••••••••",
+  borderClassName = "border-[#6B7280]",
+}: PasswordFieldProps) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="relative mt-1">
+      <input
+        id={id}
+        type={visible ? "text" : "password"}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+        className={`min-h-[40px] w-full border-b ${borderClassName} bg-transparent px-3 py-2 pr-10 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]`}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((current) => !current)}
+        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] transition hover:text-[#0f3137]"
+        aria-label={visible ? "Hide password" : "Show password"}
+      >
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
 }
 
 const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
@@ -265,14 +306,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     </Link>
                   ) : null}
                 </div>
-                <input
+                <PasswordField
                   id="auth-password"
-                  type="password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="••••••••"
-                  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                  className="mt-1 w-full border-b border-[#6B7280] bg-transparent min-h-[40px]  px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                  onChange={setPassword}
                 />
               </div>
 
@@ -285,14 +322,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   >
                     Confirm Password
                   </label>
-                  <input
+                  <PasswordField
                     id="auth-confirm-password"
-                    type="password"
                     value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder="••••••••"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                    className="mt-1 w-full border-b border-[#9aa0a6] bg-transparent min-h-[40px] px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                    onChange={setConfirmPassword}
+                    borderClassName="border-[#9aa0a6]"
                   />
                 </div>
               ) : null}
@@ -332,7 +366,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
             <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
               Secure Authentication Protocol v4.2
-              <br />© 2024 Pakistan Travel Systems
+              <br />© {new Date().getFullYear()} Pakistan Travel Systems
             </p>
           </div>
         </div>
