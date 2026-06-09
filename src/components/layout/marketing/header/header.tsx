@@ -101,6 +101,34 @@ const Header = ({ page }: HeaderProps) => {
         router.refresh()
     }
 
+    const logoutButtonClassName = cn(
+        'w-max text-sm font-normal xl:text-base',
+        useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
+    )
+
+    const logoutButtonStyle = {
+        color: useLightNav ? colors.primaryDark : colors.textOnDark,
+        fontFamily: 'var(--hp-font-body)',
+    }
+
+    const renderLoggedInAuthAction = () =>
+        isDashboardPage ? (
+            <Button
+                variant='transparent'
+                className={logoutButtonClassName}
+                style={logoutButtonStyle}
+                onClick={handleLogout}
+            >
+                {header.auth.logout.label}
+            </Button>
+        ) : (
+            <ProfileMenu
+                useLightNav={useLightNav}
+                logoutLabel={header.auth.logout.label}
+                onLogout={handleLogout}
+            />
+        )
+
     return (
         <>
             <header
@@ -111,7 +139,7 @@ const Header = ({ page }: HeaderProps) => {
                         : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
                     useLightNav
                         ? [
-                            'border-[#C0C8C9]/60 bg-white/95 shadow-sm backdrop-blur-sm',
+                            'border-[#C0C8C9]/60 bg-white shadow-sm',
                             'py-4',
                         ]
                         : isScrolled
@@ -184,11 +212,7 @@ const Header = ({ page }: HeaderProps) => {
                         {showAuthActions ? (
                             <div className='ml-10 flex items-center'>
                                 {isLoggedIn ? (
-                                    <ProfileMenu
-                                        useLightNav={useLightNav}
-                                        logoutLabel={header.auth.logout.label}
-                                        onLogout={handleLogout}
-                                    />
+                                    renderLoggedInAuthAction()
                                 ) : (
                                     <>
                                         <Button
@@ -224,13 +248,7 @@ const Header = ({ page }: HeaderProps) => {
 
                     {/* Mobile profile + menu trigger */}
                     <div className='flex items-center gap-2 lg:hidden'>
-                        {showAuthActions && isLoggedIn ? (
-                            <ProfileMenu
-                                useLightNav={useLightNav}
-                                logoutLabel={header.auth.logout.label}
-                                onLogout={handleLogout}
-                            />
-                        ) : null}
+                        {showAuthActions && isLoggedIn ? renderLoggedInAuthAction() : null}
                         <button
                             type='button'
                             aria-label={header.mobileMenu.openLabel}
@@ -316,15 +334,7 @@ const Header = ({ page }: HeaderProps) => {
                     {showAuthActions ? (
                         <div className='flex flex-col gap-3 pt-4'>
                             {isLoggedIn ? (
-                                <>
-                                    <Button
-                                        variant='secondary'
-                                        className='!w-full rounded-md bg-white text-primary-700'
-                                        href='/dashboard'
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        Dashboard
-                                    </Button>
+                                isDashboardPage ? (
                                     <Button
                                         variant='transparent'
                                         className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
@@ -332,7 +342,25 @@ const Header = ({ page }: HeaderProps) => {
                                     >
                                         {header.auth.logout.label}
                                     </Button>
-                                </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            variant='secondary'
+                                            className='!w-full rounded-md bg-white text-primary-700'
+                                            href='/dashboard'
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        >
+                                            Dashboard
+                                        </Button>
+                                        <Button
+                                            variant='transparent'
+                                            className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
+                                            onClick={handleLogout}
+                                        >
+                                            {header.auth.logout.label}
+                                        </Button>
+                                    </>
+                                )
                             ) : (
                                 <div className='flex items-center gap-3'>
                                     <Button

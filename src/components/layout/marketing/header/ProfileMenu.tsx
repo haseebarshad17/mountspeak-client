@@ -45,16 +45,29 @@ export function ProfileMenu({
                     <UserRound className='h-5 w-5' />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='z-[120] min-w-[180px]'>
-                <DropdownMenuItem asChild className={cn('cursor-pointer', menuItemClassName)}>
+            <DropdownMenuContent
+                align='end'
+                sideOffset={6}
+                className='z-[120] min-w-[180px] border border-[#C0C8C9]/60 bg-white text-[#1A1C1E] shadow-md'
+            >
+                <DropdownMenuItem
+                    asChild
+                    className={cn(
+                        'cursor-pointer text-[#1A1C1E] focus:bg-neutral-50 focus:text-[#1A1C1E]',
+                        menuItemClassName,
+                    )}
+                >
                     <Link href='/dashboard' onClick={onNavigate}>
                         <LayoutDashboard className='h-4 w-4' />
                         Dashboard
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className='bg-[#C0C8C9]/40' />
                 <DropdownMenuItem
-                    className={cn('cursor-pointer text-[#BA1A1A] focus:text-[#BA1A1A]', menuItemClassName)}
+                    className={cn(
+                        'cursor-pointer text-[#BA1A1A] focus:bg-neutral-50 focus:text-[#BA1A1A]',
+                        menuItemClassName,
+                    )}
                     onClick={onLogout}
                 >
                     <LogOut className='h-4 w-4' />
