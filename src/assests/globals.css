@@ -184,14 +184,26 @@
     a,
     li,
     input,
-    textarea,
-    button {
-        outline: auto;
+    textarea {
+        outline: none;
         text-decoration: none;
         list-style: none;
         list-style-type: none;
-        outline: none;
+    }
+
+    a:not([role='menuitem']) {
         display: block;
+    }
+
+    nav a {
+        display: inline-flex;
+    }
+
+    button {
+        outline: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
 }
