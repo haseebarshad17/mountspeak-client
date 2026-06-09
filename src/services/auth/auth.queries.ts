@@ -71,6 +71,15 @@ export const useLogout = () => {
 }
 
 
+// CURRENT USER (optional — never throws; safe for headers)
+export const useOptionalUser = () => {
+    return useQuery({
+        queryKey: ['user'],
+        queryFn: () => auth.getUser(),
+        retry: false,
+    })
+}
+
 // CURRENT USER
 export const useUser = () => {
     return useQuery({

@@ -46,11 +46,11 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
     return (
         <TanstackQueryProvider>
+            {ShouldShowHeader && page ? <Header page={page} /> : null}
             <div
                 id='app-scroll-container'
                 className='w-full h-dvh overflow-y-auto scrollbar-content'
             >
-                {ShouldShowHeader && page && <Header page={page} />}
                 {children}
                 {ShouldShowFooter && <MarketingFooter />}
                 <Toaster
