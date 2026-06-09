@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
             >
               Secure Authentication Protocol v4.2
               <br />
-              © 2024 Pakistan Travel Systems
+              © {new Date().getFullYear()} Pakistan Travel Systems
             </p>
           </div>
         </div>

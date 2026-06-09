@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 import { z } from "zod"
 
 import { supabase } from "@/lib/supabase/supabase.client"
+import { toast } from "sonner"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
 
@@ -121,6 +122,7 @@ export default function DashboardPage() {
           nextErrors[key] = issue.message
         })
         setErrors(nextErrors)
+        toast.error("Please fix the highlighted fields.")
         return
       }
 
@@ -134,8 +136,11 @@ export default function DashboardPage() {
       const { error } = await supabase.from("users").update(payload).eq("id", userId)
       if (error) {
         setErrors({ location: "Unable to save changes. Please try again." })
+        toast.error("Unable to save changes. Please try again.")
         return
       }
+
+      toast.success("Your changes have been saved successfully.")
     } finally {
       setSaving(false)
     }

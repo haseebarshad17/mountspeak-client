@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -134,7 +135,7 @@ const Header = ({ page }: HeaderProps) => {
                             alt={branding.logo.default.alt}
                             width={branding.logo.default.width}
                             height={branding.logo.default.height}
-                            className='h-auto w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
+                            className='object-contain max-h-[40px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
                             priority
                             fetchPriority='high'
                             quality={100}
@@ -143,7 +144,7 @@ const Header = ({ page }: HeaderProps) => {
 
                     {/* Navigations + Buttons  */}
                     <nav className='hidden flex-1 items-center justify-end lg:flex'>
-                        <div className='flex items-center gap-[54px] xl:pr-[144px] pr-[70px]'>
+                        <div className='flex items-center gap-[54px]'>
                             {header.navigation.map((link) => {
                                 const href = link.href ?? '/'
                                 const isActive = isNavLinkActive(pathname, href)
@@ -181,23 +182,13 @@ const Header = ({ page }: HeaderProps) => {
 
                         {/* Buttons  */}
                         {showAuthActions ? (
-                            <div className='flex items-center'>
+                            <div className='ml-10 flex items-center'>
                                 {isLoggedIn ? (
-                                    <Button
-                                        variant='secondary'
-                                        className='w-max rounded-sm px-5'
-                                        style={
-                                            useLightNav
-                                                ? {
-                                                      backgroundColor: buttons.navCta.background,
-                                                      color: buttons.navCta.text,
-                                                  }
-                                                : undefined
-                                        }
-                                        onClick={handleLogout}
-                                    >
-                                        {header.auth.logout.label}
-                                    </Button>
+                                    <ProfileMenu
+                                        useLightNav={useLightNav}
+                                        logoutLabel={header.auth.logout.label}
+                                        onLogout={handleLogout}
+                                    />
                                 ) : (
                                     <>
                                         <Button
@@ -231,32 +222,41 @@ const Header = ({ page }: HeaderProps) => {
                         ) : null}
                     </nav>
 
-                    {/* Mobile menu trigger */}
-                    <button
-                        type='button'
-                        aria-label={header.mobileMenu.openLabel}
-                        aria-expanded={isMobileMenuOpen}
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        className={cn(
-                            'group flex h-10 w-10 items-center justify-center rounded-md transition lg:hidden',
-                            useLightNav ? 'hover:opacity-90' : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
-                        )}
-                    >
-                        <span className='flex flex-col items-end gap-[5px]'>
-                            <span
-                                className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
-                                style={{
-                                    backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
-                                }}
+                    {/* Mobile profile + menu trigger */}
+                    <div className='flex items-center gap-2 lg:hidden'>
+                        {showAuthActions && isLoggedIn ? (
+                            <ProfileMenu
+                                useLightNav={useLightNav}
+                                logoutLabel={header.auth.logout.label}
+                                onLogout={handleLogout}
                             />
-                            <span
-                                className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
-                                style={{
-                                    backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
-                                }}
-                            />
-                        </span>
-                    </button>
+                        ) : null}
+                        <button
+                            type='button'
+                            aria-label={header.mobileMenu.openLabel}
+                            aria-expanded={isMobileMenuOpen}
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className={cn(
+                                'group flex h-10 w-10 items-center justify-center rounded-md transition',
+                                useLightNav ? 'hover:opacity-90' : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
+                            )}
+                        >
+                            <span className='flex flex-col items-end gap-[5px]'>
+                                <span
+                                    className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
+                                    style={{
+                                        backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                    }}
+                                />
+                                <span
+                                    className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
+                                    style={{
+                                        backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                    }}
+                                />
+                            </span>
+                        </button>
+                    </div>
                 </div>
                 </div>
             </header>
@@ -314,17 +314,27 @@ const Header = ({ page }: HeaderProps) => {
                     </nav>
 
                     {showAuthActions ? (
-                        <div className='flex items-center gap-3 pt-4'>
+                        <div className='flex flex-col gap-3 pt-4'>
                             {isLoggedIn ? (
-                                <Button
-                                    variant='secondary'
-                                    className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                    onClick={handleLogout}
-                                >
-                                    {header.auth.logout.label}
-                                </Button>
-                            ) : (
                                 <>
+                                    <Button
+                                        variant='secondary'
+                                        className='!w-full rounded-md bg-white text-primary-700'
+                                        href='/dashboard'
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Dashboard
+                                    </Button>
+                                    <Button
+                                        variant='transparent'
+                                        className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
+                                        onClick={handleLogout}
+                                    >
+                                        {header.auth.logout.label}
+                                    </Button>
+                                </>
+                            ) : (
+                                <div className='flex items-center gap-3'>
                                     <Button
                                         variant='transparent'
                                         className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
@@ -339,7 +349,7 @@ const Header = ({ page }: HeaderProps) => {
                                     >
                                         {header.auth.signUp.label}
                                     </Button>
-                                </>
+                                </div>
                             )}
                         </div>
                     ) : null}
