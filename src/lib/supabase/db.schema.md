@@ -163,20 +163,24 @@ payments
     security definer
     as $$
     begin
-      insert into public.profiles (
+      insert into public.users (
         id,
         email,
-           full_name,
-           role,
-           avatar_url,
-           created_at
+        full_name,
+        role,
+        avatar_url,
+        agency_id,
+        created_at,
+        updated_at
       )
       values (
         new.id,
         new.email,
         coalesce(new.raw_user_meta_data->>'full_name', ''),
         coalesce(new.raw_user_meta_data->>'role', 'CLIENT'),
-        coalesce(new.raw_user_meta_data->>'avatar_url', ''),
+        nullif(new.raw_user_meta_data->>'avatar_url', ''),
+        nullif(new.raw_user_meta_data->>'agency_id', '')::uuid,
+        now(),
         now()
       );
     

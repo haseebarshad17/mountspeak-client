@@ -12,6 +12,19 @@ interface LayoutWrapperProps {
     readonly children: React.ReactNode;
 }
 
+function matchesExcludedRoute(pathname: string, pattern: string): boolean {
+    if (pattern.endsWith('/*')) {
+        const base = pattern.slice(0, -2)
+        return pathname === base || pathname.startsWith(`${base}/`)
+    }
+
+    return pathname === pattern
+}
+
+function isExcludedRoute(pathname: string, patterns: string[]): boolean {
+    return patterns.some((pattern) => matchesExcludedRoute(pathname, pattern))
+}
+
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const page = useHomepagePageWithFallback();
     const pathname = usePathname();
@@ -23,12 +36,13 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
     const FooterExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*", "/dashboard", "/dashboard/*",
+        "/bookings", "/bookings/*",
         "/login", "/register", "/forgot-password", "/reset-password",
         "/booking", "/booking/*",
     ];
 
-    const ShouldShowHeader = HeaderExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));
-    const ShouldShowFooter = FooterExcludeRoutes.every(route => (!pathname.includes(route) || !pathname.startsWith(route)));
+    const ShouldShowHeader = !isExcludedRoute(pathname, HeaderExcludeRoutes);
+    const ShouldShowFooter = !isExcludedRoute(pathname, FooterExcludeRoutes);
 
     return (
         <TanstackQueryProvider>
