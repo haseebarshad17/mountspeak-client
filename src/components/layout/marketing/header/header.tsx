@@ -133,9 +133,9 @@ const Header = ({ page }: HeaderProps) => {
         <>
             <header
                 className={cn(
-                    'pointer-events-auto relative z-[100] ease duration-300',
+                    'pointer-events-auto z-[100] ease duration-300',
                     useLightNav
-                        ? 'relative top-0 left-0 right-0 w-full border-b'
+                        ? 'fixed top-0 left-0 right-0 w-full border-b'
                         : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
                     useLightNav
                         ? [

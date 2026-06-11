@@ -7,6 +7,7 @@ import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { Toaster } from 'sonner';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
+import { DUMMY_HOMEPAGE_PAGE } from '@/lib/homepage/default-homepage';
 
 interface LayoutWrapperProps {
     readonly children: React.ReactNode;
@@ -43,10 +44,11 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
     const ShouldShowHeader = !isExcludedRoute(pathname, HeaderExcludeRoutes);
     const ShouldShowFooter = !isExcludedRoute(pathname, FooterExcludeRoutes);
+    const headerPage = page ?? DUMMY_HOMEPAGE_PAGE;
 
     return (
         <TanstackQueryProvider>
-            {ShouldShowHeader && page ? <Header page={page} /> : null}
+            {ShouldShowHeader ? <Header page={headerPage} /> : null}
             <div
                 id='app-scroll-container'
                 className='w-full h-dvh overflow-y-auto scrollbar-content'
