@@ -5,12 +5,29 @@ import type { TourListItem, TourRow } from './tours.types'
 
 export { DEMO_TOUR_DETAIL_PATH }
 
-export function formatTourDiscount(percent: number | null | undefined): string {
+export function formatTourDiscountDisplayValue(
+    percent: number | null | undefined,
+): string | null {
     if (percent == null || Number.isNaN(Number(percent))) {
-        return ''
+        return null
     }
 
-    return `${Number(percent).toFixed(2)}% Off`
+    const value = Number(percent)
+    if (value <= 0) return null
+
+    if (Number.isInteger(value) || Math.abs(value - Math.round(value)) < 0.001) {
+        return String(Math.round(value))
+    }
+
+    const rounded = Math.round(value * 10) / 10
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
+}
+
+export function formatTourDiscount(percent: number | null | undefined): string {
+    const value = formatTourDiscountDisplayValue(percent)
+    if (!value) return ''
+
+    return `${value}% Off`
 }
 
 export function getTourCoverImage(tour: Pick<TourRow, 'header' | 'overview' | 'visual_fragments'>): string {
@@ -33,6 +50,10 @@ export function toTourListItem(tour: TourRow): TourListItem {
         slug: tour.slug,
         title: tour.title,
         discountLabel: formatTourDiscount(tour.discount_percent),
+        discountPercent:
+            tour.discount_percent == null || Number.isNaN(Number(tour.discount_percent))
+                ? null
+                : Number(tour.discount_percent),
         image: getTourCoverImage(tour),
     }
 }

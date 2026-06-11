@@ -4,9 +4,11 @@ import Link from 'next/link'
 
 import { tourDetailPath } from '@/services/tours/tours.utils'
 
+import { TourDiscountBadge } from './TourDiscountBadge'
+
 type TourExploreCardProps = {
     slug: string
-    discount: string
+    discountPercent?: number | null
     title: string
     image: string
     detailHref?: string
@@ -14,7 +16,7 @@ type TourExploreCardProps = {
 
 export function TourExploreCard({
     slug,
-    discount,
+    discountPercent,
     title,
     image,
     detailHref,
@@ -30,13 +32,7 @@ export function TourExploreCard({
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10' />
 
-            {discount ? (
-                <div className='absolute left-1/2 top-3 w-[calc(100%-1.5rem)] max-w-[356px] -translate-x-1/2 sm:top-4 lg:top-5'>
-                    <span className='inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-[#276968] px-4 py-2 font-roboto text-xs font-medium leading-none text-white sm:min-h-[52px] sm:px-5 sm:text-sm lg:min-h-[64px] lg:px-6 lg:text-base'>
-                        {discount}
-                    </span>
-                </div>
-            ) : null}
+            <TourDiscountBadge discountPercent={discountPercent} />
 
             <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-12 text-center sm:px-4 sm:pb-5 sm:pt-14 lg:px-5 lg:pb-6 lg:pt-16'>
                 <h3 className='font-jost text-[20px] font-medium uppercase leading-snug tracking-wide text-white'>

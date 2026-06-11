@@ -15,5 +15,6 @@ export type TourListItem = {
     slug: string
     title: string
     discountLabel: string
+    discountPercent: number | null
     image: string
 }
