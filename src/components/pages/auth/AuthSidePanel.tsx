@@ -21,7 +21,7 @@ export default function AuthSidePanel() {
           <Link
             href="/"
             aria-label="Back to homepage"
-            className="mt-10 inline-flex h-10 w-10 items-center justify-center bg-[#002e35] text-white transition hover:bg-[#043942]"
+            className="mt-10 !inline-flex h-10 w-10 items-center justify-center bg-[#002e35] text-white transition hover:bg-[#043942]"
           >
             <ArrowLeft className="h-5 w-5" strokeWidth={2} aria-hidden />
           </Link>

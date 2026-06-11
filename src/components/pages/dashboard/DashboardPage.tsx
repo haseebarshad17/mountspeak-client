@@ -1,10 +1,13 @@
 'use client'
 
 import Image from "next/image"
-import React, { useEffect, useState } from "react"
+import Link from "next/link"
+import React, { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
 import { supabase } from "@/lib/supabase/supabase.client"
+import { useOptionalUser } from "@/services/auth/auth.queries"
+import { useUserBookings } from "@/services/user-bookings/user-bookings.queries"
 import { toast } from "sonner"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
@@ -32,6 +35,12 @@ const profileSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address."),
 })
 
+type ProfileSnapshot = {
+  fullName: string
+  phoneNumber: string
+  location: string
+}
+
 export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -43,7 +52,30 @@ export default function DashboardPage() {
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savedProfile, setSavedProfile] = useState<ProfileSnapshot | null>(null)
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({})
+  const { data: currentUser } = useOptionalUser()
+  const { data: bookingsData, isLoading: bookingsLoading } = useUserBookings(
+    currentUser?.email ?? email,
+  )
+
+  const upcomingBookings = useMemo(
+    () => bookingsData?.upcoming.slice(0, 2) ?? [],
+    [bookingsData?.upcoming],
+  )
+  const upcomingCount = bookingsData?.upcoming.length ?? 0
+  const confirmedCount = bookingsData?.upcoming.filter(
+    (booking) => booking.statusTone === 'confirmed',
+  ).length ?? 0
+  const isProfileDirty = useMemo(() => {
+    if (!savedProfile) return false
+
+    return (
+      fullName !== savedProfile.fullName ||
+      phoneNumber !== savedProfile.phoneNumber ||
+      location !== savedProfile.location
+    )
+  }, [fullName, phoneNumber, location, savedProfile])
 
   useEffect(() => {
     let mounted = true
@@ -74,9 +106,11 @@ export default function DashboardPage() {
 
         if (error) {
           // Profile row may not exist yet; keep UI empty but editable.
-          setFullName("")
-          setPhoneNumber("")
-          setLocation("")
+          const emptyProfile = { fullName: "", phoneNumber: "", location: "" }
+          setFullName(emptyProfile.fullName)
+          setPhoneNumber(emptyProfile.phoneNumber)
+          setLocation(emptyProfile.location)
+          setSavedProfile(emptyProfile)
           setEmail(user.email ?? "")
           setAvatarUrl(fallbackAvatar)
           setLoading(false)
@@ -84,9 +118,15 @@ export default function DashboardPage() {
         }
 
         if (!mounted) return
-        setFullName(data?.full_name ?? "")
-        setPhoneNumber(data?.phone ?? "")
-        setLocation(data?.location ?? "")
+        const loadedProfile = {
+          fullName: data?.full_name ?? "",
+          phoneNumber: data?.phone ?? "",
+          location: data?.location ?? "",
+        }
+        setFullName(loadedProfile.fullName)
+        setPhoneNumber(loadedProfile.phoneNumber)
+        setLocation(loadedProfile.location)
+        setSavedProfile(loadedProfile)
         setEmail(data?.email ?? user.email ?? "")
         setAvatarUrl(data?.avatar_url || fallbackAvatar)
       } catch {
@@ -140,6 +180,15 @@ export default function DashboardPage() {
         return
       }
 
+      const nextProfile = {
+        fullName: parsed.data.fullName,
+        phoneNumber: parsed.data.phoneNumber,
+        location: parsed.data.location,
+      }
+      setFullName(nextProfile.fullName)
+      setPhoneNumber(nextProfile.phoneNumber)
+      setLocation(nextProfile.location)
+      setSavedProfile(nextProfile)
       toast.success("Your changes have been saved successfully.")
     } finally {
       setSaving(false)
@@ -151,13 +200,13 @@ export default function DashboardPage() {
       <section className="mx-auto w-full max-w-[1100px]">
         <h1
           className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
-          style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
+          style={{ fontFamily: "var(--hp-font-heading)" }}
         >
           Manage Account
         </h1>
         <p
           className="mt-3 max-w-[670px] text-[16px] leading-[24px] text-[#404849]"
-          style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Update your personal details, manage your security settings, and organize your
           travel preferences for future adventures in Pakistan.
@@ -173,13 +222,13 @@ export default function DashboardPage() {
             <div>
               <h2
                 className="text-[24px]  leading-[32px] text-[#00292C]"
-                style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-heading)" }}
               >
                 Personal Information
               </h2>
               <p
                 className="mt-2 max-w-[560px] text-[16px] leading-[24px] text-[#404849]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Basic info, like your name and photo, that you use on the Pakistan Travel
                 platform.
@@ -191,7 +240,7 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Full Name
               </p>
@@ -199,10 +248,10 @@ export default function DashboardPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.fullName ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
                   {errors.fullName}
                 </p>
               ) : null}
@@ -211,7 +260,7 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Email Address
               </p>
@@ -220,14 +269,14 @@ export default function DashboardPage() {
                 disabled
                 readOnly
                 className="mt-2 w-full cursor-not-allowed border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] opacity-60 outline-none"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               />
             </div>
 
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Phone Number
               </p>
@@ -237,10 +286,10 @@ export default function DashboardPage() {
                 placeholder="+92 300 1234567"
                 type="tel"
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.phoneNumber ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
                   {errors.phoneNumber}
                 </p>
               ) : null}
@@ -249,7 +298,7 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Location
               </p>
@@ -257,10 +306,10 @@ export default function DashboardPage() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.location ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
                   {errors.location}
                 </p>
               ) : null}
@@ -271,9 +320,9 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={handleSave}
-              disabled={loading || saving}
+              disabled={loading || saving || !isProfileDirty}
               className="min-h-[48px] min-w-[164px] bg-[#002a31] px-6 text-xs font-medium uppercase tracking-[1.2px] text-white transition hover:bg-[#07363d] disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              style={{ fontFamily: "var(--hp-font-body)" }}
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>
@@ -281,25 +330,29 @@ export default function DashboardPage() {
         </div>
 
         <section className="mt-8 max-w-[856px] min-h-[338px] bg-[#00292C] px-6 py-8 md:px-10 md:py-10">
-          <div className="flex flex-wrap items-end justify-between gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <h3
                 className="text-[30px] leading-[36px] text-white"
-                style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-heading)" }}
               >
                 Upcoming Expeditions
               </h3>
               <p
                 className="mt-2 text-[16px] leading-[24px] text-[#FFFFFF80]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
-                You have 2 confirmed bookings for the Summer 2024 season.
+                {bookingsLoading
+                  ? "Loading your upcoming expeditions..."
+                  : upcomingCount > 0
+                    ? `You have ${confirmedCount} confirmed booking${confirmedCount === 1 ? "" : "s"} and ${upcomingCount} upcoming expedition${upcomingCount === 1 ? "" : "s"}.`
+                    : "You do not have any upcoming expeditions yet."}
               </p>
             </div>
-            <button
-              type="button"
-              className="flex h-12 items-center gap-2 border border-[#2f5a62] px-6 text-base uppercase tracking-[0.8px] text-[#FFFFFF] transition hover:bg-[#0a3a43]"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            <Link
+              href="/bookings"
+              className="!inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap border border-[#2f5a62] px-6 text-base uppercase tracking-[0.8px] text-[#FFFFFF] transition hover:bg-[#0a3a43]"
+              style={{ fontFamily: "var(--hp-font-body)" }}
             >
               <span>View All Bookings</span>
               <Image
@@ -307,72 +360,68 @@ export default function DashboardPage() {
                 alt="Arrow icon"
                 width={9}
                 height={9}
+                className="shrink-0"
               />
-            </button>
+            </Link>
           </div>
 
           <div className="mt-10 grid gap-8 md:grid-cols-2">
-            {[
-              {
-                region: "Karakoram Range",
-                title: "K2 Base Camp Trek",
-                date: "July 12, 2024",
-                members: "4 Members",
-              },
-              {
-                region: "Gilgit Baltistan",
-                title: "Hunza Valley Cultural Tour",
-                date: "Aug 05, 2024",
-                members: "2 Members",
-              },
-            ].map((tour) => (
-              <article
-                key={tour.title}
-                className="border border-[#22484f] bg-[#08343c] p-6 max-w-[372px] min-h-[149px]"
+            {bookingsLoading ? (
+              <>
+                <div className="h-[149px] max-w-[372px] animate-pulse border border-[#22484f] bg-[#08343c]/70" />
+                <div className="h-[149px] max-w-[372px] animate-pulse border border-[#22484f] bg-[#08343c]/70" />
+              </>
+            ) : upcomingBookings.length > 0 ? (
+              upcomingBookings.map((tour) => (
+                <article
+                  key={tour.id}
+                  className="border border-[#22484f] bg-[#08343c] p-6 max-w-[372px] min-h-[149px]"
+                >
+                  <p
+                    className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"
+                    style={{ fontFamily: "var(--hp-font-body)" }}
+                  >
+                    {tour.region}
+                  </p>
+                  <h4
+                    className="mt-2 text-[20px] leading-[28px] text-white"
+                    style={{ fontFamily: "var(--hp-font-heading)" }}
+                  >
+                    {tour.title}
+                  </h4>
+                  <div
+                    className="mt-4 flex flex-wrap items-center gap-5 text-base text-[#FFFFFFB2]"
+                    style={{ fontFamily: "var(--hp-font-body)" }}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      <Image
+                        src="/images/pages/dashboard/calendar.svg"
+                        alt="Calendar icon"
+                        width={10}
+                        height={11}
+                      />
+                      {tour.dateLabel}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Image
+                        src="/images/pages/dashboard/people.svg"
+                        alt="People icon"
+                        width={12}
+                        height={9}
+                      />
+                      {tour.members}
+                    </span>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <p
+                className="text-[16px] leading-[24px] text-[#FFFFFFB2]"
+                style={{ fontFamily: "var(--hp-font-body)" }}
               >
-                <p
-                  className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"
-                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-                >
-                  {tour.region}
-                </p>
-                <h4
-                  className="mt-2 text-[20px] leading-[28px] text-white"
-                  style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
-                >
-                  {tour.title}
-                </h4>
-                <div
-                  className="mt-4 flex flex-wrap items-center gap-5 text-base text-[#FFFFFFB2]"
-                  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                >
-                  <span
-                    className="inline-flex items-center gap-1"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                  >
-                    <Image
-                      src="/images/pages/dashboard/calendar.svg"
-                      alt="Calendar icon"
-                      width={10}
-                      height={11}
-                    />
-                    {tour.date}
-                  </span>
-                  <span
-                    className="inline-flex items-center gap-1"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
-                  >
-                    <Image
-                      src="/images/pages/dashboard/people.svg"
-                      alt="People icon"
-                      width={12}
-                      height={9}
-                    />
-                    {tour.members}
-                  </span>
-                </div>
-              </article>
-            ))}
+                Book your next expedition from our tours page to see it here.
+              </p>
+            )}
           </div>
         </section>
       </section>

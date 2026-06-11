@@ -161,7 +161,7 @@ export default function AboutUsPage() {
                             <div className='mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row'>
                                 <Button
                                     href='/search'
-                                    className='min-h-[52px] min-w-[200px] rounded-none bg-white px-8 text-xs font-semibold uppercase tracking-[1.2px] text-[#00292C] hover:bg-white/90'
+                                    className='h-[52px] min-w-[200px] rounded-none bg-white px-8 text-xs font-semibold uppercase tracking-[1.2px] text-[#00292C] hover:bg-white/90'
                                     style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
                                 >
                                     Browse Tours
@@ -169,7 +169,7 @@ export default function AboutUsPage() {
                                 <Button
                                     href='/contact-us'
                                     variant='transparent'
-                                    className='min-h-[52px] min-w-[200px] rounded-none border border-white/40 px-8 text-xs font-semibold uppercase tracking-[1.2px] text-white hover:bg-white/10'
+                                    className='h-[52px] min-w-[200px] rounded-none border border-white/40 px-8 text-xs font-semibold uppercase tracking-[1.2px] text-white hover:bg-white/10'
                                     style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
                                 >
                                     Contact Us
