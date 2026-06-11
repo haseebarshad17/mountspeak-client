@@ -1,4 +1,8 @@
 import { EMAIL_EVENT_TYPES } from './email.constants'
+import {
+    bookingEmailBrandingToTemplateVariables,
+    type BookingEmailBranding,
+} from './email-branding'
 import type { SendTransactionalEmailPayload } from './email.types'
 
 export function buildBookingConfirmationEmailPayload(params: {
@@ -16,15 +20,20 @@ export function buildBookingConfirmationEmailPayload(params: {
     cnic: string
     notes?: string
     siteUrl?: string
+    branding: BookingEmailBranding
 }): SendTransactionalEmailPayload {
     const totalSeats = params.maleSeats + params.femaleSeats + params.kidsSeats
-    const siteUrl = params.siteUrl?.replace(/\/$/, '') ?? ''
+    const siteUrl = params.branding.siteUrl || params.siteUrl?.replace(/\/$/, '') || ''
 
     return {
         event_type: EMAIL_EVENT_TYPES.bookingConfirmation,
         to_email: params.toEmail.trim().toLowerCase(),
         to_name: params.toName.trim(),
         variables: {
+            ...bookingEmailBrandingToTemplateVariables({
+                ...params.branding,
+                siteUrl,
+            }),
             customer_name: params.toName.trim(),
             customer_email: params.toEmail.trim().toLowerCase(),
             booking_id: params.bookingId,
@@ -40,7 +49,6 @@ export function buildBookingConfirmationEmailPayload(params: {
             cnic: params.cnic,
             notes: params.notes?.trim() || '—',
             submitted_at: new Date().toISOString(),
-            site_url: siteUrl,
             bookings_url: siteUrl ? `${siteUrl}/bookings` : '/bookings',
         },
         metadata: {
