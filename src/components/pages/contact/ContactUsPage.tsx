@@ -3,7 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { useCreateConsultationRequest } from '@/services/consultation-requests/consultation-requests.queries'
-import { createConsultationRequestSchema } from '@/services/consultation-requests/consultation-requests.schema'
+import {
+    createConsultationRequestSchema,
+    mapConsultationRequestFieldErrors,
+} from '@/services/consultation-requests/consultation-requests.schema'
 import {
     CONSULTATION_INQUIRY_LABELS,
     CONSULTATION_INQUIRY_TYPES,
@@ -11,7 +14,10 @@ import {
     type ConsultationInquiryType,
     type ConsultationTitle,
 } from '@/services/consultation-requests/consultation-requests.types'
-import { Mail, MapPin, Phone } from 'lucide-react'
+import type { HomepagePage } from '@/data/homepage'
+import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
+import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import { FormEvent, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
@@ -51,7 +57,48 @@ function Field({
     )
 }
 
-export default function ContactUsPage() {
+function ContactDetailItem({
+    icon,
+    href,
+    children,
+}: {
+    icon: ReactNode
+    href?: string | null
+    children: ReactNode
+}) {
+    return (
+        <li className='flex items-start gap-3 text-[#404849]'>
+            {icon}
+            {href ? (
+                <a
+                    href={href}
+                    className='hover:text-[#00292C] hover:underline'
+                    style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                >
+                    {children}
+                </a>
+            ) : (
+                <span style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>{children}</span>
+            )}
+        </li>
+    )
+}
+
+const contactItemIcons: Record<'email' | 'phone' | 'location' | 'other', LucideIcon> = {
+    email: Mail,
+    phone: Phone,
+    location: MapPin,
+    other: MapPin,
+}
+
+type ContactUsPageProps = {
+    page?: HomepagePage
+}
+
+export default function ContactUsPage({ page: pageFromServer }: ContactUsPageProps) {
+    const pageFromStore = useHomepagePageWithFallback()
+    const page = pageFromServer ?? pageFromStore
+    const contactItems = page ? getFooterContactColumnItems(page.footer) : []
     const { mutateAsync: createConsultationRequest, isPending } = useCreateConsultationRequest()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
@@ -72,13 +119,15 @@ export default function ContactUsPage() {
 
         const parsed = createConsultationRequestSchema.safeParse(raw)
         if (!parsed.success) {
-            const nextErrors: Record<string, string> = {}
-            parsed.error.issues.forEach((issue) => {
-                const key = String(issue.path[0] ?? 'form')
-                if (!nextErrors[key]) nextErrors[key] = issue.message
-            })
+            const nextErrors = mapConsultationRequestFieldErrors(parsed.error.issues)
             setFieldErrors(nextErrors)
-            toast.error('Please fix the highlighted fields.')
+
+            const errorCount = Object.keys(nextErrors).length
+            toast.error(
+                errorCount === 1
+                    ? 'Please fix the highlighted field.'
+                    : `Please fix the ${errorCount} highlighted fields.`,
+            )
             return
         }
 
@@ -131,24 +180,19 @@ export default function ContactUsPage() {
                                 Contact details
                             </h2>
                             <ul className='mt-5 space-y-4'>
-                                <li className='flex items-start gap-3 text-[#404849]'>
-                                    <Mail className='mt-1 h-4 w-4 shrink-0 text-[#00292C]' />
-                                    <span style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>
-                                        info@northtripstravel.com
-                                    </span>
-                                </li>
-                                <li className='flex items-start gap-3 text-[#404849]'>
-                                    <Phone className='mt-1 h-4 w-4 shrink-0 text-[#00292C]' />
-                                    <span style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>
-                                        +92 300 1234567
-                                    </span>
-                                </li>
-                                <li className='flex items-start gap-3 text-[#404849]'>
-                                    <MapPin className='mt-1 h-4 w-4 shrink-0 text-[#00292C]' />
-                                    <span style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>
-                                        Islamabad, Pakistan
-                                    </span>
-                                </li>
+                                {contactItems.map((item, index) => {
+                                    const Icon = contactItemIcons[item.kind]
+
+                                    return (
+                                        <ContactDetailItem
+                                            key={`${item.label}-${index}`}
+                                            icon={<Icon className='mt-1 h-4 w-4 shrink-0 text-[#00292C]' />}
+                                            href={item.href}
+                                        >
+                                            {item.label}
+                                        </ContactDetailItem>
+                                    )
+                                })}
                             </ul>
                         </div>
 
@@ -183,8 +227,8 @@ export default function ContactUsPage() {
                                         id='contact-name'
                                         name='name'
                                         type='text'
-                                        required
                                         placeholder='Your full name'
+                                        aria-invalid={Boolean(fieldErrors.name)}
                                         className={inputClass}
                                         style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
@@ -194,8 +238,8 @@ export default function ContactUsPage() {
                                         id='contact-email'
                                         name='email'
                                         type='email'
-                                        required
                                         placeholder='you@example.com'
+                                        aria-invalid={Boolean(fieldErrors.email)}
                                         className={inputClass}
                                         style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
@@ -208,8 +252,8 @@ export default function ContactUsPage() {
                                         id='contact-phone'
                                         name='phone'
                                         type='tel'
-                                        required
                                         placeholder='+92 300 1234567'
+                                        aria-invalid={Boolean(fieldErrors.phone)}
                                         className={inputClass}
                                         style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
@@ -218,8 +262,8 @@ export default function ContactUsPage() {
                                     <select
                                         id='contact-inquiry-type'
                                         name='inquiry_type'
-                                        required
                                         defaultValue=''
+                                        aria-invalid={Boolean(fieldErrors.inquiry_type)}
                                         className={selectClass}
                                         style={{ backgroundImage: chevronBg, fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     >
@@ -239,8 +283,8 @@ export default function ContactUsPage() {
                                 <select
                                     id='contact-title'
                                     name='title'
-                                    required
                                     defaultValue=''
+                                    aria-invalid={Boolean(fieldErrors.title)}
                                     className={selectClass}
                                     style={{ backgroundImage: chevronBg, fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                 >
@@ -260,8 +304,8 @@ export default function ContactUsPage() {
                                     id='contact-description'
                                     name='description'
                                     rows={5}
-                                    required
                                     placeholder='Tell us about your trip or question...'
+                                    aria-invalid={Boolean(fieldErrors.description)}
                                     className={`${inputClass} min-h-[120px] resize-y`}
                                     style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                 />

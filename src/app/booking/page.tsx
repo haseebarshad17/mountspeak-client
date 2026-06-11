@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import BookingPage from '@/components/pages/booking/BookingPage'
 import { buildBookingReturnPath, buildLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
+import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import {
     fetchBookingTourBySlug,
@@ -58,11 +59,14 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         // Avoid 500 when Supabase is unavailable; client shows empty plan list.
     }
 
+    const emailBranding = resolveBookingEmailBrandingFromHomepage(agencyHomepage)
+
     return (
         <BookingPage
             tourOptions={tourOptions}
             lockedTour={lockedTour}
             isDemoMode={!isAgencySite}
+            emailBranding={emailBranding}
         />
     )
 }

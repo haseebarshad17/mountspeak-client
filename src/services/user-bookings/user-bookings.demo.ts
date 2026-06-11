@@ -1,0 +1,59 @@
+import type { UserBookingDisplay, UserPastBookingDisplay } from './user-bookings.types'
+
+export const DEMO_UPCOMING_BOOKINGS: UserBookingDisplay[] = [
+    {
+        id: 'demo-apt-884-k2',
+        referenceId: 'APT-884-K2',
+        status: 'Confirmed',
+        statusTone: 'confirmed',
+        title: 'K2 Base Camp & Concordia Trek',
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80',
+        schedule: 'Aug 12 — Aug 26, 2024',
+        location: 'Baltistan',
+        region: 'Karakoram Range',
+        dateLabel: 'July 12, 2024',
+        members: '4 Members',
+        memberCount: 4,
+        warning: '',
+        primaryAction: 'View Itinerary',
+        secondaryAction: 'Download Permit',
+        isPast: false,
+    },
+    {
+        id: 'demo-apt-4421-hz',
+        referenceId: 'APT-4421-HZ',
+        status: 'Action Required',
+        statusTone: 'action',
+        title: 'Autumn in Hunza: The Golden Valley',
+        image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80',
+        schedule: 'Oct 05 — Oct 12, 2024',
+        location: 'Gilgit-Baltistan',
+        region: 'Gilgit Baltistan',
+        dateLabel: 'Aug 05, 2024',
+        members: '2 Members',
+        memberCount: 2,
+        warning: 'Please upload a copy of your passport to confirm booking.',
+        primaryAction: 'Complete Booking',
+        secondaryAction: 'Request Cancellation',
+        isPast: false,
+    },
+]
+
+export const DEMO_PAST_BOOKINGS: UserPastBookingDisplay[] = [
+    {
+        status: 'Completed',
+        statusTone: 'completed',
+        date: 'May 2023',
+        title: 'Fairy Meadows Base Camp',
+        note: 'A clear view of Nanga Parbat, the Killer Mountain.',
+        action: 'Rebook Tour',
+    },
+    {
+        status: 'Cancelled',
+        statusTone: 'cancelled',
+        date: 'Jan 2023',
+        title: 'Skardu Winter Expedition',
+        note: 'Cancelled due to heavy snowfall and pass closure.',
+        action: 'Refund Processed',
+    },
+]

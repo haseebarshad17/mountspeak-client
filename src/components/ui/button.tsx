@@ -155,7 +155,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
                 ...props.style,
             }}
             className={cn(
-                "relative flex w-full items-center justify-center gap-2 rounded-md font-medium outline-none sm:inline-flex sm:w-auto",
+                "relative !inline-flex w-full items-center justify-center gap-2 rounded-md font-medium outline-none sm:w-auto",
                 "cursor-pointer overflow-hidden px-[30px]",
                 "focus-visible:ring-0 focus-visible:ring-none focus-visible:ring-offset-0",
                 "disabled:pointer-events-none disabled:opacity-50",

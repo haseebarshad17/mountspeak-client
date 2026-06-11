@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { getClientSiteUrl } from '@/lib/utils/site-url'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
+import type { BookingEmailBranding } from '@/services/email/email-branding'
 import { buildCreateBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
     updateBookingPaymentScreenshot,
@@ -55,12 +56,14 @@ type BookingPageProps = {
     tourOptions: BookingTourOption[]
     lockedTour: BookingTourOption | null
     isDemoMode?: boolean
+    emailBranding: BookingEmailBranding
 }
 
 export default function BookingPage({
     tourOptions,
     lockedTour,
     isDemoMode = false,
+    emailBranding,
 }: BookingPageProps) {
     const [draftReady, setDraftReady] = useState(false)
     const [identityFormKey, setIdentityFormKey] = useState(0)
@@ -234,6 +237,7 @@ export default function BookingPage({
                 cnic: details.cnic.trim(),
                 notes: details.note,
                 siteUrl: getClientSiteUrl(),
+                branding: emailBranding,
             }).catch(() => {
                 // Booking succeeded; email is best-effort and should not block the user.
             })
