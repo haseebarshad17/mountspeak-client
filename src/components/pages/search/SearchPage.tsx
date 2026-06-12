@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
+import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
 import { formatTourSearchSummary, hasTourSearchFilters } from '@/services/tours/tours.search.utils'
 import type { TourListItem } from '@/services/tours/tours.types'
@@ -17,12 +18,12 @@ type SearchPageProps = {
 }
 
 function SearchResultCard({
-    discount,
+    discountPercent,
     title,
     image,
     slug,
 }: {
-    discount: string
+    discountPercent: number | null
     title: string
     image: string
     slug: string
@@ -38,13 +39,7 @@ function SearchResultCard({
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10' />
 
-            {discount ? (
-                <div className='absolute left-1/2 top-4 w-[calc(100%-1.5rem)] max-w-[356px] -translate-x-1/2'>
-                    <span className='inline-flex min-h-[50px] w-full items-center justify-center rounded-full bg-[#276968] px-5 py-2 font-roboto text-sm font-medium text-white'>
-                        {discount}
-                    </span>
-                </div>
-            ) : null}
+            <TourDiscountBadge discountPercent={discountPercent} />
 
             <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-5 pt-14 text-center'>
                 <h3 className='font-jost text-[20px] font-medium uppercase leading-snug tracking-wide text-white'>
@@ -52,10 +47,10 @@ function SearchResultCard({
                 </h3>
                 <Link
                     href={tourDetailPath(slug)}
-                    className='mt-3 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
+                    className='mt-3 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
                 >
                     View All Place
-                    <ArrowRight className='h-4 w-4' strokeWidth={2} aria-hidden />
+                    <ArrowRight className='h-4 w-4 shrink-0' strokeWidth={2} aria-hidden />
                 </Link>
             </div>
         </article>
@@ -135,7 +130,7 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                                 <SearchResultCard
                                     key={tour.id}
                                     slug={tour.slug}
-                                    discount={tour.discountLabel}
+                                    discountPercent={tour.discountPercent}
                                     title={tour.title}
                                     image={tour.image}
                                 />

@@ -69,7 +69,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                             <TourExploreCard
                                 key={tour.id}
                                 slug={tour.slug}
-                                discount={tour.discountLabel}
+                                discountPercent={tour.discountPercent}
                                 title={tour.title}
                                 image={tour.image}
                                 detailHref={

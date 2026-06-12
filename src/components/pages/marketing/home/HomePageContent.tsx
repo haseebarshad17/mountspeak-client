@@ -10,6 +10,7 @@ import Testimonials from '@/components/pages/marketing/home/Testimonials'
 import BookATour from '@/components/pages/marketing/home/BookATour'
 import MeetOurTeam from '@/components/pages/marketing/home/MeetOurTeam'
 import PopularTravelBlogs from '@/components/pages/marketing/home/PopularTravelBlogs'
+import HomepageSkeleton from '@/components/pages/marketing/home/HomepageSkeleton'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { selectHomepageIsLoading } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
@@ -23,11 +24,7 @@ export default function HomePageContent({ tourLocations = [] }: HomePageContentP
     const isLoading = useAppSelector(selectHomepageIsLoading)
 
     if (isLoading || !page) {
-        return (
-            <div className='homepage flex min-h-[50vh] items-center justify-center'>
-                <p className='text-sm text-neutral-500'>Loading homepage…</p>
-            </div>
-        )
+        return <HomepageSkeleton />
     }
 
     return (

@@ -11,5 +11,6 @@ export const DEMO_TOUR_LIST_ITEM: TourListItem = {
     slug: DEMO_TOUR_PAGE.slug,
     title: DEMO_TOUR_PAGE.heroSection.title,
     discountLabel: '10% Off',
+    discountPercent: 10,
     image: DEMO_TOUR_PAGE.heroSection.backgroundMedia.desktop,
 }
