@@ -22,7 +22,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
     )
 
     return (
-        <section className='bg-white pb-16 sm:pb-20 lg:pb-[226px]' aria-labelledby='top-destinations-heading'>
+        <section className='bg-white pb-[100px]' aria-labelledby='top-destinations-heading'>
             <div className='agency-container'>
                 <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end'>
                     <div>
