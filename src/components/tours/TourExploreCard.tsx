@@ -40,10 +40,14 @@ export function TourExploreCard({
                 </h3>
                 <Link
                     href={detailHref ?? tourDetailPath(slug)}
-                    className='mt-2 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
+                    className='mt-2 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
                 >
                     View All Place
-                    <ArrowRight className='h-3.5 w-3.5 sm:h-4 sm:w-4' strokeWidth={2} aria-hidden />
+                    <ArrowRight
+                        className='h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4'
+                        strokeWidth={2}
+                        aria-hidden
+                    />
                 </Link>
             </div>
         </article>

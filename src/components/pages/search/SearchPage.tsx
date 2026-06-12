@@ -47,10 +47,10 @@ function SearchResultCard({
                 </h3>
                 <Link
                     href={tourDetailPath(slug)}
-                    className='mt-3 inline-flex items-center gap-1.5 font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
+                    className='mt-3 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
                 >
                     View All Place
-                    <ArrowRight className='h-4 w-4' strokeWidth={2} aria-hidden />
+                    <ArrowRight className='h-4 w-4 shrink-0' strokeWidth={2} aria-hidden />
                 </Link>
             </div>
         </article>
