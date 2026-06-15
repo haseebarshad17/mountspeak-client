@@ -41,9 +41,9 @@ export const bookingDetailsSchema = z
                 message: 'CNIC must be 13 digits (e.g. 12345-1234567-1).',
             }),
         tourId: z.string().uuid('Please select a tour plan.'),
-        maleSeats: z.coerce.number().int().min(0).max(10),
-        femaleSeats: z.coerce.number().int().min(0).max(10),
-        kidsSeats: z.coerce.number().int().min(0).max(10),
+        maleSeats: z.coerce.number().int().min(0),
+        femaleSeats: z.coerce.number().int().min(0),
+        kidsSeats: z.coerce.number().int().min(0),
         note: z.string().trim().max(500, 'Note cannot exceed 500 characters.').optional(),
     })
     .refine((data) => data.maleSeats + data.femaleSeats + data.kidsSeats >= 1, {

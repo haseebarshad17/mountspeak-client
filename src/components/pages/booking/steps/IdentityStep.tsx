@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -13,9 +13,9 @@ import { supabase } from '@/lib/supabase/supabase.client'
 import { BookingPriceSummary } from '../BookingPriceSummary'
 import { FormInput } from '../FormInput'
 import { FormSelect } from '../FormSelect'
-import { QuantityStepper } from '../QuantityStepper'
+import { QuantityStepper, type QuantityStepperHandle } from '../QuantityStepper'
 import type { BookingDetailsForm, BookingTourOption } from '../booking.types'
-import { calculateBookingPriceBreakdown, SEAT_OPTIONS } from '../booking.types'
+import { calculateBookingPriceBreakdown } from '../booking.types'
 import { bookingDetailsSchema, formatCnicInput } from '../booking.validation'
 
 type IdentityStepProps = {
@@ -27,9 +27,9 @@ type IdentityStepProps = {
     skipValidation?: boolean
 }
 
-function buildSeatSelectOptions(maxSeats: number) {
-    const safeMax = Math.max(0, Math.min(10, maxSeats))
-    return SEAT_OPTIONS.filter((option) => Number(option.value) <= safeMax)
+function getRemainingSeats(availableSeats: number | null, reservedSeats: number): number {
+    if (availableSeats == null) return Number.MAX_SAFE_INTEGER
+    return Math.max(0, availableSeats - reservedSeats)
 }
 
 export function IdentityStep({
@@ -46,11 +46,14 @@ export function IdentityStep({
     const [emergencyPhone, setEmergencyPhone] = useState(initialDetails.emergencyPhone)
     const [cnic, setCnic] = useState(() => formatCnicInput(initialDetails.cnic))
     const [tourId, setTourId] = useState(initialDetails.tourId || lockedTour?.id || '')
-    const [maleSeats, setMaleSeats] = useState(String(initialDetails.maleSeats))
-    const [femaleSeats, setFemaleSeats] = useState(String(initialDetails.femaleSeats))
+    const [maleSeats, setMaleSeats] = useState(initialDetails.maleSeats)
+    const [femaleSeats, setFemaleSeats] = useState(initialDetails.femaleSeats)
     const [kidsSeats, setKidsSeats] = useState(initialDetails.kidsSeats)
     const [note, setNote] = useState(initialDetails.note)
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const maleSeatsRef = useRef<QuantityStepperHandle>(null)
+    const femaleSeatsRef = useRef<QuantityStepperHandle>(null)
+    const kidsSeatsRef = useRef<QuantityStepperHandle>(null)
 
     const clearFieldErrors = (...keys: string[]) => {
         setFieldErrors((prev) => {
@@ -79,8 +82,8 @@ export function IdentityStep({
         emergencyPhone,
         cnic,
         tourId: lockedTour?.id ?? tourId,
-        maleSeats: Number(maleSeats) || 0,
-        femaleSeats: Number(femaleSeats) || 0,
+        maleSeats,
+        femaleSeats,
         kidsSeats,
         note,
     })
@@ -157,7 +160,7 @@ export function IdentityStep({
         return tourOptions.find((tour) => tour.id === id) ?? lockedTour ?? null
     }, [lockedTour, tourId, tourOptions])
 
-    const adultSeats = Number(maleSeats) + Number(femaleSeats)
+    const adultSeats = maleSeats + femaleSeats
     const totalTravelers = adultSeats + kidsSeats
 
     const availableSeats = selectedTour?.availableSeats ?? null
@@ -170,8 +173,8 @@ export function IdentityStep({
         }
 
         return validateSeatCapacity({
-            maleSeats: Number(maleSeats) || 0,
-            femaleSeats: Number(femaleSeats) || 0,
+            maleSeats,
+            femaleSeats,
             kidsSeats,
             availableSeats,
         })
@@ -201,30 +204,30 @@ export function IdentityStep({
         return `${summary} — ${availableSeats} seat${availableSeats === 1 ? '' : 's'} available`
     }, [adultSeats, availableSeats, kidsSeats])
 
-    const maxMaleSeats = useMemo(() => {
-        if (availableSeats == null) return 10
-        return Math.max(0, availableSeats - Number(femaleSeats) - kidsSeats)
-    }, [availableSeats, femaleSeats, kidsSeats])
+    const maxMaleSeats = useMemo(
+        () => getRemainingSeats(availableSeats, femaleSeats + kidsSeats),
+        [availableSeats, femaleSeats, kidsSeats],
+    )
 
-    const maxFemaleSeats = useMemo(() => {
-        if (availableSeats == null) return 10
-        return Math.max(0, availableSeats - Number(maleSeats) - kidsSeats)
-    }, [availableSeats, maleSeats, kidsSeats])
+    const maxFemaleSeats = useMemo(
+        () => getRemainingSeats(availableSeats, maleSeats + kidsSeats),
+        [availableSeats, maleSeats, kidsSeats],
+    )
 
-    const maxKidsSeats = useMemo(() => {
-        if (availableSeats == null) return 10
-        return Math.max(0, availableSeats - adultSeats)
-    }, [adultSeats, availableSeats])
+    const maxKidsSeats = useMemo(
+        () => getRemainingSeats(availableSeats, adultSeats),
+        [adultSeats, availableSeats],
+    )
 
     useEffect(() => {
-        if (Number(maleSeats) > maxMaleSeats) {
-            setMaleSeats(String(maxMaleSeats))
+        if (maleSeats > maxMaleSeats) {
+            setMaleSeats(maxMaleSeats)
         }
     }, [maleSeats, maxMaleSeats])
 
     useEffect(() => {
-        if (Number(femaleSeats) > maxFemaleSeats) {
-            setFemaleSeats(String(maxFemaleSeats))
+        if (femaleSeats > maxFemaleSeats) {
+            setFemaleSeats(maxFemaleSeats)
         }
     }, [femaleSeats, maxFemaleSeats])
 
@@ -256,8 +259,6 @@ export function IdentityStep({
         })
     }, [adultSeats, kidsSeats, selectedTour, totalTravelers])
 
-    const totalAmount = priceBreakdown.total
-
     const planOptions = useMemo(() => {
         if (lockedTour) {
             return [{ value: lockedTour.id, label: lockedTour.title }]
@@ -270,6 +271,35 @@ export function IdentityStep({
     }, [lockedTour, tourOptions])
 
     const handleContinue = () => {
+        const nextMaleSeats = maleSeatsRef.current?.commit() ?? maleSeats
+        const nextFemaleSeats = femaleSeatsRef.current?.commit() ?? femaleSeats
+        const nextKidsSeats = kidsSeatsRef.current?.commit() ?? kidsSeats
+        const nextAdultSeats = nextMaleSeats + nextFemaleSeats
+        const nextTotalTravelers = nextAdultSeats + nextKidsSeats
+
+        const nextCapacityError =
+            skipValidation || !selectedTour
+                ? null
+                : selectedTour.isBookingClosed
+                  ? BOOKING_CLOSED_MESSAGE
+                  : validateSeatCapacity({
+                        maleSeats: nextMaleSeats,
+                        femaleSeats: nextFemaleSeats,
+                        kidsSeats: nextKidsSeats,
+                        availableSeats,
+                    })
+
+        const nextTotalAmount =
+            selectedTour && nextTotalTravelers > 0
+                ? calculateBookingPriceBreakdown({
+                      adultSeats: nextAdultSeats,
+                      kidsSeats: nextKidsSeats,
+                      pricePerSeat: selectedTour.pricePerSeat,
+                      discountPercent: selectedTour.discountPercent,
+                      kidsDiscountPercent: selectedTour.kidsDiscountPercent,
+                  }).total
+                : 0
+
         if (!skipValidation) {
             if (selectedTour?.isBookingClosed) {
                 setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
@@ -277,14 +307,25 @@ export function IdentityStep({
                 return
             }
 
-            if (seatCapacityError) {
-                setFieldError('seatCapacity', seatCapacityError)
-                toast.error(seatCapacityError)
+            if (nextCapacityError) {
+                setFieldError('seatCapacity', nextCapacityError)
+                toast.error(nextCapacityError)
                 return
             }
         }
 
-        const snapshot = buildDetailsSnapshot()
+        const snapshot: BookingDetailsForm = {
+            firstName,
+            lastName,
+            phone,
+            emergencyPhone,
+            cnic,
+            tourId: lockedTour?.id ?? tourId,
+            maleSeats: nextMaleSeats,
+            femaleSeats: nextFemaleSeats,
+            kidsSeats: nextKidsSeats,
+            note,
+        }
 
         if (!skipValidation) {
             const parsed = bookingDetailsSchema.safeParse({
@@ -294,9 +335,9 @@ export function IdentityStep({
                 emergencyPhone,
                 cnic,
                 tourId: lockedTour?.id ?? tourId,
-                maleSeats,
-                femaleSeats,
-                kidsSeats,
+                maleSeats: nextMaleSeats,
+                femaleSeats: nextFemaleSeats,
+                kidsSeats: nextKidsSeats,
                 note: note || undefined,
             })
 
@@ -311,7 +352,7 @@ export function IdentityStep({
                 return
             }
 
-            if (!selectedTour || totalAmount <= 0) {
+            if (!selectedTour || nextTotalAmount <= 0) {
                 toast.error('Select seats and a valid tour plan to continue.')
                 return
             }
@@ -329,15 +370,12 @@ export function IdentityStep({
                     kidsSeats: parsed.data.kidsSeats,
                     note: parsed.data.note ?? '',
                 },
-                totalAmount,
+                nextTotalAmount,
             )
             return
         }
 
-        onContinue(
-            snapshot,
-            totalAmount,
-        )
+        onContinue(snapshot, nextTotalAmount)
     }
 
     return (
@@ -409,55 +447,64 @@ export function IdentityStep({
                     error={fieldErrors.cnic}
                     className='sm:col-span-2'
                 />
-                <FormSelect
-                    label='Tour ID / Destination / Plan'
-                    placeholder='Select tour or destination'
-                    required
-                    value={lockedTour?.id ?? tourId}
-                    staticField={planLocked}
-                    options={planOptions}
-                    onChange={(event) => {
-                        setTourId(event.target.value)
-                        clearFieldErrors('tourId')
-                    }}
-                    className='sm:col-span-2'
-                />
+                {planLocked ? (
+                    <FormInput
+                        label='Tour ID / Destination / Plan'
+                        required
+                        readOnly
+                        staticField
+                        value={lockedTour?.title ?? selectedTour?.title ?? ''}
+                        aria-readonly
+                        className='sm:col-span-2'
+                    />
+                ) : (
+                    <FormSelect
+                        label='Tour ID / Destination / Plan'
+                        placeholder='Select tour or destination'
+                        required
+                        value={tourId}
+                        staticField={false}
+                        options={planOptions}
+                        onChange={(event) => {
+                            setTourId(event.target.value)
+                            clearFieldErrors('tourId')
+                        }}
+                        className='sm:col-span-2'
+                    />
+                )}
                 {fieldErrors.tourId ? (
                     <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.tourId}</p>
                 ) : null}
-                <FormSelect
-                    label='Male Seats'
-                    placeholder='Select male seats'
-                    required
-                    value={maleSeats}
-                    staticField={false}
-                    options={buildSeatSelectOptions(maxMaleSeats).map((opt) => ({
-                        value: opt.value,
-                        label: `${opt.label} Male ${opt.label === '1' ? 'Seat' : 'Seats'}`,
-                    }))}
-                    onChange={(event) => {
-                        setMaleSeats(event.target.value)
-                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
-                    }}
-                    error={fieldErrors.maleSeats}
-                />
-                <FormSelect
-                    label='Female Seats'
-                    placeholder='Select female seats'
-                    required
-                    value={femaleSeats}
-                    staticField={false}
-                    options={buildSeatSelectOptions(maxFemaleSeats).map((opt) => ({
-                        value: opt.value,
-                        label: `${opt.label} Female ${opt.label === '1' ? 'Seat' : 'Seats'}`,
-                    }))}
-                    onChange={(event) => {
-                        setFemaleSeats(event.target.value)
-                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
-                    }}
-                    error={fieldErrors.femaleSeats}
-                />
                 <QuantityStepper
+                    ref={maleSeatsRef}
+                    label='Male Seats'
+                    value={maleSeats}
+                    max={maxMaleSeats}
+                    onChange={(value) => {
+                        setMaleSeats(value)
+                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
+                    }}
+                    className='sm:col-span-2'
+                />
+                {fieldErrors.maleSeats ? (
+                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.maleSeats}</p>
+                ) : null}
+                <QuantityStepper
+                    ref={femaleSeatsRef}
+                    label='Female Seats'
+                    value={femaleSeats}
+                    max={maxFemaleSeats}
+                    onChange={(value) => {
+                        setFemaleSeats(value)
+                        clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
+                    }}
+                    className='sm:col-span-2'
+                />
+                {fieldErrors.femaleSeats ? (
+                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.femaleSeats}</p>
+                ) : null}
+                <QuantityStepper
+                    ref={kidsSeatsRef}
                     label='Total Number Children (4 to 8 years):'
                     value={kidsSeats}
                     max={maxKidsSeats}

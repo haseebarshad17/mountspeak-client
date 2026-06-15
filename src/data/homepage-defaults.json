@@ -146,7 +146,7 @@
         { "label": "Home", "href": "/" },
         { "label": "Discover", "href": "/discover" },
         { "label": "About Us", "href": "/about-us" },
-        { "label": "Contact", "href": "/contact-us" }
+        { "label": "Get in Touch", "href": "/contact-us" }
       ],
       "auth": {
         "login": { "label": "Login", "href": "/login" },

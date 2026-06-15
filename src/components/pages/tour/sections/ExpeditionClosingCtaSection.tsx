@@ -31,7 +31,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                 key={btn.label}
                                 href={btn.url}
                                 className={cn(
-                                    'inline-flex min-h-[58px] w-full max-w-[257px] font-manrope items-center justify-center  px-8 text-xs uppercase  transition-colors sm:text-base',
+                                    '!inline-flex h-[58px] w-full max-w-[257px] items-center justify-center px-8 font-manrope text-xs uppercase leading-none transition-colors sm:text-base',
                                     isPrimary
                                         ? 'text-white shadow-md'
                                         : 'border border-[#737879] bg-white text-neutral-900 hover:bg-neutral-50'
