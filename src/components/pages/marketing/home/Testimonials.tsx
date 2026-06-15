@@ -93,7 +93,7 @@ function TestimonialCard({
                 className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
                 style={{ backgroundColor: colors.quoteBackground, color: colors.textBody, fontFamily: 'var(--hp-font-body)' }}
             >
-                <p className='text-sm font-normal leading-7 sm:text-base'>{quote}</p>
+                <p className='text-readable text-sm font-normal leading-7 sm:text-base'>{quote}</p>
 
                 <div className='testimonial-avatar-wrap absolute -bottom-11 left-1/2 -translate-x-1/2 sm:-bottom-12'>
                     <DottedAvatarFrame
@@ -107,13 +107,13 @@ function TestimonialCard({
 
             <div className='mt-14 text-center sm:mt-16'>
                 <h3
-                    className='text-base font-semibold sm:text-xl'
+                    className='text-readable text-base font-semibold tracking-normal sm:text-xl'
                     style={{ color: colors.cardTitle, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {name}
                 </h3>
                 <p
-                    className='pt-0.5 text-base font-normal capitalize'
+                    className='text-readable pt-0.5 text-base font-normal capitalize'
                     style={{ color: colors.textNeutral, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {location}

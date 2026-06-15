@@ -1,5 +1,6 @@
 'use client'
 
+import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
@@ -11,7 +12,7 @@ import {
 } from '@/services/booking-requests/booking-requests.types'
 import { useCreateBookingRequest } from '@/services/booking-requests/booking-requests.queries'
 import { Calendar } from 'lucide-react'
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -24,7 +25,17 @@ const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
-const seatOptions = Array.from({ length: 11 }, (_, index) => index)
+const MAX_BOOKING_REQUEST_SEATS = 50
+
+function getTodayDateInputValue(): string {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+}
+
+const dateInputClass = `${fieldClass} relative w-full cursor-pointer pr-11 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:left-0 [&::-webkit-calendar-picker-indicator]:top-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`
 
 const bookingRequestSchema = z.object({
     full_name: z.string().trim().min(2, 'Full name is required.'),
@@ -34,14 +45,36 @@ const bookingRequestSchema = z.object({
         .trim()
         .min(7, 'Phone number is required.')
         .regex(/^\+?[0-9\s-]{7,20}$/, 'Enter a valid phone number.'),
-    travel_date: z.string().min(1, 'Travel date is required.'),
+    travel_date: z
+        .string()
+        .min(1, 'Travel date is required.')
+        .refine((date) => date >= getTodayDateInputValue(), 'Travel date cannot be in the past.'),
     destination: z.string().min(1, 'Please select a destination.'),
-    male_seat: z.coerce.number().int().min(0).max(50),
-    female_seat: z.coerce.number().int().min(0).max(50),
-    category: z.enum(BOOKING_REQUEST_CATEGORIES),
+    male_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
+    female_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
+    category: z
+        .string()
+        .trim()
+        .superRefine((value, ctx) => {
+            if (!value) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'Category selection is required.',
+                })
+                return
+            }
+
+            if (!BOOKING_REQUEST_CATEGORIES.includes(value as BookingRequestCategory)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'Please select at least one category.',
+                })
+            }
+        })
+        .transform((value) => value as BookingRequestCategory),
     request_message: z.string().trim().optional(),
 }).refine((data) => data.male_seat + data.female_seat >= 1, {
-    message: 'At least one seat is required.',
+    message: 'Please select at least one seat.',
     path: ['male_seat'],
 })
 
@@ -81,6 +114,36 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const [maleSeats, setMaleSeats] = useState(0)
+    const [femaleSeats, setFemaleSeats] = useState(0)
+    const [travelDate, setTravelDate] = useState('')
+    const dateInputRef = useRef<HTMLInputElement>(null)
+    const minTravelDate = getTodayDateInputValue()
+
+    const clearFieldError = (key: string) => {
+        setFieldErrors((prev) => {
+            if (!prev[key]) return prev
+            const next = { ...prev }
+            delete next[key]
+            return next
+        })
+    }
+
+    const openDatePicker = () => {
+        const input = dateInputRef.current
+        if (!input) return
+
+        if (typeof input.showPicker === 'function') {
+            try {
+                input.showPicker()
+                return
+            } catch {
+                // showPicker can throw if not triggered by a user gesture.
+            }
+        }
+
+        input.focus()
+    }
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -92,10 +155,10 @@ const BookATour = ({ page }: HomepagePageProps) => {
             full_name: String(formData.get('full_name') ?? ''),
             email: String(formData.get('email') ?? ''),
             phone: String(formData.get('phone') ?? ''),
-            travel_date: String(formData.get('travel_date') ?? ''),
+            travel_date: travelDate,
             destination: String(formData.get('destination') ?? ''),
-            male_seat: formData.get('male_seat'),
-            female_seat: formData.get('female_seat'),
+            male_seat: maleSeats,
+            female_seat: femaleSeats,
             category: String(formData.get('category') ?? '') as BookingRequestCategory,
             request_message: String(formData.get('request_message') ?? '').trim(),
         }
@@ -121,6 +184,9 @@ const BookATour = ({ page }: HomepagePageProps) => {
             await createBookingRequest(payload)
             toast.success(formCopy.successToast)
             form.reset()
+            setMaleSeats(0)
+            setFemaleSeats(0)
+            setTravelDate('')
         } catch (error) {
             toast.error(getApiErrorMessage(error, formCopy.errorToast))
         }
@@ -243,15 +309,27 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 <FormField errorColor={colors.error} label='Travel date' error={fieldErrors.travel_date}>
                                     <div className='relative w-full max-w-[304px]'>
                                         <input
+                                            ref={dateInputRef}
                                             type='date'
                                             name='travel_date'
+                                            value={travelDate}
+                                            min={minTravelDate}
                                             required
-                                            className={`${fieldClass} w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0`}
+                                            className={dateInputClass}
+                                            onChange={(event) => {
+                                                setTravelDate(event.target.value)
+                                                clearFieldError('travel_date')
+                                            }}
+                                            onClick={openDatePicker}
                                         />
-                                        <Calendar
-                                            className='pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500'
-                                            aria-hidden
-                                        />
+                                        <button
+                                            type='button'
+                                            aria-label='Open calendar'
+                                            className='absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500'
+                                            onClick={openDatePicker}
+                                        >
+                                            <Calendar className='h-4 w-4' aria-hidden />
+                                        </button>
                                     </div>
                                 </FormField>
                             </div>
@@ -265,6 +343,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         disabled={isCitiesLoading}
                                         className={selectClass}
                                         style={{ backgroundImage: chevronBg }}
+                                        onChange={() => clearFieldError('destination')}
                                     >
                                         <option value='' disabled>
                                             {isCitiesLoading
@@ -285,6 +364,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         required
                                         className={selectClass}
                                         style={{ backgroundImage: chevronBg }}
+                                        onChange={() => clearFieldError('category')}
                                     >
                                         <option value='' disabled>
                                             {formCopy.placeholders.category}
@@ -298,35 +378,41 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 </FormField>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                                <FormField errorColor={colors.error} label='Male seats' error={fieldErrors.male_seat}>
-                                    <select
-                                        name='male_seat'
-                                        defaultValue='0'
-                                        className={selectClass}
-                                        style={{ backgroundImage: chevronBg }}
-                                    >
-                                        {seatOptions.map((count) => (
-                                            <option key={`male-${count}`} value={count}>
-                                                {count} Male {count === 1 ? 'Seat' : 'Seats'}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </FormField>
-                                <FormField errorColor={colors.error} label='Female seats' error={fieldErrors.female_seat}>
-                                    <select
-                                        name='female_seat'
-                                        defaultValue='0'
-                                        className={selectClass}
-                                        style={{ backgroundImage: chevronBg }}
-                                    >
-                                        {seatOptions.map((count) => (
-                                            <option key={`female-${count}`} value={count}>
-                                                {count} Female {count === 1 ? 'Seat' : 'Seats'}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </FormField>
+                            <div className='grid grid-cols-1 gap-4'>
+                                <div className='rounded-[10px] bg-white p-4'>
+                                    <QuantityStepper
+                                        label='Male Seats'
+                                        value={maleSeats}
+                                        max={MAX_BOOKING_REQUEST_SEATS}
+                                        onChange={(value) => {
+                                            setMaleSeats(value)
+                                            clearFieldError('male_seat')
+                                            clearFieldError('female_seat')
+                                        }}
+                                    />
+                                </div>
+                                {fieldErrors.male_seat ? (
+                                    <p className='-mt-2 font-roboto text-xs' style={{ color: colors.error }} role='alert'>
+                                        {fieldErrors.male_seat}
+                                    </p>
+                                ) : null}
+                                <div className='rounded-[10px] bg-white p-4'>
+                                    <QuantityStepper
+                                        label='Female Seats'
+                                        value={femaleSeats}
+                                        max={MAX_BOOKING_REQUEST_SEATS}
+                                        onChange={(value) => {
+                                            setFemaleSeats(value)
+                                            clearFieldError('male_seat')
+                                            clearFieldError('female_seat')
+                                        }}
+                                    />
+                                </div>
+                                {fieldErrors.female_seat ? (
+                                    <p className='-mt-2 font-roboto text-xs' style={{ color: colors.error }} role='alert'>
+                                        {fieldErrors.female_seat}
+                                    </p>
+                                ) : null}
                             </div>
 
                             <FormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
