@@ -107,8 +107,3 @@ export function formatBookingDiscountAmount(amount: number): string {
     if (amount <= 0) return formatBookingTotalAmount(0)
     return `-${formatBookingTotalAmount(amount)}`
 }
-
-export const SEAT_OPTIONS = Array.from({ length: 11 }, (_, index) => ({
-    value: String(index),
-    label: String(index),
-}))

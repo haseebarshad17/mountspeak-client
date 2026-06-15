@@ -176,8 +176,9 @@
     html,
     body {
         scroll-behavior: smooth;
-        font-family: var(--font-noto), ui-sans-serif, system-ui, sans-serif; 
+        font-family: var(--font-noto), ui-sans-serif, system-ui, sans-serif;
         overflow-x: hidden;
+        text-rendering: optimizeLegibility;
     }
     
     
@@ -222,7 +223,17 @@
     h5,
     h6 {
         font-family: var(--font-heading, var(--font-noto), ui-sans-serif);
-        @apply font-medium tracking-[-1px];
+        @apply font-medium tracking-[-0.02em];
+    }
+
+    p {
+        line-height: 1.65;
+        word-spacing: 0.04em;
+    }
+
+    .uppercase {
+        letter-spacing: 0.08em;
+        word-spacing: 0.14em;
     }
 
     p,
@@ -351,7 +362,19 @@
     }
 
     .agency-section-heading {
-        @apply text-[32px] font-semibold  leading-none
+        @apply text-[32px] font-semibold leading-tight;
+        word-spacing: 0.03em;
+    }
+
+    .text-readable {
+        line-height: 1.65;
+        word-spacing: 0.05em;
+        letter-spacing: 0.01em;
+    }
+
+    .text-readable-uppercase {
+        letter-spacing: 0.1em;
+        word-spacing: 0.18em;
     }
 
     .account-pages,

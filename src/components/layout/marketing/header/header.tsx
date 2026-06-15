@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
+import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
@@ -201,7 +202,7 @@ const Header = ({ page }: HeaderProps) => {
                                                     : colors.textOnDark,
                                             }}
                                         />
-                                        {link.label}
+                                        {resolveNavLinkDisplayLabel(link.label, href)}
                                     </Link>
                                 )
                             })}
@@ -326,7 +327,7 @@ const Header = ({ page }: HeaderProps) => {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className='rounded-lg px-3 py-3 text-base font-medium text-white transition hover:bg-white/15'
                             >
-                                {link.label}
+                                {resolveNavLinkDisplayLabel(link.label, link.href)}
                             </Link>
                         ))}
                     </nav>

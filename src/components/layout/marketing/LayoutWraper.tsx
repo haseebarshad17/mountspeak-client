@@ -31,14 +31,14 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const pathname = usePathname();
     const HeaderExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
-        "/login", "/register", "/forgot-password", "/reset-password",
+        "/login", "/register", "/forgot-password", "/reset-password", "/verify-email",
         "/booking", "/booking/*",
     ];
 
     const FooterExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*", "/dashboard", "/dashboard/*",
         "/bookings", "/bookings/*",
-        "/login", "/register", "/forgot-password", "/reset-password",
+        "/login", "/register", "/forgot-password", "/reset-password", "/verify-email",
         "/booking", "/booking/*",
     ];
 
