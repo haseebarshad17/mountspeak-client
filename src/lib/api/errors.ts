@@ -1,5 +1,8 @@
 import type { PostgrestError } from '@supabase/supabase-js'
 
+import { getMessage } from '@/lib/messages/get-message'
+import { MessageCode, type MessageCodeValue } from '@/lib/messages/codes'
+
 export class ApiError extends Error {
     readonly code?: string
     readonly details?: string | null
@@ -21,20 +24,14 @@ export function isPostgrestError(error: unknown): error is PostgrestError {
     )
 }
 
-export function getApiErrorMessage(error: unknown, fallback = 'Something went wrong. Please try again.'): string {
-    if (error instanceof ApiError) return error.message
-    if (isPostgrestError(error)) return error.message || fallback
-    if (error instanceof Error) return error.message || fallback
-    return fallback
+export function getApiErrorMessage(
+    _error: unknown,
+    code: MessageCodeValue = MessageCode.API_GENERIC,
+): string {
+    return getMessage(code)
 }
 
-export function toApiError(error: unknown, fallback?: string): ApiError {
+export function toApiError(error: unknown, code: MessageCodeValue = MessageCode.API_GENERIC): ApiError {
     if (error instanceof ApiError) return error
-    if (isPostgrestError(error)) {
-        return new ApiError(error.message || fallback || 'Request failed.', error.code, error.details)
-    }
-    if (error instanceof Error) {
-        return new ApiError(error.message || fallback || 'Request failed.')
-    }
-    return new ApiError(fallback || 'Request failed.')
+    return new ApiError(getMessage(code), code)
 }

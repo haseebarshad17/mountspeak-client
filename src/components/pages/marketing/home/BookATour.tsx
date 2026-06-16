@@ -4,6 +4,8 @@ import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
+import { MessageCode } from '@/lib/messages/codes'
 import Link from 'next/link'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
@@ -14,7 +16,12 @@ import { useCreateBookingRequest } from '@/services/booking-requests/booking-req
 import { Calendar } from 'lucide-react'
 import React, { FormEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { z } from 'zod'
+
+import {
+    bookingRequestSchema,
+    getTodayDateInputValue,
+    MAX_BOOKING_REQUEST_SEATS,
+} from './booking-request.validation'
 
 const fieldClass =
     'box-border h-[58px] w-full max-w-[304px] rounded-[10px] border-0 bg-white p-4 font-roboto text-base font-normal leading-6 tracking-normal text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40'
@@ -25,58 +32,7 @@ const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
-const MAX_BOOKING_REQUEST_SEATS = 50
-
-function getTodayDateInputValue(): string {
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = String(today.getMonth() + 1).padStart(2, '0')
-    const day = String(today.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-}
-
 const dateInputClass = `${fieldClass} relative w-full cursor-pointer pr-11 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:left-0 [&::-webkit-calendar-picker-indicator]:top-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`
-
-const bookingRequestSchema = z.object({
-    full_name: z.string().trim().min(2, 'Full name is required.'),
-    email: z.string().trim().email('Please enter a valid email.'),
-    phone: z
-        .string()
-        .trim()
-        .min(7, 'Phone number is required.')
-        .regex(/^\+?[0-9\s-]{7,20}$/, 'Enter a valid phone number.'),
-    travel_date: z
-        .string()
-        .min(1, 'Travel date is required.')
-        .refine((date) => date >= getTodayDateInputValue(), 'Travel date cannot be in the past.'),
-    destination: z.string().min(1, 'Please select a destination.'),
-    male_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
-    female_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
-    category: z
-        .string()
-        .trim()
-        .superRefine((value, ctx) => {
-            if (!value) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: 'Category selection is required.',
-                })
-                return
-            }
-
-            if (!BOOKING_REQUEST_CATEGORIES.includes(value as BookingRequestCategory)) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: 'Please select at least one category.',
-                })
-            }
-        })
-        .transform((value) => value as BookingRequestCategory),
-    request_message: z.string().trim().optional(),
-}).refine((data) => data.male_seat + data.female_seat >= 1, {
-    message: 'Please select at least one seat.',
-    path: ['male_seat'],
-})
 
 function FormField({
     label,
@@ -165,13 +121,8 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
         const parsed = bookingRequestSchema.safeParse(raw)
         if (!parsed.success) {
-            const nextErrors: Record<string, string> = {}
-            parsed.error.issues.forEach((issue) => {
-                const key = String(issue.path[0] ?? 'form')
-                if (!nextErrors[key]) nextErrors[key] = issue.message
-            })
-            setFieldErrors(nextErrors)
-            toast.error(formCopy.validationToast)
+            setFieldErrors(mapZodIssuesToFieldErrors(parsed.error.issues))
+            toast.error(getMessage(MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS))
             return
         }
 
@@ -182,13 +133,13 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
         try {
             await createBookingRequest(payload)
-            toast.success(formCopy.successToast)
+            toast.success(getMessage(MessageCode.SUCCESS_BOOKING_REQUEST_SUBMITTED))
             form.reset()
             setMaleSeats(0)
             setFemaleSeats(0)
             setTravelDate('')
         } catch (error) {
-            toast.error(getApiErrorMessage(error, formCopy.errorToast))
+            toast.error(getApiErrorMessage(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED))
         }
     }
 

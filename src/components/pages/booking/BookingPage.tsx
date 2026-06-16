@@ -4,13 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
-    BOOKING_CLOSED_MESSAGE,
-    BOOKING_SOLD_OUT_MESSAGE,
     isTourBookable,
     validateSeatCapacity,
 } from '@/lib/booking/tour-booking-rules'
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { getMessage } from '@/lib/messages/get-message'
+import { MessageCode, isMessageCode } from '@/lib/messages/codes'
 import { getClientSiteUrl } from '@/lib/utils/site-url'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
@@ -139,7 +139,7 @@ export default function BookingPage({
 
     const handleSubmit = async () => {
         if (isDemoMode) {
-            toast.info('This is a preview booking form. Connect your site URL to enable live bookings.')
+            toast.info(getMessage(MessageCode.BOOKING_DEMO_PREVIEW))
             return
         }
 
@@ -147,12 +147,16 @@ export default function BookingPage({
 
         if (!paymentParsed.success) {
             const issue = paymentParsed.error.issues[0]
-            toast.error(issue?.message ?? 'Please complete the payment step.')
+            toast.error(
+                issue?.message && isMessageCode(issue.message)
+                    ? getMessage(issue.message)
+                    : getMessage(MessageCode.BOOKING_PAYMENT_STEP_INCOMPLETE),
+            )
             return
         }
 
         if (!selectedTour || totalAmount <= 0) {
-            toast.error('Please complete your travel details before submitting.')
+            toast.error(getMessage(MessageCode.BOOKING_DETAILS_INCOMPLETE))
             setActiveStep(0)
             persistDraft({ activeStep: 0 })
             return
@@ -160,9 +164,11 @@ export default function BookingPage({
 
         if (!isTourBookable(selectedTour)) {
             toast.error(
-                selectedTour.isBookingClosed
-                    ? BOOKING_CLOSED_MESSAGE
-                    : BOOKING_SOLD_OUT_MESSAGE,
+                getMessage(
+                    selectedTour.isBookingClosed
+                        ? MessageCode.BOOKING_CLOSED
+                        : MessageCode.BOOKING_SOLD_OUT,
+                ),
             )
             setActiveStep(0)
             persistDraft({ activeStep: 0 })
@@ -177,7 +183,7 @@ export default function BookingPage({
         })
 
         if (seatError) {
-            toast.error(seatError)
+            toast.error(getMessage(seatError.code, seatError.params))
             setActiveStep(0)
             persistDraft({ activeStep: 0 })
             return
@@ -190,7 +196,7 @@ export default function BookingPage({
             if (!user) return
 
             if (!selectedTour.agencyId) {
-                toast.error('This tour is missing agency information. Please contact support.')
+                toast.error(getMessage(MessageCode.BOOKING_MISSING_AGENCY))
                 return
             }
 
@@ -244,9 +250,9 @@ export default function BookingPage({
 
             clearBookingDraft()
             setIsSuccess(true)
-            toast.success('Your expedition booking was submitted successfully.')
+            toast.success(getMessage(MessageCode.SUCCESS_BOOKING_SUBMITTED))
         } catch (error) {
-            toast.error(getApiErrorMessage(error, 'Unable to submit your booking. Please try again.'))
+            toast.error(getApiErrorMessage(error, MessageCode.API_BOOKING_SUBMIT_FAILED))
         } finally {
             setIsSubmitting(false)
         }
@@ -290,9 +296,11 @@ export default function BookingPage({
                         Booking unavailable
                     </h2>
                     <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
-                        {lockedTour.isBookingClosed
-                            ? BOOKING_CLOSED_MESSAGE
-                            : BOOKING_SOLD_OUT_MESSAGE}
+                        {getMessage(
+                            lockedTour.isBookingClosed
+                                ? MessageCode.BOOKING_CLOSED
+                                : MessageCode.BOOKING_SOLD_OUT,
+                        )}
                     </p>
                     <Button
                         href='/search'

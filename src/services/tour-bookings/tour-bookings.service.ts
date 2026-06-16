@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { toApiError } from '@/lib/api/errors'
+import { MessageCode } from '@/lib/messages/codes'
 
 import { BOOKINGS_RETURN_COLUMNS, toBookingsInsertRow } from './bookings.mapper'
 
@@ -36,7 +37,7 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
                 .select(BOOKINGS_RETURN_COLUMNS)
                 .maybeSingle()
 
-            if (error) throw toApiError(error, 'Unable to submit your booking.')
+            if (error) throw toApiError(error, MessageCode.API_BOOKING_SUBMIT_FAILED)
 
             if (data) return { ...payload, ...data } as TourBookingRecord
 
@@ -55,7 +56,7 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
                 .update({ booking_payment_screenshot: paymentScreenshotUrl })
                 .eq('id', bookingId)
 
-            if (error) throw toApiError(error, 'Unable to save payment screenshot.')
+            if (error) throw toApiError(error, MessageCode.API_PAYMENT_SCREENSHOT_SAVE_FAILED)
         },
 
         uploadPaymentScreenshot: async (
@@ -74,7 +75,7 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
                 })
 
             if (uploadError) {
-                throw toApiError(uploadError, 'Unable to upload payment screenshot.')
+                throw toApiError(uploadError, MessageCode.API_PAYMENT_SCREENSHOT_UPLOAD_FAILED)
             }
 
             const { data } = supabase.storage

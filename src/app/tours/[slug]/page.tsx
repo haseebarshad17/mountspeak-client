@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import TourPageContent from '@/components/pages/tour/TourPageContent'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { fetchPublishedTourBySlug, fetchTourPageBySlug } from '@/services/tours/tours.server'
@@ -12,23 +13,31 @@ type TourDetailPageProps = {
 
 export async function generateMetadata({ params }: TourDetailPageProps): Promise<Metadata> {
     const { slug } = await params
+    const homepage = await fetchAgencyHomepage()
     const page = await fetchTourPageBySlug(slug)
 
+    const pageTitle = page?.seo?.metaTitle ?? 'Tour Detail'
+    const description = page?.seo?.metaDescription
+
+    const base = buildPageMetadata({
+        pageTitle,
+        description,
+        homepage,
+    })
+
     if (!page?.seo) {
-        return {
-            title: 'Tour Detail | Pakistan Travel',
-        }
+        return base
     }
 
     return {
-        title: page.seo.metaTitle,
-        description: page.seo.metaDescription,
+        ...base,
         keywords: page.seo.keywords,
         openGraph: page.seo.ogImage
             ? {
+                  ...base.openGraph,
                   images: [{ url: page.seo.ogImage }],
               }
-            : undefined,
+            : base.openGraph,
     }
 }
 

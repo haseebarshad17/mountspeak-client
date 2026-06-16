@@ -4,9 +4,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
+import { MessageCode } from '@/lib/messages/codes'
 import {
-    BOOKING_CLOSED_MESSAGE,
     validateSeatCapacity,
+    type SeatCapacityError,
 } from '@/lib/booking/tour-booking-rules'
 import { supabase } from '@/lib/supabase/supabase.client'
 
@@ -25,6 +27,16 @@ type IdentityStepProps = {
     onDetailsChange?: (details: BookingDetailsForm) => void
     onContinue: (details: BookingDetailsForm, totalAmount: number) => void
     skipValidation?: boolean
+}
+
+function resolveSeatCapacityMessage(
+    error: typeof MessageCode.BOOKING_CLOSED | SeatCapacityError,
+): string {
+    if (error === MessageCode.BOOKING_CLOSED) {
+        return getMessage(MessageCode.BOOKING_CLOSED)
+    }
+
+    return getMessage(error.code, error.params)
 }
 
 function getRemainingSeats(availableSeats: number | null, reservedSeats: number): number {
@@ -169,7 +181,7 @@ export function IdentityStep({
         if (skipValidation || !selectedTour) return null
 
         if (selectedTour.isBookingClosed) {
-            return BOOKING_CLOSED_MESSAGE
+            return MessageCode.BOOKING_CLOSED
         }
 
         return validateSeatCapacity({
@@ -180,6 +192,11 @@ export function IdentityStep({
         })
     }, [availableSeats, femaleSeats, kidsSeats, maleSeats, selectedTour, skipValidation])
 
+    const seatCapacityMessage = useMemo(
+        () => (seatCapacityError ? resolveSeatCapacityMessage(seatCapacityError) : null),
+        [seatCapacityError],
+    )
+
     useEffect(() => {
         if (skipValidation) {
             setFieldError('tourId')
@@ -187,7 +204,7 @@ export function IdentityStep({
         }
 
         if (selectedTour?.isBookingClosed) {
-            setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
+            setFieldError('tourId', getMessage(MessageCode.BOOKING_CLOSED))
             return
         }
 
@@ -195,8 +212,8 @@ export function IdentityStep({
     }, [selectedTour, skipValidation])
 
     useEffect(() => {
-        setFieldError('seatCapacity', seatCapacityError ?? undefined)
-    }, [seatCapacityError])
+        setFieldError('seatCapacity', seatCapacityMessage ?? undefined)
+    }, [seatCapacityMessage])
 
     const totalSeatsDisplay = useMemo(() => {
         const summary = `Adults(${adultSeats}) - kids(${kidsSeats})`
@@ -281,13 +298,17 @@ export function IdentityStep({
             skipValidation || !selectedTour
                 ? null
                 : selectedTour.isBookingClosed
-                  ? BOOKING_CLOSED_MESSAGE
+                  ? MessageCode.BOOKING_CLOSED
                   : validateSeatCapacity({
                         maleSeats: nextMaleSeats,
                         femaleSeats: nextFemaleSeats,
                         kidsSeats: nextKidsSeats,
                         availableSeats,
                     })
+
+        const nextCapacityMessage = nextCapacityError
+            ? resolveSeatCapacityMessage(nextCapacityError)
+            : null
 
         const nextTotalAmount =
             selectedTour && nextTotalTravelers > 0
@@ -302,14 +323,14 @@ export function IdentityStep({
 
         if (!skipValidation) {
             if (selectedTour?.isBookingClosed) {
-                setFieldError('tourId', BOOKING_CLOSED_MESSAGE)
-                toast.error(BOOKING_CLOSED_MESSAGE)
+                setFieldError('tourId', getMessage(MessageCode.BOOKING_CLOSED))
+                toast.error(getMessage(MessageCode.BOOKING_CLOSED))
                 return
             }
 
-            if (nextCapacityError) {
-                setFieldError('seatCapacity', nextCapacityError)
-                toast.error(nextCapacityError)
+            if (nextCapacityMessage) {
+                setFieldError('seatCapacity', nextCapacityMessage)
+                toast.error(nextCapacityMessage)
                 return
             }
         }
@@ -342,18 +363,16 @@ export function IdentityStep({
             })
 
             if (!parsed.success) {
-                const nextErrors: Record<string, string> = {}
-                parsed.error.issues.forEach((issue) => {
-                    const key = String(issue.path[0] ?? 'form')
-                    if (!nextErrors[key]) nextErrors[key] = issue.message
-                })
-                setFieldErrors((prev) => ({ ...prev, ...nextErrors }))
-                toast.error('Please fill all the required fields.')
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    ...mapZodIssuesToFieldErrors(parsed.error.issues),
+                }))
+                toast.error(getMessage(MessageCode.VALIDATION_REQUIRED_FIELDS))
                 return
             }
 
             if (!selectedTour || nextTotalAmount <= 0) {
-                toast.error('Select seats and a valid tour plan to continue.')
+                toast.error(getMessage(MessageCode.BOOKING_SELECT_VALID_PLAN))
                 return
             }
 

@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { isEmailVerified } from "@/lib/auth/email-verification";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
+import { getMessage } from "@/lib/messages/get-message";
+import { MessageCode } from "@/lib/messages/codes";
 import { useResendVerificationEmail } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
@@ -52,7 +54,7 @@ export default function VerifyEmailPage() {
 
     const targetEmail = displayEmail;
     if (!targetEmail) {
-      toast.error("Please enter your email address.");
+      toast.error(getMessage(MessageCode.AUTH_EMAIL_REQUIRED));
       return;
     }
 
@@ -63,13 +65,9 @@ export default function VerifyEmailPage() {
         emailRedirectTo: buildAuthCallbackUrl(siteUrl, "/dashboard"),
       });
       setSent(true);
-      toast.success("Verification email sent. Please check your inbox.");
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to send verification email. Please try again.";
-      toast.error(message);
+      toast.success(getMessage(MessageCode.SUCCESS_AUTH_VERIFICATION_SENT));
+    } catch {
+      toast.error(getMessage(MessageCode.API_AUTH_VERIFY_RESEND_FAILED));
     }
   };
 
