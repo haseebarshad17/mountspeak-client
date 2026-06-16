@@ -15,6 +15,8 @@ import {
 } from "@/services/auth/auth.queries";
 import { isEmailVerified } from "@/lib/auth/email-verification";
 import { fetchSignupAgencyId } from "@/lib/auth/resolve-signup-agency-id";
+import { getMessage } from "@/lib/messages/get-message";
+import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
@@ -109,14 +111,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const queryError = useMemo(() => {
     const error = searchParams.get("error");
-    const errorDescription = searchParams.get("error_description");
     if (error === "role_not_allowed") {
-      return "Only CLIENT users can sign in on this site.";
+      return getMessage(MessageCode.API_AUTH_ROLE_NOT_ALLOWED);
     }
     if (error === "oauth_failed") {
-      return errorDescription
-        ? `Google sign-in failed: ${decodeURIComponent(errorDescription)}`
-        : "Google sign-in failed. Please try again.";
+      return getMessage(MessageCode.API_AUTH_OAUTH_FAILED);
     }
 
     return null;
@@ -152,7 +151,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     const role = await getUserRole(userId);
     if (role !== "CLIENT") {
       await logout();
-      throw new Error("Only CLIENT users can sign in on this site.");
+      throw new Error(MessageCode.API_AUTH_ROLE_NOT_ALLOWED);
     }
   };
 
@@ -167,7 +166,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
     try {
       if (!email || !password) {
-        throw new Error("Email and password are required.");
+        throw new Error(MessageCode.AUTH_EMAIL_PASSWORD_REQUIRED);
       }
 
       const siteUrl = getClientSiteUrl();
@@ -176,11 +175,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
       if (!isLogin) {
         if (!fullName.trim()) {
-          throw new Error("Full name is required.");
+          throw new Error(MessageCode.AUTH_FULL_NAME_REQUIRED);
         }
 
         if (password !== confirmPassword) {
-          throw new Error("Password and confirm password do not match.");
+          throw new Error(MessageCode.AUTH_PASSWORD_MISMATCH);
         }
 
         const resolvedAgencyId =
@@ -211,7 +210,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       } else {
         const loginResult = await login({ email, password });
         if (!loginResult.user) {
-          throw new Error("Unable to sign in. Please try again.");
+          throw new Error(MessageCode.AUTH_SIGN_IN_FAILED);
         }
 
         await enforceClientRole(loginResult.user.id);
@@ -220,26 +219,34 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
       if (authenticatedUser && !isEmailVerified(authenticatedUser)) {
         toast.success(
-          isLogin
-            ? "Please verify your email before accessing your account."
-            : "Account created. Check your inbox to verify your email."
+          getMessage(
+            isLogin
+              ? MessageCode.AUTH_VERIFY_BEFORE_ACCESS
+              : MessageCode.AUTH_VERIFY_CHECK_INBOX,
+          ),
         );
         redirectToVerifyEmail(authenticatedUser.email ?? email);
         return;
       }
 
-      toast.success(isLogin ? "Signed in successfully." : "Account created successfully.");
+      toast.success(
+        getMessage(
+          isLogin
+            ? MessageCode.SUCCESS_AUTH_SIGNED_IN
+            : MessageCode.SUCCESS_AUTH_ACCOUNT_CREATED,
+        ),
+      );
       router.push(redirectAfterAuth);
       router.refresh();
     } catch (error) {
       const fallback = isLogin
-        ? "Unable to sign in. Please check your credentials."
-        : "Unable to create account. Please try again.";
+        ? MessageCode.API_AUTH_LOGIN_FAILED
+        : MessageCode.API_AUTH_SIGNUP_FAILED;
 
-      if (error instanceof Error) {
-        toast.error(error.message || fallback);
+      if (error instanceof Error && isMessageCode(error.message)) {
+        toast.error(getMessage(error.message));
       } else {
-        toast.error(fallback);
+        toast.error(getMessage(fallback));
       }
     }
   };
@@ -256,10 +263,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
       });
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+      if (error instanceof Error && isMessageCode(error.message)) {
+        toast.error(getMessage(error.message));
       } else {
-        toast.error("Unable to continue with Google.");
+        toast.error(getMessage(MessageCode.API_AUTH_GOOGLE_FAILED));
       }
     }
   };

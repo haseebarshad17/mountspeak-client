@@ -1,7 +1,6 @@
-import { redirect } from 'next/navigation'
-
 import BookingPage from '@/components/pages/booking/BookingPage'
 import { buildBookingReturnPath, buildLoginUrlForBooking } from '@/lib/auth/booking-auth'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
@@ -10,10 +9,16 @@ import {
     fetchPublishedToursForBooking,
 } from '@/services/tours/tours.server'
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
-export const metadata: Metadata = {
-    title: 'Booking | Pakistan Travel',
-    description: 'Begin your journey with us — partner booking and registration.',
+export async function generateMetadata(): Promise<Metadata> {
+    const homepage = await fetchAgencyHomepage()
+
+    return buildPageMetadata({
+        pageTitle: 'Booking',
+        description: 'Begin your journey with us — partner booking and registration.',
+        homepage,
+    })
 }
 
 type BookingRoutePageProps = {

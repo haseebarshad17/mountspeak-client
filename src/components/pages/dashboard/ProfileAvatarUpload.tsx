@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { useId, useState } from 'react'
 
 import { supabase } from '@/lib/supabase/supabase.client'
+import { getMessage } from '@/lib/messages/get-message'
+import { MessageCode } from '@/lib/messages/codes'
 
 const AVATAR_BUCKET = 'avatars'
 const MAX_SIZE_BYTES = 2 * 1024 * 1024
@@ -66,12 +68,12 @@ export function ProfileAvatarUpload({
     setError('')
 
     if (!isAcceptedFile(file)) {
-      setError('Please choose a JPG, PNG, or WebP image.')
+      setError(getMessage(MessageCode.DASHBOARD_AVATAR_TYPE_INVALID))
       return
     }
 
     if (file.size > MAX_SIZE_BYTES) {
-      setError('Image must be 2MB or smaller.')
+      setError(getMessage(MessageCode.DASHBOARD_AVATAR_SIZE_INVALID))
       return
     }
 
@@ -103,16 +105,8 @@ export function ProfileAvatarUpload({
       if (updateError) throw updateError
 
       onAvatarChange(publicUrl)
-    } catch (err) {
-      const message =
-        err && typeof err === 'object' && 'message' in err
-          ? String((err as { message: string }).message)
-          : ''
-      setError(
-        message.includes('Bucket not found')
-          ? 'Storage is not configured. Please contact support.'
-          : 'Unable to upload your photo. Please try again.',
-      )
+    } catch {
+      setError(getMessage(MessageCode.API_AVATAR_UPLOAD_FAILED))
     } finally {
       setUploading(false)
     }
@@ -141,7 +135,7 @@ export function ProfileAvatarUpload({
 
       onAvatarChange(null)
     } catch {
-      setError('Unable to remove your photo. Please try again.')
+      setError(getMessage(MessageCode.DASHBOARD_AVATAR_REMOVE_FAILED))
     } finally {
       setDeleting(false)
     }
@@ -194,7 +188,7 @@ export function ProfileAvatarUpload({
                 if (!canUpload) {
                   e.preventDefault()
                   if (!userId && !disabled) {
-                    setError('Please sign in to upload a photo.')
+                    setError(getMessage(MessageCode.DASHBOARD_AVATAR_SIGN_IN_REQUIRED))
                   }
                   return
                 }

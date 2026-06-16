@@ -1,7 +1,12 @@
-export const BOOKING_CLOSED_MESSAGE =
-    'Bookings are only allowed before the tour start date.'
+import { MessageCode } from '@/lib/messages/codes'
 
-export const BOOKING_SOLD_OUT_MESSAGE = 'This tour has no seats available.'
+export const BOOKING_CLOSED_MESSAGE = MessageCode.BOOKING_CLOSED
+export const BOOKING_SOLD_OUT_MESSAGE = MessageCode.BOOKING_SOLD_OUT
+
+export type SeatCapacityError = {
+    code: typeof MessageCode.BOOKING_SEATS_AVAILABLE_ONE | typeof MessageCode.BOOKING_SEATS_AVAILABLE_MANY
+    params?: { count: number }
+}
 
 export function isTourBookingClosed(startDate: string | null | undefined): boolean {
     if (!startDate?.trim()) return false
@@ -36,7 +41,7 @@ export function validateSeatCapacity(params: {
     femaleSeats: number
     kidsSeats: number
     availableSeats: number | null
-}): string | null {
+}): SeatCapacityError | null {
     const requested = countBookingSeats(params)
 
     if (requested <= 0) return null
@@ -44,7 +49,14 @@ export function validateSeatCapacity(params: {
 
     if (requested > params.availableSeats) {
         const available = params.availableSeats
-        return `Only ${available} seat${available === 1 ? '' : 's'} available for this tour.`
+        if (available === 1) {
+            return { code: MessageCode.BOOKING_SEATS_AVAILABLE_ONE }
+        }
+
+        return {
+            code: MessageCode.BOOKING_SEATS_AVAILABLE_MANY,
+            params: { count: available },
+        }
     }
 
     return null

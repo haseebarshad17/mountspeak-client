@@ -6,6 +6,8 @@ import React, { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
 import { supabase } from "@/lib/supabase/supabase.client"
+import { getMessage, mapZodIssuesToFieldErrors } from "@/lib/messages/get-message"
+import { MessageCode } from "@/lib/messages/codes"
 import { useOptionalUser } from "@/services/auth/auth.queries"
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries"
 import { toast } from "sonner"
@@ -16,23 +18,20 @@ const profileSchema = z.object({
   fullName: z
     .string()
     .trim()
-    .min(2, "Full name must be at least 2 characters.")
-    .max(60, "Full name cannot exceed 60 characters."),
+    .min(2, MessageCode.DASHBOARD_FULL_NAME_MIN)
+    .max(60, MessageCode.DASHBOARD_FULL_NAME_MAX),
   phoneNumber: z
     .string()
     .trim()
-    .min(7, "Please enter a valid phone number.")
-    .max(20, "Phone number cannot exceed 20 characters.")
-    .regex(
-      /^\+?[0-9\s-]{7,20}$/,
-      "Enter a valid phone number (e.g. +92 300 1234567).",
-    ),
+    .min(7, MessageCode.DASHBOARD_PHONE_INVALID)
+    .max(20, MessageCode.DASHBOARD_PHONE_TOO_LONG)
+    .regex(/^\+?[0-9\s-]{7,20}$/, MessageCode.DASHBOARD_PHONE_FORMAT),
   location: z
     .string()
     .trim()
-    .min(2, "Location must be at least 2 characters.")
-    .max(80, "Location cannot exceed 80 characters."),
-  email: z.string().trim().email("Please enter a valid email address."),
+    .min(2, MessageCode.DASHBOARD_LOCATION_MIN)
+    .max(80, MessageCode.DASHBOARD_LOCATION_MAX),
+  email: z.string().trim().email(MessageCode.DASHBOARD_EMAIL_INVALID),
 })
 
 type ProfileSnapshot = {
@@ -156,13 +155,8 @@ export default function DashboardPage() {
       })
 
       if (!parsed.success) {
-        const nextErrors: Record<string, string> = {}
-        parsed.error.issues.forEach((issue) => {
-          const key = issue.path[0] as string
-          nextErrors[key] = issue.message
-        })
-        setErrors(nextErrors)
-        toast.error("Please fix the highlighted fields.")
+        setErrors(mapZodIssuesToFieldErrors(parsed.error.issues))
+        toast.error(getMessage(MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS))
         return
       }
 
@@ -175,8 +169,9 @@ export default function DashboardPage() {
 
       const { error } = await supabase.from("users").update(payload).eq("id", userId)
       if (error) {
-        setErrors({ location: "Unable to save changes. Please try again." })
-        toast.error("Unable to save changes. Please try again.")
+        const saveError = getMessage(MessageCode.API_PROFILE_SAVE_FAILED)
+        setErrors({ location: saveError })
+        toast.error(saveError)
         return
       }
 
@@ -189,7 +184,7 @@ export default function DashboardPage() {
       setPhoneNumber(nextProfile.phoneNumber)
       setLocation(nextProfile.location)
       setSavedProfile(nextProfile)
-      toast.success("Your changes have been saved successfully.")
+      toast.success(getMessage(MessageCode.SUCCESS_PROFILE_SAVED))
     } finally {
       setSaving(false)
     }

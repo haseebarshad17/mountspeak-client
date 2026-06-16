@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { getApiErrorMessage } from '@/lib/api/errors'
+import { ApiError, getApiErrorMessage } from '@/lib/api/errors'
+import { MessageCode } from '@/lib/messages/codes'
 
 import type {
     CreateConsultationRequestDTO,
@@ -17,14 +18,10 @@ async function submitConsultationRequest(
     })
 
     if (!response.ok) {
-        let message = 'Unable to submit consultation request.'
-        try {
-            const body = (await response.json()) as { error?: string }
-            if (body.error) message = body.error
-        } catch {
-            // ignore
-        }
-        throw new Error(message)
+        throw new ApiError(
+            getApiErrorMessage(null, MessageCode.API_CONTACT_SUBMIT_FAILED),
+            MessageCode.API_CONTACT_SUBMIT_FAILED,
+        )
     }
 
     return (await response.json()) as SubmitConsultationRpcResponse
@@ -34,7 +31,8 @@ export const useCreateConsultationRequest = () => {
     return useMutation({
         mutationFn: submitConsultationRequest,
         meta: {
-            getErrorMessage: getApiErrorMessage,
+            getErrorMessage: (error: unknown) =>
+                getApiErrorMessage(error, MessageCode.API_CONTACT_SUBMIT_FAILED),
         },
     })
 }
