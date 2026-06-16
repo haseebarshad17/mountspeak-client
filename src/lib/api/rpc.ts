@@ -1,28 +1,29 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { ApiError, toApiError } from '@/lib/api/errors'
+import { ApiError, getApiErrorMessage, toApiError } from '@/lib/api/errors'
+import { MessageCode, type MessageCodeValue } from '@/lib/messages/codes'
 
 export async function callSupabaseRpc<T>(
     supabase: SupabaseClient,
     functionName: string,
     args: Record<string, unknown>,
-    fallbackMessage = 'Request failed.',
+    code: MessageCodeValue = MessageCode.API_GENERIC,
 ): Promise<T> {
     const { data, error } = await supabase.rpc(functionName, args)
 
     if (error) {
-        throw toApiError(error, fallbackMessage)
+        throw toApiError(error, code)
     }
 
     return data as T
 }
 
-export function assertRpcSuccess<T extends { success?: boolean; message?: string }>(
+export function assertRpcSuccess<T extends { success?: boolean }>(
     payload: T,
-    fallbackMessage = 'Request failed.',
+    code: MessageCodeValue = MessageCode.API_GENERIC,
 ): T {
     if (payload?.success === false) {
-        throw new ApiError(payload.message ?? fallbackMessage)
+        throw new ApiError(getApiErrorMessage(null, code), code)
     }
 
     return payload

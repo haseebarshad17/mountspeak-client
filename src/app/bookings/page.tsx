@@ -1,13 +1,20 @@
-import BookingsPage from "@/components/pages/dashboard/BookingsPage";
-import type { Metadata } from "next";
+import BookingsPage from '@/components/pages/dashboard/BookingsPage'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: "Bookings | Pakistan Travel",
-  description: "View upcoming journeys and past expeditions.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const homepage = await fetchAgencyHomepage()
+
+    return buildPageMetadata({
+        pageTitle: 'Bookings',
+        description: 'View upcoming journeys and past expeditions.',
+        homepage,
+    })
+}
 
 const Page = () => {
-  return <BookingsPage />;
-};
+    return <BookingsPage />
+}
 
-export default Page;
+export default Page

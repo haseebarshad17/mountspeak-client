@@ -1,13 +1,20 @@
-import DashboardPage from "@/components/pages/dashboard/DashboardPage";
-import type { Metadata } from "next";
+import DashboardPage from '@/components/pages/dashboard/DashboardPage'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: "Dashboard | Pakistan Travel",
-  description: "Manage your account details, bookings, and upcoming expeditions.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const homepage = await fetchAgencyHomepage()
+
+    return buildPageMetadata({
+        pageTitle: 'Dashboard',
+        description: 'Manage your account details, bookings, and upcoming expeditions.',
+        homepage,
+    })
+}
 
 const Page = () => {
-  return <DashboardPage />;
-};
+    return <DashboardPage />
+}
 
-export default Page;
+export default Page

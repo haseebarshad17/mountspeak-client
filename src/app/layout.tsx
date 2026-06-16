@@ -11,9 +11,22 @@ import HomepageBootstrap from "@/components/providers/HomepageBootstrap";
 import HomepageThemeSync from "@/components/providers/HomepageThemeSync";
 import StoreProvider from "@/store/StoreProvider";
 import { getHomepageThemeCssVars } from "@/data/homepage";
+import { getAgencyLayoutMetadata } from "@/lib/homepage/homepage-meta";
 import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 
-export const metadata: Metadata = defaultMeta;
+export async function generateMetadata(): Promise<Metadata> {
+    const agencyHomepage = await fetchAgencyHomepage()
+
+    if (agencyHomepage.isAgencySite && agencyHomepage.siteUrl) {
+        try {
+            return getAgencyLayoutMetadata(agencyHomepage)
+        } catch {
+            return defaultMeta
+        }
+    }
+
+    return defaultMeta
+}
 
 export const viewport: Viewport = {
     themeColor: "#003B95",

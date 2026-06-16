@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import TourPageContent from '@/components/pages/tour/TourPageContent'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { DEMO_TOUR_PAGE } from '@/lib/tours/default-tour-page'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 
@@ -9,9 +10,10 @@ export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
     if (homepage.isAgencySite) {
-        return {
-            title: 'Tour Detail | Pakistan Travel',
-        }
+        return buildPageMetadata({
+            pageTitle: 'Tour Detail',
+            homepage,
+        })
     }
 
     return {

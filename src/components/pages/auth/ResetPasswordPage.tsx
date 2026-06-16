@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUpdatePassword } from "@/services/auth/auth.queries";
+import { getMessage } from "@/lib/messages/get-message";
+import { MessageCode } from "@/lib/messages/codes";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
 
@@ -17,26 +19,22 @@ export default function ResetPasswordPage() {
     event.preventDefault();
 
     if (!password || password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+      toast.error(getMessage(MessageCode.AUTH_PASSWORD_MIN_LENGTH));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error(getMessage(MessageCode.AUTH_PASSWORDS_DO_NOT_MATCH));
       return;
     }
 
     try {
       await updatePassword({ password });
-      toast.success("Password updated successfully.");
+      toast.success(getMessage(MessageCode.SUCCESS_AUTH_PASSWORD_UPDATED));
       router.push("/login");
       router.refresh();
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to reset password. Please request a new link.";
-      toast.error(message);
+    } catch {
+      toast.error(getMessage(MessageCode.API_AUTH_PASSWORD_RESET_FAILED));
     }
   };
 

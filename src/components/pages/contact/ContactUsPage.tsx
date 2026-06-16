@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { getMessage } from '@/lib/messages/get-message'
+import { MessageCode } from '@/lib/messages/codes'
 import { useCreateConsultationRequest } from '@/services/consultation-requests/consultation-requests.queries'
 import {
     createConsultationRequestSchema,
@@ -124,19 +126,21 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
 
             const errorCount = Object.keys(nextErrors).length
             toast.error(
-                errorCount === 1
-                    ? 'Please fix the highlighted field.'
-                    : `Please fix the ${errorCount} highlighted fields.`,
+                getMessage(
+                    errorCount === 1
+                        ? MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELD
+                        : MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS,
+                ),
             )
             return
         }
 
         try {
-            const result = await createConsultationRequest(parsed.data)
-            toast.success(result.message || 'Thank you! We received your message and will contact you soon.')
+            await createConsultationRequest(parsed.data)
+            toast.success(getMessage(MessageCode.SUCCESS_CONTACT_SUBMITTED))
             form.reset()
         } catch (error) {
-            toast.error(getApiErrorMessage(error, 'Unable to send your message. Please try again.'))
+            toast.error(getApiErrorMessage(error, MessageCode.API_CONTACT_SUBMIT_FAILED))
         }
     }
 
