@@ -78,7 +78,7 @@ export function ProfileMenu({
                         href='/dashboard'
                         role='menuitem'
                         className={cn(
-                            'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-[#1A1C1E] transition-colors hover:bg-neutral-50',
+                            'flex w-full items-center justify-start gap-2 rounded-sm px-2 py-1.5 text-sm text-[#1A1C1E] transition-colors hover:bg-neutral-50',
                             menuItemClassName,
                         )}
                         onClick={() => {
@@ -94,7 +94,7 @@ export function ProfileMenu({
                         type='button'
                         role='menuitem'
                         className={cn(
-                            'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-[#BA1A1A] transition-colors hover:bg-neutral-50',
+                            'flex w-full items-center justify-start gap-2 rounded-sm px-2 py-1.5 text-sm text-[#BA1A1A] transition-colors hover:bg-neutral-50',
                             menuItemClassName,
                         )}
                         onClick={() => {

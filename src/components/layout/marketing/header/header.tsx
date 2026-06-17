@@ -55,7 +55,10 @@ function HeaderNavLink({
         <Link
             href={resolvedHref}
             onClick={onNavigate}
-            className={className ?? navLinkClassName(isActive, useLightNav)}
+            className={cn(
+                className ?? navLinkClassName(isActive, useLightNav),
+                !className && useLightNav && 'text-[#00292C]',
+            )}
             style={
                 isMobileStyle
                     ? undefined
@@ -161,7 +164,7 @@ const Header = ({ page }: HeaderProps) => {
     }
 
     const logoutButtonClassName = cn(
-        'w-max text-sm font-normal xl:text-base',
+        'w-max',
         useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
     )
 
@@ -174,6 +177,7 @@ const Header = ({ page }: HeaderProps) => {
         isDashboardPage ? (
             <Button
                 variant='transparent'
+                size='nav'
                 className={logoutButtonClassName}
                 style={logoutButtonStyle}
                 onClick={handleLogout}
@@ -253,6 +257,7 @@ const Header = ({ page }: HeaderProps) => {
                                     <>
                                         <Button
                                             variant='transparent'
+                                            size='nav'
                                             className='w-max'
                                             style={{
                                                 color: useLightNav ? colors.primaryDark : colors.textOnDark,
@@ -263,7 +268,7 @@ const Header = ({ page }: HeaderProps) => {
                                         </Button>
                                         <Button
                                             variant='secondary'
-                                            className='w-max rounded-sm px-5'
+                                            className='w-max'
                                             style={
                                                 useLightNav
                                                     ? {

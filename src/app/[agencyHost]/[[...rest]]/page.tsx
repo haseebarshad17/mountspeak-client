@@ -7,10 +7,16 @@ import BookingsPage from '@/app/bookings/page'
 import ContactUsPage from '@/app/contact-us/page'
 import DashboardPage from '@/app/dashboard/page'
 import DiscoverPage from '@/app/discover/page'
+import ForgotPasswordPage from '@/app/(auth)/forgot-password/page'
 import HomePage from '@/app/page'
+import LoginPage from '@/app/(auth)/login/page'
+import RegisterPage from '@/app/(auth)/register/page'
+import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 import SearchPage from '@/app/search/page'
 import TermsPage from '@/app/terms/page'
 import TourDetailPage from '@/app/tours/[slug]/page'
+import VerifyEmailPage from '@/app/(auth)/verify-email/page'
+import DashboardShell from '@/components/pages/dashboard/DashboardShell'
 import { defaultMeta } from '@/assests/meta'
 import { isAgencyHostPathSegment } from '@/lib/homepage/agency-preview'
 import { getHomepageMetadata } from '@/lib/homepage/homepage-meta'
@@ -77,15 +83,43 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
     }
 
     if (path === 'dashboard') {
-        return <DashboardPage />
+        return (
+            <DashboardShell>
+                <DashboardPage />
+            </DashboardShell>
+        )
     }
 
     if (path === 'bookings') {
-        return <BookingsPage />
+        return (
+            <DashboardShell>
+                <BookingsPage />
+            </DashboardShell>
+        )
     }
 
     if (path === 'booking') {
         return <BookingPage searchParams={searchParams} />
+    }
+
+    if (path === 'login') {
+        return <LoginPage />
+    }
+
+    if (path === 'register') {
+        return <RegisterPage />
+    }
+
+    if (path === 'forgot-password') {
+        return <ForgotPasswordPage />
+    }
+
+    if (path === 'reset-password') {
+        return <ResetPasswordPage />
+    }
+
+    if (path === 'verify-email') {
+        return <VerifyEmailPage />
     }
 
     if (rest[0] === 'tours' && rest[1]) {

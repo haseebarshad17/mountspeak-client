@@ -35,7 +35,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='overflow-hidden bg-white pb-12 sm:pb-16 md:pb-20 lg:pb-[112px]'
+            className='overflow-hidden bg-white'
             aria-labelledby='explore-the-world-heading'
         >
             <div className='agency-container'>

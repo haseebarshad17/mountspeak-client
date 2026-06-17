@@ -1,7 +1,6 @@
 'use client'
 
 import Image from "next/image"
-import Link from "next/link"
 import React, { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
@@ -11,6 +10,8 @@ import { MessageCode } from "@/lib/messages/codes"
 import { useOptionalUser } from "@/services/auth/auth.queries"
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries"
 import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { usePreviewPath } from "@/hooks/useAgencyPreviewBase"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
 
@@ -41,6 +42,7 @@ type ProfileSnapshot = {
 }
 
 export default function DashboardPage() {
+  const bookingsPath = usePreviewPath("/bookings")
   const [userId, setUserId] = useState<string | null>(null)
 
   const [fullName, setFullName] = useState("")
@@ -195,13 +197,11 @@ export default function DashboardPage() {
       <section className="mx-auto w-full max-w-[1100px]">
         <h1
           className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
-          style={{ fontFamily: "var(--hp-font-heading)" }}
         >
           Manage Account
         </h1>
         <p
           className="mt-3 max-w-[670px] text-[16px] leading-[24px] text-[#404849]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Update your personal details, manage your security settings, and organize your
           travel preferences for future adventures in Pakistan.
@@ -217,13 +217,11 @@ export default function DashboardPage() {
             <div>
               <h2
                 className="text-[24px]  leading-[32px] text-[#00292C]"
-                style={{ fontFamily: "var(--hp-font-heading)" }}
               >
                 Personal Information
               </h2>
               <p
                 className="mt-2 max-w-[560px] text-[16px] leading-[24px] text-[#404849]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Basic info, like your name and photo, that you use on the Pakistan Travel
                 platform.
@@ -235,7 +233,6 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Full Name
               </p>
@@ -243,10 +240,9 @@ export default function DashboardPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.fullName ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
                   {errors.fullName}
                 </p>
               ) : null}
@@ -255,7 +251,6 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Email Address
               </p>
@@ -264,14 +259,12 @@ export default function DashboardPage() {
                 disabled
                 readOnly
                 className="mt-2 w-full cursor-not-allowed border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] opacity-60 outline-none"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               />
             </div>
 
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Phone Number
               </p>
@@ -281,10 +274,9 @@ export default function DashboardPage() {
                 placeholder="+92 300 1234567"
                 type="tel"
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.phoneNumber ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
                   {errors.phoneNumber}
                 </p>
               ) : null}
@@ -293,7 +285,6 @@ export default function DashboardPage() {
             <div>
               <p
                 className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Location
               </p>
@@ -301,10 +292,9 @@ export default function DashboardPage() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               />
               {errors.location ? (
-                <p className="mt-1 text-xs font-medium text-[#BA1A1A]" style={{ fontFamily: "var(--hp-font-body)" }}>
+                <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
                   {errors.location}
                 </p>
               ) : null}
@@ -312,15 +302,14 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-16 flex justify-end">
-            <button
+            <Button
               type="button"
               onClick={handleSave}
               disabled={loading || saving || !isProfileDirty}
-              className="min-h-[48px] min-w-[164px] bg-[#002a31] px-6 text-xs font-medium uppercase tracking-[1.2px] text-white transition hover:bg-[#07363d] disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ fontFamily: "var(--hp-font-body)" }}
+              className="min-w-[164px]"
             >
               {saving ? "Saving..." : "Save Changes"}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -329,13 +318,11 @@ export default function DashboardPage() {
             <div>
               <h3
                 className="text-[30px] leading-[36px] text-white"
-                style={{ fontFamily: "var(--hp-font-heading)" }}
               >
                 Upcoming Expeditions
               </h3>
               <p
                 className="mt-2 text-[16px] leading-[24px] text-[#FFFFFF80]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 {bookingsLoading
                   ? "Loading your upcoming expeditions..."
@@ -344,20 +331,21 @@ export default function DashboardPage() {
                     : "You do not have any upcoming expeditions yet."}
               </p>
             </div>
-            <Link
-              href="/bookings"
-              className="!inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap border border-[#2f5a62] px-6 text-base uppercase tracking-[0.8px] text-[#FFFFFF] transition hover:bg-[#0a3a43]"
-              style={{ fontFamily: "var(--hp-font-body)" }}
+            <Button
+              href={bookingsPath}
+              variant="outline-on-dark"
+              className="shrink-0"
             >
-              <span>View All Bookings</span>
+              View All Bookings
               <Image
                 src="/images/pages/dashboard/arrow.svg"
-                alt="Arrow icon"
+                alt=""
                 width={9}
                 height={9}
+                aria-hidden
                 className="shrink-0"
               />
-            </Link>
+            </Button>
           </div>
 
           <div className="mt-10 grid gap-8 md:grid-cols-2">
@@ -374,19 +362,16 @@ export default function DashboardPage() {
                 >
                   <p
                     className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"
-                    style={{ fontFamily: "var(--hp-font-body)" }}
                   >
                     {tour.region}
                   </p>
                   <h4
                     className="mt-2 text-[20px] leading-[28px] text-white"
-                    style={{ fontFamily: "var(--hp-font-heading)" }}
                   >
                     {tour.title}
                   </h4>
                   <div
                     className="mt-4 flex flex-wrap items-center gap-5 text-base text-[#FFFFFFB2]"
-                    style={{ fontFamily: "var(--hp-font-body)" }}
                   >
                     <span className="inline-flex items-center gap-1">
                       <Image
@@ -412,7 +397,6 @@ export default function DashboardPage() {
             ) : (
               <p
                 className="text-[16px] leading-[24px] text-[#FFFFFFB2]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 Book your next expedition from our tours page to see it here.
               </p>

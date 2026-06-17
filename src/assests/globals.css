@@ -176,7 +176,7 @@
     html,
     body {
         scroll-behavior: smooth;
-        font-family: var(--font-noto), ui-sans-serif, system-ui, sans-serif;
+        font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
         overflow-x: hidden;
         text-rendering: optimizeLegibility;
     }
@@ -192,12 +192,12 @@
         list-style-type: none;
     }
 
-    a:not([role='menuitem']) {
+    a:not([role='menuitem']):not([data-button]) {
         display: block;
     }
 
     nav a {
-        display: inline-flex;
+        display: inline-flex !important;
     }
 
     button {
@@ -205,6 +205,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        word-spacing: normal;
+    }
+
+    [data-button] {
+        word-spacing: normal;
     }
 
 }
@@ -222,7 +227,7 @@
     h4,
     h5,
     h6 {
-        font-family: var(--font-heading, var(--font-noto), ui-sans-serif);
+        font-family: var(--hp-font-heading, var(--font-jost)), ui-sans-serif, system-ui, sans-serif;
         @apply font-medium tracking-[-0.02em];
     }
 
@@ -254,7 +259,7 @@
     nav,
     ol,
     ul {
-        font-family: var(--font-noto, ui-sans-serif);
+        font-family: var(--hp-font-body, var(--font-roboto)), ui-sans-serif, system-ui, sans-serif;
         font-weight: 400;
     }
  
@@ -272,28 +277,18 @@
 
 /* Layer Utilities  */
 @layer utilities {
-    .font-noto {
-        font-family: var(--font-noto-serif), ui-serif, Georgia, serif;
-    }
-
-    .font-manrope {
-        font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-    }
-
-    /* /detail — match homepage typography (heading + roboto body) */
+    /* /detail — match homepage typography (Jost headings + Roboto body) */
     .detail-page {
         font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
     }
 
     .detail-page :is(h1, h2, h3, h4, h5, h6),
-    .detail-page .font-heading,
-    .detail-page .font-noto {
-        font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    .detail-page .font-heading {
+        font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
     }
 
     .detail-page :is(p, li, span, a, button, label, dt, dd, input, textarea),
-    .detail-page .font-body,
-    .detail-page .font-manrope {
+    .detail-page .font-body {
         font-family: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
     }
 

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 import { useOptionalUser } from "@/services/auth/auth.queries";
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries";
@@ -37,13 +38,11 @@ function BookingsPolicyPanels() {
       <section className="bg-[#002a31] px-6 py-7 text-white md:w-[362px] md:shrink-0">
         <h3
           className="text-[20px] leading-[28px]"
-          style={{ fontFamily: "var(--hp-font-heading)" }}
         >
           Our Commitment
         </h3>
         <p
           className="mt-4 text-base text-[#c6d6da]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Adventure is unpredictable. We provide the most flexible cancellation terms
           in the region to ensure your peace of mind while protecting our local
@@ -52,7 +51,6 @@ function BookingsPolicyPanels() {
         <button
           type="button"
           className="mt-6 inline-flex items-center gap-2 border-b border-b-[#FFFFFF4D] pb-1 text-xs font-medium uppercase tracking-[1.2px] text-[#e5eff2]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           <span>Full Policy Details</span>
           <Image
@@ -67,7 +65,6 @@ function BookingsPolicyPanels() {
       <section className="border border-[#C0C8C9] bg-white p-8 md:w-[362px] md:shrink-0">
         <h3
           className="text-xs font-medium uppercase tracking-[1.2px] text-[#404849]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Cancellation Summary
         </h3>
@@ -82,8 +79,8 @@ function BookingsPolicyPanels() {
               className="mt-1"
             />
             <div>
-              <p style={{ fontFamily: "var(--hp-font-body)" }} className="text-base font-medium text-[#1A1C1E]">100% Refund</p>
-              <p style={{ fontFamily: "var(--hp-font-body)" }} className="text-sm text-[#5f6870]">Cancel up to 30 days before departure.</p>
+              <p className="text-base font-medium text-[#1A1C1E]">100% Refund</p>
+              <p className="text-sm text-[#5f6870]">Cancel up to 30 days before departure.</p>
             </div>
           </div>
 
@@ -96,8 +93,8 @@ function BookingsPolicyPanels() {
               className="mt-1"
             />
             <div>
-              <p style={{ fontFamily: "var(--hp-font-body)" }} className="text-base font-semibold text-[#1A1C1E]">50% Credit</p>
-              <p className="text-sm text-[#5f6870]" style={{ fontFamily: "var(--hp-font-body)" }}>Cancel 15–29 days before departure.</p>
+              <p className="text-base font-semibold text-[#1A1C1E]">50% Credit</p>
+              <p className="text-sm text-[#5f6870]">Cancel 15–29 days before departure.</p>
             </div>
           </div>
 
@@ -110,8 +107,8 @@ function BookingsPolicyPanels() {
               className="mt-1"
             />
             <div>
-              <p style={{ fontFamily: "var(--hp-font-body)" }} className="text-base font-semibold text-[#1A1C1E]">Emergency Cases</p>
-              <p className="text-sm text-[#5f6870]" style={{ fontFamily: "var(--hp-font-body)" }}>Full credit for unforeseen political or weather events.</p>
+              <p className="text-base font-semibold text-[#1A1C1E]">Emergency Cases</p>
+              <p className="text-sm text-[#5f6870]">Full credit for unforeseen political or weather events.</p>
             </div>
           </div>
         </div>
@@ -130,13 +127,11 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
               ? "bg-[#E2E2E5] text-[#404849]"
               : "bg-[#FFDAD6] text-[#93000A]"
           }`}
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           {tour.status}
         </span>
         <span
           className="text-xs font-medium uppercase text-[#404849]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           {tour.date}
         </span>
@@ -144,13 +139,11 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
 
       <h4
         className="mt-4 text-[20px] leading-[28px] text-[#00292C]"
-        style={{ fontFamily: "var(--hp-font-heading)" }}
       >
         {tour.title}
       </h4>
       <p
         className="mt-2 text-base text-[#404849]"
-        style={{ fontFamily: "var(--hp-font-body)" }}
       >
         {tour.note}
       </p>
@@ -158,7 +151,6 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
       <button
         type="button"
         className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[1.2px] text-[#00292C]"
-        style={{ fontFamily: "var(--hp-font-body)" }}
       >
         <span>{tour.action}</span>
         <Image
@@ -189,13 +181,11 @@ const BookingsPage = () => {
       <section className="mx-auto w-full max-w-[1100px]">
         <h1
           className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
-          style={{ fontFamily: "var(--hp-font-heading)" }}
         >
           Your Journeys
         </h1>
         <p
           className="mt-3 max-w-[670px] text-[16px] leading-[24px] text-[#404849]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Manage your upcoming expeditions to the high peaks and serene valleys of
           Pakistan. Authority in every mile.
@@ -207,7 +197,6 @@ const BookingsPage = () => {
               type="button"
               onClick={() => setActiveTab("upcoming")}
               className={tabButtonClassName(activeTab === "upcoming")}
-              style={{ fontFamily: "var(--hp-font-body)" }}
               aria-selected={activeTab === "upcoming"}
               role="tab"
             >
@@ -217,7 +206,6 @@ const BookingsPage = () => {
               type="button"
               onClick={() => setActiveTab("past")}
               className={tabButtonClassName(activeTab === "past")}
-              style={{ fontFamily: "var(--hp-font-body)" }}
               aria-selected={activeTab === "past"}
               role="tab"
             >
@@ -247,13 +235,11 @@ const BookingsPage = () => {
                         <div className="flex flex-wrap items-center justify-between gap-4 ">
                           <span
                             className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
-                            style={{ fontFamily: "var(--hp-font-body)" }}
                           >
                             {tour.status}
                           </span>
                           <span
                             className="text-xs font-medium uppercase text-[#404849]"
-                            style={{ fontFamily: "var(--hp-font-body)" }}
                           >
                             {tour.referenceId}
                           </span>
@@ -261,14 +247,12 @@ const BookingsPage = () => {
 
                         <h2
                           className="mt-2 text-[22px] leading-[32px] text-[#00292C]"
-                          style={{ fontFamily: "var(--hp-font-heading)" }}
                         >
                           {tour.title}
                         </h2>
 
                         <div
                           className={`mt-2 flex flex-wrap items-center gap-4 text-lg text-[#404849] ${tour.warning ? "" : "mb-[30px]"}`}
-                          style={{ fontFamily: "var(--hp-font-body)" }}
                         >
                           <span className="inline-flex items-center gap-1 text-lg">
                             <Image
@@ -302,7 +286,6 @@ const BookingsPage = () => {
                             />
                             <p
                               className="text-[16px] text-[#BA1A1A]"
-                              style={{ fontFamily: "var(--hp-font-body)" }}
                             >
                               {tour.warning}
                             </p>
@@ -310,17 +293,16 @@ const BookingsPage = () => {
                         ) : null}
 
                         <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
-                          <button
+                          <Button
                             type="button"
-                            className="max-w-[173px] w-full bg-[#002a31] min-h-[42px] text-xs font-semibold uppercase tracking-[1.1px] text-white"
-                            style={{ fontFamily: "var(--hp-font-body)" }}
+                            className="shrink-0"
                           >
                             {tour.primaryAction}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
-                            className="flex justify-center items-center min-h-[42px] gap-1 w-full text-center border border-[#00292C] max-w-[183px] text-xs font-medium uppercase tracking-[0.6px] text-[#00292C]"
-                            style={{ fontFamily: "var(--hp-font-body)" }}
+                            variant="outline"
+                            className="shrink-0"
                           >
                             <span>{tour.secondaryAction}</span>
                             {tour.statusTone === "action" || tour.statusTone === "pending" ? (
@@ -332,7 +314,7 @@ const BookingsPage = () => {
                                 className="brightness-0 opacity-80"
                               />
                             ) : null}
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -341,7 +323,6 @@ const BookingsPage = () => {
               ) : (
                 <p
                   className="border border-[#C0C8C9] bg-white p-8 text-[16px] text-[#404849]"
-                  style={{ fontFamily: "var(--hp-font-body)" }}
                 >
                   You do not have any upcoming bookings yet.
                 </p>
@@ -360,7 +341,6 @@ const BookingsPage = () => {
             ) : (
               <p
                 className="border border-[#C0C8C9] bg-[#F3F3F6] p-8 text-[16px] text-[#404849]"
-                style={{ fontFamily: "var(--hp-font-body)" }}
               >
                 No past expeditions yet.
               </p>

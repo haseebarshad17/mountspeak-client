@@ -1,5 +1,5 @@
 import { serverEnv } from '@/env/server'
-import { prefixHref } from '@/lib/homepage/agency-preview'
+import { prefixHref, stripAgencyPreviewBase } from '@/lib/homepage/agency-preview'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -23,7 +23,9 @@ function buildRedirectUrl(
 export async function updateSession(request: NextRequest, options: UpdateSessionOptions = {}) {
     const { previewBase = null, browserRequest } = options
     let response = NextResponse.next({ request })
-    const pathname = request.nextUrl.pathname
+    const browserPathname = browserRequest?.nextUrl.pathname ?? request.nextUrl.pathname
+    const browserSearch = browserRequest?.nextUrl.search ?? request.nextUrl.search
+    const pathname = stripAgencyPreviewBase(request.nextUrl.pathname)
     const protectedPaths = ['/dashboard', '/bookings', '/booking']
     const guestOnlyPaths = ['/login', '/register']
     const isProtectedPath = protectedPaths.some(
@@ -70,8 +72,7 @@ export async function updateSession(request: NextRequest, options: UpdateSession
 
     if (isProtectedPath && !user) {
         const loginUrl = buildRedirectUrl(request, browserRequest, previewBase, '/login')
-        const returnPath = `${pathname}${request.nextUrl.search}`
-        loginUrl.searchParams.set('next', returnPath)
+        loginUrl.searchParams.set('next', `${browserPathname}${browserSearch}`)
         return NextResponse.redirect(loginUrl)
     }
 

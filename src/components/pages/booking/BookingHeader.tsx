@@ -101,14 +101,14 @@ export function BookingHeader() {
                                     <div className='hidden items-center gap-3 sm:flex'>
                                         <Button
                                             variant='transparent'
-                                            className='!h-auto !min-h-0 !w-auto !px-0 text-sm text-neutral-800 hover:bg-transparent'
+                                            size='nav'
+                                            className='!w-auto text-neutral-800 hover:bg-transparent'
                                             href={header.auth?.login?.href ?? '/login'}
                                         >
                                             {header.auth?.login?.label ?? 'Login'}
                                         </Button>
                                         <Button
                                             variant='secondary'
-                                            className='h-10 rounded-sm px-4 text-sm'
                                             href={header.auth?.signUp?.href ?? '/register'}
                                         >
                                             {header.auth?.signUp?.label ?? 'Sign Up'}

@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/clsxUtils'
 
 import type { TourPage } from './tour-page.types'
@@ -19,7 +20,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
             style={{ backgroundColor: theme.backgroundColor }}
         >
             <div className="agency-container text-center !px-16">
-                <h2 className="mx-auto max-w-3xl font-noto text-3xl font-bold  text-[#191C1C] sm:text-4xl lg:text-[48px] lg:leading-[57px]">
+                <h2 className="mx-auto max-w-3xl font-heading text-3xl font-bold  text-[#191C1C] sm:text-4xl lg:text-[48px] lg:leading-[57px]">
                     {finalCtaSection.title}
                 </h2>
 
@@ -27,14 +28,13 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                     {finalCtaSection.buttons.map((btn) => {
                         const isPrimary = btn.style === 'primary'
                         return (
-                            <Link
+                            <Button
                                 key={btn.label}
-                                href={btn.url}
+                                asChild
+                                variant={isPrimary ? 'default' : 'outline'}
                                 className={cn(
-                                    '!inline-flex h-[58px] w-full max-w-[257px] items-center justify-center px-8 font-manrope text-xs uppercase leading-none transition-colors sm:text-base',
-                                    isPrimary
-                                        ? 'text-white shadow-md'
-                                        : 'border border-[#737879] bg-white text-neutral-900 hover:bg-neutral-50'
+                                    'w-full max-w-[257px]',
+                                    !isPrimary && 'border-[#737879] text-neutral-900 hover:bg-neutral-50',
                                 )}
                                 style={
                                     isPrimary
@@ -45,8 +45,8 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                         : undefined
                                 }
                             >
-                                {btn.label}
-                            </Link>
+                                <Link href={btn.url}>{btn.label}</Link>
+                            </Button>
                         )
                     })}
                 </div>

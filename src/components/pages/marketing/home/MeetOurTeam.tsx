@@ -52,7 +52,7 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
     const { colors } = page.theme
 
     return (
-        <section className='bg-white pb-16 sm:pb-20 lg:pb-[192px]' aria-labelledby='meet-our-team-heading'>
+        <section className='bg-white' aria-labelledby='meet-our-team-heading'>
             <div className='agency-container'>
                 <header className='mx-auto max-w-3xl text-center'>
                     <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />

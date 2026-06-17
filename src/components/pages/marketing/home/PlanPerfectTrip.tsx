@@ -8,10 +8,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
     const section = page.sections.planPerfectTrip
     const { colors } = page.theme
     return (
-        <section
-            className='pb-16 sm:pb-20 lg:pb-[112px]'
-            aria-labelledby='plan-perfect-trip-heading'
-        >
+        <section aria-labelledby='plan-perfect-trip-heading'>
             <div className='agency-container'>
                 <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-8 lg:gap-12 xl:gap-[100px]'>
                     <div className='w-full max-w-[580px] justify-self-center md:justify-self-start'>

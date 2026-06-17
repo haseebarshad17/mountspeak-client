@@ -52,7 +52,7 @@ function SearchResultCard({
                     href={detailPath}
                     className='mt-3 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
                 >
-                    View All Place
+                    View Details
                     <ArrowRight className='h-4 w-4 shrink-0' strokeWidth={2} aria-hidden />
                 </Link>
             </div>
@@ -71,19 +71,16 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                     <div className='px-4 pb-8 pt-[120px] text-center text-white sm:px-6 sm:pb-10 sm:pt-36 md:pb-12 md:pt-44 lg:pb-14 lg:pt-48'>
                         <p
                             className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
-                            style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
                         >
                             Search
                         </p>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                         >
                             Find your trip
                         </h1>
                         <p
                             className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             Choose your route and travel dates to browse published tours from our partners.
                         </p>
@@ -105,13 +102,11 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                     <div className='mx-auto max-w-[900px] text-center'>
                         <h2
                             className='text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'
-                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                         >
                             Search results
                         </h2>
                         <p
                             className='pt-3 text-base text-neutral-600'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             {summary
                                 ? summary
@@ -120,7 +115,6 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                         {isFiltered ? (
                             <p
                                 className='pt-2 text-sm text-neutral-500'
-                                style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                             >
                                 {tours.length} trip{tours.length === 1 ? '' : 's'} found
                             </p>
@@ -142,7 +136,6 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                     ) : (
                         <p
                             className='mx-auto max-w-xl pt-10 text-center text-base text-neutral-500'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             {isFiltered
                                 ? 'No trips match your search. Try different locations or dates.'

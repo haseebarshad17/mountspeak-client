@@ -80,6 +80,7 @@ function LocationDropdownList({
                             key={city}
                             type="button"
                             variant="ghost"
+                            size="max"
                             className={cn(itemClassName, selected === city && "bg-neutral-100")}
                             onClick={() => onSelect(city)}
                         >
@@ -138,7 +139,7 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
     }
 
     const triggerCls = cn(
-        "flex h-14 !w-full min-w-0 items-center justify-start gap-2.5 overflow-hidden px-4 text-sm font-medium",
+        "!justify-start flex h-14 !w-full min-w-0 items-center gap-2.5 overflow-hidden px-4 !text-sm !font-medium !normal-case !tracking-normal",
         "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
         "xl:h-[56px] xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:hover:bg-[#F8FAFB]"
     )
@@ -166,7 +167,7 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
 
                 <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
                     <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
+                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
                             <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{from || heroSearch.fromPlaceholder}</span>
                         </Button>
@@ -203,7 +204,7 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
 
                 <Popover open={open === "to"} onOpenChange={(v) => setOpen(v ? "to" : null)}>
                     <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
+                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
                             <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{to || heroSearch.toPlaceholder}</span>
                         </Button>
@@ -241,7 +242,7 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
 
                 <Popover open={open === "date"} onOpenChange={(v) => setOpen(v ? "date" : null)}>
                     <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" className={`${triggerCls} xl:border-r xl:border-[#D6D9DC]`}>
+                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
                             <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
                             <span className="truncate min-w-0 w-full">{date || heroSearch.datePlaceholder}</span>
                         </Button>
@@ -269,7 +270,8 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
                 <div className="xl:col-span-1 xl:flex xl:items-center xl:px-[6px]">
                     <Button
                         type="submit"
-                        className="h-14 w-full rounded-xl xl:h-[44px] xl:w-full xl:rounded-[3px] xl:px-4 xl:text-[14px] xl:font-medium xl:whitespace-nowrap"
+                        size="max"
+                        className="!h-14 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm"
                         style={{
                             backgroundColor: heroSearchButton.background,
                             color: heroSearchButton.text,

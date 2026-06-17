@@ -10,11 +10,15 @@ import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode } from "@/lib/messages/codes";
 import { useResendVerificationEmail } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const loginPath = usePreviewPath("/login");
+  const dashboardPath = usePreviewPath("/dashboard");
   const emailFromQuery = searchParams.get("email") ?? "";
   const [email, setEmail] = useState(emailFromQuery);
   const [sent, setSent] = useState(false);
@@ -41,13 +45,13 @@ export default function VerifyEmailPage() {
       }
 
       if (user && isEmailVerified(user)) {
-        router.replace("/dashboard");
+        router.replace(dashboardPath);
         router.refresh();
       }
     }
 
     void checkVerificationStatus();
-  }, [router]);
+  }, [router, dashboardPath]);
 
   const onResend = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,7 +66,7 @@ export default function VerifyEmailPage() {
       const siteUrl = getClientSiteUrl();
       await resendVerification({
         email: targetEmail,
-        emailRedirectTo: buildAuthCallbackUrl(siteUrl, "/dashboard"),
+        emailRedirectTo: buildAuthCallbackUrl(siteUrl, dashboardPath),
       });
       setSent(true);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_VERIFICATION_SENT));
@@ -80,13 +84,11 @@ export default function VerifyEmailPage() {
           <div className="w-full max-w-[500px]">
             <h1
               className="mb-3 text-5xl font-semibold leading-[56px] tracking-[-0.02em] text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
             >
               Verify your email
             </h1>
             <p
               className="mb-[40px] text-[16px] leading-6 text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
             >
               {sent
                 ? "We sent a new verification link. Open it to activate your account before accessing Manage Account."
@@ -96,7 +98,6 @@ export default function VerifyEmailPage() {
             {displayEmail ? (
               <p
                 className="mb-8 rounded-sm border border-[#C0C8C966] bg-[#f7f9f9] px-4 py-3 text-sm leading-6 text-[#1A1C1E]"
-                style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
               >
                 Verification email for <strong>{displayEmail}</strong>
               </p>
@@ -108,7 +109,6 @@ export default function VerifyEmailPage() {
                   <label
                     htmlFor="verify-email"
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                   >
                     Email Address
                   </label>
@@ -119,35 +119,30 @@ export default function VerifyEmailPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="explorer@pakistan.travel"
                     autoComplete="email"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                     className="mt-1 min-h-[40px] w-full border-b border-[#6B7280] bg-transparent px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
                   />
                 </div>
               ) : null}
 
-              <button
+              <Button
                 type="submit"
                 disabled={isPending}
-                className="mt-4 h-14 w-full bg-[#002e35] text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-[#043942] disabled:cursor-not-allowed disabled:opacity-70"
+                className={displayEmail ? "mt-4 w-full" : "w-full"}
               >
                 {isPending ? "Sending..." : sent ? "Resend Again" : "Resend Verification Email"}
-              </button>
+              </Button>
             </form>
 
             <Link
-              href="/login"
+              href={loginPath}
               className="mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             >
               ← Back to Sign In
             </Link>
 
             <p
               className="mt-16 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             >
-              Secure Authentication Protocol v4.2
-              <br />
               © {new Date().getFullYear()} Pakistan Travel Systems
             </p>
           </div>

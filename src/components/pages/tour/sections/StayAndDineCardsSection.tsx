@@ -34,13 +34,13 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
                                 />
                             </div>
                             <div className="flex flex-1 flex-col pt-5">
-                                <p className="text-base font-manrope font-bold uppercase text-[#506449]">
+                                <p className="text-base font-roboto font-bold uppercase text-[#506449]">
                                     {prop.type}
                                 </p>
-                                <h3 className="mt-2 font-heading text-2xl font-semibold text-[#191C1C] font-noto">
+                                <h3 className="mt-2 font-heading text-2xl font-semibold text-[#191C1C] font-heading">
                                     {prop.name}
                                 </h3>
-                                <p className="mt-2 flex-1 text-sm  text-[#434849] font-manrope">
+                                <p className="mt-2 flex-1 text-sm  text-[#434849] font-roboto">
                                     {prop.description}
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">

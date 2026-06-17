@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { BookMarked, LogOut, UserRound } from "lucide-react";
+import { useInternalPathname, usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 
 interface DashboardSidebarProps {
   onNavigate?: () => void;
@@ -17,23 +17,24 @@ const navLinkClassName = (isActive: boolean) =>
   ].join(" ");
 
 const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
-  const pathname = usePathname();
-  const isProfileActive = pathname.startsWith("/dashboard");
-  const isBookingsActive = pathname.startsWith("/bookings");
+  const internalPathname = useInternalPathname();
+  const dashboardPath = usePreviewPath("/dashboard");
+  const bookingsPath = usePreviewPath("/bookings");
+  const isProfileActive = internalPathname.startsWith("/dashboard");
+  const isBookingsActive = internalPathname.startsWith("/bookings");
 
   return (
     <aside className="w-full md:w-[264px] md:min-w-[264px] md:max-w-[264px]">
       <div>
         <p
           className="text-[12px] font-semibold uppercase tracking-[0.6px] pl-2 text-[#707979]"
-          style={{ fontFamily: "var(--hp-font-body)" }}
         >
           Account Settings
         </p>
 
         <nav className="mt-4 space-y-2">
           <Link
-            href="/dashboard"
+            href={dashboardPath}
             onClick={onNavigate}
             className={navLinkClassName(isProfileActive)}
           >
@@ -42,14 +43,13 @@ const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
             </span>
             <span
               className="text-base font-normal"
-              style={{ fontFamily: "var(--hp-font-body)" }}
             >
               Profile
             </span>
           </Link>
 
           <Link
-            href="/bookings"
+            href={bookingsPath}
             onClick={onNavigate}
             className={navLinkClassName(isBookingsActive)}
           >
@@ -58,7 +58,6 @@ const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
             </span>
             <span
               className="text-base font-normal"
-              style={{ fontFamily: "var(--hp-font-body)" }}
             >
               Bookings
             </span>
@@ -74,7 +73,6 @@ const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
           </span>
           <span
             className="text-base font-medium"
-            style={{ fontFamily: "var(--hp-font-body)" }}
           >
             Sign Out
           </span>

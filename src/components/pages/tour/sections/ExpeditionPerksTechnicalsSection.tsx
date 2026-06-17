@@ -32,7 +32,7 @@ export function ExpeditionPerksTechnicalsSection({
             className="border-t border-black/[0.06] bg-[#ECECE8] py-8 sm:py-10 lg:py-16"
         >
             <div className="agency-container !px-16">
-                <h2 className="text-center font-heading text-3xl font-bold font-noto text-[#191C1C] sm:text-4xl">
+                <h2 className="text-center font-heading text-3xl font-bold font-heading text-[#191C1C] sm:text-4xl">
                     {perksAndTechnicalsSection.title}
                 </h2>
                 <div className="mt-[48px] grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -48,10 +48,10 @@ export function ExpeditionPerksTechnicalsSection({
                                     style={{ color: theme.secondaryColor }}
                                     strokeWidth={1.75}
                                 />
-                                <h3 className="mt-6 text-base leading-6 font-manrope text-[#191C1C]">
+                                <h3 className="mt-6 text-base leading-6 font-roboto text-[#191C1C]">
                                     {item.title}
                                 </h3>
-                                <p className="mt-2 text-xs text-[#434849] font-manrope">
+                                <p className="mt-2 text-xs text-[#434849] font-roboto">
                                     {item.description}
                                 </p>
                             </article>

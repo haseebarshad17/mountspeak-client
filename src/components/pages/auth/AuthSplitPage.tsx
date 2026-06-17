@@ -18,6 +18,7 @@ import { fetchSignupAgencyId } from "@/lib/auth/resolve-signup-agency-id";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
 import {
@@ -26,6 +27,7 @@ import {
 } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import AuthSidePanel from "./AuthSidePanel";
 
 type AuthMode = "login" | "register";
@@ -59,7 +61,6 @@ function PasswordField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
         className={`min-h-[40px] w-full border-b ${borderClassName} bg-transparent px-3 py-2 pr-10 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]`}
       />
       <button
@@ -78,11 +79,17 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const isLogin = mode === "login";
   const router = useRouter();
   const searchParams = useSearchParams();
+  const loginPath = usePreviewPath("/login");
+  const registerPath = usePreviewPath("/register");
+  const forgotPasswordPath = usePreviewPath("/forgot-password");
+  const verifyEmailPath = usePreviewPath("/verify-email");
+  const dashboardPath = usePreviewPath("/dashboard");
+  const homePath = usePreviewPath("/");
   const redirectAfterAuth = useMemo(() => {
     const next = searchParams.get("next");
     if (next?.startsWith("/")) return next;
-    return "/dashboard";
-  }, [searchParams]);
+    return dashboardPath;
+  }, [searchParams, dashboardPath]);
 
   const nextQuery = useMemo(() => {
     const next = searchParams.get("next");
@@ -135,7 +142,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       } = await supabase.auth.getUser();
 
       if (active && user) {
-        router.replace("/");
+        router.replace(homePath);
         router.refresh();
       }
     };
@@ -145,7 +152,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, [router, homePath]);
 
   const enforceClientRole = async (userId: string) => {
     const role = await getUserRole(userId);
@@ -157,7 +164,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const redirectToVerifyEmail = (userEmail: string) => {
     const params = new URLSearchParams({ email: userEmail });
-    router.push(`/verify-email?${params.toString()}`);
+    router.push(`${verifyEmailPath}?${params.toString()}`);
     router.refresh();
   };
 
@@ -278,19 +285,18 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
         <div className="flex w-full items-center justify-center bg-white px-6  sm:px-10 md:w-1/2 lg:px-[100px]">
           <div className="w-full max-w-[500px]">
-            <h1 className="text-5xl leading-[56px] font-semibold tracking-[-0.02em] mb-3 text-[#1A1C1E]" style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}>
+            <h1 className="text-5xl leading-[56px] font-semibold tracking-[-0.02em] mb-3 text-[#1A1C1E]">
               Welcome back.
             </h1>
-            <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]" style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}>
+            <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]">
               Please enter your details to access your dashboard.
             </p>
 
             <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">
               <Link
-                href={`/login${nextQuery}`}
+                href={`${loginPath}${nextQuery}`}
                 className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#0f3137]" : "text-[#8a8f95]"
                   }`}
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 Sign In
                 {isLogin ? (
@@ -298,10 +304,9 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 ) : null}
               </Link>
               <Link
-                href={`/register${nextQuery}`}
+                href={`${registerPath}${nextQuery}`}
                 className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#8a8f95]" : "text-[#0f3137]"
                   }`}
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 Create Account
                 {!isLogin ? (
@@ -316,7 +321,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   <label
                     htmlFor="auth-full-name"
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                   >
                     Full Name
                   </label>
@@ -326,7 +330,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
                     placeholder="Muhammad Ahmed"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                     className="mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
                   />
                 </div>
@@ -336,7 +339,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 <label
                   htmlFor="auth-email"
                   className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                 >
                   Email Address
                 </label>
@@ -346,7 +348,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="explorer@pakistan.travel"
-                  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                   className="mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
                 />
               </div>
@@ -355,15 +356,13 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 <div className="flex items-center justify-between">
                   <label
                     htmlFor="auth-password"
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]"
                   >
                     Password
                   </label>
                   {isLogin ? (
                     <Link
-                      href="/forgot-password"
-                      style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                      href={forgotPasswordPath}
                       className="text-xs font-semibold text-[#00292C] transition hover:text-[#0f3137]"
                     >
                       Forgot?
@@ -380,7 +379,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
               {!isLogin ? (
                 <div>
                   <label
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                     htmlFor="auth-confirm-password"
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
                   >
@@ -394,30 +392,30 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   />
                 </div>
               ) : null}
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-10 h-14 w-full bg-[#002e35] text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-[#043942] disabled:cursor-not-allowed disabled:opacity-70"
+                className="mt-10 w-full"
               >
                 {isSubmitting
                   ? (isLogin ? "Signing In..." : "Creating Account...")
                   : (isLogin ? "Sign In" : "Create Account")}
-              </button>
+              </Button>
             </form>
             <div className="mt-8 mb-10 flex items-center gap-4">
               <span className="h-px flex-1 bg-[#C0C8C966]" />
-              <span className="text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+              <span className="text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]">
                 or continue with
               </span>
               <span className="h-px flex-1 bg-[#C0C8C966]" />
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={onGoogleSignIn}
               disabled={isGooglePending}
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-              className="flex h-[54px] w-full items-center justify-center gap-2 border border-[#C0C8C966] bg-white text-xs font-medium uppercase text-[#1A1C1E] transition hover:border-[#0f3137]/40 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full"
             >
               <Image
                 src="/images/pages/auth/SVG.svg"
@@ -426,11 +424,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 height={20}
               />
               <span>{isGooglePending ? "Please wait..." : "Google"}</span>
-            </button>
+            </Button>
 
-            <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
-              Secure Authentication Protocol v4.2
-              <br />© {new Date().getFullYear()} Pakistan Travel Systems
+            <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
+              © {new Date().getFullYear()} Pakistan Travel Systems
             </p>
           </div>
         </div>
