@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { assertRpcSuccess, callSupabaseRpc } from '@/lib/api/rpc'
+import { MessageCode } from '@/lib/messages/codes'
 
 import { SUBMIT_CONSULT_US_RPC } from './consultation-requests.constants'
 import type {
@@ -35,10 +36,10 @@ export const consultationRequestsService = ({ supabase }: ConsultationRequestsSe
                 supabase,
                 SUBMIT_CONSULT_US_RPC,
                 toRpcArgs(payload),
-                'Unable to submit consultation request.',
+                MessageCode.API_CONTACT_SUBMIT_FAILED,
             )
 
-            return assertRpcSuccess(data, 'Unable to submit consultation request.')
+            return assertRpcSuccess(data, MessageCode.API_CONTACT_SUBMIT_FAILED)
         },
     }
 }

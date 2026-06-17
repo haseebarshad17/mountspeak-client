@@ -1,8 +1,35 @@
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 import type { Metadata } from 'next'
 
-export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
-    const { seo, branding } = homepage.page
+function resolveAbsoluteAssetUrl(src: string, siteUrl: string): string {
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+        return src
+    }
+
+    if (src.startsWith('/')) {
+        return `${siteUrl}${src}`
+    }
+
+    return `${siteUrl}/${src}`
+}
+
+export function getAgencyFaviconIcons(homepage: AgencyHomepage): Metadata['icons'] {
+    const siteUrl = homepage.siteUrl
+    if (!siteUrl) return undefined
+
+    const logoSrc = homepage.page.branding.logo.default.src
+    if (!logoSrc) return undefined
+
+    const iconUrl = resolveAbsoluteAssetUrl(logoSrc, siteUrl)
+
+    return {
+        icon: [{ url: iconUrl }],
+        apple: iconUrl,
+    }
+}
+
+export function getAgencyLayoutMetadata(homepage: AgencyHomepage): Metadata {
+    const { branding, seo } = homepage.page
     const siteUrl = homepage.siteUrl
 
     if (!siteUrl) {
@@ -11,25 +38,21 @@ export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
         )
     }
 
-    const ogImage =
-        seo.ogImage.startsWith('http://') ||
-        seo.ogImage.startsWith('https://')
-            ? seo.ogImage
-            : seo.ogImage.startsWith('/')
-              ? `${siteUrl}${seo.ogImage}`
-              : seo.ogImage
+    const agencyName = branding.name
+    const ogImage = resolveAbsoluteAssetUrl(seo.ogImage, siteUrl)
 
     return {
         title: {
-            default: seo.title,
-            template: seo.titleTemplate,
+            default: `Home | ${agencyName}`,
+            template: `%s | ${agencyName}`,
         },
         description: seo.description,
         keywords: seo.keywords,
         metadataBase: new URL(siteUrl),
-        applicationName: branding.name,
+        applicationName: agencyName,
+        icons: getAgencyFaviconIcons(homepage),
         openGraph: {
-            title: seo.title,
+            title: `Home | ${agencyName}`,
             description: seo.description,
             url: `${siteUrl}${seo.canonicalUrl}`,
             siteName: seo.siteName,
@@ -46,10 +69,40 @@ export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
         },
         twitter: {
             card: seo.twitterCard as 'summary_large_image',
-            title: seo.title,
+            title: `Home | ${agencyName}`,
             description: seo.description,
             images: [ogImage],
         },
+        appleWebApp: {
+            title: agencyName,
+            statusBarStyle: 'default',
+            capable: true,
+        },
         robots: seo.robots,
+    }
+}
+
+export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
+    const { seo } = homepage.page
+    const base = getAgencyLayoutMetadata(homepage)
+    const agencyName = homepage.page.branding.name
+
+    return {
+        ...base,
+        title: {
+            default: `Home | ${agencyName}`,
+            template: `%s | ${agencyName}`,
+        },
+        description: seo.description,
+        openGraph: {
+            ...base.openGraph,
+            title: `Home | ${agencyName}`,
+            description: seo.description,
+        },
+        twitter: {
+            ...base.twitter,
+            title: `Home | ${agencyName}`,
+            description: seo.description,
+        },
     }
 }

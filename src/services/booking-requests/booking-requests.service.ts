@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { supabaseRestPost } from '@/lib/api/rest'
 import { toApiError } from '@/lib/api/errors'
+import { MessageCode } from '@/lib/messages/codes'
 
 import type { BookingRequestRecord, CreateBookingRequestDTO } from './booking-requests.types'
 
@@ -25,7 +26,7 @@ export const bookingRequestsService = ({ supabase }: BookingRequestsServiceProps
                 .select()
                 .maybeSingle()
 
-            if (error) throw toApiError(error, 'Unable to submit booking request.')
+            if (error) throw toApiError(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED)
 
             // Insert can succeed even when SELECT is blocked by RLS (data comes back null).
             if (data) return data as BookingRequestRecord
@@ -55,7 +56,7 @@ export const bookingRequestsService = ({ supabase }: BookingRequestsServiceProps
                 }
                 return record
             } catch (error) {
-                throw toApiError(error, 'Unable to submit booking request.')
+                throw toApiError(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED)
             }
         },
     }

@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { getClientSiteUrl } from "@/lib/utils/site-url";
+import { getMessage } from "@/lib/messages/get-message";
+import { MessageCode } from "@/lib/messages/codes";
 import { useForgotPassword } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
 import AuthSidePanel from "./AuthSidePanel";
@@ -16,7 +18,7 @@ export default function ForgotPasswordPage() {
     event.preventDefault();
 
     if (!email.trim()) {
-      toast.error("Please enter your email address.");
+      toast.error(getMessage(MessageCode.AUTH_EMAIL_REQUIRED));
       return;
     }
 
@@ -26,13 +28,9 @@ export default function ForgotPasswordPage() {
         redirectTo: `${getClientSiteUrl()}/reset-password`,
       });
       setSent(true);
-      toast.success("Reset link sent. Please check your email.");
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to send reset link. Please try again.";
-      toast.error(message);
+      toast.success(getMessage(MessageCode.SUCCESS_AUTH_RESET_LINK_SENT));
+    } catch {
+      toast.error(getMessage(MessageCode.API_AUTH_RESET_LINK_FAILED));
     }
   };
 

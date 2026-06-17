@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+import { MessageCode } from '@/lib/messages/codes'
+import { mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
+
 import {
     CONSULTATION_INQUIRY_TYPES,
     CONSULTATION_TITLES,
@@ -8,35 +11,35 @@ import {
 const phoneSchema = z
     .string()
     .trim()
-    .min(1, 'Please enter your phone number.')
-    .max(25, 'Phone number is too long.')
+    .min(1, MessageCode.CONTACT_PHONE_REQUIRED)
+    .max(25, MessageCode.CONTACT_PHONE_TOO_LONG)
     .regex(
         /^\+?[0-9][0-9\s-]{6,24}$/,
-        'Please enter a valid phone number (e.g. +92 300 1234567).',
+        MessageCode.CONTACT_PHONE_FORMAT,
     )
 
 export const createConsultationRequestSchema = z.object({
     name: z
         .string()
         .trim()
-        .min(1, 'Please enter your full name.')
-        .min(2, 'Full name must be at least 2 characters.'),
+        .min(1, MessageCode.CONTACT_NAME_REQUIRED)
+        .min(2, MessageCode.CONTACT_NAME_MIN),
     email: z
         .string()
         .trim()
-        .min(1, 'Please enter your email address.')
-        .email('Please enter a valid email address.'),
+        .min(1, MessageCode.CONTACT_EMAIL_REQUIRED)
+        .email(MessageCode.CONTACT_EMAIL_INVALID),
     phone: phoneSchema,
     title: z.enum(CONSULTATION_TITLES, {
-        message: 'Please select a subject.',
+        message: MessageCode.CONTACT_SUBJECT_REQUIRED,
     }),
     description: z
         .string()
         .trim()
-        .min(1, 'Please enter your message.')
-        .min(10, 'Message must be at least 10 characters.'),
+        .min(1, MessageCode.CONTACT_MESSAGE_REQUIRED)
+        .min(10, MessageCode.CONTACT_MESSAGE_MIN),
     inquiry_type: z.enum(CONSULTATION_INQUIRY_TYPES, {
-        message: 'Please select an inquiry type.',
+        message: MessageCode.CONTACT_INQUIRY_TYPE_REQUIRED,
     }),
 })
 
@@ -45,14 +48,5 @@ export type CreateConsultationRequestInput = z.infer<typeof createConsultationRe
 export function mapConsultationRequestFieldErrors(
     issues: z.ZodIssue[],
 ): Record<string, string> {
-    const errors: Record<string, string> = {}
-
-    for (const issue of issues) {
-        const key = String(issue.path[0] ?? 'form')
-        if (!errors[key]) {
-            errors[key] = issue.message
-        }
-    }
-
-    return errors
+    return mapZodIssuesToFieldErrors(issues)
 }

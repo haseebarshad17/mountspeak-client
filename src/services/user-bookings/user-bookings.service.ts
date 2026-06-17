@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { toApiError } from '@/lib/api/errors'
+import { MessageCode } from '@/lib/messages/codes'
 
 import { partitionBookings } from './user-bookings.utils'
 
@@ -46,7 +47,7 @@ export const userBookingsService = ({ supabase }: UserBookingsServiceProps) => {
                 .order('created_at', { ascending: false })
 
             if (error) {
-                throw toApiError(error, 'Unable to load your bookings.')
+                throw toApiError(error, MessageCode.API_BOOKINGS_LOAD_FAILED)
             }
 
             const rows = (data ?? []) as UserBookingRow[]

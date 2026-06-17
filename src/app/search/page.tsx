@@ -1,12 +1,19 @@
 import type { Metadata } from 'next'
 
 import SearchPage from '@/components/pages/search/SearchPage'
+import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { parseTourSearchParams } from '@/services/tours/tours.search.utils'
 import { fetchTourLocationOptions, searchPublishedTours } from '@/services/tours/tours.server'
 
-export const metadata: Metadata = {
-    title: 'Search Trips | Pakistan Travel',
-    description: 'Browse available trips and destinations.',
+export async function generateMetadata(): Promise<Metadata> {
+    const homepage = await fetchAgencyHomepage()
+
+    return buildPageMetadata({
+        pageTitle: 'Search Trips',
+        description: 'Browse available trips and destinations.',
+        homepage,
+    })
 }
 
 type SearchRouteProps = {

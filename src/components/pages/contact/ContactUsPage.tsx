@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { getMessage } from '@/lib/messages/get-message'
+import { MessageCode } from '@/lib/messages/codes'
 import { useCreateConsultationRequest } from '@/services/consultation-requests/consultation-requests.queries'
 import {
     createConsultationRequestSchema,
@@ -124,19 +126,21 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
 
             const errorCount = Object.keys(nextErrors).length
             toast.error(
-                errorCount === 1
-                    ? 'Please fix the highlighted field.'
-                    : `Please fix the ${errorCount} highlighted fields.`,
+                getMessage(
+                    errorCount === 1
+                        ? MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELD
+                        : MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS,
+                ),
             )
             return
         }
 
         try {
-            const result = await createConsultationRequest(parsed.data)
-            toast.success(result.message || 'Thank you! We received your message and will contact you soon.')
+            await createConsultationRequest(parsed.data)
+            toast.success(getMessage(MessageCode.SUCCESS_CONTACT_SUBMITTED))
             form.reset()
         } catch (error) {
-            toast.error(getApiErrorMessage(error, 'Unable to send your message. Please try again.'))
+            toast.error(getApiErrorMessage(error, MessageCode.API_CONTACT_SUBMIT_FAILED))
         }
     }
 
@@ -145,12 +149,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
             <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
                 <div className='rounded-[16px] bg-[url("/images/pages/home/tour-list.png")] bg-cover bg-center bg-no-repeat'>
                     <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
-                        <p
-                            className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
-                            style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
-                        >
-                            Contact
-                        </p>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
                             style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}

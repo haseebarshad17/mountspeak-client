@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
+import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -48,11 +49,11 @@ export function BookingHeader() {
 
     return (
         <>
-            <header className='pointer-events-auto relative z-50 border-b border-white/30 bg-transparent'>
+            <header className='relative z-10 border-b border-white/30 bg-transparent'>
                 <div className='agency-container flex h-[118px] items-center justify-between gap-4'>
                     <Link
                         href='/'
-                        className='relative z-50 flex shrink-0 items-center gap-3'
+                        className='flex shrink-0 items-center gap-3'
                     >
                         <Image
                             src={branding.logo.default.src}
@@ -64,9 +65,9 @@ export function BookingHeader() {
                         />
                     </Link>
 
-                    <div className='relative z-50 flex items-center gap-4 lg:gap-8'>
+                    <div className='flex items-center gap-4 lg:gap-8'>
                         <nav
-                            className='relative z-50 hidden items-center gap-6 lg:flex xl:gap-8'
+                            className='hidden items-center gap-6 lg:flex xl:gap-8'
                             aria-label='Main navigation'
                         >
                             {header.navigation.map((link) => {
@@ -78,18 +79,18 @@ export function BookingHeader() {
                                         key={`${link.label}-${href}`}
                                         href={href}
                                         className={cn(
-                                            'relative z-50 inline-flex text-sm font-normal text-neutral-800 transition-colors hover:text-primary-700 xl:text-base',
+                                            'inline-flex text-sm font-normal text-neutral-800 transition-colors hover:text-primary-700 xl:text-base',
                                             isActive && 'font-medium text-primary-700',
                                         )}
                                     >
-                                        {link.label}
+                                        {resolveNavLinkDisplayLabel(link.label, href)}
                                     </Link>
                                 )
                             })}
                         </nav>
 
                         {showAuthActions ? (
-                            <div className='relative z-50 flex items-center gap-2'>
+                            <div className='flex items-center gap-2'>
                                 {isLoggedIn ? (
                                     <ProfileMenu
                                         useLightNav
@@ -122,7 +123,7 @@ export function BookingHeader() {
                             aria-label={header.mobileMenu.openLabel}
                             aria-expanded={isMobileMenuOpen}
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className='relative z-50 flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300/80 bg-white/80 lg:hidden'
+                            className='flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300/80 bg-white/80 lg:hidden'
                         >
                             <span className='flex flex-col items-end gap-[5px]'>
                                 <span className='h-[2.5px] w-6 rounded-full bg-neutral-800' />
@@ -171,7 +172,7 @@ export function BookingHeader() {
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className='rounded-lg px-3 py-3 text-base font-medium text-neutral-800 transition hover:bg-neutral-100'
                                     >
-                                        {link.label}
+                                        {resolveNavLinkDisplayLabel(link.label, href)}
                                     </Link>
                                 )
                             })}
