@@ -11,7 +11,7 @@ import HomepageBootstrap from "@/components/providers/HomepageBootstrap";
 import HomepageThemeSync from "@/components/providers/HomepageThemeSync";
 import StoreProvider from "@/store/StoreProvider";
 import { getHomepageThemeCssVars } from "@/data/homepage";
-import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
+import { DUMMY_HOMEPAGE_PAGE } from "@/lib/homepage/default-homepage";
 
 export const metadata: Metadata = defaultMeta;
 
@@ -28,8 +28,7 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-    const agencyHomepage = await fetchAgencyHomepage()
-    const bodyThemeStyle = getHomepageThemeCssVars(agencyHomepage.page.theme)
+    const bodyThemeStyle = getHomepageThemeCssVars(DUMMY_HOMEPAGE_PAGE.theme)
 
     return (
         <html
