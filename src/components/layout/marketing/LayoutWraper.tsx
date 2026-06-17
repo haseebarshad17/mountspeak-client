@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { usePathname } from 'next/navigation';
+import { useInternalPathname } from '@/hooks/useAgencyPreviewBase';
 import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { Toaster } from 'sonner';
@@ -28,7 +28,7 @@ function isExcludedRoute(pathname: string, patterns: string[]): boolean {
 
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const page = useHomepagePageWithFallback();
-    const pathname = usePathname();
+    const pathname = useInternalPathname();
     const HeaderExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password", "/verify-email",

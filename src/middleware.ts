@@ -1,8 +1,8 @@
 import {
     AGENCY_PREVIEW_HOST_COOKIE,
     getHostnameFromHostHeader,
-    isLocalDevHostname,
-    resolveAgencyPreviewFromPathname,
+    isAgencyPreviewPlatformHost,
+    resolveAgencyPreviewForRequest,
     type AgencyPreviewContext,
 } from '@/lib/homepage/agency-preview'
 import { updateSession } from '@/lib/supabase/middleware'
@@ -42,9 +42,10 @@ function createPreviewRequestHeaders(
     return headers
 }
 
-async function handleLocalhostAgencyPreview(request: NextRequest): Promise<NextResponse> {
+async function handleAgencyPathPreview(request: NextRequest): Promise<NextResponse> {
     const pathname = request.nextUrl.pathname
-    const preview = resolveAgencyPreviewFromPathname(pathname)
+    const requestHostname = getHostnameFromHostHeader(request.headers.get('host'))
+    const preview = resolveAgencyPreviewForRequest(pathname, requestHostname)
 
     if (preview) {
         const requestHeaders = createPreviewRequestHeaders(request, preview)
@@ -94,8 +95,8 @@ async function handleLocalhostAgencyPreview(request: NextRequest): Promise<NextR
 export async function middleware(request: NextRequest) {
     const hostname = getHostnameFromHostHeader(request.headers.get('host'))
 
-    if (isLocalDevHostname(hostname)) {
-        return handleLocalhostAgencyPreview(request)
+    if (isAgencyPreviewPlatformHost(hostname)) {
+        return handleAgencyPathPreview(request)
     }
 
     return updateSession(request)
@@ -106,9 +107,12 @@ export const config = {
         // Next.js skips middleware on dotted path segments by default (treated as static files).
         '/(.*\\.vercel\\.app)',
         '/(.*\\.vercel\\.app)/:path*',
+        '/([^/]+\\.[^/]+)',
+        '/([^/]+\\.[^/]+)/:path*',
         { source: '/:path*', has: [{ type: 'host', value: 'localhost:3000' }] },
         { source: '/:path*', has: [{ type: 'host', value: 'localhost:3001' }] },
         { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3000' }] },
         { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3001' }] },
+        { source: '/:path*', has: [{ type: 'host', value: 'trip-connect-agency-site.vercel.app' }] },
     ],
 }

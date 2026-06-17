@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
     getHostnameFromHostHeader,
     isAgencyHostPathSegment,
-    isLocalDevHostname,
+    isAgencyPreviewPlatformHost,
 } from '@/lib/homepage/agency-preview'
 import { fetchAgencyHomepage, fetchAgencyHomepageForHost } from '@/services/homepage/homepage.server'
 
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const previewHost = request.nextUrl.searchParams.get('host')?.trim().toLowerCase()
 
     if (
-        isLocalDevHostname(requestHostname) &&
+        isAgencyPreviewPlatformHost(requestHostname) &&
         previewHost &&
         isAgencyHostPathSegment(previewHost)
     ) {
