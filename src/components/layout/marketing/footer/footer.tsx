@@ -1,5 +1,8 @@
+'use client'
+
 import { cn } from '@/lib/utils/clsxUtils'
 import type { HomepagePage } from '@/data/homepage'
+import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -8,13 +11,33 @@ type FooterProps = {
     footer: HomepagePage['footer']
 }
 
+function FooterLink({
+    href,
+    className,
+    children,
+}: {
+    href: string
+    className: string
+    children: React.ReactNode
+}) {
+    const resolvedHref = usePrefixedHref(href) ?? href
+
+    return (
+        <Link href={resolvedHref} className={className}>
+            {children}
+        </Link>
+    )
+}
+
 const Footer = ({ footer }: FooterProps) => {
+    const homeHref = usePrefixedHref('/') ?? '/'
+
     return (
         <footer style={{ backgroundColor: footer.backgroundColor }}>
             <div className='agency-container'>
                 <section className='flex flex-col gap-10 py-[60px] xl:flex-row lg:justify-between lg:gap-6 lg:py-[95px]'>
                     <div className='w-max flex-shrink-0 xl:pr-[170px] pr-[70px] pb-5'>
-                        <a href="/">
+                        <Link href={homeHref}>
                             <Image
                                 src={footer.logo.src}
                                 alt={footer.logo.alt}
@@ -22,7 +45,7 @@ const Footer = ({ footer }: FooterProps) => {
                                 height={footer.logo.height}
                                 className='h-auto w-[95px]'
                             />
-                        </a>
+                        </Link>
                     </div>
 
                     <div className='grid flex-1 grid-cols-1 gap-8 text-white xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-10'>
@@ -47,7 +70,7 @@ const Footer = ({ footer }: FooterProps) => {
 
                                               return (
                                                   <li key={linkIdx}>
-                                                      <Link
+                                                      <FooterLink
                                                           href={category.href}
                                                           className={cn(
                                                               'text-sm font-normal opacity-80 sm:text-base',
@@ -55,7 +78,7 @@ const Footer = ({ footer }: FooterProps) => {
                                                           )}
                                                       >
                                                           {category.label}
-                                                      </Link>
+                                                      </FooterLink>
                                                   </li>
                                               )
                                           })
@@ -75,7 +98,7 @@ const Footer = ({ footer }: FooterProps) => {
 
                                               return (
                                                   <li key={linkIdx}>
-                                                      <Link
+                                                      <FooterLink
                                                           href={category.href}
                                                           className={cn(
                                                               'text-sm font-normal opacity-80 sm:text-base',
@@ -83,7 +106,7 @@ const Footer = ({ footer }: FooterProps) => {
                                                           )}
                                                       >
                                                           {category.label}
-                                                      </Link>
+                                                      </FooterLink>
                                                   </li>
                                               )
                                           })}

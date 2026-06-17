@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
+import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
 import { formatTourSearchSummary, hasTourSearchFilters } from '@/services/tours/tours.search.utils'
 import type { TourListItem } from '@/services/tours/tours.types'
@@ -28,6 +29,8 @@ function SearchResultCard({
     image: string
     slug: string
 }) {
+    const detailPath = usePrefixedHref(tourDetailPath(slug)) ?? tourDetailPath(slug)
+
     return (
         <article className='group relative mx-auto w-full max-w-[416px] min-h-[240px] overflow-hidden rounded-[10px] lg:mx-0 lg:min-h-[300px]'>
             <Image
@@ -46,7 +49,7 @@ function SearchResultCard({
                     {title}
                 </h3>
                 <Link
-                    href={tourDetailPath(slug)}
+                    href={detailPath}
                     className='mt-3 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
                 >
                     View All Place
