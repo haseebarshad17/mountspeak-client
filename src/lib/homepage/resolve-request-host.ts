@@ -2,7 +2,7 @@ import { headers } from 'next/headers'
 
 import {
     getHostnameFromHostHeader,
-    isLocalDevHostname,
+    isAgencyPreviewPlatformHost,
 } from '@/lib/homepage/agency-preview'
 import { readAgencyPreviewHostForRequest } from '@/lib/homepage/agency-preview-request'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
@@ -30,7 +30,7 @@ export async function getRequestSiteHost(): Promise<string> {
 
     const hostname = getHostnameFromHostHeader(raw)
 
-    if (isLocalDevHostname(hostname)) {
+    if (isAgencyPreviewPlatformHost(hostname)) {
         const requestPreviewHost = readAgencyPreviewHostForRequest()
         if (requestPreviewHost) {
             return requestPreviewHost
