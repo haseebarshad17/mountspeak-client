@@ -2,7 +2,7 @@
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import type { HomepagePage } from '@/data/homepage'
+import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
 import Image from 'next/image'
@@ -78,20 +78,18 @@ function TestimonialCard({
     location,
     avatar,
     clipId,
-    colors,
 }: {
     quote: string
     name: string
     location: string
     avatar: string
     clipId: string
-    colors: HomepagePage['theme']['colors']
 }) {
     return (
         <div className='flex flex-col items-center px-2 pb-4 pt-2'>
             <div
                 className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
-                style={{ backgroundColor: colors.quoteBackground, color: colors.textBody, fontFamily: 'var(--hp-font-body)' }}
+                style={{ backgroundColor: STATIC_UI_COLORS.quoteBackground, color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
             >
                 <p className='text-readable text-sm font-normal leading-7 sm:text-base'>{quote}</p>
 
@@ -100,7 +98,7 @@ function TestimonialCard({
                         src={avatar}
                         alt={name}
                         clipId={clipId}
-                        accentColor={colors.accent}
+                        accentColor={STATIC_UI_COLORS.accent}
                     />
                 </div>
             </div>
@@ -108,19 +106,19 @@ function TestimonialCard({
             <div className='mt-14 text-center sm:mt-16'>
                 <h3
                     className='text-readable text-base font-semibold tracking-normal sm:text-xl'
-                    style={{ color: colors.cardTitle, fontFamily: 'var(--hp-font-body)' }}
+                    style={{ color: STATIC_UI_COLORS.cardTitle, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {name}
                 </h3>
                 <p
                     className='text-readable pt-0.5 text-base font-normal capitalize'
-                    style={{ color: colors.textNeutral, fontFamily: 'var(--hp-font-body)' }}
+                    style={{ color: STATIC_UI_COLORS.textNeutral, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {location}
                 </p>
                 <div className='mt-2 flex items-center justify-center gap-1'>
                     {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className='h-4 w-4' style={{ fill: colors.accent, color: colors.accent }} aria-hidden />
+                        <Star key={i} className='h-4 w-4' style={{ fill: STATIC_UI_COLORS.accent, color: STATIC_UI_COLORS.accent }} aria-hidden />
                     ))}
                 </div>
             </div>
@@ -130,7 +128,6 @@ function TestimonialCard({
 
 const Testimonials = ({ page }: HomepagePageProps) => {
     const section = page.sections.testimonials
-    const { colors } = page.theme
 
     const swiperRef = useRef<SwiperType | null>(null)
     const [activeIndex, setActiveIndex] = useState(1)
@@ -139,11 +136,11 @@ const Testimonials = ({ page }: HomepagePageProps) => {
         <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
             <div className='agency-container pb-[100px]'>
                 <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} />
                     <h2
                         id='testimonials-heading'
                         className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
-                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                        style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
@@ -172,7 +169,6 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                                 <TestimonialCard
                                     {...item}
                                     clipId={`testimonial-arc-${index}`}
-                                    colors={colors}
                                 />
                             </SwiperSlide>
                         ))}
@@ -194,8 +190,8 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                             )}
                             style={
                                 idx === activeIndex
-                                    ? { backgroundColor: colors.primary }
-                                    : { borderColor: colors.accent }
+                                    ? { backgroundColor: HP_CSS_VARS.primary }
+                                    : { borderColor: STATIC_UI_COLORS.accent }
                             }
                         />
                     ))}

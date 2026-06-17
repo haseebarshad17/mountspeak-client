@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { STATIC_UI_COLORS } from '@/data/homepage'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 
@@ -10,7 +11,6 @@ type HeroProps = HomepagePageProps & {
 
 const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
-    const { colors } = page.theme
 
     return (
         <section className='p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]'>
@@ -23,13 +23,13 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                         <div className='w-full max-w-[828px] mx-auto text-center'>
                             <h1
                                 className='text-3xl font-semibold leading-[0.95] sm:text-4xl md:text-5xl xl:text-[45px]'
-                                style={{ color: colors.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
+                                style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                             >
                                 {hero.title}
                             </h1>
                             <p
                                 className='pt-3 text-sm font-normal sm:pt-4 sm:text-base xl:text-lg'
-                                style={{ color: colors.heroText, fontFamily: 'var(--hp-font-body)' }}
+                                style={{ color: STATIC_UI_COLORS.heroText, fontFamily: 'var(--hp-font-body)' }}
                             >
                                 {hero.paragraph}
                             </p>

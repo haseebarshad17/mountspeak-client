@@ -1,5 +1,6 @@
 'use client'
 
+import { STATIC_UI_COLORS } from '@/data/homepage'
 import { FilterPills } from '@/components/pages/marketing/home/filter-pills'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
@@ -12,7 +13,6 @@ export type PopularDestinationProps = HomepagePageProps & {
 
 const PopularDestination = ({ page, activeLabel, onLabelChange }: PopularDestinationProps) => {
     const section = page.sections.popularDestination
-    const { colors } = page.theme
 
     return (
         <section
@@ -21,11 +21,11 @@ const PopularDestination = ({ page, activeLabel, onLabelChange }: PopularDestina
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} />
                     <h2
                         id='popular-destination-heading'
                         className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
-                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                        style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
