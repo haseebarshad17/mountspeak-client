@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
+import { getAgencyPreviewHostFromPathname } from '@/lib/homepage/agency-preview'
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 
 export type HomepageFetchStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -20,7 +21,15 @@ export const fetchHomepage = createAsyncThunk<AgencyHomepage, void, { rejectValu
     'homepage/fetch',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await fetch('/api/homepage', {
+            const previewHost =
+                typeof window !== 'undefined'
+                    ? getAgencyPreviewHostFromPathname(window.location.pathname)
+                    : null
+            const apiUrl = previewHost
+                ? `/api/homepage?host=${encodeURIComponent(previewHost)}`
+                : '/api/homepage'
+
+            const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: { Accept: 'application/json' },
                 cache: 'no-store',

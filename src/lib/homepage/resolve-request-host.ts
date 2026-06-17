@@ -1,10 +1,20 @@
 import { headers } from 'next/headers'
 
+import {
+    getHostnameFromHostHeader,
+    isLocalDevHostname,
+} from '@/lib/homepage/agency-preview'
+import { readAgencyPreviewHostForRequest } from '@/lib/homepage/agency-preview-request'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
 
-/** Current request host, e.g. `localhost:3000` or `agency.example.com`. */
 export async function getRequestSiteHost(): Promise<string> {
     const headersList = await headers()
+    const overrideHost = headersList.get('x-agency-site-host')?.trim().toLowerCase()
+
+    if (overrideHost) {
+        return overrideHost
+    }
+
     const raw =
         headersList.get('x-forwarded-host')?.split(',')[0]?.trim() ||
         headersList.get('host')?.trim() ||
@@ -16,6 +26,15 @@ export async function getRequestSiteHost(): Promise<string> {
             'SITE_HOST_MISSING',
             400,
         )
+    }
+
+    const hostname = getHostnameFromHostHeader(raw)
+
+    if (isLocalDevHostname(hostname)) {
+        const requestPreviewHost = readAgencyPreviewHostForRequest()
+        if (requestPreviewHost) {
+            return requestPreviewHost
+        }
     }
 
     return raw.toLowerCase()

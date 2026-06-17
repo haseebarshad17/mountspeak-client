@@ -1,7 +1,10 @@
+'use client'
+
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { tourDetailPath } from '@/services/tours/tours.utils'
 
 import { TourDiscountBadge } from './TourDiscountBadge'
@@ -21,6 +24,8 @@ export function TourExploreCard({
     image,
     detailHref,
 }: TourExploreCardProps) {
+    const detailPath = usePrefixedHref(detailHref ?? tourDetailPath(slug)) ?? tourDetailPath(slug)
+
     return (
         <article className='group relative mx-auto w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'>
             <Image
@@ -39,7 +44,7 @@ export function TourExploreCard({
                     {title}
                 </h3>
                 <Link
-                    href={detailHref ?? tourDetailPath(slug)}
+                    href={detailPath}
                     className='mt-2 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
                 >
                     View All Place

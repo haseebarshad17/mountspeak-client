@@ -2,6 +2,7 @@
 import * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import Link from "next/link";
+import { usePrefixedHref } from "@/hooks/useAgencyPreviewBase";
 import { cn } from "@/lib/utils/clsxUtils";
 
 const buttonVariants = tv({
@@ -100,8 +101,10 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     const pressStart = React.useRef(0);
     const releaseTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
+    const resolvedHref = usePrefixedHref(href)
+
     const Component: React.ElementType =
-        href ? Link : component ?? (asChild ? "div" : "button");
+        resolvedHref ? Link : component ?? (asChild ? "div" : "button");
     const onMouseDown = props.onMouseDown as React.MouseEventHandler<Element> | undefined;
     const onMouseUp = props.onMouseUp as React.MouseEventHandler<Element> | undefined;
 
@@ -165,7 +168,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
             )}
 
             {...props}
-            href={href}
+            href={resolvedHref}
 
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}

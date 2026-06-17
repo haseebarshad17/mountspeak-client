@@ -16,9 +16,7 @@ async function resolveRequestHost(): Promise<string> {
     }
 }
 
-async function fetchAgencyHomepageUncached(): Promise<AgencyHomepage> {
-    const requestHost = await resolveRequestHost()
-
+async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
     try {
         const supabase = createPublicSupabase()
         const api = homepageService({ supabase })
@@ -38,4 +36,14 @@ async function fetchAgencyHomepageUncached(): Promise<AgencyHomepage> {
     }
 }
 
-export const fetchAgencyHomepage = cache(fetchAgencyHomepageUncached)
+const fetchAgencyHomepageForResolvedHost = cache(loadAgencyHomepageForHost)
+
+export async function fetchAgencyHomepage(): Promise<AgencyHomepage> {
+    const requestHost = await resolveRequestHost()
+    return fetchAgencyHomepageForResolvedHost(requestHost)
+}
+
+/** Explicit host lookup for localhost preview (`?host=` API) and tests. */
+export async function fetchAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
+    return loadAgencyHomepageForHost(requestHost.toLowerCase().trim())
+}

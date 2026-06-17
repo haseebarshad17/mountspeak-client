@@ -3,13 +3,14 @@
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
+import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 type HeaderProps = {
@@ -29,12 +30,67 @@ const navLinkClassName = (isActive: boolean, useLightNav: boolean) =>
         isActive && 'font-medium',
     )
 
+type HeaderNavLinkProps = {
+    href: string
+    label: string
+    useLightNav: boolean
+    color: string
+    onNavigate?: () => void
+    className?: string
+}
+
+function HeaderNavLink({
+    href,
+    label,
+    useLightNav,
+    color,
+    onNavigate,
+    className,
+}: HeaderNavLinkProps) {
+    const internalPathname = useInternalPathname()
+    const resolvedHref = usePrefixedHref(href) ?? href
+    const isActive = isNavLinkActive(internalPathname, href)
+    const isMobileStyle = Boolean(className)
+
+    return (
+        <Link
+            href={resolvedHref}
+            onClick={onNavigate}
+            className={className ?? navLinkClassName(isActive, useLightNav)}
+            style={
+                isMobileStyle
+                    ? undefined
+                    : {
+                          color,
+                          fontFamily: 'var(--hp-font-body)',
+                      }
+            }
+        >
+            {className ? (
+                label
+            ) : (
+                <>
+                    <span
+                        aria-hidden
+                        className={cn(
+                            'absolute bottom-0 left-0 h-[2px] w-full origin-left transition-transform duration-200',
+                            isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                        )}
+                        style={{ backgroundColor: color }}
+                    />
+                    {label}
+                </>
+            )}
+        </Link>
+    )
+}
+
 const Header = ({ page }: HeaderProps) => {
-    const pathname = usePathname()
+    const internalPathname = useInternalPathname()
     const router = useRouter()
-    const isTermsPage = pathname === '/terms' || pathname.startsWith('/terms/')
-    const isDashboardPage = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
-    const isBookingsPage = pathname === '/bookings' || pathname.startsWith('/bookings/')
+    const isTermsPage = internalPathname === '/terms' || internalPathname.startsWith('/terms/')
+    const isDashboardPage = internalPathname === '/dashboard' || internalPathname.startsWith('/dashboard/')
+    const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
     const useLightNav = isTermsPage || isDashboardPage || isBookingsPage
     const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useOptionalUser()
@@ -47,6 +103,9 @@ const Header = ({ page }: HeaderProps) => {
 
     const { header, branding, theme } = page
     const { colors, buttons } = theme
+    const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
+    const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
+    const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
 
     useEffect(() => {
         if (useLightNav) {
@@ -98,7 +157,7 @@ const Header = ({ page }: HeaderProps) => {
     const handleLogout = async () => {
         await logout()
         setIsMobileMenuOpen(false)
-        router.push('/login')
+        router.push(loginHref)
         router.refresh()
     }
 
@@ -174,38 +233,15 @@ const Header = ({ page }: HeaderProps) => {
                     {/* Navigations + Buttons  */}
                     <nav className='hidden flex-1 items-center justify-end lg:flex'>
                         <div className='flex items-center gap-[54px]'>
-                            {header.navigation.map((link) => {
-                                const href = link.href ?? '/'
-                                const isActive = isNavLinkActive(pathname, href)
-
-                                return (
-                                    <Link
-                                        key={link.href}
-                                        href={href}
-                                        className={navLinkClassName(isActive, useLightNav)}
-                                        style={{
-                                            color: useLightNav ? colors.primaryDark : colors.textOnDark,
-                                            fontFamily: 'var(--hp-font-body)',
-                                        }}
-                                    >
-                                        <span
-                                            aria-hidden
-                                            className={cn(
-                                                'absolute bottom-0 left-0 h-[2px] w-full origin-left transition-transform duration-200',
-                                                isActive
-                                                    ? 'scale-x-100'
-                                                    : 'scale-x-0 group-hover:scale-x-100',
-                                            )}
-                                            style={{
-                                                backgroundColor: useLightNav
-                                                    ? colors.primaryDark
-                                                    : colors.textOnDark,
-                                            }}
-                                        />
-                                        {resolveNavLinkDisplayLabel(link.label, href)}
-                                    </Link>
-                                )
-                            })}
+                            {header.navigation.map((link) => (
+                                <HeaderNavLink
+                                    key={link.href}
+                                    href={link.href ?? '/'}
+                                    label={link.label}
+                                    useLightNav={useLightNav}
+                                    color={useLightNav ? colors.primaryDark : colors.textOnDark}
+                                />
+                            ))}
                         </div>
 
 
@@ -222,7 +258,7 @@ const Header = ({ page }: HeaderProps) => {
                                             style={{
                                                 color: useLightNav ? colors.primaryDark : colors.textOnDark,
                                             }}
-                                            href={header.auth.login.href ?? '/login'}
+                                            href={loginHref}
                                         >
                                             {header.auth.login.label}
                                         </Button>
@@ -237,7 +273,7 @@ const Header = ({ page }: HeaderProps) => {
                                                       }
                                                     : undefined
                                             }
-                                            href={header.auth.signUp.href ?? '/register'}
+                                            href={signUpHref}
                                         >
                                             {header.auth.signUp.label}
                                         </Button>
@@ -321,14 +357,15 @@ const Header = ({ page }: HeaderProps) => {
 
                     <nav className='mt-10 flex flex-1 flex-col gap-2'>
                         {header.navigation.map((link) => (
-                            <Link
+                            <HeaderNavLink
                                 key={link.href}
                                 href={link.href ?? '/'}
-                                onClick={() => setIsMobileMenuOpen(false)}
+                                label={link.label}
+                                useLightNav={useLightNav}
+                                color={colors.textOnDark}
+                                onNavigate={() => setIsMobileMenuOpen(false)}
                                 className='rounded-lg px-3 py-3 text-base font-medium text-white transition hover:bg-white/15'
-                            >
-                                {resolveNavLinkDisplayLabel(link.label, link.href)}
-                            </Link>
+                            />
                         ))}
                     </nav>
 
@@ -348,7 +385,7 @@ const Header = ({ page }: HeaderProps) => {
                                         <Button
                                             variant='secondary'
                                             className='!w-full rounded-md bg-white text-primary-700'
-                                            href='/dashboard'
+                                            href={dashboardHref}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
                                             Dashboard
@@ -367,14 +404,14 @@ const Header = ({ page }: HeaderProps) => {
                                     <Button
                                         variant='transparent'
                                         className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                        href={header.auth.login.href ?? '/login'}
+                                        href={loginHref}
                                     >
                                         {header.auth.login.label}
                                     </Button>
                                     <Button
                                         variant='secondary'
                                         className='flex-1 !w-full rounded-md bg-white text-primary-700'
-                                        href={header.auth.signUp.href ?? '/register'}
+                                        href={signUpHref}
                                     >
                                         {header.auth.signUp.label}
                                     </Button>
