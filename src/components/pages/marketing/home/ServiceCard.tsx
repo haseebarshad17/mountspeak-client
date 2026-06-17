@@ -1,10 +1,8 @@
-import type { HomepagePage } from '@/data/homepage'
+import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import type { OurServicesItem } from '@/services/homepage/homepage.page.types'
 import Image from 'next/image'
 
-type ServiceCardProps = OurServicesItem & {
-    colors: HomepagePage['theme']['colors']
-}
+type ServiceCardProps = OurServicesItem
 
 export function ServiceCard({
     title,
@@ -12,7 +10,6 @@ export function ServiceCard({
     iconSrc,
     iconAlt,
     iconPosition,
-    colors,
 }: ServiceCardProps) {
     const iconBlock = (
         <div className='relative h-16 w-16 shrink-0'>
@@ -32,13 +29,13 @@ export function ServiceCard({
         <div className={`min-w-0 flex-1 ${textAlign}`}>
             <h3
                 className='pb-[26px] font-jost text-[20px] font-medium leading-6 tracking-normal'
-                style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
             >
                 {title}
             </h3>
             <p
                 className='pt-1 font-roboto text-base font-normal leading-6 tracking-normal'
-                style={{ color: colors.text, fontFamily: 'var(--hp-font-body)' }}
+                style={{ color: STATIC_UI_COLORS.text, fontFamily: 'var(--hp-font-body)' }}
             >
                 {description}
             </p>
@@ -48,7 +45,7 @@ export function ServiceCard({
     return (
         <article
             className='mx-auto flex w-full max-w-[636px] min-h-[162px] items-center rounded-[10px] border bg-white px-[24px] py-4 shadow-sm'
-            style={{ borderColor: colors.border }}
+            style={{ borderColor: HP_CSS_VARS.primaryBorder }}
         >
             <div className='flex w-full items-center gap-6'>
                 {iconPosition === 'start' && iconBlock}

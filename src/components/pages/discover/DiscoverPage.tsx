@@ -4,9 +4,11 @@ import { ServiceCard } from '@/components/pages/marketing/home/ServiceCard'
 import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePage } from '@/data/homepage'
+import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { selectHomepageIsLoading } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
+import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 type DiscoverPageProps = {
@@ -27,7 +29,6 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
     }
 
     const ourServices = page.sections.ourServices
-    const { colors, buttons } = page.theme
 
     if (!ourServices?.items?.length) {
         return (
@@ -71,10 +72,10 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
             >
                 <div className='agency-container'>
                     <header className='mx-auto max-w-3xl text-center'>
-                        <SectionEyebrow name={ourServices.eyebrow} color={colors.eyebrow} />
+                        <SectionEyebrow name={ourServices.eyebrow} />
                         <h2
                             className='agency-section-heading pt-3 text-[32px] font-medium leading-tight sm:pt-4 sm:text-[40px] sm:leading-[48px]'
-                            style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                            style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             All services
                         </h2>
@@ -82,17 +83,17 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
 
                     <div className='mx-auto grid w-full max-w-[1312px] grid-cols-1 gap-4 pt-10 sm:gap-5 sm:pt-12 md:grid-cols-2 md:pt-14 lg:gap-6 lg:pt-16'>
                         {ourServices.items.map((service) => (
-                            <ServiceCard key={service.title} {...service} colors={colors} />
+                            <ServiceCard key={service.title} {...service} />
                         ))}
                     </div>
 
                     <div
                         className='mx-auto mt-14 flex max-w-[1312px] flex-col items-center justify-between gap-6 border-t pt-10 sm:flex-row sm:pt-12'
-                        style={{ borderColor: colors.border }}
+                        style={{ borderColor: HP_CSS_VARS.primaryBorder }}
                     >
                         <p
                             className='max-w-xl text-center text-base leading-7 sm:text-left'
-                            style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                            style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
                             Ready to plan your trip? Browse published tours or speak with our team for a tailored
                             consultation.
@@ -100,23 +101,16 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                         <div className='flex flex-col gap-3 sm:flex-row'>
                             <Button
                                 variant='default'
-                                className='min-w-[180px]'
-                                style={{
-                                    backgroundColor: buttons.primary.background,
-                                    borderColor: buttons.primary.border,
-                                    color: buttons.primary.text,
-                                }}
+                                style={HP_THEME_BTN_STYLE}
+                                className={cn('min-w-[180px]', HP_THEME_BTN_CLASS)}
                                 asChild
                             >
                                 <Link href='/search'>Browse Tours</Link>
                             </Button>
                             <Button
                                 variant='outline'
-                                className='min-w-[180px]'
-                                style={{
-                                    borderColor: colors.border,
-                                    color: colors.primaryDark,
-                                }}
+                                style={HP_OUTLINE_BTN_STYLE}
+                                className={cn('min-w-[180px]', HP_THEME_OUTLINE_BTN_CLASS)}
                                 asChild
                             >
                                 <Link href='/contact-us'>Contact Us</Link>

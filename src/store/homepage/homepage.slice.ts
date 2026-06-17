@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import { getAgencyPreviewHostFromPathname } from '@/lib/homepage/agency-preview'
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
@@ -52,6 +52,11 @@ const homepageSlice = createSlice({
     initialState,
     reducers: {
         resetHomepage: () => initialState,
+        hydrateHomepage: (state, action: PayloadAction<AgencyHomepage>) => {
+            state.data = action.payload
+            state.status = 'succeeded'
+            state.error = null
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -71,5 +76,5 @@ const homepageSlice = createSlice({
     },
 })
 
-export const { resetHomepage } = homepageSlice.actions
+export const { resetHomepage, hydrateHomepage } = homepageSlice.actions
 export const homepageReducer = homepageSlice.reducer

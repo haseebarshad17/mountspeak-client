@@ -30,8 +30,8 @@ export interface BrandingLogo {
 export interface DefaultClass {
     src:    string;
     alt:    string;
-    width:  number;
-    height: number;
+    width?: number;
+    height?: number;
 }
 
 export interface Footer {
@@ -293,18 +293,11 @@ export interface Robots {
 }
 
 export interface Theme {
-    colors:  Colors;
-    buttons: Buttons;
-    fonts:   Fonts;
+    buttons: ThemeButtons;
 }
 
-export interface Buttons {
-    primary:        HeroSearch;
-    primaryRounded: HeroSearch;
-    secondary:      HeroSearch;
-    outline:        HeroSearch;
-    heroSearch:     HeroSearch;
-    navCta:         HeroSearch;
+export interface ThemeButtons {
+    primary: HeroSearch;
 }
 
 export interface HeroSearch {
@@ -312,64 +305,4 @@ export interface HeroSearch {
     backgroundHover: string;
     text:            string;
     border?:         string;
-}
-
-export interface Colors {
-    primary:               string;
-    primaryHover:          string;
-    primaryDark:           string;
-    primaryDarkHover:      string;
-    accent:                string;
-    background:            string;
-    backgroundMuted:       string;
-    surface:               string;
-    border:                string;
-    borderLight:           string;
-    title:                 string;
-    titleOnDark:           string;
-    text:                  string;
-    textMuted:             string;
-    textBody:              string;
-    textNeutral:           string;
-    textOnDark:            string;
-    textOnDarkMuted:       string;
-    eyebrow:               string;
-    heroTitle:             string;
-    heroText:              string;
-    statValue:             string;
-    cardTitle:             string;
-    quoteBackground:       string;
-    quoteActiveBackground: string;
-    error:                 string;
-    avatarBadge:           string;
-}
-
-export interface Fonts {
-    heading:        Body;
-    body:           Body;
-    sectionHeading: SectionHeading;
-    eyebrow:        Eyebrow;
-}
-
-export interface Body {
-    family:      string;
-    cssVariable: string;
-    fallback:    string;
-}
-
-export interface Eyebrow {
-    family:        string;
-    cssVariable:   string;
-    size:          string;
-    weight:        string;
-    letterSpacing: string;
-    textTransform: string;
-}
-
-export interface SectionHeading {
-    family:      string;
-    cssVariable: string;
-    weight:      string;
-    sizeDesktop: string;
-    lineHeight:  string;
 }

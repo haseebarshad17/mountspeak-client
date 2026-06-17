@@ -408,3 +408,23 @@
     }
 
 }
+
+/* Outside @layer — overrides Button variant Tailwind classes (bg + hover). */
+.hp-theme-btn {
+    background-color: var(--hp-color-primary) !important;
+    color: var(--hp-color-primary-text) !important;
+    border-color: var(--hp-color-primary-border) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.hp-theme-btn:hover,
+.hp-theme-btn:focus-visible {
+    background-color: var(--hp-color-primary-hover) !important;
+}
+
+/* Outline buttons — border matches API primary background; rest unchanged. */
+.hp-theme-outline-btn {
+    background-color: #ffffff !important;
+    border-color: var(--hp-color-primary) !important;
+    color: var(--hp-color-primary) !important;
+}
