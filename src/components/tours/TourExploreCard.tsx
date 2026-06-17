@@ -47,7 +47,7 @@ export function TourExploreCard({
                     href={detailPath}
                     className='mt-2 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
                 >
-                    View All Place
+                    View Details
                     <ArrowRight
                         className='h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4'
                         strokeWidth={2}

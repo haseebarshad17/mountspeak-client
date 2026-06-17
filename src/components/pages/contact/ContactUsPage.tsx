@@ -24,14 +24,14 @@ import { FormEvent, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 const inputClass =
-    'mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 min-h-[44px] text-base text-[#1A1C1E] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#00292C]'
+    'mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]'
 
 const selectClass = `${inputClass} appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10`
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
 const labelClass =
-    'block text-xs font-bold uppercase tracking-[1.2px] text-[#707979]'
+    'block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]'
 
 function Field({
     label,
@@ -46,12 +46,12 @@ function Field({
 }) {
     return (
         <div>
-            <label htmlFor={htmlFor} className={labelClass} style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
+            <label htmlFor={htmlFor} className={labelClass}>
                 {label}
             </label>
             {children}
             {error ? (
-                <p className='mt-1 text-xs text-[#BA1A1A]' style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
+                <p className='mt-1 text-xs text-[#BA1A1A]'>
                     {error}
                 </p>
             ) : null}
@@ -75,12 +75,11 @@ function ContactDetailItem({
                 <a
                     href={href}
                     className='hover:text-[#00292C] hover:underline'
-                    style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                 >
                     {children}
                 </a>
             ) : (
-                <span style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}>{children}</span>
+                <span>{children}</span>
             )}
         </li>
     )
@@ -151,13 +150,11 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                     <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                         >
                             Get in touch
                         </h1>
                         <p
                             className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             Share your travel plans or questions. Our team will review your consultation request and
                             respond as soon as possible.
@@ -173,7 +170,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                         <div className='border border-[#C0C8C9] bg-white p-6'>
                             <h2
                                 className='text-xl font-semibold text-[#00292C]'
-                                style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                             >
                                 Contact details
                             </h2>
@@ -197,7 +193,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                         <div className='border border-[#D5DADD] bg-[#EEF1F3] p-6'>
                             <p
                                 className='text-sm leading-6 text-[#404849]'
-                                style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                             >
                                 Typical response time is within 24–48 hours on business days.
                             </p>
@@ -207,13 +202,11 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                     <section className='border border-[#C0C8C9] bg-white p-6 sm:p-8 lg:p-10'>
                         <h2
                             className='text-2xl font-semibold text-[#00292C]'
-                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                         >
                             Send a consultation request
                         </h2>
                         <p
                             className='mt-2 text-sm text-[#404849]'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             Fields marked with * are required.
                         </p>
@@ -228,7 +221,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         placeholder='Your full name'
                                         aria-invalid={Boolean(fieldErrors.name)}
                                         className={inputClass}
-                                        style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
                                 </Field>
                                 <Field label='Email *' htmlFor='contact-email' error={fieldErrors.email}>
@@ -239,7 +231,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         placeholder='you@example.com'
                                         aria-invalid={Boolean(fieldErrors.email)}
                                         className={inputClass}
-                                        style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
                                 </Field>
                             </div>
@@ -253,7 +244,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         placeholder='+92 300 1234567'
                                         aria-invalid={Boolean(fieldErrors.phone)}
                                         className={inputClass}
-                                        style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                     />
                                 </Field>
                                 <Field label='Inquiry Type *' htmlFor='contact-inquiry-type' error={fieldErrors.inquiry_type}>
@@ -263,7 +253,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         defaultValue=''
                                         aria-invalid={Boolean(fieldErrors.inquiry_type)}
                                         className={selectClass}
-                                        style={{ backgroundImage: chevronBg, fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                                        style={{ backgroundImage: chevronBg }}
                                     >
                                         <option value='' disabled>
                                             Select inquiry type
@@ -284,7 +274,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                     defaultValue=''
                                     aria-invalid={Boolean(fieldErrors.title)}
                                     className={selectClass}
-                                    style={{ backgroundImage: chevronBg, fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
+                                    style={{ backgroundImage: chevronBg }}
                                 >
                                     <option value='' disabled>
                                         Select a subject
@@ -305,7 +295,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                     placeholder='Tell us about your trip or question...'
                                     aria-invalid={Boolean(fieldErrors.description)}
                                     className={`${inputClass} min-h-[120px] resize-y`}
-                                    style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                                 />
                             </Field>
 
@@ -313,8 +302,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                 <Button
                                     type='submit'
                                     disabled={isPending}
-                                    className='min-h-[52px] min-w-[200px] rounded-none bg-[#00292C] px-8 text-xs font-semibold uppercase tracking-[1.2px] text-white hover:bg-[#043942] disabled:opacity-70'
-                                    style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
+                                    className='min-w-[200px]'
                                 >
                                     {isPending ? 'Sending...' : 'Send Message'}
                                 </Button>

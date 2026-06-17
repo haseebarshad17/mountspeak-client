@@ -5,15 +5,15 @@ import { usePathname } from 'next/navigation'
 
 import {
     prefixHref,
-    resolveAgencyPreviewForRequest,
+    resolveAgencyPreviewFromPathname,
+    stripAgencyPreviewBase,
 } from '@/lib/homepage/agency-preview'
 
 export function useAgencyPreviewBase(): string | null {
     const pathname = usePathname()
 
     return useMemo(() => {
-        if (typeof window === 'undefined') return null
-        return resolveAgencyPreviewForRequest(pathname, window.location.hostname)?.previewBase ?? null
+        return resolveAgencyPreviewFromPathname(pathname)?.previewBase ?? null
     }, [pathname])
 }
 
@@ -26,14 +26,14 @@ export function usePrefixedHref(href: string | undefined): string | undefined {
     }, [href, previewBase])
 }
 
+export function usePreviewPath(path: string): string {
+    const previewBase = useAgencyPreviewBase()
+
+    return useMemo(() => prefixHref(path, previewBase), [path, previewBase])
+}
+
 export function useInternalPathname(): string {
     const pathname = usePathname()
 
-    return useMemo(() => {
-        if (typeof window !== 'undefined') {
-            const preview = resolveAgencyPreviewForRequest(pathname, window.location.hostname)
-            if (preview) return preview.internalPathname
-        }
-        return pathname
-    }, [pathname])
+    return useMemo(() => stripAgencyPreviewBase(pathname), [pathname])
 }

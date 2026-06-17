@@ -24,18 +24,16 @@ export function TourDiscountBadge({
         >
             <span
                 className={cn(
-                    'inline-flex min-h-[36px] items-center justify-center rounded-full bg-[#276968] px-3.5 py-1.5 font-roboto text-xs font-medium leading-none text-white shadow-sm sm:min-h-[40px] sm:px-4 sm:py-2 sm:text-sm',
+                    'relative inline-flex min-h-[30px] items-center justify-center',
+                    'bg-[#276968] py-1 pl-4 pr-2.5 font-roboto text-xs font-normal leading-none text-white shadow-sm',
+                    'sm:min-h-[32px] sm:pl-[18px] sm:pr-3 sm:text-sm',
+                    '[clip-path:polygon(10px_0,100%_0,100%_100%,10px_100%,0_50%)]',
                     pillClassName,
                 )}
             >
-                <span className='inline-flex items-baseline gap-0.5 whitespace-nowrap'>
-                    <span className='text-sm font-semibold tabular-nums sm:text-base'>
-                        {value}
-                    </span>
-                    <span className='text-xs font-bold leading-none sm:text-sm'>%</span>
-                    <span className='ml-1 text-[0.82em] font-medium uppercase tracking-[0.06em] opacity-95'>
-                        Off
-                    </span>
+                <span className='whitespace-nowrap tabular-nums'>
+                    {value}%{' '}
+                    <span className='uppercase tracking-[0.04em]'>Off</span>
                 </span>
             </span>
         </div>

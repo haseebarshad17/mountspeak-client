@@ -43,7 +43,6 @@ export function FinalizeStep({
                     </div>
                     <p
                         className='text-xl font-semibold text-neutral-900'
-                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                     >
                         {formatBookingTotalAmount(totalAmount)}
                     </p>
@@ -52,7 +51,6 @@ export function FinalizeStep({
                 <div className='mt-4 flex items-end justify-between gap-4 border-t border-neutral-200 pt-4'>
                     <span
                         className='text-xs font-semibold uppercase tracking-wide text-neutral-700'
-                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                     >
                         Total Payable
                     </span>
@@ -60,7 +58,6 @@ export function FinalizeStep({
                         <span className='block text-[10px] text-neutral-400'>inc. all local taxes</span>
                         <span
                             className='text-3xl font-semibold leading-none text-primary-700'
-                            style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                         >
                             {formatBookingTotalAmount(totalAmount)}
                         </span>

@@ -42,7 +42,7 @@ export function FilterPills({
     className,
 }: FilterPillsProps) {
     return (
-        <div className={cn('flex flex-wrap items-center justify-center gap-x-8 gap-y-5', className)}>
+        <div className={cn('flex flex-wrap items-center justify-center gap-x-8 gap-y-5 mb-[60px]', className)}>
             {labels.map((label) => (
                 <FilterPill
                     key={label}

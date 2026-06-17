@@ -6,7 +6,6 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
-import Link from 'next/link'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -145,7 +144,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='relative mb-[88px] bg-cover bg-center'
+            className='relative bg-cover bg-center'
             style={{ backgroundImage: `url("${section.backgroundImage}")` }}
             aria-labelledby='book-a-tour-heading'
         >
@@ -195,14 +194,14 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
                         <Button
                             variant='secondary'
-                            className='mt-8 h-12 min-w-[200px] rounded-full border-0 px-8 text-base font-medium sm:mt-10'
+                            className='mt-8 min-w-[200px] sm:mt-10'
                             style={{
                                 backgroundColor: buttons.secondary.background,
                                 color: buttons.secondary.text,
                             }}
-                            asChild
+                            href={section.cta.href ?? '/search'}
                         >
-                            <Link href={section.cta.href ?? '/search'}>{section.cta.label}</Link>
+                            {section.cta.label}
                         </Button>
                     </div>
 
@@ -329,9 +328,10 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 </FormField>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-4'>
-                                <div className='rounded-[10px] bg-white p-4'>
+                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                                <FormField errorColor={colors.error} label='Male Seats' error={fieldErrors.male_seat}>
                                     <QuantityStepper
+                                        variant='field'
                                         label='Male Seats'
                                         value={maleSeats}
                                         max={MAX_BOOKING_REQUEST_SEATS}
@@ -341,14 +341,10 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('female_seat')
                                         }}
                                     />
-                                </div>
-                                {fieldErrors.male_seat ? (
-                                    <p className='-mt-2 font-roboto text-xs' style={{ color: colors.error }} role='alert'>
-                                        {fieldErrors.male_seat}
-                                    </p>
-                                ) : null}
-                                <div className='rounded-[10px] bg-white p-4'>
+                                </FormField>
+                                <FormField errorColor={colors.error} label='Female Seats' error={fieldErrors.female_seat}>
                                     <QuantityStepper
+                                        variant='field'
                                         label='Female Seats'
                                         value={femaleSeats}
                                         max={MAX_BOOKING_REQUEST_SEATS}
@@ -358,12 +354,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('female_seat')
                                         }}
                                     />
-                                </div>
-                                {fieldErrors.female_seat ? (
-                                    <p className='-mt-2 font-roboto text-xs' style={{ color: colors.error }} role='alert'>
-                                        {fieldErrors.female_seat}
-                                    </p>
-                                ) : null}
+                                </FormField>
                             </div>
 
                             <FormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
@@ -379,7 +370,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 type='submit'
                                 variant='default'
                                 disabled={isPending}
-                                className='!flex h-[58px] w-full max-w-[624px] rounded-[100px] px-8 text-base font-normal leading-6 tracking-normal disabled:cursor-not-allowed disabled:opacity-70'
+                                className='w-full max-w-[624px]'
                                 style={{
                                     backgroundColor: buttons.primary.background,
                                     color: buttons.primary.text,

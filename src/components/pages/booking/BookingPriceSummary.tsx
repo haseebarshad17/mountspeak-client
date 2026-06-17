@@ -50,7 +50,6 @@ export function BookingPriceSummary({
 
             <div
                 className='overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50'
-                style={{ fontFamily: 'var(--font-booking-body), ui-sans-serif' }}
             >
                 <div className='space-y-3 px-4 py-4'>
                     <SummaryRow
@@ -84,7 +83,6 @@ export function BookingPriceSummary({
 
                 <div
                     className='flex items-center justify-between gap-4 border-t border-neutral-200 bg-white px-4 py-3.5'
-                    style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                 >
                     <span className='text-xs font-semibold uppercase tracking-wide text-neutral-700'>
                         Total payable

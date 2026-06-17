@@ -24,8 +24,8 @@
             "secondaryColor": "#F26A3D",
             "backgroundColor": "#F5F5F2",
             "textColor": "#1F1F1F",
-            "fontHeading": "Playfair",
-            "fontBody": "Inter"
+            "fontHeading": "Jost",
+            "fontBody": "Roboto"
         },
         "navigation": {
             "transparent": true,

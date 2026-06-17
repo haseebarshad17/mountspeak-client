@@ -13,7 +13,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='py-16 sm:py-20 lg:py-[96px]'
+            className='py-[100px]'
             style={{ backgroundColor: section.backgroundColor }}
             aria-labelledby='our-services-heading'
         >
@@ -38,7 +38,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
                 <div className='flex justify-center pt-10 sm:pt-12 lg:pt-8'>
                     <Button
                         variant='default'
-                        className='h-[58px] w-[219px] max-w-[219px] rounded-full border px-8 text-sm font-medium sm:w-[219px] sm:text-base'
+                        className='w-[219px] max-w-[219px]'
                         style={{
                             backgroundColor: buttons.primary.background,
                             borderColor: buttons.primary.border,

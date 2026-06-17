@@ -25,16 +25,16 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
             <div className="agency-container !px-16">
                 <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p className="text-base font-manrope uppercase tracking-[0.1em] text-readable-uppercase text-[#D2E9C7]">
+                        <p className="text-base font-roboto uppercase tracking-[0.1em] text-readable-uppercase text-[#D2E9C7]">
                             {gallerySection.eyebrow}
                         </p>
-                        <h2 className="mt-4 font-heading text-3xl font-bold font-noto text-white sm:text-4xl">
+                        <h2 className="mt-4 font-heading text-3xl font-bold font-heading text-white sm:text-4xl">
                             {gallerySection.title}
                         </h2>
                     </div>
                     <Link
                         href={gallerySection.actionUrl}
-                        className="text-base font-manrope uppercase tracking-[0.1em] text-readable-uppercase text-white underline decoration-2 underline-offset-4 transition hover:text-white/90"
+                        className="text-base font-roboto uppercase tracking-[0.1em] text-readable-uppercase text-white underline decoration-2 underline-offset-4 transition hover:text-white/90"
                         style={{ textDecorationColor: theme.secondaryColor }}
                     >
                         {gallerySection.actionLabel}

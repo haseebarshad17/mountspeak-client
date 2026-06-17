@@ -4,7 +4,7 @@ import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
 import { defaultMeta } from "@/assests/meta";
-import { hankenGrotesk, jetBrainsMono, jost, manrope, notoSans, notoSerif, plusJakartaSans, redHatText, roboto } from "@/assests/fonts";
+import { jost, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
 import HomepageBootstrap from "@/components/providers/HomepageBootstrap";
@@ -47,20 +47,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     return (
         <html
             lang="en"
-            className={cn(
-                notoSans.variable,
-                redHatText.variable,
-                jost.variable,
-                roboto.variable,
-                hankenGrotesk.variable,
-                plusJakartaSans.variable,
-                jetBrainsMono.variable,
-                notoSerif.variable,
-                manrope.variable,
-            )}
+            className={cn(jost.variable, roboto.variable)}
         >
             <body
-                className={cn(notoSans.variable)}
+                className={cn("font-body", roboto.variable)}
                 style={bodyThemeStyle}
             >
                 <StoreProvider>

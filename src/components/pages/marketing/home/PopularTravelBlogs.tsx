@@ -36,21 +36,18 @@ function BlogCard({
                 <div className='absolute inset-x-0 bottom-0 flex items-stretch border-t border-white/25 bg-transparent'>
                     <div
                         className='flex flex-1 items-center justify-center gap-1.5 border-r border-white/80 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                        style={{ fontFamily: 'var(--hp-font-body)' }}
                     >
                         <Calendar className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
                         {date}
                     </div>
                     <div
                         className='flex flex-1 items-center justify-center gap-1.5 border-r border-white/80 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                        style={{ fontFamily: 'var(--hp-font-body)' }}
                     >
                         <ThumbsUp className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
                         {likes}
                     </div>
                     <div
                         className='flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                        style={{ fontFamily: 'var(--hp-font-body)' }}
                     >
                         <MessageCircle className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
                         {comments}
@@ -80,7 +77,7 @@ function BlogCard({
                 <Button
                     asChild
                     variant='default'
-                    className='mt-4 !inline-flex h-10 w-max min-w-[110px] md:max-w-[126px] md:h-[42px] justify-center rounded-full border-0 px-6 text-sm font-normal leading-6 shadow-none'
+                    className='mt-4 w-max min-w-[110px]'
                     style={{
                         backgroundColor: buttons.primary.background,
                         color: buttons.primary.text,
@@ -98,7 +95,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
     const { colors, buttons } = page.theme
 
     return (
-        <section className='bg-white pb-16 sm:pb-20 lg:pb-[149px]' aria-labelledby='popular-travel-blogs-heading'>
+        <section className='bg-white' aria-labelledby='popular-travel-blogs-heading'>
             <div className='agency-container'>
                 <header className='mx-auto max-w-[861px] text-center'>
                     <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
@@ -117,7 +114,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                     </p>
                 </header>
 
-                <div className='mx-auto grid max-w-[1280px] grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
+                <div className='mx-auto grid grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
                     {section.posts.map((post) => (
                         <BlogCard
                             key={post.title}
