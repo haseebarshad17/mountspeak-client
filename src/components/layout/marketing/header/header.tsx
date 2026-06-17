@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
+import { HP_CSS_VARS, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -103,8 +104,8 @@ const Header = ({ page }: HeaderProps) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(useLightNav)
 
-    const { header, branding, theme } = page
-    const { colors, buttons } = theme
+    const { header, branding } = page
+    const colors = STATIC_UI_COLORS
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
     const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
@@ -169,7 +170,7 @@ const Header = ({ page }: HeaderProps) => {
     )
 
     const logoutButtonStyle = {
-        color: useLightNav ? colors.primaryDark : colors.textOnDark,
+        color: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
         fontFamily: 'var(--hp-font-body)',
     }
 
@@ -224,8 +225,8 @@ const Header = ({ page }: HeaderProps) => {
                                     : branding.logo.onDark.src
                             }
                             alt={branding.logo.default.alt}
-                            width={branding.logo.default.width}
-                            height={branding.logo.default.height}
+                            width={150}
+                            height={100}
                             className='object-contain max-h-[40px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
                             priority
                             fetchPriority='high'
@@ -242,7 +243,7 @@ const Header = ({ page }: HeaderProps) => {
                                     href={link.href ?? '/'}
                                     label={link.label}
                                     useLightNav={useLightNav}
-                                    color={useLightNav ? colors.primaryDark : colors.textOnDark}
+                                    color={useLightNav ? HP_CSS_VARS.primary : colors.textOnDark}
                                 />
                             ))}
                         </div>
@@ -250,7 +251,7 @@ const Header = ({ page }: HeaderProps) => {
 
                         {/* Buttons  */}
                         {showAuthActions ? (
-                            <div className='ml-10 flex items-center'>
+                            <div className='ml-10 flex items-center gap-10'>
                                 {isLoggedIn ? (
                                     renderLoggedInAuthAction()
                                 ) : (
@@ -260,7 +261,7 @@ const Header = ({ page }: HeaderProps) => {
                                             size='nav'
                                             className='w-max'
                                             style={{
-                                                color: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                                color: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
                                             }}
                                             href={loginHref}
                                         >
@@ -268,15 +269,8 @@ const Header = ({ page }: HeaderProps) => {
                                         </Button>
                                         <Button
                                             variant='secondary'
-                                            className='w-max'
-                                            style={
-                                                useLightNav
-                                                    ? {
-                                                          backgroundColor: buttons.navCta.background,
-                                                          color: buttons.navCta.text,
-                                                      }
-                                                    : undefined
-                                            }
+                                            style={useLightNav ? HP_THEME_BTN_STYLE : undefined}
+                                            className={cn('w-max', useLightNav && HP_THEME_BTN_CLASS)}
                                             href={signUpHref}
                                         >
                                             {header.auth.signUp.label}
@@ -304,13 +298,13 @@ const Header = ({ page }: HeaderProps) => {
                                 <span
                                     className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
                                     style={{
-                                        backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                        backgroundColor: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
                                     }}
                                 />
                                 <span
                                     className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
                                     style={{
-                                        backgroundColor: useLightNav ? colors.primaryDark : colors.textOnDark,
+                                        backgroundColor: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
                                     }}
                                 />
                             </span>
@@ -344,8 +338,8 @@ const Header = ({ page }: HeaderProps) => {
                         <Image
                             src={branding.logo.onDark.src}
                             alt={branding.logo.onDark.alt}
-                            width={branding.logo.onDark.width}
-                            height={branding.logo.onDark.height}
+                            width={150}
+                            height={100}
                             className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xl:w-[95px]'
                             quality={100}
                         />

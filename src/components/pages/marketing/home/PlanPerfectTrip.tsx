@@ -1,12 +1,12 @@
 'use client'
 
+import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import Image from 'next/image'
 import React from 'react'
 
 const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
     const section = page.sections.planPerfectTrip
-    const { colors } = page.theme
     return (
         <section aria-labelledby='plan-perfect-trip-heading'>
             <div className='agency-container'>
@@ -24,7 +24,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
                     <div className='w-full max-w-[612px] pt-0 md:pt-2 lg:pt-0 xl:pt-[38px]'>
                         <span
                             className='text-sm font-semibold uppercase tracking-[0.12em] sm:text-base'
-                            style={{ color: colors.eyebrow, fontFamily: 'var(--hp-font-body)' }}
+                            style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.eyebrow}
                         </span>
@@ -32,14 +32,14 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
                         <h2
                             id='plan-perfect-trip-heading'
                             className='agency-section-heading pt-1'
-                            style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                            style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {section.title}
                         </h2>
 
                         <p
                             className='pt-4 text-sm font-normal leading-7 sm:pt-5 sm:text-base'
-                            style={{ color: colors.text, fontFamily: 'var(--hp-font-body)' }}
+                            style={{ color: STATIC_UI_COLORS.text, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.paragraph}
                         </p>
@@ -49,13 +49,13 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
                                 <div key={item.value}>
                                     <dt
                                         className='text-2xl font-semibold leading-none sm:text-[28px]'
-                                        style={{ color: colors.statValue, fontFamily: 'var(--hp-font-heading)' }}
+                                        style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
                                     >
                                         {item.value}
                                     </dt>
                                     <dd
                                         className='pt-1 text-sm font-normal sm:text-base'
-                                        style={{ color: colors.text, fontFamily: 'var(--hp-font-body)' }}
+                                        style={{ color: STATIC_UI_COLORS.text, fontFamily: 'var(--hp-font-body)' }}
                                     >
                                         {item.label}
                                     </dd>

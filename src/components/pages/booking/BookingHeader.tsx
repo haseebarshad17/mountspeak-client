@@ -58,8 +58,8 @@ export function BookingHeader() {
                         <Image
                             src={branding.logo.default.src}
                             alt={branding.logo.default.alt}
-                            width={branding.logo.default.width}
-                            height={branding.logo.default.height}
+                            width={150}
+                            height={100}
                             className='h-11 w-auto max-w-[150px] object-contain sm:h-11'
                             priority
                         />
@@ -147,8 +147,8 @@ export function BookingHeader() {
                             <Image
                                 src={branding.logo.default.src}
                                 alt={branding.logo.default.alt}
-                                width={branding.logo.default.width}
-                                height={branding.logo.default.height}
+                                width={150}
+                                height={100}
                                 className='h-auto w-[80px] object-contain'
                             />
                             <button

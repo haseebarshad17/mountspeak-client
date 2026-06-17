@@ -1,9 +1,12 @@
 'use client'
 
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_LIGHT_BUTTON, STATIC_UI_COLORS } from '@/data/homepage'
+
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 import { usePakistanCities } from '@/services/cities/cities.queries'
@@ -63,7 +66,7 @@ function FormField({
 
 const BookATour = ({ page }: HomepagePageProps) => {
     const section = page.sections.bookATour
-    const { colors, buttons } = page.theme
+    const colors = STATIC_UI_COLORS
     const formCopy = section.form
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
@@ -196,8 +199,8 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             variant='secondary'
                             className='mt-8 min-w-[200px] sm:mt-10'
                             style={{
-                                backgroundColor: buttons.secondary.background,
-                                color: buttons.secondary.text,
+                                backgroundColor: STATIC_LIGHT_BUTTON.background,
+                                color: STATIC_LIGHT_BUTTON.text,
                             }}
                             href={section.cta.href ?? '/search'}
                         >
@@ -370,11 +373,8 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 type='submit'
                                 variant='default'
                                 disabled={isPending}
-                                className='w-full max-w-[624px]'
-                                style={{
-                                    backgroundColor: buttons.primary.background,
-                                    color: buttons.primary.text,
-                                }}
+                                style={HP_THEME_BTN_STYLE}
+                                className={cn('w-full max-w-[624px]', HP_THEME_BTN_CLASS)}
                             >
                                 {isPending ? formCopy.submittingLabel : formCopy.submitLabel}
                             </Button>

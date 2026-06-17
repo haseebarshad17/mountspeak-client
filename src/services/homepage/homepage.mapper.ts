@@ -1,5 +1,6 @@
 import type { HomepagePage } from '@/data/homepage'
 import { resolveStorageUrlsDeep } from '@/lib/supabase/resolve-storage-urls'
+import { normalizeHomepagePage } from '@/lib/homepage/normalize-homepage'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
 import type { AgencyHomepage, AgencySiteThemeRow } from './homepage.types'
 
@@ -13,7 +14,6 @@ function isHomepagePageShape(value: unknown): value is HomepagePage {
         typeof value.seo === 'object' &&
         typeof value.theme === 'object' &&
         typeof value.branding === 'object' &&
-        typeof value.header === 'object' &&
         typeof value.footer === 'object' &&
         typeof value.sections === 'object'
     )
@@ -65,7 +65,7 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
         agencyId: row.agency_id,
         siteUrl: normalizeSiteUrl(row.site_url),
         isAgencySite: true,
-        page: resolveStorageUrlsDeep(page),
+        page: resolveStorageUrlsDeep(normalizeHomepagePage(page)),
     }
 }
 

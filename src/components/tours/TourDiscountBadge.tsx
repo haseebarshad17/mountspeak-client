@@ -1,3 +1,4 @@
+import { HP_CSS_VARS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { formatTourDiscountDisplayValue } from '@/services/tours/tours.utils'
 
@@ -25,11 +26,12 @@ export function TourDiscountBadge({
             <span
                 className={cn(
                     'relative inline-flex min-h-[30px] items-center justify-center',
-                    'bg-[#276968] py-1 pl-4 pr-2.5 font-roboto text-xs font-normal leading-none text-white shadow-sm',
+                    'py-1 pl-4 pr-2.5 font-roboto text-xs font-normal leading-none text-white shadow-sm',
                     'sm:min-h-[32px] sm:pl-[18px] sm:pr-3 sm:text-sm',
                     '[clip-path:polygon(10px_0,100%_0,100%_100%,10px_100%,0_50%)]',
                     pillClassName,
                 )}
+                style={{ backgroundColor: HP_CSS_VARS.primary }}
             >
                 <span className='whitespace-nowrap tabular-nums'>
                     {value}%{' '}

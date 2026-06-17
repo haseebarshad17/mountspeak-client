@@ -1,5 +1,6 @@
 'use client'
 
+import { HP_CSS_VARS, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
 export type FilterPillsProps = {
@@ -25,10 +26,17 @@ export function FilterPill({
             aria-pressed={isActive}
             className={cn(
                 'inline-flex min-h-[42px] min-w-[152px] cursor-pointer items-center justify-center rounded-full border px-4 font-roboto text-base font-normal leading-6 tracking-normal transition-colors',
-                isActive
-                    ? 'border-[#276968] bg-[#276968] text-white'
-                    : 'border-[#276968] bg-[#F2F2F2] text-[#14141F] hover:border-neutral-300 hover:bg-neutral-100',
+                isActive ? HP_THEME_BTN_CLASS : 'hover:bg-neutral-50',
             )}
+            style={
+                isActive
+                    ? HP_THEME_BTN_STYLE
+                    : {
+                          backgroundColor: '#FFFFFF',
+                          borderColor: HP_CSS_VARS.primaryBorder,
+                          color: STATIC_UI_COLORS.title,
+                      }
+            }
         >
             {label}
         </button>

@@ -1,8 +1,11 @@
 'use client'
 
+import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
+
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { filterDestinationCards } from '@/data/popular-destinations'
+import { cn } from '@/lib/utils/clsxUtils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,7 +19,6 @@ type TopDestinationsProps = HomepagePageProps & {
 
 const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
     const section = page.sections.popularDestination.topDestinations
-    const { colors, buttons } = page.theme
     const prevRef = useRef<HTMLButtonElement>(null)
     const nextRef = useRef<HTMLButtonElement>(null)
 
@@ -34,14 +36,14 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                     <div>
                         <span
                             className='text-base font-normal leading-6'
-                            style={{ color: colors.primary, fontFamily: 'var(--hp-font-body)' }}
+                            style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.subtitle}
                         </span>
                         <h2
                             id='top-destinations-heading'
                             className='agency-section-heading pt-1 text-[40px] font-medium leading-[48px]'
-                            style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                            style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {section.title}
                         </h2>
@@ -71,12 +73,8 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
 
                         <Button
                             variant='outline'
-                            className='w-max'
-                            style={{
-                                backgroundColor: buttons.outline.background,
-                                borderColor: buttons.outline.border,
-                                color: buttons.outline.text,
-                            }}
+                            style={HP_OUTLINE_BTN_STYLE}
+                            className={cn('w-max', HP_THEME_OUTLINE_BTN_CLASS)}
                             asChild
                         >
                             <Link href={section.seeAllHref ?? '/search'}>{section.seeAllLabel}</Link>
@@ -133,7 +131,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                         <div className='flex items-center justify-between gap-3 px-1 pb-1 pt-4'>
                                             <h3
                                                 className='font-jost text-[28px] font-medium leading-8 sm:text-[32px]'
-                                                style={{ color: colors.primary, fontFamily: 'var(--hp-font-heading)' }}
+                                                style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
                                             >
                                                 {destination.name}
                                             </h3>
@@ -156,7 +154,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                                 ))}
                                                 <span
                                                     className='-ml-2 inline-flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white ring-2 ring-white'
-                                                    style={{ backgroundColor: colors.avatarBadge }}
+                                                    style={{ backgroundColor: STATIC_UI_COLORS.avatarBadge }}
                                                 >
                                                     {section.moreTravelersLabel}
                                                 </span>
@@ -169,7 +167,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                     ) : (
                         <p
                             className='py-12 text-center text-base'
-                            style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                            style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.emptyMessage}
                         </p>

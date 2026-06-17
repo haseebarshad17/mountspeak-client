@@ -1,5 +1,7 @@
 import type { HomepagePage } from '@/data/homepage'
 
+import type { HeroSearch } from '@/services/homepage/homepage.page.types'
+
 /** Default search filter labels when homepage API data is not loaded yet. */
 export const DEFAULT_HERO_SEARCH_FILTERS: HomepagePage['sections']['hero']['searchFilters'] = {
     fromPlaceholder: 'From',
@@ -15,7 +17,7 @@ export const DEFAULT_HERO_SEARCH_FILTERS: HomepagePage['sections']['hero']['sear
     doneDate: 'Done',
 }
 
-export const DEFAULT_HERO_SEARCH_BUTTON: HomepagePage['theme']['buttons']['heroSearch'] = {
+export const DEFAULT_HERO_SEARCH_BUTTON: HeroSearch = {
     background: '#276968',
     backgroundHover: '#1f5453',
     text: '#FFFFFF',

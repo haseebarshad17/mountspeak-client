@@ -7,8 +7,8 @@ import { usePakistanCities } from "@/services/cities/cities.queries"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
 import { Calendar, MapPin, Navigation, Search } from "lucide-react"
 import type { HomepagePage } from '@/data/homepage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import {
-    DEFAULT_HERO_SEARCH_BUTTON,
     DEFAULT_HERO_SEARCH_FILTERS,
 } from '@/components/pages/marketing/home/hero-search.defaults'
 import { selectHomepagePage } from '@/store/homepage/homepage.selectors'
@@ -153,7 +153,6 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
         "!flex !h-auto !w-full min-w-0 justify-start rounded-md !px-3 py-2.5 text-left sm:!flex sm:!w-full"
 
     const heroSearch = page?.sections.hero.searchFilters ?? DEFAULT_HERO_SEARCH_FILTERS
-    const heroSearchButton = page?.theme.buttons.heroSearch ?? DEFAULT_HERO_SEARCH_BUTTON
 
     return (
         <form
@@ -271,11 +270,11 @@ export default function HeroFilters({ page: pageProp, initialValues, tourLocatio
                     <Button
                         type="submit"
                         size="max"
-                        className="!h-14 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm"
-                        style={{
-                            backgroundColor: heroSearchButton.background,
-                            color: heroSearchButton.text,
-                        }}
+                        style={HP_THEME_BTN_STYLE}
+                        className={cn(
+                            HP_THEME_BTN_CLASS,
+                            '!h-14 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
+                        )}
                     >
                         {heroSearch.searchButtonLabel} <Search className="ml-2 w-4 h-4 flex-shrink-0" />
                     </Button>

@@ -1,5 +1,6 @@
 'use client'
 
+import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useQuery } from '@tanstack/react-query'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
@@ -15,7 +16,6 @@ import { toTourListItem } from '@/services/tours/tours.utils'
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
-    const { colors } = page.theme
     const isAgencySite = useIsAgencySite()
     const agencyId = useAppSelector(selectHomepageAgencyId)
 
@@ -40,17 +40,17 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
+                    <SectionEyebrow name={section.eyebrow} />
                     <h2
                         id='explore-the-world-heading'
                         className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
-                        style={{ color: colors.title, fontFamily: 'var(--hp-font-heading)' }}
+                        style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
                     <p
                         className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-7 md:pt-5 md:text-lg md:leading-8'
-                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                        style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.paragraph}
                     </p>
@@ -59,7 +59,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                 {showLoading ? (
                     <p
                         className='mx-auto max-w-xl pt-10 text-center text-base'
-                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                        style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         Loading tours…
                     </p>
@@ -81,7 +81,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                 ) : (
                     <p
                         className='mx-auto max-w-xl pt-10 text-center text-base'
-                        style={{ color: colors.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                        style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.emptyMessage}
                     </p>
