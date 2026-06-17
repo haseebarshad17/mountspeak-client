@@ -23,7 +23,7 @@ const FlightHotels = () => {
                                 <p className='text-sm font-normal sm:text-base'>Search flights & places and book for your amazing trips.</p>
                                 <Button
                                     variant='secondary'
-                                    className='mt-4 w-max gap-1.5 px-5 text-sm'
+                                    className='mt-4 w-max gap-1.5'
                                 >
                                     <MousePointer2 size={16} className='rotate-[90deg]' />
                                     Show flights
@@ -46,7 +46,7 @@ const FlightHotels = () => {
                                 <p className='text-sm font-normal sm:text-base'>Search our best hotels & places and book for your  amazing trips.</p>
                                 <Button
                                     variant='secondary'
-                                    className='mt-4 w-max gap-1.5 px-5 text-sm'
+                                    className='mt-4 w-max gap-1.5'
                                 >
                                     <MousePointer2 size={16} className='rotate-[90deg]' />
                                     Show hotels

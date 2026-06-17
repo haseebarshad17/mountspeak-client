@@ -206,7 +206,6 @@ export function ProfileAvatarUpload({
           {uploading ? (
             <span
               className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-black/60 py-1 text-center text-[10px] font-medium uppercase tracking-[0.6px] text-white"
-              style={{ fontFamily: 'var(--hp-font-body)' }}
             >
               Uploading…
             </span>
@@ -216,7 +215,6 @@ export function ProfileAvatarUpload({
 
       <p
         className="mt-2 text-[12px] leading-[18px] text-[#707979]"
-        style={{ fontFamily: 'var(--hp-font-body)' }}
       >
         JPG, PNG, or WebP · max 2MB
       </p>
@@ -224,7 +222,6 @@ export function ProfileAvatarUpload({
       {!userId && !disabled ? (
         <p
           className="mt-1 text-xs text-[#707979]"
-          style={{ fontFamily: 'var(--hp-font-body)' }}
         >
           Sign in to upload a profile photo.
         </p>
@@ -233,7 +230,6 @@ export function ProfileAvatarUpload({
       {error ? (
         <p
           className="mt-1 text-xs font-medium text-[#BA1A1A]"
-          style={{ fontFamily: 'var(--hp-font-body)' }}
         >
           {error}
         </p>

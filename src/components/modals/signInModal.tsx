@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "@/components/ui/button";
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -84,9 +85,9 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
                     </a>
                   </div>
 
-                  <button className="w-full rounded-xl bg-blue-900 py-3 text-white transition-all hover:bg-blue-950 hover:shadow-lg">
+                  <Button className="w-full">
                     Sign In
-                  </button>
+                  </Button>
 
                   <p className="text-center text-sm text-neutral-600">
                     Don&apos;t have an account?{" "}

@@ -6,12 +6,16 @@ import { getClientSiteUrl } from "@/lib/utils/site-url";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode } from "@/lib/messages/codes";
 import { useForgotPassword } from "@/services/auth/auth.queries";
+import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import AuthSidePanel from "./AuthSidePanel";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const loginPath = usePreviewPath("/login");
+  const resetPasswordPath = usePreviewPath("/reset-password");
   const { mutateAsync: sendResetLink, isPending } = useForgotPassword();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -25,7 +29,7 @@ export default function ForgotPasswordPage() {
     try {
       await sendResetLink({
         email: email.trim(),
-        redirectTo: `${getClientSiteUrl()}/reset-password`,
+        redirectTo: `${getClientSiteUrl()}${resetPasswordPath}`,
       });
       setSent(true);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_RESET_LINK_SENT));
@@ -43,13 +47,11 @@ export default function ForgotPasswordPage() {
           <div className="w-full max-w-[500px]">
             <h1
               className="mb-3 text-5xl font-semibold leading-[56px] tracking-[-0.02em] text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-hanken-grotesk), sans-serif" }}
             >
               Forgot password?
             </h1>
             <p
               className="mb-[40px] text-[16px] leading-6 text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
             >
               {sent
                 ? "We sent a password reset link to your email. Open the link to choose a new password."
@@ -60,7 +62,6 @@ export default function ForgotPasswordPage() {
               <div className="space-y-8">
                 <p
                   className="rounded-sm border border-[#C0C8C966] bg-[#f7f9f9] px-4 py-3 text-sm leading-6 text-[#1A1C1E]"
-                  style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                 >
                   Email sent to <strong>{email}</strong>. If you do not see it, check your spam
                   folder.
@@ -69,7 +70,6 @@ export default function ForgotPasswordPage() {
                   type="button"
                   onClick={() => setSent(false)}
                   className="text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
-                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                 >
                   Use a different email
                 </button>
@@ -80,7 +80,6 @@ export default function ForgotPasswordPage() {
                   <label
                     htmlFor="forgot-email"
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                   >
                     Email Address
                   </label>
@@ -91,35 +90,30 @@ export default function ForgotPasswordPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="explorer@pakistan.travel"
                     autoComplete="email"
-                    style={{ fontFamily: "var(--font-plus-jakarta-sans), sans-serif" }}
                     className="mt-1 min-h-[40px] w-full border-b border-[#6B7280] bg-transparent px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
                   />
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={isPending}
-                  className="mt-10 h-14 w-full bg-[#002e35] text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-[#043942] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="mt-10 w-full"
                 >
                   {isPending ? "Sending..." : "Send Reset Link"}
-                </button>
+                </Button>
               </form>
             )}
 
             <Link
-              href="/login"
+              href={loginPath}
               className="mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             >
               ← Back to Sign In
             </Link>
 
             <p
               className="mt-16 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             >
-              Secure Authentication Protocol v4.2
-              <br />
               © {new Date().getFullYear()} Pakistan Travel Systems
             </p>
           </div>

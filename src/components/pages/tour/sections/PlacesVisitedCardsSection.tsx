@@ -16,12 +16,12 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
                     <div className="shrink-0">
                         <p
-                            className="text-base font-manrope uppercase"
+                            className="text-base font-roboto uppercase"
                             style={{ color: theme.secondaryColor }}
                         >
                             {placesVisitedSection.eyebrow}
                         </p>
-                        <h2 className="mt-2 font-heading text-3xl font-noto font-semibold tracking-tight text-[#191C1C] sm:text-4xl">
+                        <h2 className="mt-2 font-heading text-3xl font-heading font-semibold tracking-tight text-[#191C1C] sm:text-4xl">
                             {placesVisitedSection.title}
                         </h2>
                     </div>
@@ -42,10 +42,10 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                                     sizes="(max-width: 640px) 100vw, 25vw"
                                 />
                             </div>
-                            <h3 className="mt-4 font-heading font-noto text-lg font-semibold text-[#191C1C] sm:text-xl">
+                            <h3 className="mt-4 font-heading font-heading text-lg font-semibold text-[#191C1C] sm:text-xl">
                                 {card.title}
                             </h3>
-                            <p className="mt-1.5 text-xs font-medium font-manrope uppercase  text-[#434849]">
+                            <p className="mt-1.5 text-xs font-medium font-roboto uppercase  text-[#434849]">
                                 {card.category} • {card.location}
                             </p>
                         </article>

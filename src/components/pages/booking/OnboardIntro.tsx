@@ -19,13 +19,11 @@ export function OnboardIntro({
         <div className='mx-auto w-full max-w-[455px] xl:mx-0'>
             <h2
                 className='text-[40px] font-semibold leading-[0.98] text-neutral-800 xs:text-[46px] sm:text-[58px] xl:text-[64px]'
-                style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
             >
                 {titleLines.map((line) => (
                     <span
                         key={line}
                         className='mr-2 inline-block text-[40px] font-semibold leading-[0.98] text-neutral-800 xs:text-[46px] sm:text-[58px] xl:text-[64px]'
-                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                     >
                         {line}
                     </span>

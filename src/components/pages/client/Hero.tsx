@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react'
 import React from 'react'
 
+import { Button } from '@/components/ui/button'
 import { heroContent } from './content'
 
 const Hero = () => {
@@ -22,9 +23,9 @@ const Hero = () => {
                                 className='w-full py-3 text-neutral-900 placeholder:text-neutral-400 focus:outline-none'
                             />
                         </div>
-                        <button className='rounded-md bg-[rgb(var(--color-primary-500))] px-8 py-3 text-white transition-colors hover:bg-[rgb(var(--color-primary-600))]'>
+                        <Button className='shrink-0'>
                             {heroContent.searchButtonLabel}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

@@ -49,12 +49,12 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     <div className="agency-container !px-16">
                         <div className="max-w-3xl text-white">
                             {eyebrow ? (
-                                <p className="mb-3 font-manrope text-base font-semibold uppercase text-[#FFDBD0]">
+                                <p className="mb-3 font-roboto text-base font-semibold uppercase text-[#FFDBD0]">
                                     {eyebrow}
                                 </p>
                             ) : null}
                             <h1
-                                className="font-noto text-[40px] font-semibold leading-[1.05] tracking-tight lg:leading-[57px] max-w-[672px] w-full lg:text-[48px]"
+                                className="font-heading text-[40px] font-semibold leading-[1.05] tracking-tight lg:leading-[57px] max-w-[672px] w-full lg:text-[48px]"
                                 style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
                             >
                                 {title}

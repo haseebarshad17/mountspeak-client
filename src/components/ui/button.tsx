@@ -5,47 +5,63 @@ import Link from "next/link";
 import { usePrefixedHref } from "@/hooks/useAgencyPreviewBase";
 import { cn } from "@/lib/utils/clsxUtils";
 
+/** Shared CTA typography — matches auth / form primary buttons site-wide */
+export const buttonCtaTypography =
+    "text-sm font-semibold uppercase tracking-[0.1em] ![word-spacing:normal]";
+
 const buttonVariants = tv({
+    base: [
+        "relative !inline-flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap",
+        "cursor-pointer outline-none transition-colors",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-70",
+        "focus-visible:ring-0",
+        buttonCtaTypography,
+    ],
     variants: {
         variant: {
-            default: "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/30",
+            default: "bg-[#002e35] text-white hover:bg-[#043942]",
             "default-red": "bg-red-600 text-white hover:bg-red-700",
             "default-blue": "bg-blue-600 text-white hover:bg-blue-700",
             "default-purple": "bg-purple-600 text-white hover:bg-purple-700",
             "default-amber": "bg-amber-600 text-white hover:bg-amber-700",
 
-            outline: "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50",
+            outline:
+                "border border-[#C0C8C966] bg-white text-[#1A1C1E] hover:border-[#0f3137]/40",
+            "outline-on-dark":
+                "border border-[#2f5a62] bg-transparent text-white hover:border-[#2f5a62] hover:bg-[#0a3a43]",
             "outline-primary": "border border-primary-600 text-primary-700 hover:bg-primary-50",
             "outline-red": "border border-red-600 text-red-700 hover:bg-red-50",
             "outline-blue": "border border-blue-600 text-blue-700 hover:bg-blue-50",
             "outline-purple": "border border-purple-600 text-purple-700 hover:bg-purple-50",
             "outline-amber": "border border-amber-600 text-amber-700 hover:bg-amber-50",
 
-            ghost: "hover:bg-gray-200/50 hover:text-gray-900 bg-transparent",
-            "ghost-primary": "hover:bg-primary-50 hover:text-primary-900 bg-transparent",
-            "ghost-red": "hover:bg-red-50 hover:text-red-900 bg-transparent",
-            "ghost-blue": "hover:bg-blue-50 hover:text-blue-900 bg-transparent",
-            "ghost-purple": "hover:bg-purple-50 hover:text-purple-900 bg-transparent",
-            "ghost-amber": "hover:bg-amber-50 hover:text-amber-950 bg-transparent",
+            ghost: "bg-transparent hover:bg-gray-200/50 hover:text-gray-900",
+            "ghost-primary": "bg-transparent hover:bg-primary-50 hover:text-primary-900",
+            "ghost-red": "bg-transparent hover:bg-red-50 hover:text-red-900",
+            "ghost-blue": "bg-transparent hover:bg-blue-50 hover:text-blue-900",
+            "ghost-purple": "bg-transparent hover:bg-purple-50 hover:text-purple-900",
+            "ghost-amber": "bg-transparent hover:bg-amber-50 hover:text-amber-950",
 
-            link: "text-emerald-600 underline-offset-4 hover:underline bg-transparent shadow-none",
-            "link-red": "text-red-600 underline-offset-4 hover:underline bg-transparent shadow-none",
-            "link-blue": "text-blue-600 underline-offset-4 hover:underline bg-transparent shadow-none",
-            "link-amber": "text-amber-600 underline-offset-4 hover:underline bg-transparent shadow-none",
+            link: "bg-transparent text-emerald-600 underline-offset-4 shadow-none hover:underline",
+            "link-red": "bg-transparent text-red-600 underline-offset-4 shadow-none hover:underline",
+            "link-blue": "bg-transparent text-blue-600 underline-offset-4 shadow-none hover:underline",
+            "link-amber": "bg-transparent text-amber-600 underline-offset-4 shadow-none hover:underline",
 
             destructive: "bg-red-600 text-white hover:bg-red-700",
             secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
             transparent: "bg-transparent text-gray-700 hover:bg-transparent",
-            faded: "bg-gray-100/50 text-gray-600 hover:bg-gray-100/70 opacity-70",
-            "hero-outline": "border border-transparent bg-white text-primary-600 hover:bg-primary-50 hover:border-primary-600",
+            faded: "bg-gray-100/50 text-gray-600 opacity-70 hover:bg-gray-100/70",
+            "hero-outline":
+                "border border-transparent bg-white text-primary-600 hover:border-primary-600 hover:bg-primary-50",
         },
         size: {
-            default: "h-10 px-5 text-sm",
-            sm: "h-[36px] px-3 text-sm",
-            md: "h-10 px-5 text-sm",
-            lg: "h-12 px-6 text-base",
-            icon: "h-10 w-10 p-0 text-base",
-            max: "w-max h-max"
+            default: "h-14 min-h-14 rounded-md px-8",
+            sm: "h-10 min-h-10 rounded-md px-5",
+            md: "h-14 min-h-14 rounded-md px-8",
+            lg: "h-14 min-h-14 rounded-md px-8",
+            nav: "h-auto min-h-0 rounded-md px-0 !text-sm !font-normal !normal-case !tracking-normal",
+            icon: "h-10 w-10 min-h-0 rounded-md p-0",
+            max: "h-max min-h-0 w-max px-0 !font-normal !normal-case !tracking-normal",
         },
     },
     defaultVariants: {
@@ -152,17 +168,13 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     return (
         <Component
             ref={ref}
+            data-button=""
             style={{
                 transform: shouldScale && isPressed ? "scale(0.94)" : "scale(1)",
                 transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
                 ...props.style,
             }}
             className={cn(
-                "relative !inline-flex w-full items-center justify-center gap-2 rounded-md font-medium outline-none sm:w-auto",
-                "cursor-pointer overflow-hidden px-[30px]",
-                "focus-visible:ring-0 focus-visible:ring-none focus-visible:ring-offset-0",
-                "disabled:pointer-events-none disabled:opacity-50",
-                "cubic-bezier(0.22, 1, 0.36, 1) !transition-all",
                 buttonVariants({ variant, size }),
                 className
             )}

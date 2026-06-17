@@ -47,19 +47,16 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                     >
                         <p
                             className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
-                            style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
                         >
                             {ourServices.eyebrow}
                         </p>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                            style={{ fontFamily: 'var(--font-hanken-grotesk), sans-serif' }}
                         >
                             {ourServices.title}
                         </h1>
                         <p
                             className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'
-                            style={{ fontFamily: 'var(--font-plus-jakarta-sans), sans-serif' }}
                         >
                             Explore the full range of travel services we offer — from curated expeditions and
                             custom itineraries to on-ground support across Pakistan.
@@ -69,7 +66,7 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
             </section>
 
             <main
-                className='pb-20 pt-4 sm:pt-6'
+                className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'
                 style={{ backgroundColor: ourServices.backgroundColor }}
             >
                 <div className='agency-container'>
@@ -103,7 +100,7 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                         <div className='flex flex-col gap-3 sm:flex-row'>
                             <Button
                                 variant='default'
-                                className='h-[52px] min-w-[180px] rounded-full border px-8 text-sm font-medium'
+                                className='min-w-[180px]'
                                 style={{
                                     backgroundColor: buttons.primary.background,
                                     borderColor: buttons.primary.border,
@@ -114,8 +111,8 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                                 <Link href='/search'>Browse Tours</Link>
                             </Button>
                             <Button
-                                variant='transparent'
-                                className='h-[52px] min-w-[180px] rounded-full border px-8 text-sm font-medium'
+                                variant='outline'
+                                className='min-w-[180px]'
                                 style={{
                                     borderColor: colors.border,
                                     color: colors.primaryDark,

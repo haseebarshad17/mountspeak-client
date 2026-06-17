@@ -291,7 +291,6 @@ export default function BookingPage({
                 <div className='agency-container py-20 text-center'>
                     <h2
                         className='text-3xl font-semibold text-neutral-800'
-                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                     >
                         Booking unavailable
                     </h2>
@@ -304,7 +303,7 @@ export default function BookingPage({
                     </p>
                     <Button
                         href='/search'
-                        className='mt-8 inline-flex h-12 items-center justify-center rounded-full bg-primary-700 px-10 text-base text-white hover:bg-primary-800'
+                        className='mt-8 min-w-[200px]'
                     >
                         Browse other tours
                     </Button>
@@ -320,7 +319,6 @@ export default function BookingPage({
                 <div className='agency-container py-20 text-center'>
                     <h2
                         className='text-3xl font-semibold text-neutral-800'
-                        style={{ fontFamily: 'var(--font-booking-heading), ui-sans-serif' }}
                     >
                         Booking Submitted
                     </h2>
@@ -329,13 +327,13 @@ export default function BookingPage({
                         {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your
                         payment and contact you shortly.
                     </p>
-                    <button
+                    <Button
                         type='button'
                         onClick={resetBooking}
-                        className='mt-8 inline-flex h-12 items-center justify-center rounded-full bg-primary-700 px-10 text-base text-white hover:bg-primary-800'
+                        className='mt-8 min-w-[200px]'
                     >
                         Book Another Expedition
-                    </button>
+                    </Button>
                 </div>
             </>
         )

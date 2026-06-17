@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { Button } from '@/components/ui/button'
 import { promoBannerContent } from './content'
 
 const PromoBanner = () => {
@@ -10,9 +11,9 @@ const PromoBanner = () => {
                     <h2 className='text-3xl'>{promoBannerContent.title}</h2>
                     <p className='mt-2 text-lg text-purple-100'>{promoBannerContent.subtitle}</p>
                 </div>
-                <button className='rounded-md bg-white px-8 py-3 font-medium text-purple-600 transition-colors hover:bg-neutral-100'>
+                <Button variant='secondary' className='bg-white text-purple-600 hover:bg-neutral-100'>
                     {promoBannerContent.buttonLabel}
-                </button>
+                </Button>
             </div>
         </section>
     )

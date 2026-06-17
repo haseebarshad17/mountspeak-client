@@ -13,7 +13,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { colors } = page.theme
 
     return (
-        <section className='p-2 pb-14 sm:p-3 sm:pb-16 md:p-4 lg:p-5 lg:pb-20 xl:p-[30px] xl:pb-[112px]'>
+        <section className='p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]'>
             <div
                 className='rounded-[16px] bg-cover bg-center bg-no-repeat'
                 style={{ backgroundImage: `url("${hero.backgroundImage}")` }}

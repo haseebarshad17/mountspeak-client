@@ -136,8 +136,8 @@ const Testimonials = ({ page }: HomepagePageProps) => {
     const [activeIndex, setActiveIndex] = useState(1)
 
     return (
-        <section className='overflow-hidden bg-white pb-16 sm:pb-20 lg:pb-[112px]' aria-labelledby='testimonials-heading'>
-            <div className='agency-container py-10 sm:py-12 lg:py-14'>
+        <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
+            <div className='agency-container pb-[100px]'>
                 <header className='mx-auto max-w-3xl text-center'>
                     <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
                     <h2
@@ -152,7 +152,6 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                 <div className='relative mx-auto mt-8 max-w-[1280px] sm:mt-10 lg:mt-12'>
                     <Swiper
                         slidesPerView={1}
-                        centeredSlides
                         loop
                         speed={500}
                         spaceBetween={20}

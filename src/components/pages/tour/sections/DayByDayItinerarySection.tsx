@@ -17,7 +17,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
             className=" bg-[#F3F4F3] py-8 sm:py-10 lg:pt-16 lg:pb-[112px]"
         >
             <div className="agency-container">
-                <h2 className="text-center font-heading font-noto text-3xl font-bold tracking-tight text-[#191C1C] sm:text-4xl">
+                <h2 className="text-center font-heading font-heading text-3xl font-bold tracking-tight text-[#191C1C] sm:text-4xl">
                     {itinerarySection.title}
                 </h2>
 
@@ -45,10 +45,10 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                     >
                                         {dayLabel}
                                     </span>
-                                    <h3 className="font-heading text-xl font-noto font-semibold text-neutral-900 sm:text-2xl">
+                                    <h3 className="font-heading text-xl font-heading font-semibold text-neutral-900 sm:text-2xl">
                                         {day.title}
                                     </h3>
-                                    <p className="mt-4 max-w-md text-sm font-manrope leading-relaxed text-[#434849] sm:text-base">
+                                    <p className="mt-4 max-w-md text-sm font-roboto leading-relaxed text-[#434849] sm:text-base">
                                         {day.description}
                                     </p>
                                 </div>

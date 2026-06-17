@@ -16,7 +16,7 @@ const PopularDestination = ({ page, activeLabel, onLabelChange }: PopularDestina
 
     return (
         <section
-            className='overflow-hidden bg-white pt-[100px] pb-8 sm:pb-10 lg:pb-12'
+            className='overflow-hidden bg-white'
             aria-labelledby='popular-destination-heading'
         >
             <div className='agency-container'>

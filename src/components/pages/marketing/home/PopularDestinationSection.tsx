@@ -16,14 +16,14 @@ const PopularDestinationSection = ({ page }: HomepagePageProps) => {
     )
 
     return (
-        <>
+        <div>
             <PopularDestination
                 page={page}
                 activeLabel={filterKey}
                 onLabelChange={setActiveFilter}
             />
             <TopDestinations page={page} activeFilter={filterKey} />
-        </>
+        </div>
     )
 }
 

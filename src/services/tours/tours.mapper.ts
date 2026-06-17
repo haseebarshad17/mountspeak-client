@@ -11,8 +11,8 @@ const DEFAULT_THEME: TourPage['theme'] = {
     secondaryColor: '#F26A3D',
     backgroundColor: '#F5F5F2',
     textColor: '#1F1F1F',
-    fontHeading: 'Playfair',
-    fontBody: 'Inter',
+    fontHeading: 'Jost',
+    fontBody: 'Roboto',
 }
 
 const PERK_ICON_ALIASES: Record<string, string> = {

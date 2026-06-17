@@ -31,10 +31,7 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
     }, [activeFilter])
 
     return (
-        <section
-            className='bg-white pb-12 sm:pb-16 md:pb-20 lg:pb-[220px]'
-            aria-labelledby='tourism-gallery-heading'
-        >
+        <section className='bg-white' aria-labelledby='tourism-gallery-heading'>
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
                     <SectionEyebrow name={section.eyebrow} color={colors.eyebrow} />
@@ -52,14 +49,12 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
                         {section.paragraph}
                     </p>
                 </header>
-                <div className='pb-[60px]'>
-                    <FilterPills
-                        labels={section.filters}
-                        activeLabel={activeFilter}
-                        onLabelChange={setActiveFilter}
-                        className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10'
-                    />
-                </div>
+                <FilterPills
+                    labels={section.filters}
+                    activeLabel={activeFilter}
+                    onLabelChange={setActiveFilter}
+                    className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10'
+                />
 
                 <div className='mx-auto mt-6 grid max-w-[1424px] grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-3 sm:gap-[12px] lg:mt-2 lg:grid-cols-6'>
                     {filteredImages.map((image, index) => (
