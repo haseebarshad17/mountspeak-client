@@ -1,6 +1,7 @@
 import React from 'react'
-import Image from 'next/image'
 import { CalendarDays, CircleDollarSign, Mountain, type LucideIcon } from 'lucide-react'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
 import type { TourPage } from './tour-page.types'
 
@@ -25,7 +26,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
         >
             <div className="relative min-h-[min(85vh,820px)] overflow-hidden rounded-[16px] sm:min-h-[82vh] lg:h-[631px] lg:min-h-[631px]">
                 <div className="absolute inset-0">
-                    <Image
+                    <TourMediaImage
                         src={backgroundMedia.desktop}
                         alt={backgroundMedia.alt}
                         fill

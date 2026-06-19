@@ -1,6 +1,7 @@
 import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import { PrefixedLink } from '@/components/ui/prefixed-link'
 
 import type { TourPage } from './tour-page.types'
 
@@ -32,19 +33,19 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
                             {gallerySection.title}
                         </h2>
                     </div>
-                    <Link
+                    <PrefixedLink
                         href={gallerySection.actionUrl}
                         className="text-base font-roboto uppercase tracking-[0.1em] text-readable-uppercase text-white underline decoration-2 underline-offset-4 transition hover:text-white/90"
                         style={{ textDecorationColor: theme.secondaryColor }}
                     >
                         {gallerySection.actionLabel}
-                    </Link>
+                    </PrefixedLink>
                 </div>
 
                 {heroShot ? (
                     <div className="mt-12 grid gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
                         <div className="relative min-h-[300px] overflow-hidden rounded-2xl lg:min-h-[480px]">
-                            <Image
+                            <TourMediaImage
                                 src={heroShot.src}
                                 alt={heroShot.alt}
                                 fill
@@ -55,7 +56,7 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
                         <div className="grid grid-cols-2 gap-4 lg:gap-5">
                             {topRight ? (
                                 <div className="relative aspect-square overflow-hidden rounded-2xl">
-                                    <Image
+                                    <TourMediaImage
                                         src={topRight.src}
                                         alt={topRight.alt}
                                         fill
@@ -66,7 +67,7 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
                             ) : null}
                             {bottomRight ? (
                                 <div className="relative aspect-square overflow-hidden rounded-2xl">
-                                    <Image
+                                    <TourMediaImage
                                         src={bottomRight.src}
                                         alt={bottomRight.alt}
                                         fill
@@ -77,7 +78,7 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
                             ) : null}
                             {wideBottom ? (
                                 <div className="relative col-span-2 aspect-[21/9] overflow-hidden rounded-2xl sm:aspect-[16/7]">
-                                    <Image
+                                    <TourMediaImage
                                         src={wideBottom.src}
                                         alt={wideBottom.alt}
                                         fill

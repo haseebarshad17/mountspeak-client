@@ -1,5 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
 import type { TourPage } from './tour-page.types'
 
@@ -34,7 +35,7 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                     {placesVisitedSection.cards.map((card) => (
                         <article key={card.id} className="group">
                             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl">
-                                <Image
+                                <TourMediaImage
                                     src={card.thumbnail}
                                     alt={card.title}
                                     fill

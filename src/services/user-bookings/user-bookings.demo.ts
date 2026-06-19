@@ -15,8 +15,9 @@ export const DEMO_UPCOMING_BOOKINGS: UserBookingDisplay[] = [
         members: '4 Members',
         memberCount: 4,
         warning: '',
+        slug: 'hunza-valley-fairy-meadows',
         primaryAction: 'View Itinerary',
-        secondaryAction: 'Download Permit',
+        secondaryAction: '',
         isPast: false,
     },
     {
@@ -33,6 +34,7 @@ export const DEMO_UPCOMING_BOOKINGS: UserBookingDisplay[] = [
         members: '2 Members',
         memberCount: 2,
         warning: 'Please upload a copy of your passport to confirm booking.',
+        slug: 'hunza-valley-fairy-meadows',
         primaryAction: 'Complete Booking',
         secondaryAction: 'Request Cancellation',
         isPast: false,

@@ -1,5 +1,5 @@
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
-import { resolveTourMediaUrl } from '@/lib/supabase/tour-media'
+import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
 import type { TourListItem, TourRow } from './tours.types'
 
@@ -41,7 +41,7 @@ export function getTourCoverImage(tour: Pick<TourRow, 'header' | 'overview' | 'v
     const gallery = resolveTourMediaUrl(fragment)
     if (gallery) return gallery
 
-    return 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80'
+    return TOUR_MEDIA_PLACEHOLDER
 }
 
 export function toTourListItem(tour: TourRow): TourListItem {

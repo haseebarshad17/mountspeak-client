@@ -7,13 +7,13 @@ type HomepageServiceProps = {
     supabase: SupabaseClient
 }
 
-const agencySiteThemeColumns = 'id, agency_id, site_url, theme, created_at, updated_at'
+const agencySiteThemeColumns =
+    'id, agency_id, site_url, theme, specialization_id, created_at, updated_at'
 
 export const homepageService = ({ supabase }: HomepageServiceProps) => {
     return {
         /**
          * GET /rest/v1/agency_site_theme?site_url=eq.{url}
-         * Tries URL candidates derived from the request Host header.
          */
         getAgencySiteThemeByRequestHost: async (
             requestHost: string,
@@ -28,7 +28,16 @@ export const homepageService = ({ supabase }: HomepageServiceProps) => {
                     .maybeSingle()
 
                 if (error) throw error
-                if (data) return data as AgencySiteThemeRow
+                if (data) {
+                    const row = data as AgencySiteThemeRow
+                    console.log('[agency_site_theme] Row matched host', {
+                        requestHost,
+                        matchedSiteUrl: siteUrl,
+                        agency_id: row.agency_id,
+                        specialization_id: row.specialization_id ?? null,
+                    })
+                    return row
+                }
             }
 
             const { data, error } = await supabase

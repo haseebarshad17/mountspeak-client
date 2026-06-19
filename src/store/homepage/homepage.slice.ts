@@ -61,8 +61,10 @@ const homepageSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchHomepage.pending, (state) => {
-                state.status = 'loading'
                 state.error = null
+                if (!state.data) {
+                    state.status = 'loading'
+                }
             })
             .addCase(fetchHomepage.fulfilled, (state, action) => {
                 state.status = 'succeeded'

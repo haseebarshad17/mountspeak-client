@@ -10,6 +10,7 @@ import type {
   UserBookingStatusTone,
   UserPastBookingDisplay,
 } from "@/services/user-bookings/user-bookings.types";
+import { tourDetailPath } from "@/services/tours/tours.utils";
 
 type BookingsTab = "upcoming" | "past";
 
@@ -294,27 +295,33 @@ const BookingsPage = () => {
 
                         <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
                           <Button
-                            type="button"
                             className="shrink-0"
+                            href={
+                              tour.primaryAction === "View Itinerary" && tour.slug
+                                ? tourDetailPath(tour.slug)
+                                : undefined
+                            }
                           >
                             {tour.primaryAction}
                           </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="shrink-0"
-                          >
-                            <span>{tour.secondaryAction}</span>
-                            {tour.statusTone === "action" || tour.statusTone === "pending" ? (
-                              <Image
-                                src="/images/pages/booking/arrow.svg"
-                                alt="Arrow icon"
-                                width={9}
-                                height={9}
-                                className="brightness-0 opacity-80"
-                              />
-                            ) : null}
-                          </Button>
+                          {tour.secondaryAction ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="shrink-0"
+                            >
+                              <span>{tour.secondaryAction}</span>
+                              {tour.statusTone === "action" || tour.statusTone === "pending" ? (
+                                <Image
+                                  src="/images/pages/booking/arrow.svg"
+                                  alt="Arrow icon"
+                                  width={9}
+                                  height={9}
+                                  className="brightness-0 opacity-80"
+                                />
+                              ) : null}
+                            </Button>
+                          ) : null}
                         </div>
                       </div>
                     </div>

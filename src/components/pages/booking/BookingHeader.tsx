@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { useInternalPathname, usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+
+import { PrefixedLink } from '@/components/ui/prefixed-link'
 
 function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
     if (!href) return false
@@ -25,8 +26,8 @@ function resolveNavHref(href: string | null | undefined): string {
 }
 
 export function BookingHeader() {
-    const pathname = usePathname()
-    const router = useRouter()
+    const internalPathname = useInternalPathname()
+    const router = usePreviewRouter()
     const page = useHomepagePageWithFallback()
     const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useOptionalUser()
@@ -51,7 +52,7 @@ export function BookingHeader() {
         <>
             <header className='relative z-10 border-b border-white/30 bg-transparent'>
                 <div className='agency-container flex h-[118px] items-center justify-between gap-4'>
-                    <Link
+                    <PrefixedLink
                         href='/'
                         className='flex shrink-0 items-center gap-3'
                     >
@@ -63,7 +64,7 @@ export function BookingHeader() {
                             className='h-11 w-auto max-w-[150px] object-contain sm:h-11'
                             priority
                         />
-                    </Link>
+                    </PrefixedLink>
 
                     <div className='flex items-center gap-4 lg:gap-8'>
                         <nav
@@ -72,10 +73,10 @@ export function BookingHeader() {
                         >
                             {header.navigation.map((link) => {
                                 const href = resolveNavHref(link.href)
-                                const isActive = isNavLinkActive(pathname, href)
+                                const isActive = isNavLinkActive(internalPathname, href)
 
                                 return (
-                                    <Link
+                                    <PrefixedLink
                                         key={`${link.label}-${href}`}
                                         href={href}
                                         className={cn(
@@ -84,7 +85,7 @@ export function BookingHeader() {
                                         )}
                                     >
                                         {resolveNavLinkDisplayLabel(link.label, href)}
-                                    </Link>
+                                    </PrefixedLink>
                                 )
                             })}
                         </nav>
@@ -166,14 +167,14 @@ export function BookingHeader() {
                                 const href = resolveNavHref(link.href)
 
                                 return (
-                                    <Link
+                                    <PrefixedLink
                                         key={`${link.label}-${href}`}
                                         href={href}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className='rounded-lg px-3 py-3 text-base font-medium text-neutral-800 transition hover:bg-neutral-100'
                                     >
                                         {resolveNavLinkDisplayLabel(link.label, href)}
-                                    </Link>
+                                    </PrefixedLink>
                                 )
                             })}
                         </nav>

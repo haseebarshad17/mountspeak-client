@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils/clsxUtils'
 import { LayoutDashboard, LogOut, UserRound } from 'lucide-react'
-import Link from 'next/link'
+
+import { PrefixedLink } from '@/components/ui/prefixed-link'
 
 export type ProfileMenuProps = {
     useLightNav: boolean
@@ -74,7 +75,7 @@ export function ProfileMenu({
                     role='menu'
                     className='absolute right-0 top-full z-[200] mt-2 min-w-[180px] overflow-hidden rounded-md border border-[#C0C8C9]/60 bg-white p-1 text-[#1A1C1E] shadow-md'
                 >
-                    <Link
+                    <PrefixedLink
                         href='/dashboard'
                         role='menuitem'
                         className={cn(
@@ -88,7 +89,7 @@ export function ProfileMenu({
                     >
                         <LayoutDashboard className='h-4 w-4 shrink-0' />
                         Dashboard
-                    </Link>
+                    </PrefixedLink>
                     <div className='my-1 h-px bg-[#C0C8C9]/40' aria-hidden />
                     <button
                         type='button'

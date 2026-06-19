@@ -1,5 +1,7 @@
 import { cache } from 'react'
+import { unstable_noStore as noStore } from 'next/cache'
 
+import { resolveSelectedSpecialization } from '@/lib/homepage/specialization'
 import { createDefaultAgencyHomepage } from '@/lib/homepage/default-homepage'
 import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
 import { createPublicSupabase } from '@/lib/supabase/supabase.public.server'
@@ -7,6 +9,7 @@ import { createPublicSupabase } from '@/lib/supabase/supabase.public.server'
 import { mapAgencySiteThemeRowToHomepage } from './homepage.mapper'
 import { homepageService } from './homepage.service'
 import type { AgencyHomepage } from './homepage.types'
+import { fetchSpecializations } from '@/services/specializations/specializations.server'
 
 async function resolveRequestHost(): Promise<string> {
     try {
@@ -17,33 +20,60 @@ async function resolveRequestHost(): Promise<string> {
 }
 
 async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
+    noStore()
+
     try {
         const supabase = createPublicSupabase()
         const api = homepageService({ supabase })
-        const row = await api.getAgencySiteThemeByRequestHost(requestHost)
+        const [row, specializations] = await Promise.all([
+            api.getAgencySiteThemeByRequestHost(requestHost),
+            fetchSpecializations(),
+        ])
 
         if (!row) {
-            return createDefaultAgencyHomepage(requestHost)
+            return {
+                ...createDefaultAgencyHomepage(requestHost),
+                specializations,
+            }
         }
 
         try {
-            return mapAgencySiteThemeRowToHomepage(row)
+            const homepage = mapAgencySiteThemeRowToHomepage(row)
+            const specializationId = row.specialization_id?.trim() || null
+            const selectedSpecialization = resolveSelectedSpecialization(
+                specializationId,
+                specializations,
+            )
+
+            console.log('[specialization_id] selected option', {
+                specializationId,
+                selectedOption: selectedSpecialization,
+            })
+
+            return {
+                ...homepage,
+                specializationId,
+                specializations,
+            }
         } catch {
-            return createDefaultAgencyHomepage(requestHost)
+            return {
+                ...createDefaultAgencyHomepage(requestHost),
+                specializations,
+            }
         }
     } catch {
         return createDefaultAgencyHomepage(requestHost)
     }
 }
 
-const fetchAgencyHomepageForResolvedHost = cache(loadAgencyHomepageForHost)
-
-export async function fetchAgencyHomepage(): Promise<AgencyHomepage> {
+export const fetchAgencyHomepage = cache(async (): Promise<AgencyHomepage> => {
     const requestHost = await resolveRequestHost()
-    return fetchAgencyHomepageForResolvedHost(requestHost)
-}
+    return loadAgencyHomepageForHost(requestHost)
+})
 
 /** Explicit host lookup for localhost preview (`?host=` API) and tests. */
-export async function fetchAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
-    return loadAgencyHomepageForHost(requestHost.toLowerCase().trim())
-}
+export const fetchAgencyHomepageForHost = cache(
+    async (requestHost: string): Promise<AgencyHomepage> => {
+        return loadAgencyHomepageForHost(requestHost.toLowerCase().trim())
+    },
+)

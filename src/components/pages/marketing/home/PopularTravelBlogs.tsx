@@ -8,7 +8,6 @@ import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data
 import { cn } from '@/lib/utils/clsxUtils'
 import { Calendar, MessageCircle, ThumbsUp } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import React from 'react'
 
 function BlogCard({
@@ -73,12 +72,12 @@ function BlogCard({
                     {excerpt}
                 </p>
                 <Button
-                    asChild
                     variant='default'
                     style={HP_THEME_BTN_STYLE}
                     className={cn('mt-4 w-max min-w-[110px]', HP_THEME_BTN_CLASS)}
+                    href={href || '#'}
                 >
-                    <Link href={href || '#'}>{section.readMoreLabel}</Link>
+                    {section.readMoreLabel}
                 </Button>
             </div>
         </article>

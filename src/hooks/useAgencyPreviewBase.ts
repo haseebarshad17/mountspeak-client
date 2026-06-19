@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo } from 'react'
-import { usePathname } from 'next/navigation'
+import { useCallback, useMemo } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 import {
     prefixHref,
@@ -36,4 +36,36 @@ export function useInternalPathname(): string {
     const pathname = usePathname()
 
     return useMemo(() => stripAgencyPreviewBase(pathname), [pathname])
+}
+
+export function usePreviewRouter() {
+    const router = useRouter()
+    const previewBase = useAgencyPreviewBase()
+
+    const push = useCallback(
+        (href: string) => router.push(prefixHref(href, previewBase)),
+        [previewBase, router],
+    )
+
+    const replace = useCallback(
+        (href: string) => router.replace(prefixHref(href, previewBase)),
+        [previewBase, router],
+    )
+
+    const prefetch = useCallback(
+        (href: string) => router.prefetch(prefixHref(href, previewBase)),
+        [previewBase, router],
+    )
+
+    return useMemo(
+        () => ({
+            push,
+            replace,
+            prefetch,
+            refresh: router.refresh,
+            back: router.back,
+            forward: router.forward,
+        }),
+        [push, prefetch, replace, router],
+    )
 }
