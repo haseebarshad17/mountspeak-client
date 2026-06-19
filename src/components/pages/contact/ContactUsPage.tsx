@@ -17,14 +17,19 @@ import {
     type ConsultationTitle,
 } from '@/services/consultation-requests/consultation-requests.types'
 import type { HomepagePage } from '@/data/homepage'
+import { HP_THEME_INPUT_FOCUS_CLASS, HP_THEME_LINK_CLASS, HP_THEME_TEXT_CLASS } from '@/data/homepage'
+import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
+import { cn } from '@/lib/utils/clsxUtils'
 import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import { FormEvent, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
-const inputClass =
-    'mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]'
+const inputClass = cn(
+    'mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8]',
+    HP_THEME_INPUT_FOCUS_CLASS,
+)
 
 const selectClass = `${inputClass} appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10`
 
@@ -74,7 +79,7 @@ function ContactDetailItem({
             {href ? (
                 <a
                     href={href}
-                    className='hover:text-[#00292C] hover:underline'
+                    className={cn('hover:underline', HP_THEME_LINK_CLASS)}
                 >
                     {children}
                 </a>
@@ -99,6 +104,7 @@ type ContactUsPageProps = {
 export default function ContactUsPage({ page: pageFromServer }: ContactUsPageProps) {
     const pageFromStore = useHomepagePageWithFallback()
     const page = pageFromServer ?? pageFromStore
+    const backgroundImage = useHeroBackgroundImage()
     const contactItems = page ? getFooterContactColumnItems(page.footer) : []
     const { mutateAsync: createConsultationRequest, isPending } = useCreateConsultationRequest()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -146,7 +152,10 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
     return (
         <>
             <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div className='rounded-[16px] bg-[url("/images/pages/home/tour-list.png")] bg-cover bg-center bg-no-repeat'>
+                <div
+                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
+                    style={{ backgroundImage: `url("${backgroundImage}")` }}
+                >
                     <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
@@ -169,7 +178,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                     <aside className='space-y-6'>
                         <div className='border border-[#C0C8C9] bg-white p-6'>
                             <h2
-                                className='text-xl font-semibold text-[#00292C]'
+                                className={cn('text-xl font-semibold', HP_THEME_TEXT_CLASS)}
                             >
                                 Contact details
                             </h2>
@@ -180,7 +189,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                     return (
                                         <ContactDetailItem
                                             key={`${item.label}-${index}`}
-                                            icon={<Icon className='mt-1 h-4 w-4 shrink-0 text-[#00292C]' />}
+                                            icon={<Icon className={cn('mt-1 h-4 w-4 shrink-0', HP_THEME_TEXT_CLASS)} />}
                                             href={item.href}
                                         >
                                             {item.label}
@@ -201,7 +210,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
 
                     <section className='border border-[#C0C8C9] bg-white p-6 sm:p-8 lg:p-10'>
                         <h2
-                            className='text-2xl font-semibold text-[#00292C]'
+                            className={cn('text-2xl font-semibold', HP_THEME_TEXT_CLASS)}
                         >
                             Send a consultation request
                         </h2>
@@ -301,10 +310,11 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                             <div className='flex justify-end pt-2'>
                                 <Button
                                     type='submit'
-                                    disabled={isPending}
+                                    loading={isPending}
+                                    loadingText='Sending...'
                                     className='min-w-[200px]'
                                 >
-                                    {isPending ? 'Sending...' : 'Send Message'}
+                                    Send Message
                                 </Button>
                             </div>
                         </form>

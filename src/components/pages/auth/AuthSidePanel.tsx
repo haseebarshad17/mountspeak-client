@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
+import { HP_THEME_ICON_BTN_CLASS } from "@/data/homepage";
+import { cn } from "@/lib/utils/clsxUtils";
 
 const authSideImageSrc = encodeURI(
   "/images/pages/auth/Section - Image Side (Hidden on Mobile) (1).svg",
@@ -26,7 +28,10 @@ export default function AuthSidePanel() {
           <Link
             href={homePath}
             aria-label="Back to homepage"
-            className="mt-10 !inline-flex h-10 w-10 items-center justify-center bg-[#002e35] text-white transition hover:bg-[#043942]"
+            className={cn(
+              "mt-10 !inline-flex h-10 w-10 items-center justify-center text-white transition",
+              HP_THEME_ICON_BTN_CLASS,
+            )}
           >
             <ArrowLeft className="h-5 w-5" strokeWidth={2} aria-hidden />
           </Link>

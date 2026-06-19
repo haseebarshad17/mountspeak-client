@@ -5,6 +5,7 @@ import type {
 
 export type UserBookingTourRow = {
     id: string
+    slug: string | null
     title: string
     from_location: string | null
     to_location: string | null
@@ -42,6 +43,7 @@ export type UserBookingDisplay = {
     members: string
     memberCount: number
     warning: string
+    slug: string | null
     primaryAction: string
     secondaryAction: string
     isPast: boolean

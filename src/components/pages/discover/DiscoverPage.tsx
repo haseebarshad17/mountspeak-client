@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePage } from '@/data/homepage'
 import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
+import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { selectHomepageIsLoading } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { cn } from '@/lib/utils/clsxUtils'
-import Link from 'next/link'
 
 type DiscoverPageProps = {
     page?: HomepagePage
@@ -19,6 +19,7 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
     const pageFromStore = useHomepagePageWithFallback()
     const isLoading = useAppSelector(selectHomepageIsLoading)
     const page = pageFromServer ?? pageFromStore
+    const backgroundImage = useHeroBackgroundImage()
 
     if (isLoading || !page) {
         return (
@@ -41,7 +42,10 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
     return (
         <>
             <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div className='rounded-[16px] bg-[url("/images/pages/home/tour-list.png")] bg-cover bg-center bg-no-repeat'>
+                <div
+                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
+                    style={{ backgroundImage: `url("${backgroundImage}")` }}
+                >
                     <div
                         id='services'
                         className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'
@@ -103,17 +107,17 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                                 variant='default'
                                 style={HP_THEME_BTN_STYLE}
                                 className={cn('min-w-[180px]', HP_THEME_BTN_CLASS)}
-                                asChild
+                                href='/search'
                             >
-                                <Link href='/search'>Browse Tours</Link>
+                                Browse Tours
                             </Button>
                             <Button
                                 variant='outline'
                                 style={HP_OUTLINE_BTN_STYLE}
                                 className={cn('min-w-[180px]', HP_THEME_OUTLINE_BTN_CLASS)}
-                                asChild
+                                href='/contact-us'
                             >
-                                <Link href='/contact-us'>Contact Us</Link>
+                                Contact Us
                             </Button>
                         </div>
                     </div>

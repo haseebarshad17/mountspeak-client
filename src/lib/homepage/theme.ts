@@ -70,6 +70,18 @@ export const HP_OUTLINE_BTN_STYLE: CSSProperties = {
     color: HP_CSS_VARS.primary,
 }
 
+/** Text, links, tabs, and inputs that should follow agency primary color. */
+export const HP_THEME_TEXT_CLASS = 'text-[var(--hp-color-primary)]'
+export const HP_THEME_BG_CLASS = 'bg-[var(--hp-color-primary)]'
+export const HP_THEME_BORDER_CLASS = 'border-[var(--hp-color-primary)]'
+export const HP_THEME_LINK_CLASS =
+    'text-[var(--hp-color-primary)] transition hover:text-[var(--hp-color-primary-hover)]'
+export const HP_THEME_TAB_ACTIVE_CLASS = 'text-[var(--hp-color-primary)]'
+export const HP_THEME_TAB_INACTIVE_CLASS = 'text-[#8a8f95]'
+export const HP_THEME_TAB_INDICATOR_CLASS = 'bg-[var(--hp-color-primary)]'
+export const HP_THEME_INPUT_FOCUS_CLASS = 'focus:border-[var(--hp-color-primary)]'
+export const HP_THEME_ICON_BTN_CLASS = 'hp-theme-btn'
+
 export function resolveThemeButtons(theme: Theme): ResolvedThemeButtons {
     const primary = { ...DEFAULT_PRIMARY, ...theme.buttons.primary }
 

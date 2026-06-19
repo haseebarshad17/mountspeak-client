@@ -1,5 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
 import type { TourPage } from './tour-page.types'
 
@@ -41,7 +42,7 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
 
                     <div className="relative h-[442px] w-[442px] overflow-hidden border border-black/[0.08] bg-neutral-100 shadow-sm">
                         <div className="relative h-full w-full">
-                            <Image
+                            <TourMediaImage
                                 src={overviewSection.sideCard.image}
                                 alt={overviewSection.sideCard.alt}
                                 fill

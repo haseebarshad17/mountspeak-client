@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -30,7 +29,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                         return (
                             <Button
                                 key={btn.label}
-                                asChild
+                                href={btn.url}
                                 variant={isPrimary ? 'default' : 'outline'}
                                 className={cn(
                                     'w-full max-w-[257px]',
@@ -45,7 +44,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                                         : undefined
                                 }
                             >
-                                <Link href={btn.url}>{btn.label}</Link>
+                                {btn.label}
                             </Button>
                         )
                     })}

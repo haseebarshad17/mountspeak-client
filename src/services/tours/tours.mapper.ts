@@ -1,5 +1,5 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
-import { resolveTourMediaUrl } from '@/lib/supabase/tour-media'
+import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
 
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
 
@@ -48,8 +48,8 @@ function formatDayNightLabel(dayCount?: number, nightCount?: number): string {
 export function mapTourRecordToPage(row: TourRecord): TourPage {
     const header = row.header
     const overview = row.overview
-    const heroUrl = resolveTourMediaUrl(header?.hero_image_url)
-    const overviewImage = resolveTourMediaUrl(overview?.image_url)
+    const heroUrl = resolveTourMediaUrlOrPlaceholder(header?.hero_image_url)
+    const overviewImage = resolveTourMediaUrlOrPlaceholder(overview?.image_url)
     const dayNight = formatDayNightLabel(header?.day_count, header?.night_count)
 
     const tripHighlights = [
@@ -152,8 +152,8 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 title: place.name,
                 location: place.location_label.toUpperCase(),
                 category: place.location_label.toUpperCase(),
-                thumbnail: resolveTourMediaUrl(place.image_url),
-                gallery: [resolveTourMediaUrl(place.image_url)],
+                thumbnail: resolveTourMediaUrlOrPlaceholder(place.image_url),
+                gallery: [resolveTourMediaUrlOrPlaceholder(place.image_url)],
                 description: place.name,
             })),
         },
@@ -165,7 +165,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 day: day.day,
                 title: day.title,
                 description: day.description,
-                image: resolveTourMediaUrl(day.image_url),
+                image: resolveTourMediaUrlOrPlaceholder(day.image_url),
                 alt: day.title,
                 activities: [],
                 accommodation: '',
@@ -178,7 +178,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 id: slugifyId(stay.name, index),
                 type: stay.category,
                 name: stay.name,
-                thumbnail: resolveTourMediaUrl(stay.image_url),
+                thumbnail: resolveTourMediaUrlOrPlaceholder(stay.image_url),
                 description: stay.description,
                 amenities: stay.amenities ?? [],
                 rating: 0,
@@ -204,7 +204,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             media: (row.visual_fragments ?? []).map((src, index) => ({
                 id: `gallery-${index + 1}`,
                 type: 'image' as const,
-                src: resolveTourMediaUrl(src),
+                src: resolveTourMediaUrlOrPlaceholder(src),
                 alt: `${row.title} gallery ${index + 1}`,
             })),
         },

@@ -29,6 +29,8 @@ export function createDefaultAgencyHomepage(requestHost: string): AgencyHomepage
     return {
         agencyId: DEFAULT_AGENCY_ID,
         siteUrl: resolveFallbackSiteUrl(requestHost),
+        specializationId: null,
+        specializations: [],
         isAgencySite: false,
         page: resolveStorageUrlsDeep(page),
     }

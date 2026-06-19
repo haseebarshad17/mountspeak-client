@@ -12,7 +12,7 @@ const navLinkClassName = (isActive: boolean) =>
   [
     "!flex min-h-12 w-full max-w-[264px] items-center gap-3 border border-l-4 px-4 text-left transition",
     isActive
-      ? "border-[#e4ebee] border-l-[#00292C] bg-[#0640451A] text-[#1a1c1e]"
+      ? "border-[#e4ebee] border-l-[var(--hp-color-primary)] bg-[#0640451A] text-[#1a1c1e]"
       : "border-transparent border-l-transparent text-[#2f3b45] hover:bg-[#0640451A]",
   ].join(" ");
 

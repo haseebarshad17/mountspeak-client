@@ -305,10 +305,12 @@ export default function DashboardPage() {
             <Button
               type="button"
               onClick={handleSave}
-              disabled={loading || saving || !isProfileDirty}
+              loading={saving}
+              loadingText="Saving..."
+              disabled={loading || !isProfileDirty}
               className="min-w-[164px]"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              Save Changes
             </Button>
           </div>
         </div>

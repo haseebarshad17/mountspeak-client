@@ -130,7 +130,7 @@ function mapActions(tone: UserBookingStatusTone): {
 
     return {
         primaryAction: 'View Itinerary',
-        secondaryAction: 'Download Permit',
+        secondaryAction: '',
     }
 }
 
@@ -158,6 +158,7 @@ export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay 
         members: members.label,
         memberCount: members.count,
         warning: status.warning,
+        slug: tour?.slug ?? null,
         primaryAction: actions.primaryAction,
         secondaryAction: actions.secondaryAction,
         isPast: isPastTour(tour?.end_date ?? null, tour?.start_date ?? null),

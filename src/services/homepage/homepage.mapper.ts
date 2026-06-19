@@ -64,6 +64,8 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
     return {
         agencyId: row.agency_id,
         siteUrl: normalizeSiteUrl(row.site_url),
+        specializationId: null,
+        specializations: [],
         isAgencySite: true,
         page: resolveStorageUrlsDeep(normalizeHomepagePage(page)),
     }

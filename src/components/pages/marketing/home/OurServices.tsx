@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { cn } from '@/lib/utils/clsxUtils'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import Link from 'next/link'
 import React from 'react'
 import { ServiceCard } from './ServiceCard'
 
@@ -42,9 +41,9 @@ const OurServices = ({ page }: HomepagePageProps) => {
                         variant='default'
                         style={HP_THEME_BTN_STYLE}
                         className={cn('w-[219px] max-w-[219px]', HP_THEME_BTN_CLASS)}
-                        asChild
+                        href={section.cta.href ?? '/discover#services'}
                     >
-                        <Link href={section.cta.href ?? '/discover#services'}>{section.cta.label}</Link>
+                        {section.cta.label}
                     </Button>
                 </div>
             </div>

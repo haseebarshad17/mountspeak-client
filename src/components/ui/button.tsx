@@ -2,6 +2,7 @@
 import * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { usePrefixedHref } from "@/hooks/useAgencyPreviewBase";
 import { cn } from "@/lib/utils/clsxUtils";
 
@@ -19,7 +20,7 @@ const buttonVariants = tv({
     ],
     variants: {
         variant: {
-            default: "bg-[#002e35] text-white hover:bg-[#043942]",
+            default: "hp-theme-btn",
             "default-red": "bg-red-600 text-white hover:bg-red-700",
             "default-blue": "bg-blue-600 text-white hover:bg-blue-700",
             "default-purple": "bg-purple-600 text-white hover:bg-purple-700",
@@ -81,6 +82,8 @@ export interface ButtonProps<C extends React.ElementType = "button">
     rippleGoesFast?: boolean;
     showRipple?: boolean;
     shouldScale?: boolean;
+    loading?: boolean;
+    loadingText?: React.ReactNode;
 }
 
 interface Ripple {
@@ -107,6 +110,9 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     rippleGoesFast = false,
     showRipple = false,
     shouldScale = false,
+    loading = false,
+    loadingText,
+    disabled,
     ...props
 }, ref) => {
 
@@ -118,6 +124,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     const releaseTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
     const resolvedHref = usePrefixedHref(href)
+    const isDisabled = Boolean(disabled || loading)
 
     const Component: React.ElementType =
         resolvedHref ? Link : component ?? (asChild ? "div" : "button");
@@ -181,12 +188,21 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
 
             {...props}
             href={resolvedHref}
+            disabled={isDisabled}
+            aria-busy={loading || undefined}
 
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
         >
-            {children}
+            {loading ? (
+                <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <span>{loadingText ?? children}</span>
+                </>
+            ) : (
+                children
+            )}
 
             {showRipple && ripples.map(ripple => (
                 <span

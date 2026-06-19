@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { PrefixedLink } from "@/components/ui/prefixed-link";
 
 interface TentaLogoProps {
     href?: string;
@@ -18,13 +18,13 @@ export default function Logo({
     showText = true,
 }: TentaLogoProps) {
     return (
-        <Link href={href} className={className}>
+        <PrefixedLink href={href} className={className}>
             <div
                 className={`flex items-center justify-center bg-gradient-to-br from-primary-400 to-primary-600 ${markClassName}`}
             >
                 <span className="text-xl font-bold text-white">T</span>
             </div>
             {showText ? <span className={textClassName}>Tenta</span> : null}
-        </Link>
+        </PrefixedLink>
     );
 }
