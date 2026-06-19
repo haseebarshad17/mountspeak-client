@@ -25,48 +25,48 @@ function BlogCard({
 }) {
     return (
         <article
-            className='flex h-full w-full flex-col overflow-hidden rounded-xl border bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]'
+            className='flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]'
             style={{ borderColor: STATIC_UI_COLORS.borderLight }}
         >
-            <div className='relative aspect-[4/3] shrink-0 overflow-hidden border-b border-white/20 w-[416px] h-[250px]'>
-                <Image src={image} alt={title} fill className='object-cover' sizes='(max-width: 768px) 100vw, 33vw' />
-                <div className='absolute inset-x-0 bottom-0 flex items-stretch border-t border-white/25 bg-transparent'>
-                    <div
-                        className='flex flex-1 items-center justify-center gap-1.5 border-r border-white/80 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                    >
-                        <Calendar className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
-                        {date}
+            <div className='relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-white/20'>
+                <Image
+                    src={image}
+                    alt={title}
+                    fill
+                    className='object-cover'
+                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+                />
+                <div className='absolute inset-x-0 bottom-0 flex items-stretch border-t border-white/25 bg-black/35'>
+                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 border-r border-white/80 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
+                        <Calendar className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
+                        <span className='truncate'>{date}</span>
                     </div>
-                    <div
-                        className='flex flex-1 items-center justify-center gap-1.5 border-r border-white/80 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                    >
-                        <ThumbsUp className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
-                        {likes}
+                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 border-r border-white/80 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
+                        <ThumbsUp className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
+                        <span className='truncate'>{likes}</span>
                     </div>
-                    <div
-                        className='flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-normal leading-5 text-white'
-                    >
-                        <MessageCircle className='h-3.5 w-3.5 shrink-0 stroke-[1.5]' aria-hidden />
-                        {comments}
+                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
+                        <MessageCircle className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
+                        <span className='truncate'>{comments}</span>
                     </div>
                 </div>
             </div>
 
-            <div className='flex flex-1 flex-col p-6 w-[416px] h-[269px]'>
+            <div className='flex min-w-0 flex-1 flex-col p-4 sm:p-6'>
                 <p
-                    className='text-base font-normal leading-6 pb-3'
+                    className='pb-2 text-sm font-normal leading-5 sm:pb-3 sm:text-base sm:leading-6'
                     style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {section.postedByPrefix} <span>{author}</span>
                 </p>
                 <h3
-                    className='pt-2 sm:text-2xl font-semibold text-[17px] leading-7 pb-4'
+                    className='pb-2 text-base font-semibold leading-6 sm:pb-4 sm:text-xl sm:leading-7 lg:text-2xl'
                     style={{ color: STATIC_UI_COLORS.cardTitle, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {title}
                 </h3>
                 <p
-                    className='pt-2 flex-1 text-base font-normal leading-6'
+                    className='flex-1 text-sm font-normal leading-5 sm:text-base sm:leading-6'
                     style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {excerpt}
@@ -74,7 +74,7 @@ function BlogCard({
                 <Button
                     variant='default'
                     style={HP_THEME_BTN_STYLE}
-                    className={cn('mt-4 w-max min-w-[110px]', HP_THEME_BTN_CLASS)}
+                    className={cn('mt-3 w-max min-w-[100px] sm:mt-4 sm:min-w-[110px]', HP_THEME_BTN_CLASS)}
                     href={href || '#'}
                 >
                     {section.readMoreLabel}
@@ -107,7 +107,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                     </p>
                 </header>
 
-                <div className='mx-auto grid grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
+                <div className='mx-auto grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
                     {section.posts.map((post) => (
                         <BlogCard
                             key={post.title}

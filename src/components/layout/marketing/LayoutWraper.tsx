@@ -5,6 +5,7 @@ import { useInternalPathname } from '@/hooks/useAgencyPreviewBase';
 import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { Toaster } from 'sonner';
+import MarketingFaqSection from '@/components/layout/marketing/MarketingFaqSection';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
 import { DUMMY_HOMEPAGE_PAGE } from '@/lib/homepage/default-homepage';
@@ -53,6 +54,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
                 className='w-full h-dvh overflow-y-auto scrollbar-content'
             >
                 {children}
+                {ShouldShowFooter && <MarketingFaqSection />}
                 {ShouldShowFooter && <MarketingFooter />}
                 <Toaster
                     position='bottom-right'

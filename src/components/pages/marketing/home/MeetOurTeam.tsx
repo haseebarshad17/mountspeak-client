@@ -9,28 +9,28 @@ import React from 'react'
 
 function TeamCard({ name, role, image }: Member) {
     return (
-        <article className='overflow-hidden rounded-2xl bg-neutral-100 shadow-sm max-w-[306px] w-full h-[424px]'>
-            <div className='relative aspect-[3/4] w-full bg-neutral-200 h-[300px]'>
+        <article className='h-auto w-full overflow-hidden rounded-xl bg-neutral-100 shadow-sm sm:max-w-[306px] sm:rounded-2xl sm:h-[424px]'>
+            <div className='relative aspect-[3/4] w-full bg-neutral-200 sm:aspect-auto sm:h-[300px]'>
                 <Image
                     src={image}
                     alt={name}
                     fill
                     className='object-cover object-top'
-                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
+                    sizes='(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw'
                 />
             </div>
             <div
-                className='px-4 py-5 text-center sm:px-5 sm:py-6 max-w-[306px] h-[124px]'
+                className='h-auto px-2 py-3 text-center sm:h-[124px] sm:max-w-[306px] sm:px-5 sm:py-6'
                 style={{ backgroundColor: STATIC_UI_COLORS.backgroundMuted }}
             >
                 <h3
-                    className='text-xl font-medium leading-7 sm:text-2xl'
+                    className='text-sm font-medium leading-5 sm:text-xl sm:leading-7 lg:text-2xl'
                     style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                 >
                     {name}
                 </h3>
                 <p
-                    className='pt-1 text-sm font-normal leading-6 sm:text-base'
+                    className='pt-0.5 text-xs font-normal leading-5 sm:pt-1 sm:text-sm sm:leading-6 lg:text-base'
                     style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {role}
@@ -57,7 +57,7 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
                     </h2>
                 </header>
 
-                <div className='mx-auto grid max-w-[1200px] grid-cols-1 gap-6 pt-10 sm:grid-cols-2 sm:gap-8 sm:pt-12 lg:grid-cols-4 lg:gap-8 lg:pt-14'>
+                <div className='mx-auto grid max-w-[1200px] grid-cols-2 gap-3 pt-8 sm:gap-8 sm:pt-12 lg:grid-cols-4 lg:gap-8 lg:pt-14'>
                     {(section.members ?? []).map((member) => (
                         <TeamCard key={member.name} {...member} />
                     ))}

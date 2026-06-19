@@ -87,13 +87,19 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                     </div>
                 </div>
 
-                <div className='overflow-x-hidden pt-6'>
+                <div className='overflow-x-hidden pt-4 sm:pt-6'>
                     {destinations.length > 0 ? (
                         <Swiper
                             key={activeFilter}
                             modules={[Navigation, Autoplay]}
-                            spaceBetween={37}
-                            slidesPerView='auto'
+                            slidesPerView={1}
+                            spaceBetween={16}
+                            breakpoints={{
+                                640: {
+                                    slidesPerView: 'auto',
+                                    spaceBetween: 37,
+                                },
+                            }}
                             loop={canSlide}
                             speed={600}
                             autoplay={
@@ -121,49 +127,28 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             className='select-none !overflow-hidden'
                         >
                             {destinations.map((destination) => (
-                                <SwiperSlide key={destination.id} className='!w-[520px] shrink-0'>
-                                    <article className='my-7 h-[459px] w-full rounded-[20px] bg-white p-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:p-3.5'>
+                                <SwiperSlide
+                                    key={destination.id}
+                                    className='!w-full shrink-0 sm:!w-[520px]'
+                                >
+                                    <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:h-[459px] sm:p-3.5'>
                                         <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[332px]'>
                                             <Image
                                                 src={destination.image}
                                                 alt={destination.name}
                                                 fill
                                                 className='object-cover'
-                                                sizes='(max-width: 640px) 90vw, (max-width: 1170px) 33vw, 400px'
+                                                sizes='(max-width: 640px) 100vw, (max-width: 1170px) 33vw, 400px'
                                             />
                                         </div>
 
-                                        <div className='flex items-center justify-between gap-3 px-1 pb-1 pt-4'>
+                                        <div className='px-1 pb-1 pt-4'>
                                             <h3
-                                                className='font-jost text-[28px] font-medium leading-8 sm:text-[32px]'
+                                                className='font-jost text-[22px] font-medium leading-7 sm:text-[28px] sm:leading-8 lg:text-[32px]'
                                                 style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
                                             >
                                                 {destination.name}
                                             </h3>
-
-                                            <div className='flex shrink-0 items-center'>
-                                                {section.avatars.map((avatar, idx) => (
-                                                    <div
-                                                        key={avatar}
-                                                        className='relative h-9 w-9 overflow-hidden rounded-full border-2 border-white'
-                                                        style={{ marginLeft: idx === 0 ? 0 : -10 }}
-                                                    >
-                                                        <Image
-                                                            src={avatar}
-                                                            alt=''
-                                                            fill
-                                                            className='object-cover'
-                                                            sizes='36px'
-                                                        />
-                                                    </div>
-                                                ))}
-                                                <span
-                                                    className='-ml-2 inline-flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white ring-2 ring-white'
-                                                    style={{ backgroundColor: STATIC_UI_COLORS.avatarBadge }}
-                                                >
-                                                    {section.moreTravelersLabel}
-                                                </span>
-                                            </div>
                                         </div>
                                     </article>
                                 </SwiperSlide>

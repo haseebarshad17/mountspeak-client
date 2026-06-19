@@ -73,7 +73,7 @@ function PasswordField({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className={cn(
-          "min-h-[40px] w-full border-b bg-transparent px-3 py-2 pr-10 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8]",
+          "min-h-[36px] w-full border-b bg-transparent px-3 py-2 pr-10 text-sm text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] sm:min-h-[40px] sm:text-base",
           borderClassName,
           HP_THEME_INPUT_FOCUS_CLASS,
         )}
@@ -300,7 +300,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
         <div className="flex w-full items-center justify-center bg-white px-6  sm:px-10 md:w-1/2 lg:px-[100px]">
           <div className="w-full max-w-[500px]">
-            <h1 className="text-5xl leading-[56px] font-semibold tracking-[-0.02em] mb-3 text-[#1A1C1E]">
+            <h1 className="mb-3 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[#1A1C1E] sm:text-5xl sm:leading-[56px]">
               Welcome back.
             </h1>
             <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]">
