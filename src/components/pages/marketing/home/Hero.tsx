@@ -52,7 +52,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                     <div className='agency-container'>
                         <div className='w-full max-w-[828px] mx-auto text-center'>
                             <h1
-                                className='text-3xl font-semibold leading-[0.95] sm:text-4xl md:text-5xl xl:text-[45px]'
+                                className='text-[26px] font-semibold leading-[1.1] sm:text-3xl sm:leading-[0.95] md:text-4xl lg:text-5xl xl:text-[45px]'
                                 style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                             >
                                 {hero.title}

@@ -357,7 +357,7 @@
     }
 
     .agency-section-heading {
-        @apply text-[32px] font-semibold leading-tight;
+        @apply text-[26px] font-semibold leading-tight sm:text-[32px];
         word-spacing: 0.03em;
     }
 
@@ -427,4 +427,35 @@
     background-color: #ffffff !important;
     border-color: var(--hp-color-primary) !important;
     color: var(--hp-color-primary) !important;
+}
+
+/* Mobile compaction — smaller buttons, inputs, and titles (< 640px) */
+@media (max-width: 639px) {
+    #app-scroll-container h1,
+    .account-pages h1 {
+        font-size: 1.625rem !important;
+        line-height: 1.15 !important;
+    }
+
+    #app-scroll-container .agency-section-heading,
+    .account-pages .agency-section-heading {
+        font-size: 1.625rem !important;
+        line-height: 1.2 !important;
+    }
+
+    #app-scroll-container [data-button]:not([class*='h-auto']):not([class*='min-h-0']):not([class*='w-10']):not([class*='w-11']),
+    .account-pages [data-button]:not([class*='h-auto']):not([class*='min-h-0']):not([class*='w-10']):not([class*='w-11']) {
+        min-height: 2.75rem !important;
+        height: 2.75rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }
+
+    #app-scroll-container input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='file']):not([type='range']):not([type='color']),
+    #app-scroll-container select,
+    .account-pages input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='file']):not([type='range']):not([type='color']),
+    .account-pages select {
+        height: 2.75rem !important;
+        min-height: 2.75rem !important;
+    }
 }

@@ -26,11 +26,11 @@ import {
 } from './booking-request.validation'
 
 const fieldClass =
-    'box-border h-[58px] w-full max-w-[304px] rounded-[10px] border-0 bg-white p-4 font-roboto text-base font-normal leading-6 tracking-normal text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40'
+    'box-border h-11 w-full max-w-none rounded-[10px] border-0 bg-white px-4 py-2 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40 sm:h-[58px] sm:max-w-[304px] sm:p-4 sm:text-base'
 
 const selectClass = `${fieldClass} appearance-none bg-[length:16px] bg-[right_16px_center] bg-no-repeat pr-10`
 
-const textareaClass = `${fieldClass} !h-auto min-h-[58px] resize-none py-4 align-top`
+const textareaClass = `${fieldClass} !h-auto min-h-[44px] resize-none py-3 align-top sm:min-h-[58px] sm:py-4`
 
 const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
 
@@ -50,7 +50,7 @@ function FormField({
     errorColor: string
 }) {
     return (
-        <div className={className}>
+        <div className={cn('w-full', className)}>
             <label>
                 <span className='sr-only'>{label}</span>
                 {children}
@@ -208,7 +208,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                         </Button>
                     </div>
 
-                    <div className='w-full max-w-[624px] lg:justify-self-end'>
+                    <div className='w-full max-w-none sm:max-w-[624px] lg:justify-self-end'>
                         <h3
                             id='book-a-tour-heading'
                             className='text-[28px] font-medium leading-tight sm:text-[32px] lg:text-[36px]'
@@ -224,11 +224,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
                         </p>
 
                         <form
-                            className='mt-6 flex w-full max-w-[624px] flex-col gap-4 sm:mt-8'
+                            className='mt-5 flex w-full flex-col gap-2.5 sm:mt-8 sm:max-w-[624px] sm:gap-4'
                             onSubmit={handleSubmit}
                             noValidate
                         >
-                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                            <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4'>
                                 <FormField errorColor={colors.error} label='Full name' error={fieldErrors.full_name}>
                                     <input
                                         type='text'
@@ -249,7 +249,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 </FormField>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                            <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4'>
                                 <FormField errorColor={colors.error} label='Phone' error={fieldErrors.phone}>
                                     <input
                                         type='tel'
@@ -260,7 +260,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                     />
                                 </FormField>
                                 <FormField errorColor={colors.error} label='Travel date' error={fieldErrors.travel_date}>
-                                    <div className='relative w-full max-w-[304px]'>
+                                    <div className='relative w-full sm:max-w-[304px]'>
                                         <input
                                             ref={dateInputRef}
                                             type='date'
@@ -287,7 +287,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 </FormField>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                            <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4'>
                                 <FormField errorColor={colors.error} label='Destination' error={fieldErrors.destination}>
                                     <select
                                         name='destination'
@@ -331,7 +331,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 </FormField>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                            <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4'>
                                 <FormField errorColor={colors.error} label='Male Seats' error={fieldErrors.male_seat}>
                                     <QuantityStepper
                                         variant='field'
@@ -365,7 +365,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                     name='request_message'
                                     rows={3}
                                     placeholder={formCopy.placeholders.message}
-                                    className={`${textareaClass} !max-w-[624px] w-full`}
+                                    className={`${textareaClass} w-full max-w-none sm:!max-w-[624px]`}
                                 />
                             </FormField>
 
@@ -375,7 +375,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 loading={isPending}
                                 loadingText={formCopy.submittingLabel}
                                 style={HP_THEME_BTN_STYLE}
-                                className={cn('w-full max-w-[624px]', HP_THEME_BTN_CLASS)}
+                                className={cn('w-full max-w-none sm:max-w-[624px]', HP_THEME_BTN_CLASS)}
                             >
                                 {formCopy.submitLabel}
                             </Button>

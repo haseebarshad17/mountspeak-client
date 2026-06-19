@@ -137,7 +137,7 @@ export default function HeroStandardFilters({
     }
 
     const triggerCls = cn(
-        "!justify-start flex h-14 !w-full min-w-0 items-center gap-2.5 overflow-hidden px-4 !text-sm !font-medium !normal-case !tracking-normal",
+        "!justify-start flex h-11 !w-full min-w-0 items-center gap-2.5 overflow-hidden px-4 !text-sm !font-medium !normal-case !tracking-normal sm:h-14",
         "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
         "xl:h-[56px] xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:hover:bg-[#F8FAFB]"
     )
@@ -272,7 +272,7 @@ export default function HeroStandardFilters({
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-14 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
+                            '!h-11 w-full !rounded-xl !font-medium !normal-case !tracking-normal sm:!h-14 xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
                         )}
                     >
                         {heroSearch.searchButtonLabel}

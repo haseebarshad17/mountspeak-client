@@ -25,7 +25,8 @@ export function FilterPill({
             onClick={onClick}
             aria-pressed={isActive}
             className={cn(
-                'inline-flex min-h-[42px] min-w-[152px] cursor-pointer items-center justify-center rounded-full border px-4 font-roboto text-base font-normal leading-6 tracking-normal transition-colors',
+                'inline-flex shrink-0 min-h-[34px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full border px-3 py-1.5 font-roboto text-sm font-normal leading-5 tracking-normal transition-colors',
+                'sm:min-h-[42px] sm:min-w-[152px] sm:px-4 sm:text-base sm:leading-6',
                 isActive ? HP_THEME_BTN_CLASS : 'hover:bg-neutral-50',
             )}
             style={
@@ -50,7 +51,12 @@ export function FilterPills({
     className,
 }: FilterPillsProps) {
     return (
-        <div className={cn('flex flex-wrap items-center justify-center gap-x-8 gap-y-5 mb-[60px]', className)}>
+        <div
+            className={cn(
+                'mb-10 -mx-3 flex flex-nowrap items-center gap-2 overflow-x-auto px-3 pb-1 scrollbar-hide sm:mx-0 sm:mb-[60px] sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-5 sm:overflow-visible sm:px-0',
+                className,
+            )}
+        >
             {labels.map((label) => (
                 <FilterPill
                     key={label}

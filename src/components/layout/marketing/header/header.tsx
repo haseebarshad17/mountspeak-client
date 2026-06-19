@@ -317,21 +317,21 @@ const Header = ({ page }: HeaderProps) => {
             {/* Mobile drawer + overlay */}
             <div
                 className={cn(
-                    'fixed inset-0 z-[60] transition-opacity duration-300 lg:hidden',
-                    isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+                    'fixed inset-0 z-[200] transition-opacity duration-300 lg:hidden',
+                    isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
                 )}
             >
                 <button
                     type='button'
                     aria-label={header.mobileMenu.overlayCloseLabel}
-                    className='absolute inset-0 bg-black/45 backdrop-blur-[2px]'
+                    className='absolute inset-0 z-0 bg-black/45 backdrop-blur-[2px]'
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
 
                 <aside
                     className={cn(
-                        'absolute right-0 top-0 flex h-full w-[min(88vw,360px)] flex-col bg-primary-500 px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 sm:px-6',
-                        isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                        'absolute right-0 top-0 z-10 flex h-full w-[min(88vw,360px)] flex-col bg-primary-500 px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 sm:px-6',
+                        isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
                     )}
                 >
                     <div className='flex items-center justify-between'>
