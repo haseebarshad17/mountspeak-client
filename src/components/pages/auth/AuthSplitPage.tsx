@@ -19,6 +19,8 @@ import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
+import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/homepage";
+import { cn } from "@/lib/utils/clsxUtils";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
 import {
@@ -29,6 +31,15 @@ import { useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import AuthSidePanel from "./AuthSidePanel";
+import {
+  authInputBorderClassName,
+  authInputClassName,
+  authPasswordToggleClassName,
+  HP_THEME_LINK_CLASS,
+  HP_THEME_TAB_ACTIVE_CLASS,
+  HP_THEME_TAB_INACTIVE_CLASS,
+  HP_THEME_TAB_INDICATOR_CLASS,
+} from "./auth-theme";
 
 type AuthMode = "login" | "register";
 
@@ -61,12 +72,16 @@ function PasswordField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className={`min-h-[40px] w-full border-b ${borderClassName} bg-transparent px-3 py-2 pr-10 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]`}
+        className={cn(
+          "min-h-[40px] w-full border-b bg-transparent px-3 py-2 pr-10 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8]",
+          borderClassName,
+          HP_THEME_INPUT_FOCUS_CLASS,
+        )}
       />
       <button
         type="button"
         onClick={() => setVisible((current) => !current)}
-        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] transition hover:text-[#0f3137]"
+        className={authPasswordToggleClassName}
         aria-label={visible ? "Hide password" : "Show password"}
       >
         {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -295,22 +310,26 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
             <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">
               <Link
                 href={`${loginPath}${nextQuery}`}
-                className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#0f3137]" : "text-[#8a8f95]"
-                  }`}
+                className={cn(
+                  "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
+                  isLogin ? HP_THEME_TAB_ACTIVE_CLASS : HP_THEME_TAB_INACTIVE_CLASS,
+                )}
               >
                 Sign In
                 {isLogin ? (
-                  <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#0f3137]" />
+                  <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
                 ) : null}
               </Link>
               <Link
                 href={`${registerPath}${nextQuery}`}
-                className={`relative pb-4 text-xs font-semibold uppercase tracking-[0.6px] ${isLogin ? "text-[#8a8f95]" : "text-[#0f3137]"
-                  }`}
+                className={cn(
+                  "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
+                  isLogin ? HP_THEME_TAB_INACTIVE_CLASS : HP_THEME_TAB_ACTIVE_CLASS,
+                )}
               >
                 Create Account
                 {!isLogin ? (
-                  <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#0f3137]" />
+                  <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
                 ) : null}
               </Link>
             </div>
@@ -330,7 +349,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
                     placeholder="Muhammad Ahmed"
-                    className="mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>
               ) : null}
@@ -348,7 +367,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="explorer@pakistan.travel"
-                  className="mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                  className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                 />
               </div>
 
@@ -363,7 +382,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   {isLogin ? (
                     <Link
                       href={forgotPasswordPath}
-                      className="text-xs font-semibold text-[#00292C] transition hover:text-[#0f3137]"
+                      className={cn("text-xs font-semibold", HP_THEME_LINK_CLASS)}
                     >
                       Forgot?
                     </Link>
@@ -394,12 +413,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
               ) : null}
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                loading={isSubmitting}
+                loadingText={isLogin ? "Signing In..." : "Creating Account..."}
                 className="mt-10 w-full"
               >
-                {isSubmitting
-                  ? (isLogin ? "Signing In..." : "Creating Account...")
-                  : (isLogin ? "Sign In" : "Create Account")}
+                {isLogin ? "Sign In" : "Create Account"}
               </Button>
             </form>
             <div className="mt-8 mb-10 flex items-center gap-4">
@@ -414,16 +432,19 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
               type="button"
               variant="outline"
               onClick={onGoogleSignIn}
-              disabled={isGooglePending}
-              className="w-full"
+              loading={isGooglePending}
+              loadingText="Please wait..."
+              className={cn("w-full", HP_THEME_OUTLINE_BTN_CLASS)}
             >
-              <Image
-                src="/images/pages/auth/SVG.svg"
-                alt="Google icon"
-                width={20}
-                height={20}
-              />
-              <span>{isGooglePending ? "Please wait..." : "Google"}</span>
+              {!isGooglePending ? (
+                <Image
+                  src="/images/pages/auth/SVG.svg"
+                  alt="Google icon"
+                  width={20}
+                  height={20}
+                />
+              ) : null}
+              <span>Google</span>
             </Button>
 
             <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">

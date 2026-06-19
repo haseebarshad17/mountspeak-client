@@ -11,8 +11,10 @@ import { MessageCode } from "@/lib/messages/codes";
 import { useResendVerificationEmail } from "@/services/auth/auth.queries";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
+import { authInputBorderClassName, authInputClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -119,23 +121,24 @@ export default function VerifyEmailPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="explorer@pakistan.travel"
                     autoComplete="email"
-                    className="mt-1 min-h-[40px] w-full border-b border-[#6B7280] bg-transparent px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>
               ) : null}
 
               <Button
                 type="submit"
-                disabled={isPending}
+                loading={isPending}
+                loadingText="Sending..."
                 className={displayEmail ? "mt-4 w-full" : "w-full"}
               >
-                {isPending ? "Sending..." : sent ? "Resend Again" : "Resend Verification Email"}
+                {sent ? "Resend Again" : "Resend Verification Email"}
               </Button>
             </form>
 
             <Link
               href={loginPath}
-              className="mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
+              className={cn("mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px]", HP_THEME_LINK_CLASS)}
             >
               ← Back to Sign In
             </Link>

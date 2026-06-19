@@ -372,11 +372,12 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             <Button
                                 type='submit'
                                 variant='default'
-                                disabled={isPending}
+                                loading={isPending}
+                                loadingText={formCopy.submittingLabel}
                                 style={HP_THEME_BTN_STYLE}
                                 className={cn('w-full max-w-[624px]', HP_THEME_BTN_CLASS)}
                             >
-                                {isPending ? formCopy.submittingLabel : formCopy.submitLabel}
+                                {formCopy.submitLabel}
                             </Button>
                         </form>
                     </div>

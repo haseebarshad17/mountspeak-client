@@ -1,6 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import {
+    HP_THEME_BG_CLASS,
+    HP_THEME_BORDER_CLASS,
+    HP_THEME_TEXT_CLASS,
+} from '@/data/homepage'
+import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
+import { cn } from '@/lib/utils/clsxUtils'
 import { Compass, MapPin, ShieldCheck, Users } from 'lucide-react'
 import {
     aboutHero,
@@ -13,10 +20,15 @@ import {
 const valueIcons = [Compass, ShieldCheck, MapPin, Users] as const
 
 export default function AboutUsPage() {
+    const backgroundImage = useHeroBackgroundImage()
+
     return (
         <>
             <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div className='rounded-[16px] bg-[url("/images/pages/home/tour-list.png")] bg-cover bg-center bg-no-repeat'>
+                <div
+                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
+                    style={{ backgroundImage: `url("${backgroundImage}")` }}
+                >
                     <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
                         <p
                             className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
@@ -65,7 +77,7 @@ export default function AboutUsPage() {
                                     className='border border-[#C0C8C9] bg-white px-6 py-8 text-center'
                                 >
                                     <p
-                                        className='text-3xl font-semibold text-[#00292C] sm:text-4xl'
+                                        className={cn('text-3xl font-semibold sm:text-4xl', HP_THEME_TEXT_CLASS)}
                                     >
                                         {stat.value}
                                     </p>
@@ -95,11 +107,11 @@ export default function AboutUsPage() {
                                         key={value.title}
                                         className='border border-[#C0C8C9] bg-white p-6 sm:p-8'
                                     >
-                                        <div className='flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF1F3] text-[#00292C]'>
+                                        <div className={cn('flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF1F3]', HP_THEME_TEXT_CLASS)}>
                                             <Icon className='h-5 w-5' aria-hidden />
                                         </div>
                                         <h3
-                                            className='mt-5 text-xl font-semibold text-[#00292C]'
+                                            className={cn('mt-5 text-xl font-semibold', HP_THEME_TEXT_CLASS)}
                                         >
                                             {value.title}
                                         </h3>
@@ -133,7 +145,7 @@ export default function AboutUsPage() {
                     </section>
 
                     <section className='mx-auto max-w-[1182px] px-[15px]'>
-                        <div className='border border-[#00292C] bg-[#00292C] px-6 py-12 text-center text-white sm:px-10 sm:py-14'>
+                        <div className={cn('border px-6 py-12 text-center text-white sm:px-10 sm:py-14', HP_THEME_BORDER_CLASS, HP_THEME_BG_CLASS)}>
                             <h2
                                 className='text-2xl font-semibold sm:text-3xl'
                             >
@@ -147,7 +159,7 @@ export default function AboutUsPage() {
                             <div className='mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row'>
                                 <Button
                                     href='/search'
-                                    className='min-w-[200px] bg-white text-[#00292C] hover:bg-white/90'
+                                    className={cn('min-w-[200px] bg-white hover:bg-white/90', HP_THEME_TEXT_CLASS)}
                                 >
                                     Browse Tours
                                 </Button>

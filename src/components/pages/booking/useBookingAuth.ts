@@ -1,8 +1,8 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { buildClientLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { isEmailVerified } from '@/lib/auth/email-verification'
 import { supabase } from '@/lib/supabase/supabase.client'
@@ -12,7 +12,7 @@ type UseBookingAuthOptions = {
 }
 
 export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {}) {
-    const router = useRouter()
+    const router = usePreviewRouter()
     const [userId, setUserId] = useState<string | null>(null)
     const [authReady, setAuthReady] = useState(skipAuth)
 

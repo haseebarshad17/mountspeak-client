@@ -3,11 +3,14 @@
 import { useEffect } from 'react'
 
 import { getHomepageThemeCssVars } from '@/data/homepage'
+import { resolveHeroBackgroundImage } from '@/lib/homepage/hero-banner'
+import { resolveSelectedSpecialization, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import {
     selectHomepageData,
     selectHomepageIsLoading,
     selectHomepagePage,
+    selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 
@@ -15,6 +18,7 @@ export default function HomepageThemeSync() {
     const page = useHomepagePageWithFallback()
     const pageFromStore = useAppSelector(selectHomepagePage)
     const homepageData = useAppSelector(selectHomepageData)
+    const specializations = useAppSelector(selectHomepageSpecializations)
     const isLoading = useAppSelector(selectHomepageIsLoading)
 
     useEffect(() => {
@@ -23,10 +27,34 @@ export default function HomepageThemeSync() {
         const source = pageFromStore ? 'api' : 'dummy-fallback'
         const { primary } = page.theme.buttons
 
+        const specializationId = homepageData?.specializationId ?? null
+        const selectedSpecialization = resolveSelectedSpecialization(
+            specializationId,
+            specializations,
+        )
+
+        const heroBackground = page.sections.hero.backgroundImage
+        const resolvedHeroBackground = resolveHeroBackgroundImage({
+            specializationId,
+            specializations,
+            defaultBackgroundImage: heroBackground,
+        })
+
+        console.log('[specialization_id] selected option', {
+            specializationId,
+            selectedOption: selectedSpecialization,
+            allOptions: specializations,
+        })
+
         console.log('[HomepageTheme] Theme source:', source, {
             isAgencySite: homepageData?.isAgencySite ?? false,
             siteUrl: homepageData?.siteUrl ?? null,
             agencyId: homepageData?.agencyId ?? null,
+            specializationId,
+            selectedOptionName: selectedSpecialization?.name ?? null,
+            usesHajjUmrahBanner: usesHajjUmrahBanner(specializationId, specializations),
+            heroBackground,
+            resolvedHeroBackground,
         })
         console.log('[HomepageTheme] API primary color:', {
             background: primary.background,
@@ -57,7 +85,7 @@ export default function HomepageThemeSync() {
                 body.style.setProperty(key, String(value))
             }
         })
-    }, [page, pageFromStore, homepageData, isLoading])
+    }, [page, pageFromStore, homepageData, specializations, isLoading])
 
     return null
 }

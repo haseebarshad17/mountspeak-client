@@ -52,17 +52,17 @@ function SectionContent({ section }: { section: TermsSection }) {
                     <div className='min-w-[760px] overflow-hidden rounded-[4px] border border-[#C0C8C9] bg-[#F7F8FA]'>
                         <div className='grid grid-cols-[1fr_3fr_1fr] border-b border-[#C0C8C9] bg-[#EAECEE] px-4 py-4 md:pl-4 md:pr-10'>
                             <p
-                                className='text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[#00292C]'
+                                className='text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[var(--hp-color-primary)]'
                             >
                                 Cookie Type
                             </p>
                             <p
-                                className='text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[#00292C]'
+                                className='text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[var(--hp-color-primary)]'
                             >
                                 Purpose
                             </p>
                             <p
-                                className='text-right text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[#00292C]'
+                                className='text-right text-xs font-medium font-roboto uppercase tracking-[0.6px] text-[var(--hp-color-primary)]'
                             >
                                 Duration
                             </p>
@@ -74,7 +74,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                                 className='grid grid-cols-[1fr_3fr_1fr] border-b border-[#C0C8C9] px-4 py-4 last:border-b-0 md:pl-4 md:pr-10'
                             >
                                 <p
-                                    className='text-base font-medium leading-7 text-[#00292C]'
+                                    className='text-base font-medium leading-7 text-[var(--hp-color-primary)]'
                                 >
                                     {row.type}
                                 </p>
@@ -128,7 +128,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                                 />
                             </span>
                             <div>
-                                <p className='font-semibold text-[#00292C] text-[20px] leading-7 max-w-[710px]'>{item.title}</p>
+                                <p className='font-semibold text-[var(--hp-color-primary)] text-[20px] leading-7 max-w-[710px]'>{item.title}</p>
                                 <p className='mt-2 text-base  text-[#404849]'>
                                     {item.body}
                                 </p>
@@ -143,10 +143,10 @@ function SectionContent({ section }: { section: TermsSection }) {
                     {section.list.map((item, i) => (
                         <div
                             key={i}
-                            className='border-l-4  max-w-[400px] w-full p-6 border-l-[#00292C] bg-[#EEEEF0] px-5 py-4'
+                            className='border-l-4  max-w-[400px] w-full p-6 border-l-[var(--hp-color-primary)] bg-[#EEEEF0] px-5 py-4'
                         >
                             <p
-                                className='text-xs font-medium font-roboto uppercase text-[#00292C]'
+                                className='text-xs font-medium font-roboto uppercase text-[var(--hp-color-primary)]'
                             >
                                 {item.title}
                             </p>
@@ -189,7 +189,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                 <div className='mt-20 flex max-w-[832px] flex-col items-start justify-between gap-6 border border-[#D5DADD] bg-[#EEF1F3] px-6 py-6 sm:flex-row sm:items-center sm:p-10'>
                     <div>
                         <h3
-                            className='text-[24px] leading-[32px] text-[#00292C]'
+                            className='text-[24px] leading-[32px] text-[var(--hp-color-primary)]'
                         >
                             Have questions about our terms?
                         </h3>
@@ -249,7 +249,7 @@ export default function TermsPage() {
             <div className='bg-[#F7F8FA] pt-8 sm:pt-[40px] lg:pt-[55px]'>
                 <div className='mx-auto w-full max-w-[1182px] px-[15px]'>
                     <h1
-                        className='font-heading text-[36px] font-bold leading-tight text-[#00292C] sm:text-[48px] lg:text-[72px]'
+                        className='font-heading text-[36px] font-bold leading-tight text-[var(--hp-color-primary)] sm:text-[48px] lg:text-[72px]'
                     >
                         Legal Framework
                     </h1>
@@ -283,12 +283,12 @@ export default function TermsPage() {
                                         className={cn(
                                             'font-roboto relative flex items-center gap-4 rounded pl-[16px]  text-left text-[12px] font-medium leading-4 tracking-[0.01em] transition-colors',
                                             activeId === s.id
-                                                ? 'text-[#00292C]'
-                                                : 'text-[#5E666C] hover:text-[#00292C]',
+                                                ? 'text-[var(--hp-color-primary)]'
+                                                : 'text-[#5E666C] hover:text-[var(--hp-color-primary)]',
                                         )}
                                     >
                                         {activeId === s.id && (
-                                            <span className='absolute left-0 top-1/2 h-[16px] w-[2px] font-roboto -translate-y-1/2 rounded-full bg-[#00292C]' />
+                                            <span className='absolute left-0 top-1/2 h-[16px] w-[2px] font-roboto -translate-y-1/2 rounded-full bg-[var(--hp-color-primary)]' />
                                         )}
                                         <span>{s.index}.</span>
                                         <span className='font-roboto '>{s.label}</span>

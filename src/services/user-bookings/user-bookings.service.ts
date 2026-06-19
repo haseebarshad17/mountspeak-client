@@ -17,6 +17,7 @@ const USER_BOOKINGS_SELECT = `
   booking_payment_screenshot,
   tours (
     id,
+    slug,
     title,
     from_location,
     to_location,

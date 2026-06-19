@@ -1,5 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
 import type { TourPage } from './tour-page.types'
 
@@ -56,7 +57,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
 
                             const visual = (
                                 <div className="relative h-[192px] w-full max-w-[516px] overflow-hidden rounded-2xl">
-                                    <Image
+                                    <TourMediaImage
                                         src={day.image}
                                         alt={day.alt}
                                         fill

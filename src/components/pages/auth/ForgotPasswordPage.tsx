@@ -9,7 +9,9 @@ import { useForgotPassword } from "@/services/auth/auth.queries";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/clsxUtils";
 import AuthSidePanel from "./AuthSidePanel";
+import { authInputBorderClassName, authInputClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -69,7 +71,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setSent(false)}
-                  className="text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
+                  className={cn("text-xs font-semibold uppercase tracking-[0.6px]", HP_THEME_LINK_CLASS)}
                 >
                   Use a different email
                 </button>
@@ -90,23 +92,24 @@ export default function ForgotPasswordPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="explorer@pakistan.travel"
                     autoComplete="email"
-                    className="mt-1 min-h-[40px] w-full border-b border-[#6B7280] bg-transparent px-3 py-2 text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] focus:border-[#0f3137]"
+                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  loading={isPending}
+                  loadingText="Sending..."
                   className="mt-10 w-full"
                 >
-                  {isPending ? "Sending..." : "Send Reset Link"}
+                  Send Reset Link
                 </Button>
               </form>
             )}
 
             <Link
               href={loginPath}
-              className="mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px] text-[#00292C] transition hover:text-[#0f3137]"
+              className={cn("mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px]", HP_THEME_LINK_CLASS)}
             >
               ← Back to Sign In
             </Link>

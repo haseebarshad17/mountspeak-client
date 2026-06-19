@@ -1,6 +1,6 @@
 'use client'
 
-import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
@@ -8,7 +8,6 @@ import { filterDestinationCards } from '@/data/popular-destinations'
 import { cn } from '@/lib/utils/clsxUtils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import React, { useMemo, useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -56,7 +55,10 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                     ref={prevRef}
                                     type='button'
                                     aria-label='Previous destinations'
-                                    className='inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white text-[#00292C] transition hover:border-[#0f3137]/40 disabled:cursor-not-allowed disabled:opacity-40'
+                                    className={cn(
+                                        'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                        HP_THEME_TEXT_CLASS,
+                                    )}
                                 >
                                     <ChevronLeft className='h-5 w-5' aria-hidden />
                                 </button>
@@ -64,7 +66,10 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                     ref={nextRef}
                                     type='button'
                                     aria-label='Next destinations'
-                                    className='inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white text-[#00292C] transition hover:border-[#0f3137]/40 disabled:cursor-not-allowed disabled:opacity-40'
+                                    className={cn(
+                                        'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                        HP_THEME_TEXT_CLASS,
+                                    )}
                                 >
                                     <ChevronRight className='h-5 w-5' aria-hidden />
                                 </button>
@@ -75,9 +80,9 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             variant='outline'
                             style={HP_OUTLINE_BTN_STYLE}
                             className={cn('w-max', HP_THEME_OUTLINE_BTN_CLASS)}
-                            asChild
+                            href={section.seeAllHref ?? '/search'}
                         >
-                            <Link href={section.seeAllHref ?? '/search'}>{section.seeAllLabel}</Link>
+                            {section.seeAllLabel}
                         </Button>
                     </div>
                 </div>

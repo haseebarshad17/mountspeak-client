@@ -10,8 +10,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 
 export default function HomepageBootstrap() {
     const dispatch = useAppDispatch()
-    const status = useAppSelector(selectHomepageStatus)
     const pathname = usePathname()
+    const homepageStatus = useAppSelector(selectHomepageStatus)
     const previewHost = getAgencyPreviewHostFromPathname(pathname)
     const previewHostKey = previewHost ?? ''
     const lastPreviewHostKey = useRef<string | null>(null)
@@ -19,20 +19,27 @@ export default function HomepageBootstrap() {
     useEffect(() => {
         if (lastPreviewHostKey.current === null) {
             lastPreviewHostKey.current = previewHostKey
+            if (homepageStatus !== 'succeeded') {
+                void dispatch(fetchHomepage())
+            }
             return
         }
 
         if (lastPreviewHostKey.current !== previewHostKey) {
             lastPreviewHostKey.current = previewHostKey
             dispatch(resetHomepage())
-        }
-    }, [dispatch, previewHostKey])
-
-    useEffect(() => {
-        if (status === 'idle') {
             void dispatch(fetchHomepage())
         }
-    }, [dispatch, status, previewHostKey])
+    }, [dispatch, homepageStatus, previewHostKey])
+
+    useEffect(() => {
+        const refetchHomepage = () => {
+            void dispatch(fetchHomepage())
+        }
+
+        window.addEventListener('focus', refetchHomepage)
+        return () => window.removeEventListener('focus', refetchHomepage)
+    }, [dispatch])
 
     return null
 }

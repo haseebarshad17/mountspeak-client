@@ -1,5 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
+
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
 import type { TourPage } from './tour-page.types'
 
@@ -25,7 +26,7 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
                     {stayAndDineSection.properties.map((prop) => (
                         <article key={prop.id} className="flex flex-col">
                             <div className="relative h-[256px] w-full max-w-[368px] overflow-hidden rounded-2xl">
-                                <Image
+                                <TourMediaImage
                                     src={prop.thumbnail}
                                     alt={prop.name}
                                     fill

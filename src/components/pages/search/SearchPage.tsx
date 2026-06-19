@@ -6,15 +6,29 @@ import Link from 'next/link'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
+import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
+import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
 import { formatTourSearchSummary, hasTourSearchFilters } from '@/services/tours/tours.search.utils'
+import {
+    formatUmrahSearchSummary,
+    hasUmrahSearchFilters,
+    type UmrahSearchFilters,
+} from '@/services/tours/tours.umrah-search.utils'
 import type { TourListItem } from '@/services/tours/tours.types'
 import { tourDetailPath } from '@/services/tours/tours.utils'
 
 type SearchPageProps = {
     tours: TourListItem[]
     filters: TourSearchFilters
+    umrahFilters: UmrahSearchFilters
     tourLocations: string[]
 }
 
@@ -60,36 +74,57 @@ function SearchResultCard({
     )
 }
 
-export default function SearchPage({ tours, filters, tourLocations }: SearchPageProps) {
-    const summary = formatTourSearchSummary(filters)
-    const isFiltered = hasTourSearchFilters(filters)
+export default function SearchPage({ tours, filters, umrahFilters, tourLocations }: SearchPageProps) {
+    const page = useHomepagePageWithFallback()
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
+    const backgroundImage = useHeroBackgroundImage()
+
+    const summary = isUmrahSearch
+        ? formatUmrahSearchSummary(umrahFilters)
+        : formatTourSearchSummary(filters)
+    const isFiltered = isUmrahSearch ? hasUmrahSearchFilters(umrahFilters) : hasTourSearchFilters(filters)
+
+    const heroCopy = isUmrahSearch
+        ? {
+              eyebrow: 'Umrah Search',
+              title: 'Find your Umrah package',
+              description:
+                  'Select package duration, number of passengers, and package type to browse available Umrah tours.',
+          }
+        : {
+              eyebrow: 'Search',
+              title: 'Find your trip',
+              description:
+                  'Choose your route and travel dates to browse published tours from our partners.',
+          }
 
     return (
         <>
             <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div className='rounded-[16px] bg-[url("/images/pages/home/tour-list.png")] bg-cover bg-center bg-no-repeat'>
+                <div
+                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
+                    style={{ backgroundImage: `url("${backgroundImage}")` }}
+                >
                     <div className='px-4 pb-8 pt-[120px] text-center text-white sm:px-6 sm:pb-10 sm:pt-36 md:pb-12 md:pt-44 lg:pb-14 lg:pt-48'>
-                        <p
-                            className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
-                        >
-                            Search
+                        <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
+                            {heroCopy.eyebrow}
                         </p>
-                        <h1
-                            className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                        >
-                            Find your trip
+                        <h1 className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
+                            {heroCopy.title}
                         </h1>
-                        <p
-                            className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'
-                        >
-                            Choose your route and travel dates to browse published tours from our partners.
+                        <p className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'>
+                            {heroCopy.description}
                         </p>
                     </div>
 
                     <div className='px-4 pb-10 sm:px-6 sm:pb-12 md:pb-14 lg:pb-16'>
                         <div className='mx-auto w-full max-w-[867px]'>
                             <HeroFilters
+                                page={page ?? undefined}
                                 initialValues={filters}
+                                umrahInitialValues={umrahFilters}
                                 tourLocations={tourLocations}
                             />
                         </div>
@@ -100,22 +135,18 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
             <main className='bg-[#F7F8FA] pb-20 pt-4 sm:pt-6'>
                 <div className='agency-container'>
                     <div className='mx-auto max-w-[900px] text-center'>
-                        <h2
-                            className='text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'
-                        >
+                        <h2 className='text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'>
                             Search results
                         </h2>
-                        <p
-                            className='pt-3 text-base text-neutral-600'
-                        >
+                        <p className='pt-3 text-base text-neutral-600'>
                             {summary
                                 ? summary
-                                : 'Explore available trips and pick your next adventure.'}
+                                : isUmrahSearch
+                                  ? 'Explore available Umrah packages and pick the one that suits you.'
+                                  : 'Explore available trips and pick your next adventure.'}
                         </p>
                         {isFiltered ? (
-                            <p
-                                className='pt-2 text-sm text-neutral-500'
-                            >
+                            <p className='pt-2 text-sm text-neutral-500'>
                                 {tours.length} trip{tours.length === 1 ? '' : 's'} found
                             </p>
                         ) : null}
@@ -134,11 +165,11 @@ export default function SearchPage({ tours, filters, tourLocations }: SearchPage
                             ))}
                         </div>
                     ) : (
-                        <p
-                            className='mx-auto max-w-xl pt-10 text-center text-base text-neutral-500'
-                        >
+                        <p className='mx-auto max-w-xl pt-10 text-center text-base text-neutral-500'>
                             {isFiltered
-                                ? 'No trips match your search. Try different locations or dates.'
+                                ? isUmrahSearch
+                                    ? 'No Umrah packages match your search. Try different duration or package type.'
+                                    : 'No trips match your search. Try different locations or dates.'
                                 : 'No published tours yet.'}
                         </p>
                     )}

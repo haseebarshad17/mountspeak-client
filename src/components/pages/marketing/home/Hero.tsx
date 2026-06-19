@@ -1,9 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
+import { resolveSelectedSpecialization, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 
 type HeroProps = HomepagePageProps & {
     tourLocations?: string[]
@@ -11,12 +18,35 @@ type HeroProps = HomepagePageProps & {
 
 const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+
+    const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
+
+    useEffect(() => {
+        const selectedSpecialization = resolveSelectedSpecialization(
+            specializationId,
+            specializations,
+        )
+
+        console.log('[specialization_id] selected option', {
+            specializationId,
+            selectedOption: selectedSpecialization,
+        })
+        console.log('[Hero] specialization_id banner check', {
+            specializationId,
+            selectedOptionName: selectedSpecialization?.name ?? null,
+            usesHajjUmrahBanner: usesHajjUmrahBanner(specializationId, specializations),
+            defaultBackgroundImage: hero.backgroundImage,
+            resolvedBackgroundImage: backgroundImage,
+        })
+    }, [backgroundImage, hero.backgroundImage, specializationId, specializations])
 
     return (
         <section className='p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]'>
             <div
                 className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                style={{ backgroundImage: `url("${hero.backgroundImage}")` }}
+                style={{ backgroundImage: `url("${backgroundImage}")` }}
             >
                 <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
                     <div className='agency-container'>
