@@ -227,7 +227,12 @@ const Header = ({ page }: HeaderProps) => {
                             alt={branding.logo.default.alt}
                             width={150}
                             height={100}
-                            className='object-contain max-h-[40px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]'
+                            className={cn(
+                                'object-contain transition-all duration-300 max-w-[150px] object-left',
+                                isScrolled
+                                    ? 'h-[80px] w-auto max-h-[80px]'
+                                    : 'max-h-[100px] min-h-[50px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]',
+                            )}
                             priority
                             fetchPriority='high'
                             quality={100}
