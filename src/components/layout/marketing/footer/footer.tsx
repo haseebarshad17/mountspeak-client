@@ -32,27 +32,32 @@ function FooterLink({
     )
 }
 
+function FooterDot() {
+    return (
+        <li
+            aria-hidden
+            className='h-1.5 w-1.5 shrink-0 rounded-full bg-white opacity-80'
+        />
+    )
+}
+
 function FooterColumnBlock({ column }: { column: FooterColumn }) {
     const entries = 'links' in column && column.links ? column.links : (column.items ?? [])
 
     return (
         <div className='flex w-full max-w-[1100px] flex-col items-center text-center text-white'>
             <h3 className='pb-3 text-sm font-semibold sm:pb-4 sm:text-lg'>{column.title}</h3>
-            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 sm:gap-y-3'>
+            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 sm:gap-y-3'>
                 {entries.map((entry, linkIdx) => {
-                    if (!entry.href) {
-                        return (
-                            <li
-                                key={linkIdx}
-                                className='text-xs font-normal opacity-80 sm:text-base'
-                            >
-                                {entry.label}
-                            </li>
-                        )
-                    }
-
-                    return (
-                        <li key={linkIdx}>
+                    const item = !entry.href ? (
+                        <li
+                            key={`item-${linkIdx}`}
+                            className='text-xs font-normal opacity-80 sm:text-base'
+                        >
+                            {entry.label}
+                        </li>
+                    ) : (
+                        <li key={`item-${linkIdx}`}>
                             <FooterLink
                                 href={entry.href}
                                 className={cn(
@@ -63,6 +68,15 @@ function FooterColumnBlock({ column }: { column: FooterColumn }) {
                                 {entry.label}
                             </FooterLink>
                         </li>
+                    )
+
+                    if (linkIdx === 0) return item
+
+                    return (
+                        <React.Fragment key={linkIdx}>
+                            <FooterDot />
+                            {item}
+                        </React.Fragment>
                     )
                 })}
             </ul>
