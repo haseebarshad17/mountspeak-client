@@ -429,6 +429,20 @@
     color: var(--hp-color-primary) !important;
 }
 
+/* Light buttons on dark sections — theme primary bg used as text color. */
+.hp-theme-light-btn {
+    background-color: #f2f2f2 !important;
+    border-color: transparent !important;
+    color: var(--hp-color-primary) !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hp-theme-light-btn:hover,
+.hp-theme-light-btn:focus-visible {
+    background-color: #ffffff !important;
+    color: var(--hp-color-primary) !important;
+}
+
 /* Mobile compaction — smaller buttons, inputs, and titles (< 640px) */
 @media (max-width: 639px) {
     #app-scroll-container h1,

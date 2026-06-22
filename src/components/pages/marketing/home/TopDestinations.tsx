@@ -4,9 +4,10 @@ import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, HP_THEME
 
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { filterDestinationCards } from '@/data/popular-destinations'
 import { cn } from '@/lib/utils/clsxUtils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 import Image from 'next/image'
 import React, { useMemo, useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
@@ -155,12 +156,13 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             ))}
                         </Swiper>
                     ) : (
-                        <p
-                            className='py-12 text-center text-base'
-                            style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
-                        >
-                            {section.emptyMessage}
-                        </p>
+                        <div className='py-8 sm:py-10'>
+                            <SectionEmptyState
+                                icon={MapPin}
+                                title='No destinations yet'
+                                description={section.emptyMessage}
+                            />
+                        </div>
                     )}
                 </div>
             </div>

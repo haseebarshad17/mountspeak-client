@@ -4,6 +4,8 @@ import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useQuery } from '@tanstack/react-query'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
+import { SectionEmptyState } from '@/components/ui/section-empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
@@ -13,6 +15,7 @@ import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { toTourListItem } from '@/services/tours/tours.utils'
+import { Compass } from 'lucide-react'
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
@@ -57,12 +60,18 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                 </header>
 
                 {showLoading ? (
-                    <p
-                        className='mx-auto max-w-xl pt-10 text-center text-base'
-                        style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                    <div
+                        className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'
+                        aria-busy='true'
+                        aria-label='Loading tours'
                     >
-                        Loading tours…
-                    </p>
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <Skeleton
+                                key={index}
+                                className='aspect-[416/300] w-full max-w-[416px] rounded-[10px] lg:max-w-none'
+                            />
+                        ))}
+                    </div>
                 ) : displayTours.length > 0 ? (
                     <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
                         {displayTours.map((tour) => (
@@ -79,12 +88,13 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         ))}
                     </div>
                 ) : (
-                    <p
-                        className='mx-auto max-w-xl pt-10 text-center text-base'
-                        style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
-                    >
-                        {section.emptyMessage}
-                    </p>
+                    <div className='pt-8 sm:pt-10 md:pt-12 lg:pt-14'>
+                        <SectionEmptyState
+                            icon={Compass}
+                            title='No tours yet'
+                            description={section.emptyMessage}
+                        />
+                    </div>
                 )}
             </div>
         </section>
