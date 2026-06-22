@@ -100,7 +100,7 @@ const Footer = ({ footer }: FooterProps) => {
                             alt={footer.logo.alt}
                             width={180}
                             height={120}
-                            className='mx-auto h-auto w-[130px] sm:w-[150px] lg:w-[180px] max-h-[100px]'
+                            className='mx-auto h-auto w-[130px] sm:w-[150px] lg:w-[180px] max-h-[100px] object-contain'
                         />
                     </Link>
 

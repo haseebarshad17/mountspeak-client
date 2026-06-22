@@ -64,6 +64,9 @@ export const HP_THEME_BTN_STYLE: CSSProperties = {}
 /** Outline buttons — white bg, primary text, border = API primary background. */
 export const HP_THEME_OUTLINE_BTN_CLASS = 'hp-theme-outline-btn'
 
+/** Light buttons on dark sections — theme primary background as text color. */
+export const HP_THEME_LIGHT_BTN_CLASS = 'hp-theme-light-btn'
+
 export const HP_OUTLINE_BTN_STYLE: CSSProperties = {
     backgroundColor: '#FFFFFF',
     borderColor: HP_CSS_VARS.primary,
