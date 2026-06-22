@@ -12,6 +12,8 @@ type FooterProps = {
     footer: HomepagePage['footer']
 }
 
+type FooterColumn = ReturnType<typeof getFooterDisplayColumns>[number]
+
 function FooterLink({
     href,
     className,
@@ -30,91 +32,67 @@ function FooterLink({
     )
 }
 
+function FooterColumnBlock({ column }: { column: FooterColumn }) {
+    const entries = 'links' in column && column.links ? column.links : (column.items ?? [])
+
+    return (
+        <div className='flex w-full max-w-[1100px] flex-col items-center text-center text-white'>
+            <h3 className='pb-3 text-sm font-semibold sm:pb-4 sm:text-lg'>{column.title}</h3>
+            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6 sm:gap-y-3'>
+                {entries.map((entry, linkIdx) => {
+                    if (!entry.href) {
+                        return (
+                            <li
+                                key={linkIdx}
+                                className='text-xs font-normal opacity-80 sm:text-base'
+                            >
+                                {entry.label}
+                            </li>
+                        )
+                    }
+
+                    return (
+                        <li key={linkIdx}>
+                            <FooterLink
+                                href={entry.href}
+                                className={cn(
+                                    'text-xs font-normal opacity-80 sm:text-base',
+                                    'hover:opacity-100',
+                                )}
+                            >
+                                {entry.label}
+                            </FooterLink>
+                        </li>
+                    )
+                })}
+            </ul>
+        </div>
+    )
+}
+
 const Footer = ({ footer }: FooterProps) => {
     const homeHref = usePrefixedHref('/') ?? '/'
     const columns = getFooterDisplayColumns(footer)
+    const linksColumn = columns.find((column) => column.title.toLowerCase() === 'links')
+    const contactColumn = columns.find((column) => column.title.toLowerCase().includes('contact'))
 
     return (
         <footer style={{ backgroundColor: footer.backgroundColor }}>
             <div className='agency-container'>
-                <section className='flex flex-col gap-10 py-[60px] xl:flex-row lg:justify-between lg:gap-6 lg:py-[95px]'>
-                    <div className='w-max flex-shrink-0 xl:pr-[150px] pr-[70px] pb-5'>
-                        <Link href={homeHref}>
-                            <Image
-                                src={footer.logo.src}
-                                alt={footer.logo.alt}
-                                width={95}
-                                height={100}
-                                className='h-auto w-[95px]'
-                            />
-                        </Link>
-                    </div>
+                <section className='flex flex-col items-center gap-10 py-12 text-center sm:gap-12 sm:py-16 lg:gap-14 lg:py-[95px]'>
+                    <Link href={homeHref} className='inline-block'>
+                        <Image
+                            src={footer.logo.src}
+                            alt={footer.logo.alt}
+                            width={180}
+                            height={120}
+                            className='mx-auto h-auto w-[130px] sm:w-[150px] lg:w-[180px]'
+                        />
+                    </Link>
 
-                    <div className='grid flex-1 grid-cols-1 text-white xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-                        {columns.map((item, idx) => (
-                            <div key={idx}>
-                                <h3 className='pb-3 text-base font-semibold sm:pb-4 sm:text-lg'>{item.title}</h3>
-                                <ul className='flex flex-col gap-3'>
-                                    {'links' in item && item.links
-                                        ? item.links.map((category, linkIdx) => {
-                                              if (!category.href) {
-                                                  return (
-                                                      <li
-                                                          key={linkIdx}
-                                                          className={cn(
-                                                              'text-sm font-normal opacity-80 sm:text-base',
-                                                          )}
-                                                      >
-                                                          {category.label}
-                                                      </li>
-                                                  )
-                                              }
-
-                                              return (
-                                                  <li key={linkIdx}>
-                                                      <FooterLink
-                                                          href={category.href}
-                                                          className={cn(
-                                                              'text-sm font-normal opacity-80 sm:text-base',
-                                                              'hover:opacity-100 w-max',
-                                                          )}
-                                                      >
-                                                          {category.label}
-                                                      </FooterLink>
-                                                  </li>
-                                              )
-                                          })
-                                        : (item.items ?? []).map((category, linkIdx) => {
-                                              if (!category.href) {
-                                                  return (
-                                                      <li
-                                                          key={linkIdx}
-                                                          className={cn(
-                                                              'text-sm font-normal opacity-80 sm:text-base',
-                                                          )}
-                                                      >
-                                                          {category.label}
-                                                      </li>
-                                                  )
-                                              }
-
-                                              return (
-                                                  <li key={linkIdx}>
-                                                      <FooterLink
-                                                          href={category.href}
-                                                          className={cn(
-                                                              'text-sm font-normal opacity-80 sm:text-base',
-                                                              'hover:opacity-100 w-max',
-                                                          )}
-                                                      >
-                                                          {category.label}
-                                                      </FooterLink>
-                                                  </li>
-                                              )
-                                          })}
-                                </ul>
-                            </div>
-                        ))}
+                    <div className='flex w-full flex-col items-center gap-10 sm:gap-12'>
+                        {linksColumn ? <FooterColumnBlock column={linksColumn} /> : null}
+                        {contactColumn ? <FooterColumnBlock column={contactColumn} /> : null}
                     </div>
                 </section>
             </div>

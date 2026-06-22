@@ -21,31 +21,12 @@ export const STATIC_HEADER: Header = {
 }
 
 /** Footer link columns are hardcoded — only Contact comes from payload. */
-export const STATIC_FOOTER_LINK_COLUMNS: Column[] = [
-    {
+export function getStaticFooterLinksColumn(): Column {
+    return {
         title: 'Links',
-        links: [
-            { label: 'Flights', href: '/flights' },
-            { label: 'Stays', href: '/stays' },
-            { label: 'Discover', href: '/discover' },
-            { label: 'About Us', href: '/about' },
-            { label: 'Contact', href: '/contact' },
-        ],
-    },
-    {
-        title: 'Our Activities',
-        links: [
-            { label: 'Tour', href: '/tour' },
-            { label: 'Kayaking', href: '/kayaking' },
-            { label: 'Cruising & Sailing', href: '/cruising-sailing' },
-            { label: 'Multi-activities', href: '/multi-activities' },
-        ],
-    },
-    {
-        title: 'About Us',
-        links: [
-            { label: 'Our Story', href: '/our-story' },
-            { label: 'Work with us', href: '/careers' },
-        ],
-    },
-]
+        links: STATIC_HEADER.navigation.map(({ label, href }) => ({
+            label,
+            href,
+        })),
+    }
+}

@@ -2,7 +2,7 @@ import homepageDefaultsDocument from '@/data/homepage-defaults.json'
 import type { HomepagePage } from '@/data/homepage'
 import type { Footer, Theme } from '@/services/homepage/homepage.page.types'
 
-import { STATIC_FOOTER_LINK_COLUMNS, STATIC_HEADER } from './static-site-content'
+import { STATIC_HEADER, getStaticFooterLinksColumn } from './static-site-content'
 
 const BASE_PAGE = homepageDefaultsDocument.page as HomepagePage
 
@@ -65,5 +65,5 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
 
 export function getFooterDisplayColumns(footer: Footer) {
     const contactColumn = getContactColumn(footer)
-    return [...STATIC_FOOTER_LINK_COLUMNS, contactColumn]
+    return [getStaticFooterLinksColumn(), contactColumn]
 }

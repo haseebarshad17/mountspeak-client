@@ -48,7 +48,7 @@ export function FormSelect({
                 aria-readonly={staticField || undefined}
                 aria-invalid={invalid || undefined}
                 className={cn(
-                    'h-11 w-full appearance-none rounded-sm border border-gray-300 bg-neutral-50 bg-[length:16px] bg-[right_12px_center] bg-no-repeat px-3 pr-10 text-sm outline-none transition focus:border-primary-600 focus:ring-1 focus:ring-primary-600',
+                    'h-10 w-full appearance-none rounded-sm border border-gray-300 bg-neutral-50 bg-[length:16px] bg-[right_12px_center] bg-no-repeat px-3 pr-10 text-sm outline-none transition focus:border-primary-600 focus:ring-1 focus:ring-primary-600 sm:h-11',
                     hasSelection ? 'text-neutral-800' : 'text-neutral-400',
                     invalid && 'border-red-400 focus:border-red-500 focus:ring-0',
                     staticField && 'pointer-events-none cursor-default',

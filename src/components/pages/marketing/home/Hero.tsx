@@ -1,16 +1,10 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
-import { resolveSelectedSpecialization, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
-import {
-    selectHomepageSpecializationId,
-    selectHomepageSpecializations,
-} from '@/store/homepage/homepage.selectors'
-import { useAppSelector } from '@/store/hooks'
 
 type HeroProps = HomepagePageProps & {
     tourLocations?: string[]
@@ -18,29 +12,7 @@ type HeroProps = HomepagePageProps & {
 
 const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
-
     const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
-
-    useEffect(() => {
-        const selectedSpecialization = resolveSelectedSpecialization(
-            specializationId,
-            specializations,
-        )
-
-        console.log('[specialization_id] selected option', {
-            specializationId,
-            selectedOption: selectedSpecialization,
-        })
-        console.log('[Hero] specialization_id banner check', {
-            specializationId,
-            selectedOptionName: selectedSpecialization?.name ?? null,
-            usesHajjUmrahBanner: usesHajjUmrahBanner(specializationId, specializations),
-            defaultBackgroundImage: hero.backgroundImage,
-            resolvedBackgroundImage: backgroundImage,
-        })
-    }, [backgroundImage, hero.backgroundImage, specializationId, specializations])
 
     return (
         <section className='p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]'>
@@ -52,7 +24,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                     <div className='agency-container'>
                         <div className='w-full max-w-[828px] mx-auto text-center'>
                             <h1
-                                className='text-3xl font-semibold leading-[0.95] sm:text-4xl md:text-5xl xl:text-[45px]'
+                                className='text-[26px] font-semibold leading-[1.1] sm:text-3xl sm:leading-[0.95] md:text-4xl lg:text-5xl xl:text-[45px]'
                                 style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                             >
                                 {hero.title}

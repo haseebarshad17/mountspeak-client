@@ -34,7 +34,7 @@ export function FormInput({
     const fieldClassName = cn(
         'w-full rounded-sm border border-gray-300 bg-neutral-50 text-sm text-neutral-800 outline-none transition placeholder:text-neutral-400 focus:border-primary-600 focus:ring-1 focus:ring-primary-600',
         invalid && 'border-red-400 focus:border-red-500 focus:ring-0',
-        textarea ? 'h-auto min-h-[120px] resize-none p-3' : 'h-11 px-3',
+        textarea ? 'h-auto min-h-[96px] resize-none p-3 sm:min-h-[120px]' : 'h-10 px-3 sm:h-11',
         classNames?.input,
     )
 

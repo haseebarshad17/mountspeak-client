@@ -50,7 +50,7 @@ export function BookingHeader() {
 
     return (
         <>
-            <header className='relative z-10 border-b border-white/30 bg-transparent'>
+            <header className='relative z-10 bg-white'>
                 <div className='agency-container flex h-[118px] items-center justify-between gap-4'>
                     <PrefixedLink
                         href='/'
