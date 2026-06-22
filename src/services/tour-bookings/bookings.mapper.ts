@@ -10,6 +10,7 @@ export function formatBookingAmountTotal(amount: number): string {
 export function toBookingsInsertRow(payload: CreateTourBookingDTO): Record<string, string | number | null> {
     return {
         tour_id: payload.tour_id,
+        agency_id: payload.agency_id,
         name: payload.name.trim(),
         email: payload.email.trim(),
         phone: payload.phone.trim(),
@@ -26,6 +27,7 @@ export function toBookingsInsertRow(payload: CreateTourBookingDTO): Record<strin
 
 export function buildCreateBookingPayload(params: {
     tourId: string
+    agencyId: string
     name: string
     email: string
     phone: string
@@ -39,6 +41,7 @@ export function buildCreateBookingPayload(params: {
 }): CreateTourBookingDTO {
     return {
         tour_id: params.tourId,
+        agency_id: params.agencyId,
         name: params.name,
         email: params.email,
         phone: params.phone,

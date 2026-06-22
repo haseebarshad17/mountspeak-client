@@ -1,6 +1,7 @@
 /** Matches `public.bookings` insert/update payload in Supabase. */
 export type CreateTourBookingDTO = {
     tour_id: string
+    agency_id: string
     name: string
     email: string
     phone: string

@@ -29,14 +29,7 @@ export const homepageService = ({ supabase }: HomepageServiceProps) => {
 
                 if (error) throw error
                 if (data) {
-                    const row = data as AgencySiteThemeRow
-                    console.log('[agency_site_theme] Row matched host', {
-                        requestHost,
-                        matchedSiteUrl: siteUrl,
-                        agency_id: row.agency_id,
-                        specialization_id: row.specialization_id ?? null,
-                    })
-                    return row
+                    return data as AgencySiteThemeRow
                 }
             }
 

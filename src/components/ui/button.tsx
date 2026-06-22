@@ -60,7 +60,7 @@ const buttonVariants = tv({
             sm: "h-9 min-h-9 rounded-md px-4 sm:h-10 sm:min-h-10 sm:px-5",
             md: "h-11 min-h-11 rounded-md px-6 sm:h-14 sm:min-h-14 sm:px-8",
             lg: "h-11 min-h-11 rounded-md px-6 sm:h-14 sm:min-h-14 sm:px-8",
-            nav: "h-auto min-h-0 rounded-md px-0 !text-sm !font-normal !normal-case !tracking-normal",
+            nav: "h-auto min-h-0 rounded-md px-0 !text-sm xl:!text-base !font-normal !normal-case !tracking-normal",
             icon: "h-10 w-10 min-h-0 rounded-md p-0",
             max: "h-max min-h-0 w-max px-0 !font-normal !normal-case !tracking-normal",
         },

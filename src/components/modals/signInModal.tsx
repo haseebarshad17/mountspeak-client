@@ -61,7 +61,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
                     <label className="mb-2 block text-sm text-neutral-700">Email</label>
                     <input
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder="example@gmail.com"
                       className="w-full rounded-xl border border-neutral-200 px-4 py-3 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100"
                     />
                   </div>

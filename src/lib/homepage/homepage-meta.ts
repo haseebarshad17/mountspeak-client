@@ -89,10 +89,7 @@ export function getHomepageMetadata(homepage: AgencyHomepage): Metadata {
 
     return {
         ...base,
-        title: {
-            default: `Home | ${agencyName}`,
-            template: `%s | ${agencyName}`,
-        },
+        title: 'Home',
         description: seo.description,
         openGraph: {
             ...base.openGraph,

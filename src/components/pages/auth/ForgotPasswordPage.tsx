@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="explorer@pakistan.travel"
+                    placeholder="example@gmail.com"
                     autoComplete="email"
                     className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />

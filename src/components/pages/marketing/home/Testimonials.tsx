@@ -6,7 +6,8 @@ import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
 import Image from 'next/image'
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
+import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper/types'
 import 'swiper/css'
@@ -126,11 +127,31 @@ function TestimonialCard({
     )
 }
 
+const MAX_SLIDES_PER_VIEW = 3
+const MIN_SLIDES_FOR_LOOP = MAX_SLIDES_PER_VIEW * 2
+
+function buildLoopSlides(items: NonNullable<HomepagePageProps['page']['sections']['testimonials']['items']>) {
+    if (items.length >= MIN_SLIDES_FOR_LOOP) return items
+
+    const loopSlides = [...items]
+    let index = 0
+
+    while (loopSlides.length < MIN_SLIDES_FOR_LOOP) {
+        loopSlides.push(items[index % items.length])
+        index += 1
+    }
+
+    return loopSlides
+}
+
 const Testimonials = ({ page }: HomepagePageProps) => {
     const section = page.sections.testimonials
+    const items = section.items ?? []
+    const loopSlides = useMemo(() => buildLoopSlides(items), [items])
+    const canLoop = items.length > 1
 
     const swiperRef = useRef<SwiperType | null>(null)
-    const [activeIndex, setActiveIndex] = useState(1)
+    const [activeIndex, setActiveIndex] = useState(0)
 
     return (
         <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
@@ -148,11 +169,22 @@ const Testimonials = ({ page }: HomepagePageProps) => {
 
                 <div className='relative mx-auto mt-8 max-w-[1280px] sm:mt-10 lg:mt-12'>
                     <Swiper
+                        key={`${items.length}-${items.map((item) => item.name).join('|')}`}
+                        modules={[Autoplay]}
                         slidesPerView={1}
-                        loop
+                        loop={canLoop}
+                        loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
                         speed={500}
                         spaceBetween={20}
-                        initialSlide={1}
+                        autoplay={
+                            canLoop
+                                ? {
+                                      delay: 4500,
+                                      disableOnInteraction: false,
+                                      pauseOnMouseEnter: true,
+                                  }
+                                : false
+                        }
                         breakpoints={{
                             640: { slidesPerView: 1.4, spaceBetween: 24 },
                             900: { slidesPerView: 2.2, spaceBetween: 28 },
@@ -161,10 +193,13 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                         onBeforeInit={(swiper) => {
                             swiperRef.current = swiper
                         }}
-                        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                        onSlideChange={(swiper) => {
+                            if (items.length === 0) return
+                            setActiveIndex(swiper.realIndex % items.length)
+                        }}
                         className='testimonials-swiper !overflow-visible px-2'
                     >
-                        {(section.items ?? []).map((item, index) => (
+                        {loopSlides.map((item, index) => (
                             <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
                                 <TestimonialCard
                                     {...item}
@@ -176,7 +211,7 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                 </div>
 
                 <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
-                    {(section.items ?? []).map((_, idx) => (
+                    {items.map((_, idx) => (
                         <button
                             key={idx}
                             type='button'

@@ -131,7 +131,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                     key={destination.id}
                                     className='!w-full shrink-0 sm:!w-[520px]'
                                 >
-                                    <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:h-[459px] sm:p-3.5'>
+                                    <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 pb-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:p-3.5 sm:pb-4'>
                                         <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[332px]'>
                                             <Image
                                                 src={destination.image}
@@ -142,7 +142,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                             />
                                         </div>
 
-                                        <div className='px-1 pb-1 pt-4'>
+                                        <div className='px-1 pt-3 sm:pt-4'>
                                             <h3
                                                 className='font-jost text-[22px] font-medium leading-7 sm:text-[28px] sm:leading-8 lg:text-[32px]'
                                                 style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
