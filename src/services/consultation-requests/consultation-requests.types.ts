@@ -27,6 +27,7 @@ export type CreateConsultationRequestDTO = {
     title: string
     description: string
     inquiry_type?: ConsultationInquiryType | null
+    agency_id?: string
 }
 
 export type SubmitConsultationRpcResponse = {

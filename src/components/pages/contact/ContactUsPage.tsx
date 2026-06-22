@@ -20,10 +20,14 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_INPUT_FOCUS_CLASS, HP_THEME_LINK_CLASS, HP_THEME_TEXT_CLASS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { useIsAgencySite } from '@/hooks/useIsAgencySite'
+import { DEFAULT_AGENCY_ID } from '@/lib/homepage/default-homepage'
 import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
 import { cn } from '@/lib/utils/clsxUtils'
+import { useAppSelector } from '@/store/hooks'
+import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
 import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
-import { FormEvent, useState, type ReactNode } from 'react'
+import { FormEvent, useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 const inputClass = cn(
@@ -108,10 +112,25 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
     const contactItems = page ? getFooterContactColumnItems(page.footer) : []
     const { mutateAsync: createConsultationRequest, isPending } = useCreateConsultationRequest()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const agencyId = useAppSelector(selectHomepageAgencyId)
+    const isAgencySite = useIsAgencySite()
+
+    const resolvedAgencyId = useMemo(() => {
+        if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
+            return undefined
+        }
+
+        return agencyId
+    }, [agencyId, isAgencySite])
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         setFieldErrors({})
+
+        if (isAgencySite && !resolvedAgencyId) {
+            toast.error(getMessage(MessageCode.BOOKING_MISSING_AGENCY))
+            return
+        }
 
         const form = event.currentTarget
         const formData = new FormData(form)
@@ -122,6 +141,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
             title: String(formData.get('title') ?? '') as ConsultationTitle,
             inquiry_type: String(formData.get('inquiry_type') ?? '') as ConsultationInquiryType,
             description: String(formData.get('description') ?? ''),
+            ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
         }
         const parsed = createConsultationRequestSchema.safeParse(raw)
         if (!parsed.success) {

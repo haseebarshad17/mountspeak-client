@@ -41,6 +41,7 @@ export const createConsultationRequestSchema = z.object({
     inquiry_type: z.enum(CONSULTATION_INQUIRY_TYPES, {
         message: MessageCode.CONTACT_INQUIRY_TYPE_REQUIRED,
     }),
+    agency_id: z.string().uuid().optional(),
 })
 
 export type CreateConsultationRequestInput = z.infer<typeof createConsultationRequestSchema>
