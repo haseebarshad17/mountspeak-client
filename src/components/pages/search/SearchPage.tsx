@@ -1,11 +1,12 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Compass, SearchX } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
+import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
@@ -209,13 +210,25 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                             ) : null}
                         </>
                     ) : (
-                        <p className='mx-auto max-w-xl pt-10 text-center text-base text-neutral-500'>
-                            {isFiltered
-                                ? isUmrahSearch
-                                    ? 'No Umrah packages match your search. Try different duration or package type.'
-                                    : 'No trips match your search. Try different locations or dates.'
-                                : 'No published tours yet.'}
-                        </p>
+                        <div className='pt-8 sm:pt-10'>
+                            <SectionEmptyState
+                                icon={isFiltered ? SearchX : Compass}
+                                title={
+                                    isFiltered
+                                        ? isUmrahSearch
+                                            ? 'No packages found'
+                                            : 'No trips found'
+                                        : 'No tours published yet'
+                                }
+                                description={
+                                    isFiltered
+                                        ? isUmrahSearch
+                                            ? 'No Umrah packages match your search. Try different duration or package type.'
+                                            : 'No trips match your search. Try different locations or dates.'
+                                        : 'No published tours yet. Check back soon for new adventures.'
+                                }
+                            />
+                        </div>
                     )}
                 </div>
             </main>

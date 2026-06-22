@@ -1,6 +1,6 @@
 'use client'
 
-import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_LIGHT_BUTTON, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_LIGHT_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
@@ -197,11 +197,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
                         <Button
                             variant='secondary'
-                            className='mt-8 min-w-[200px] sm:mt-10'
-                            style={{
-                                backgroundColor: STATIC_LIGHT_BUTTON.background,
-                                color: STATIC_LIGHT_BUTTON.text,
-                            }}
+                            className={cn('mt-8 min-w-[200px] sm:mt-10', HP_THEME_LIGHT_BTN_CLASS)}
                             href={section.cta.href ?? '/search'}
                         >
                             {section.cta.label}
