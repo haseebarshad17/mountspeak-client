@@ -123,7 +123,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
             inquiry_type: String(formData.get('inquiry_type') ?? '') as ConsultationInquiryType,
             description: String(formData.get('description') ?? ''),
         }
-
         const parsed = createConsultationRequestSchema.safeParse(raw)
         if (!parsed.success) {
             const nextErrors = mapConsultationRequestFieldErrors(parsed.error.issues)
