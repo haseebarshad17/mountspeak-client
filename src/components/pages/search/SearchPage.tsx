@@ -3,6 +3,7 @@
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
@@ -24,6 +25,8 @@ import {
 } from '@/services/tours/tours.umrah-search.utils'
 import type { TourListItem } from '@/services/tours/tours.types'
 import { tourDetailPath } from '@/services/tours/tours.utils'
+
+const TOURS_PER_SCROLL = 6
 
 type SearchPageProps = {
     tours: TourListItem[]
@@ -80,6 +83,35 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
     const backgroundImage = useHeroBackgroundImage()
+    const [visibleCount, setVisibleCount] = useState(TOURS_PER_SCROLL)
+    const loadMoreRef = useRef<HTMLDivElement>(null)
+
+    const visibleTours = tours.slice(0, visibleCount)
+    const hasMoreTours = visibleCount < tours.length
+
+    useEffect(() => {
+        setVisibleCount(TOURS_PER_SCROLL)
+    }, [tours])
+
+    useEffect(() => {
+        if (!hasMoreTours) return
+
+        const sentinel = loadMoreRef.current
+        if (!sentinel) return
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    setVisibleCount((current) => Math.min(current + TOURS_PER_SCROLL, tours.length))
+                }
+            },
+            { rootMargin: '200px 0px' },
+        )
+
+        observer.observe(sentinel)
+
+        return () => observer.disconnect()
+    }, [hasMoreTours, tours.length])
 
     const summary = isUmrahSearch
         ? formatUmrahSearchSummary(umrahFilters)
@@ -153,17 +185,29 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                     </div>
 
                     {tours.length > 0 ? (
-                        <div className='grid grid-cols-1 justify-items-center gap-5 pt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:justify-items-stretch'>
-                            {tours.map((tour) => (
-                                <SearchResultCard
-                                    key={tour.id}
-                                    slug={tour.slug}
-                                    discountPercent={tour.discountPercent}
-                                    title={tour.title}
-                                    image={tour.image}
-                                />
-                            ))}
-                        </div>
+                        <>
+                            <div className='grid grid-cols-1 justify-items-center gap-5 pt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:justify-items-stretch'>
+                                {visibleTours.map((tour) => (
+                                    <SearchResultCard
+                                        key={tour.id}
+                                        slug={tour.slug}
+                                        discountPercent={tour.discountPercent}
+                                        title={tour.title}
+                                        image={tour.image}
+                                    />
+                                ))}
+                            </div>
+
+                            {hasMoreTours ? (
+                                <div
+                                    ref={loadMoreRef}
+                                    className='flex justify-center pt-8'
+                                    aria-hidden
+                                >
+                                    <span className='text-sm text-neutral-500'>Loading more trips...</span>
+                                </div>
+                            ) : null}
+                        </>
                     ) : (
                         <p className='mx-auto max-w-xl pt-10 text-center text-base text-neutral-500'>
                             {isFiltered

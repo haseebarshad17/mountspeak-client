@@ -25,6 +25,7 @@ import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
 import {
   selectHomepageAgencyId,
+  selectHomepagePage,
   selectIsAgencySite,
 } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
@@ -121,6 +122,8 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const { mutateAsync: logout } = useLogout();
   const agencyId = useAppSelector(selectHomepageAgencyId);
   const isAgencySite = useAppSelector(selectIsAgencySite);
+  const homepagePage = useAppSelector(selectHomepagePage);
+  const brandName = homepagePage?.branding?.name?.trim() || "Pakistan Travel Systems";
 
   const signupAgencyId = useMemo(() => {
     if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
@@ -366,7 +369,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="explorer@pakistan.travel"
+                  placeholder="example@gmail.com"
                   className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                 />
               </div>
@@ -448,7 +451,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
             </Button>
 
             <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
-              © {new Date().getFullYear()} Pakistan Travel Systems
+              © {new Date().getFullYear()} {brandName}
             </p>
           </div>
         </div>

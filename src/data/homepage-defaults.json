@@ -391,7 +391,7 @@
           "validationToast": "Please fix the highlighted fields.",
           "placeholders": {
             "fullName": "Your Name *",
-            "email": "Your Email *",
+            "email": "example@gmail.com",
             "phone": "Your Phone *",
             "destination": "Select Destination",
             "destinationLoading": "Loading cities...",

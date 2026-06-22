@@ -4,11 +4,13 @@ import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import type { HomepagePage } from '@/data/homepage'
-import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
-import { Calendar, MessageCircle, ThumbsUp } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, MessageCircle, ThumbsUp } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useRef } from 'react'
+import { Autoplay, Navigation } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 function BlogCard({
     title,
@@ -84,8 +86,14 @@ function BlogCard({
     )
 }
 
+const BLOG_CAROUSEL_THRESHOLD = 3
+
 const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
     const section = page.sections.popularTravelBlogs
+    const posts = section.posts ?? []
+    const useCarousel = posts.length > BLOG_CAROUSEL_THRESHOLD
+    const prevRef = useRef<HTMLButtonElement>(null)
+    const nextRef = useRef<HTMLButtonElement>(null)
 
     return (
         <section className='bg-white' aria-labelledby='popular-travel-blogs-heading'>
@@ -105,17 +113,87 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                     >
                         {section.paragraph}
                     </p>
+
+                    {useCarousel ? (
+                        <div className='mt-5 flex items-center justify-center gap-2 sm:mt-6'>
+                            <button
+                                ref={prevRef}
+                                type='button'
+                                aria-label='Previous blog posts'
+                                className={cn(
+                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
+                            >
+                                <ChevronLeft className='h-5 w-5' aria-hidden />
+                            </button>
+                            <button
+                                ref={nextRef}
+                                type='button'
+                                aria-label='Next blog posts'
+                                className={cn(
+                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
+                            >
+                                <ChevronRight className='h-5 w-5' aria-hidden />
+                            </button>
+                        </div>
+                    ) : null}
                 </header>
 
-                <div className='mx-auto grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
-                    {section.posts.map((post) => (
-                        <BlogCard
-                            key={post.title}
-                            {...post}
-                            section={section}
-                        />
-                    ))}
-                </div>
+                {useCarousel ? (
+                    <div className='mx-auto max-w-[1200px] overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
+                        <Swiper
+                            modules={[Navigation, Autoplay]}
+                            slidesPerView={1}
+                            spaceBetween={16}
+                            breakpoints={{
+                                640: {
+                                    slidesPerView: 2,
+                                    spaceBetween: 24,
+                                },
+                                1024: {
+                                    slidesPerView: 3,
+                                    spaceBetween: 24,
+                                },
+                            }}
+                            loop
+                            speed={600}
+                            autoplay={{
+                                delay: 4500,
+                                disableOnInteraction: false,
+                                pauseOnMouseEnter: true,
+                            }}
+                            navigation={{
+                                prevEl: prevRef.current,
+                                nextEl: nextRef.current,
+                            }}
+                            onBeforeInit={(swiper) => {
+                                if (
+                                    swiper.params.navigation &&
+                                    typeof swiper.params.navigation !== 'boolean'
+                                ) {
+                                    swiper.params.navigation.prevEl = prevRef.current
+                                    swiper.params.navigation.nextEl = nextRef.current
+                                }
+                            }}
+                            className='select-none !overflow-hidden'
+                        >
+                            {posts.map((post) => (
+                                <SwiperSlide key={post.title} className='!h-auto'>
+                                    <BlogCard {...post} section={section} />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
+                ) : (
+                    <div className='mx-auto grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
+                        {posts.map((post) => (
+                            <BlogCard key={post.title} {...post} section={section} />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     )

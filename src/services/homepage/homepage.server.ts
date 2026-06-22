@@ -1,7 +1,6 @@
 import { cache } from 'react'
 import { unstable_noStore as noStore } from 'next/cache'
 
-import { resolveSelectedSpecialization } from '@/lib/homepage/specialization'
 import { createDefaultAgencyHomepage } from '@/lib/homepage/default-homepage'
 import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
 import { createPublicSupabase } from '@/lib/supabase/supabase.public.server'
@@ -40,15 +39,6 @@ async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHom
         try {
             const homepage = mapAgencySiteThemeRowToHomepage(row)
             const specializationId = row.specialization_id?.trim() || null
-            const selectedSpecialization = resolveSelectedSpecialization(
-                specializationId,
-                specializations,
-            )
-
-            console.log('[specialization_id] selected option', {
-                specializationId,
-                selectedOption: selectedSpecialization,
-            })
 
             return {
                 ...homepage,

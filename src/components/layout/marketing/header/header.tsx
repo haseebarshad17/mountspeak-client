@@ -256,17 +256,12 @@ const Header = ({ page }: HeaderProps) => {
                                     renderLoggedInAuthAction()
                                 ) : (
                                     <>
-                                        <Button
-                                            variant='transparent'
-                                            size='nav'
-                                            className='w-max'
-                                            style={{
-                                                color: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
-                                            }}
-                                            href={loginHref}
-                                        >
-                                            {header.auth.login.label}
-                                        </Button>
+                                        <HeaderNavLink
+                                            href={header.auth.login.href ?? '/login'}
+                                            label={header.auth.login.label}
+                                            useLightNav={useLightNav}
+                                            color={useLightNav ? HP_CSS_VARS.primary : colors.textOnDark}
+                                        />
                                         <Button
                                             variant='secondary'
                                             style={useLightNav ? HP_THEME_BTN_STYLE : undefined}

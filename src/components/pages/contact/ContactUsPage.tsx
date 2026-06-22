@@ -237,7 +237,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         id='contact-email'
                                         name='email'
                                         type='email'
-                                        placeholder='you@example.com'
+                                        placeholder='example@gmail.com'
                                         aria-invalid={Boolean(fieldErrors.email)}
                                         className={inputClass}
                                     />

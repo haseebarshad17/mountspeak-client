@@ -121,20 +121,10 @@ function TopDestinationsSkeleton() {
                     {Array.from({ length: 3 }).map((_, index) => (
                         <div
                             key={index}
-                            className='h-[459px] w-[min(520px,85vw)] shrink-0 rounded-[20px] border border-neutral-200/80 bg-white p-3.5 shadow-[0_4px_30px_rgba(0,0,0,0.08)]'
+                            className='w-[min(520px,85vw)] shrink-0 rounded-[20px] border border-neutral-200/80 bg-white p-3.5 pb-4 shadow-[0_4px_30px_rgba(0,0,0,0.08)]'
                         >
                             <Skeleton className='h-[332px] w-full rounded-[16px]' />
-                            <div className='flex items-center justify-between gap-3 px-1 pt-4'>
-                                <Skeleton className='h-8 w-40' />
-                                <div className='flex gap-1'>
-                                    {Array.from({ length: 4 }).map((__, avatarIndex) => (
-                                        <Skeleton
-                                            key={avatarIndex}
-                                            className='h-9 w-9 rounded-full'
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            <Skeleton className='h-8 w-40' />
                         </div>
                     ))}
                 </div>

@@ -200,21 +200,22 @@ export default function BookingPage({
                 return
             }
 
-            const booking = await createTourBooking(
-                buildCreateBookingPayload({
-                    tourId: selectedTour.id,
-                    name: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
-                    email: user.email ?? '',
-                    phone: details.phone.trim(),
-                    emergencyPhone: details.emergencyPhone.trim(),
-                    cnic: details.cnic.trim(),
-                    maleSeats: details.maleSeats,
-                    femaleSeats: details.femaleSeats,
-                    kidsSeats: details.kidsSeats,
-                    totalAmount,
-                    notes: details.note,
-                }),
-            )
+            const payload = buildCreateBookingPayload({
+                tourId: selectedTour.id,
+                agencyId: selectedTour.agencyId,
+                name: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
+                email: user.email ?? '',
+                phone: details.phone.trim(),
+                emergencyPhone: details.emergencyPhone.trim(),
+                cnic: details.cnic.trim(),
+                maleSeats: details.maleSeats,
+                femaleSeats: details.femaleSeats,
+                kidsSeats: details.kidsSeats,
+                totalAmount,
+                notes: details.note,
+            })
+
+            const booking = await createTourBooking(payload)
 
             if (!booking.id) {
                 throw new Error('Booking was created but no booking id was returned.')
