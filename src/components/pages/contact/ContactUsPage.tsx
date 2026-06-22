@@ -143,7 +143,6 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
             description: String(formData.get('description') ?? ''),
             ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
         }
-
         const parsed = createConsultationRequestSchema.safeParse(raw)
         if (!parsed.success) {
             const nextErrors = mapConsultationRequestFieldErrors(parsed.error.issues)
