@@ -2,6 +2,7 @@
 
 import { ServiceCard } from '@/components/pages/marketing/home/ServiceCard'
 import { Button } from '@/components/ui/button'
+import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePage } from '@/data/homepage'
 import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
@@ -41,15 +42,8 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
 
     return (
         <>
-            <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div
-                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                    style={{ backgroundImage: `url("${backgroundImage}")` }}
-                >
-                    <div
-                        id='services'
-                        className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'
-                    >
+            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
+                    <div id='services' className={PAGE_HERO_CONTENT_CLASS}>
                         <p
                             className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
                         >
@@ -67,8 +61,7 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                             custom itineraries to on-ground support across Pakistan.
                         </p>
                     </div>
-                </div>
-            </section>
+            </PageHeroBanner>
 
             <main
                 className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'

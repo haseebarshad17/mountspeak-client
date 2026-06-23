@@ -24,11 +24,20 @@ export function TechnicalRouteBreakdownSection({ page }: TechnicalRouteBreakdown
                     <div className="mt-8 grid gap-8 md:grid-cols-3 md:gap-10">
                         {technicalRouteSection.segments.map((seg) => (
                             <article key={seg.segmentId} className='max-w-[340px]'>
-                                <h3 className="relative pl-6 text-base font-roboto font-semibold leading-snug text-[#F0602B]">
+                                <h3
+                                    className="relative pl-6 text-base font-roboto font-semibold leading-snug"
+                                    style={{ color: theme.secondaryColor }}
+                                >
                                     <span
                                         aria-hidden
-                                        className="absolute font-roboto left-0 top-[0.45em] rounded-full bg-[#F0602B]"
-                                        style={{ width: 10, height: 10, minWidth: 10, minHeight: 10 }}
+                                        className="absolute left-0 top-[0.45em] rounded-full font-roboto"
+                                        style={{
+                                            width: 10,
+                                            height: 10,
+                                            minWidth: 10,
+                                            minHeight: 10,
+                                            backgroundColor: theme.secondaryColor,
+                                        }}
                                     />
                                     {seg.title}
                                 </h3>

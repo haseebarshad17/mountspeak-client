@@ -1,9 +1,14 @@
 'use client'
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { SectionEmptyState } from "@/components/ui/section-empty-state";
 
+import { useIsAgencySite } from "@/hooks/useIsAgencySite";
+import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { useAppSelector } from "@/store/hooks";
+import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors";
 import { useOptionalUser } from "@/services/auth/auth.queries";
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries";
 import type {
@@ -11,6 +16,8 @@ import type {
   UserPastBookingDisplay,
 } from "@/services/user-bookings/user-bookings.types";
 import { tourDetailPath } from "@/services/tours/tours.utils";
+
+import { CalendarDays, History } from "lucide-react";
 
 type BookingsTab = "upcoming" | "past";
 
@@ -172,7 +179,20 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
 const BookingsPage = () => {
   const [activeTab, setActiveTab] = useState<BookingsTab>("upcoming");
   const { data: currentUser } = useOptionalUser();
-  const { data: bookingsData, isLoading } = useUserBookings(currentUser?.email ?? null);
+  const agencyId = useAppSelector(selectHomepageAgencyId);
+  const isAgencySite = useIsAgencySite();
+  const resolvedAgencyId = useMemo(() => {
+    if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
+      return undefined;
+    }
+
+    return agencyId;
+  }, [agencyId, isAgencySite]);
+  const { data: bookingsData, isLoading } = useUserBookings(
+    currentUser?.email ?? null,
+    resolvedAgencyId,
+    { agencyScoped: isAgencySite === true },
+  );
 
   const upcomingTours = bookingsData?.upcoming ?? [];
   const pastTours = bookingsData?.past ?? [];
@@ -328,11 +348,12 @@ const BookingsPage = () => {
                   </article>
                 ))
               ) : (
-                <p
-                  className="border border-[#C0C8C9] bg-white p-8 text-[16px] text-[#404849]"
-                >
-                  You do not have any upcoming bookings yet.
-                </p>
+                <SectionEmptyState
+                  icon={CalendarDays}
+                  title="No upcoming bookings"
+                  description="You do not have any upcoming bookings yet. Explore our tours to plan your next adventure."
+                  className="max-w-none"
+                />
               )}
           </div>
         ) : (
@@ -346,11 +367,12 @@ const BookingsPage = () => {
                 ))}
               </div>
             ) : (
-              <p
-                className="border border-[#C0C8C9] bg-[#F3F3F6] p-8 text-[16px] text-[#404849]"
-              >
-                No past expeditions yet.
-              </p>
+              <SectionEmptyState
+                icon={History}
+                title="No past expeditions"
+                description="Completed and cancelled trips will appear here once you have booking history."
+                className="max-w-none"
+              />
             )}
           </div>
         )}

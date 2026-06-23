@@ -8,7 +8,7 @@ import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -22,6 +22,8 @@ function isNavLinkActive(pathname: string, href: string | null | undefined): boo
     if (href === '/') return pathname === '/'
     return pathname === href || pathname.startsWith(`${href}/`)
 }
+
+const LIGHT_NAV_LINK_COLOR = '#00292C'
 
 const navLinkClassName = (isActive: boolean, useLightNav: boolean) =>
     cn(
@@ -218,7 +220,7 @@ const Header = ({ page }: HeaderProps) => {
                 <div className='flex w-full items-center justify-between gap-4'>
                     {/* Logo  */}
                     <div>
-                        <Image
+                        <StorageMediaImage
                             src={
                                 useLightNav
                                     ? branding.logo.default.src
@@ -230,7 +232,7 @@ const Header = ({ page }: HeaderProps) => {
                             className={cn(
                                 'object-contain transition-all duration-300 max-w-[150px] object-left',
                                 isScrolled
-                                    ? 'h-[80px] w-auto max-h-[80px]'
+                                    ? 'w-auto max-h-[50px]'
                                     : 'max-h-[100px] min-h-[50px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]',
                             )}
                             priority
@@ -248,7 +250,7 @@ const Header = ({ page }: HeaderProps) => {
                                     href={link.href ?? '/'}
                                     label={link.label}
                                     useLightNav={useLightNav}
-                                    color={useLightNav ? HP_CSS_VARS.primary : colors.textOnDark}
+                                    color={useLightNav ? LIGHT_NAV_LINK_COLOR : colors.textOnDark}
                                 />
                             ))}
                         </div>
@@ -335,7 +337,7 @@ const Header = ({ page }: HeaderProps) => {
                     )}
                 >
                     <div className='flex items-center justify-between'>
-                        <Image
+                        <StorageMediaImage
                             src={branding.logo.onDark.src}
                             alt={branding.logo.onDark.alt}
                             width={150}

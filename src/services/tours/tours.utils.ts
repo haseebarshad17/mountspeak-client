@@ -1,3 +1,4 @@
+import { getAvailableSeats } from '@/lib/booking/tour-booking-rules'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
@@ -44,7 +45,12 @@ export function getTourCoverImage(tour: Pick<TourRow, 'header' | 'overview' | 'v
     return TOUR_MEDIA_PLACEHOLDER
 }
 
-export function toTourListItem(tour: TourRow): TourListItem {
+export function toTourListItem(
+    tour: TourRow,
+    confirmedSeats = 0,
+): TourListItem {
+    const totalBooked = confirmedSeats
+
     return {
         id: tour.id,
         slug: tour.slug,
@@ -55,6 +61,8 @@ export function toTourListItem(tour: TourRow): TourListItem {
                 ? null
                 : Number(tour.discount_percent),
         image: getTourCoverImage(tour),
+        totalBooked,
+        remainingSeats: getAvailableSeats(tour.capacity_total, totalBooked),
     }
 }
 

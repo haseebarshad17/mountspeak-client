@@ -6,6 +6,7 @@ export const STATIC_HEADER: Header = {
         { label: 'Home', href: '/' },
         { label: 'Discover', href: '/discover' },
         { label: 'About Us', href: '/about-us' },
+        { label: 'FAQ', href: '/faq' },
         { label: 'Contact', href: '/contact-us' },
     ],
     auth: {

@@ -7,6 +7,7 @@ import BookingsPage from '@/app/bookings/page'
 import ContactUsPage from '@/app/contact-us/page'
 import DashboardPage from '@/app/dashboard/page'
 import DiscoverPage from '@/app/discover/page'
+import FaqPage from '@/app/faq/page'
 import ForgotPasswordPage from '@/app/(auth)/forgot-password/page'
 import HomePage from '@/app/page'
 import LoginPage from '@/app/(auth)/login/page'
@@ -72,6 +73,10 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
 
     if (path === 'about-us') {
         return <AboutUsPage />
+    }
+
+    if (path === 'faq') {
+        return <FaqPage />
     }
 
     if (path === 'contact-us') {

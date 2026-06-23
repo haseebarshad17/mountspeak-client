@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { MessageCode } from '@/lib/messages/codes'
 import type {
     ForgotPasswordDTO,
     GoogleLoginDTO,
@@ -10,6 +11,57 @@ import type {
 
 
 type AuthServiceProps = { supabase: SupabaseClient }
+
+async function getUserAgencyId(
+    supabase: SupabaseClient,
+    userId: string,
+): Promise<string | null> {
+    const { data, error } = await supabase
+        .from('users')
+        .select('agency_id')
+        .eq('id', userId)
+        .single()
+
+    if (error) throw error
+
+    return (data.agency_id as string | null) ?? null
+}
+
+async function bindUserToAgency(
+    supabase: SupabaseClient,
+    userId: string,
+    agencyId: string,
+) {
+    const { error: metadataError } = await supabase.auth.updateUser({
+        data: { agency_id: agencyId },
+    })
+
+    if (metadataError) throw metadataError
+
+    const { error: profileError } = await supabase
+        .from('users')
+        .update({ agency_id: agencyId })
+        .eq('id', userId)
+
+    if (profileError) throw profileError
+}
+
+async function enforceAgencyAccess(
+    supabase: SupabaseClient,
+    userId: string,
+    agencyId: string,
+) {
+    const userAgencyId = await getUserAgencyId(supabase, userId)
+
+    if (userAgencyId && userAgencyId !== agencyId) {
+        await supabase.auth.signOut()
+        throw new Error(MessageCode.AUTH_AGENCY_MISMATCH)
+    }
+
+    if (!userAgencyId) {
+        await bindUserToAgency(supabase, userId, agencyId)
+    }
+}
 
 export const authService = ({ supabase }: AuthServiceProps) => {
     return {
@@ -45,6 +97,10 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                 })
 
             if (error) throw error
+
+            if (data.user && payload.agency_id) {
+                await enforceAgencyAccess(supabase, data.user.id, payload.agency_id)
+            }
 
             return data
         },

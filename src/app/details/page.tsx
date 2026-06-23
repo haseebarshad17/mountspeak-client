@@ -5,6 +5,7 @@ import TourPageContent from '@/components/pages/tour/TourPageContent'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { DEMO_TOUR_PAGE } from '@/lib/tours/default-tour-page'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import { applyAgencyThemeToTourPage } from '@/services/tours/tours.mapper'
 
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
@@ -35,5 +36,5 @@ export default async function DetailsPage() {
         notFound()
     }
 
-    return <TourPageContent page={DEMO_TOUR_PAGE} />
+    return <TourPageContent page={applyAgencyThemeToTourPage(DEMO_TOUR_PAGE, homepage.page?.theme)} />
 }

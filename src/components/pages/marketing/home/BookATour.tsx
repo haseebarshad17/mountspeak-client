@@ -4,6 +4,7 @@ import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_LIGHT_BTN_CLASS, STATI
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
+import { PAGE_HERO_OVERLAY_CLASS } from '@/components/ui/page-hero-banner'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -147,10 +148,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='relative bg-cover bg-center'
+            className='relative overflow-hidden bg-cover bg-center'
             style={{ backgroundImage: `url("${section.backgroundImage}")` }}
             aria-labelledby='book-a-tour-heading'
         >
+            <div className={PAGE_HERO_OVERLAY_CLASS} aria-hidden />
             <div className='agency-container relative z-10 py-14 sm:py-16 lg:py-20 xl:py-24'>
                 <div className='grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16'>
                     <div className='text-white'>

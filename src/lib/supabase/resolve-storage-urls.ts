@@ -1,4 +1,4 @@
-import { resolveHomepageMediaUrl } from '@/lib/supabase/homepage-media'
+import { resolveHomepageMediaUrlOrPlaceholder } from '@/lib/supabase/homepage-media'
 
 function looksLikeStoragePath(value: string): boolean {
     const trimmed = value.trim()
@@ -26,7 +26,7 @@ function looksLikeStoragePath(value: string): boolean {
 export function resolveStorageUrlsDeep<T>(value: T): T {
     if (typeof value === 'string') {
         return (
-            looksLikeStoragePath(value) ? resolveHomepageMediaUrl(value) : value
+            looksLikeStoragePath(value) ? resolveHomepageMediaUrlOrPlaceholder(value) : value
         ) as T
     }
 

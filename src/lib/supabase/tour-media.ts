@@ -1,11 +1,12 @@
 import { clientEnv } from '@/env/client'
 
+import { STORAGE_MEDIA_PLACEHOLDER } from '@/lib/supabase/storage-media-placeholder'
+
 /** Public bucket for tour images (paths stored on tours.*.image_url fields). */
 export const TOUR_MEDIA_BUCKET =
     process.env.NEXT_PUBLIC_SUPABASE_TOUR_STORAGE_BUCKET ?? 'tour-media'
 
-export const TOUR_MEDIA_PLACEHOLDER =
-    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80'
+export const TOUR_MEDIA_PLACEHOLDER = STORAGE_MEDIA_PLACEHOLDER
 
 export function resolveTourMediaUrl(pathOrUrl: string | null | undefined): string {
     if (!pathOrUrl?.trim()) {

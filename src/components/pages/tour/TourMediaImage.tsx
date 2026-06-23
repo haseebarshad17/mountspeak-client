@@ -1,28 +1,14 @@
 'use client'
 
-import Image, { type ImageProps } from 'next/image'
-import { useState } from 'react'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import type { ImageProps } from 'next/image'
 
-import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
+import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
 
 type TourMediaImageProps = Omit<ImageProps, 'src'> & {
     src: string | null | undefined
 }
 
-export function TourMediaImage({ src, alt, onError, ...props }: TourMediaImageProps) {
-    const [imageSrc, setImageSrc] = useState(() => resolveTourMediaUrlOrPlaceholder(src))
-
-    return (
-        <Image
-            {...props}
-            src={imageSrc}
-            alt={alt}
-            onError={(event) => {
-                onError?.(event)
-                if (imageSrc !== TOUR_MEDIA_PLACEHOLDER) {
-                    setImageSrc(TOUR_MEDIA_PLACEHOLDER)
-                }
-            }}
-        />
-    )
+export function TourMediaImage({ src, ...props }: TourMediaImageProps) {
+    return <StorageMediaImage src={resolveTourMediaUrlOrPlaceholder(src)} {...props} />
 }

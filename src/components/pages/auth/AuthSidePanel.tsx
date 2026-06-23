@@ -15,7 +15,7 @@ export default function AuthSidePanel() {
   const homePath = usePreviewPath("/");
 
   return (
-    <div className="relative hidden overflow-hidden md:block md:w-1/2">
+    <div className="relative hidden h-full min-h-0 shrink-0 overflow-hidden md:block md:w-1/2">
       <Image
         src={authSideImageSrc}
         alt="Discover the rugged beauty"

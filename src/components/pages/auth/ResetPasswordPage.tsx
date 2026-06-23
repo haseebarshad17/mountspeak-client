@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
-import { authInputBorderClassName, authInputClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -44,12 +44,13 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <section className="flex h-full justify-center">
-      <div className="flex h-full w-full max-w-[100%] flex-col overflow-hidden border-none bg-white md:flex-row">
+    <section className={authPageSectionClassName}>
+      <div className={authPageShellClassName}>
         <AuthSidePanel />
 
-        <div className="flex w-full items-center justify-center bg-white px-6 sm:px-10 md:w-1/2 lg:px-[100px]">
-          <div className="w-full max-w-[500px]">
+        <div className={authFormPanelClassName}>
+          <div className={authFormPanelInnerClassName}>
+          <div className={authFormContentClassName}>
             <h1
               className="mb-3 text-5xl font-semibold leading-[56px] tracking-[-0.02em] text-[#1A1C1E]"
             >
@@ -116,10 +117,11 @@ export default function ResetPasswordPage() {
             </Link>
 
             <p
-              className="mt-16 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
+              className="mt-10 pb-4 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
             >
               © {new Date().getFullYear()} Pakistan Travel Systems
             </p>
+          </div>
           </div>
         </div>
       </div>

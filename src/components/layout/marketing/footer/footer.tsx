@@ -2,9 +2,11 @@
 
 import { cn } from '@/lib/utils/clsxUtils'
 import type { HomepagePage } from '@/data/homepage'
+import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
 import { getFooterDisplayColumns } from '@/lib/homepage/normalize-homepage'
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -13,6 +15,13 @@ type FooterProps = {
 }
 
 type FooterColumn = ReturnType<typeof getFooterDisplayColumns>[number]
+
+const contactItemIcons: Record<'email' | 'phone' | 'location' | 'other', LucideIcon> = {
+    email: Mail,
+    phone: Phone,
+    location: MapPin,
+    other: MapPin,
+}
 
 function FooterLink({
     href,
@@ -41,27 +50,20 @@ function FooterDot() {
     )
 }
 
-function FooterColumnBlock({ column }: { column: FooterColumn }) {
+function FooterLinksBlock({ column }: { column: FooterColumn }) {
     const entries = 'links' in column && column.links ? column.links : (column.items ?? [])
 
     return (
         <div className='flex w-full max-w-[1100px] flex-col items-center text-center text-white'>
-            <h3 className='pb-3 text-sm font-semibold sm:pb-4 sm:text-lg'>{column.title}</h3>
-            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 sm:gap-y-3'>
+            <h3 className='pb-2 text-sm font-semibold sm:text-base'>{column.title}</h3>
+            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4'>
                 {entries.map((entry, linkIdx) => {
-                    const item = !entry.href ? (
-                        <li
-                            key={`item-${linkIdx}`}
-                            className='text-xs font-normal opacity-80 sm:text-base'
-                        >
-                            {entry.label}
-                        </li>
-                    ) : (
+                    const item = (
                         <li key={`item-${linkIdx}`}>
                             <FooterLink
-                                href={entry.href}
+                                href={entry.href ?? '/'}
                                 className={cn(
-                                    'text-xs font-normal opacity-80 sm:text-base',
+                                    'text-xs font-normal opacity-80 sm:text-sm',
                                     'hover:opacity-100',
                                 )}
                             >
@@ -84,6 +86,52 @@ function FooterColumnBlock({ column }: { column: FooterColumn }) {
     )
 }
 
+function FooterContactBlock({ footer, title }: { footer: HomepagePage['footer']; title: string }) {
+    const contactItems = getFooterContactColumnItems(footer)
+
+    if (contactItems.length === 0) return null
+
+    return (
+        <div className='flex w-full max-w-[1100px] flex-col items-center text-center text-white'>
+            <h3 className='pb-2 text-sm font-semibold sm:text-base'>{title}</h3>
+            <ul className='flex flex-row flex-wrap items-center justify-center gap-x-3 gap-y-3 sm:gap-x-4 sm:gap-y-3'>
+                {contactItems.map((item, index) => {
+                    const Icon = contactItemIcons[item.kind]
+                    const content = item.href ? (
+                        <a
+                            href={item.href}
+                            className='text-xs font-normal opacity-80 transition hover:opacity-100 hover:underline sm:text-sm'
+                        >
+                            {item.label}
+                        </a>
+                    ) : (
+                        <span className='text-xs font-normal opacity-80 sm:text-sm'>{item.label}</span>
+                    )
+
+                    const rowItem = (
+                        <li
+                            key={`${item.label}-${index}`}
+                            className='inline-flex max-w-full items-center gap-2'
+                        >
+                            <Icon className='h-4 w-4 shrink-0 text-white opacity-90' aria-hidden />
+                            {content}
+                        </li>
+                    )
+
+                    if (index === 0) return rowItem
+
+                    return (
+                        <React.Fragment key={index}>
+                            <FooterDot />
+                            {rowItem}
+                        </React.Fragment>
+                    )
+                })}
+            </ul>
+        </div>
+    )
+}
+
 const Footer = ({ footer }: FooterProps) => {
     const homeHref = usePrefixedHref('/') ?? '/'
     const columns = getFooterDisplayColumns(footer)
@@ -93,20 +141,22 @@ const Footer = ({ footer }: FooterProps) => {
     return (
         <footer style={{ backgroundColor: footer.backgroundColor }}>
             <div className='agency-container'>
-                <section className='flex flex-col items-center gap-10 py-12 text-center sm:gap-12 sm:py-16 lg:gap-14 lg:py-[95px]'>
+                <section className='flex flex-col items-center gap-6 py-8 text-center sm:gap-8 sm:py-10 lg:gap-10 lg:py-12'>
                     <Link href={homeHref} className='inline-block'>
-                        <Image
+                        <StorageMediaImage
                             src={footer.logo.src}
                             alt={footer.logo.alt}
                             width={180}
                             height={120}
-                            className='mx-auto h-auto w-[130px] sm:w-[150px] lg:w-[180px] max-h-[100px] object-contain'
+                            className='mx-auto h-auto max-h-[100px] w-[130px] object-contain sm:w-[150px] lg:w-[180px]'
                         />
                     </Link>
 
-                    <div className='flex w-full flex-col items-center gap-10 sm:gap-12'>
-                        {linksColumn ? <FooterColumnBlock column={linksColumn} /> : null}
-                        {contactColumn ? <FooterColumnBlock column={contactColumn} /> : null}
+                    <div className='flex w-full flex-col items-center gap-6 sm:gap-8'>
+                        {linksColumn ? <FooterLinksBlock column={linksColumn} /> : null}
+                        {contactColumn ? (
+                            <FooterContactBlock footer={footer} title={contactColumn.title} />
+                        ) : null}
                     </div>
                 </section>
             </div>

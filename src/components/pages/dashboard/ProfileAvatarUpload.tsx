@@ -3,8 +3,11 @@
 import { Camera, Loader2, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useId, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { supabase } from '@/lib/supabase/supabase.client'
+import { DEFAULT_PROFILE_AVATAR_SRC } from '@/lib/profile/default-profile-avatar'
+import { isUserUploadedAvatarUrl } from '@/lib/profile/avatar-url'
 import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 
@@ -52,12 +55,15 @@ export function ProfileAvatarUpload({
   disabled = false,
 }: ProfileAvatarUploadProps) {
   const inputId = useId()
+  const queryClient = useQueryClient()
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
 
   const isBusy = uploading || deleting
   const canUpload = Boolean(userId) && !disabled && !isBusy
+  const hasUploadedAvatar = isUserUploadedAvatarUrl(avatarUrl)
+  const displayAvatarSrc = hasUploadedAvatar ? avatarUrl : DEFAULT_PROFILE_AVATAR_SRC
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -82,7 +88,7 @@ export function ProfileAvatarUpload({
       const ext = getExtension(file)
       const path = `${userId}/avatar-${Date.now()}.${ext}`
 
-      const previousPath = getStoragePathFromUrl(avatarUrl)
+      const previousPath = getStoragePathFromUrl(hasUploadedAvatar ? avatarUrl : null)
       if (previousPath) {
         await supabase.storage.from(AVATAR_BUCKET).remove([previousPath])
       }
@@ -105,6 +111,7 @@ export function ProfileAvatarUpload({
       if (updateError) throw updateError
 
       onAvatarChange(publicUrl)
+      await queryClient.invalidateQueries({ queryKey: ['user-profile'] })
     } catch {
       setError(getMessage(MessageCode.API_AVATAR_UPLOAD_FAILED))
     } finally {
@@ -116,7 +123,7 @@ export function ProfileAvatarUpload({
     event.stopPropagation()
     event.preventDefault()
 
-    if (!userId || !avatarUrl || isBusy || disabled) return
+    if (!userId || !hasUploadedAvatar || !avatarUrl || isBusy || disabled) return
 
     setError('')
     setDeleting(true)
@@ -134,6 +141,7 @@ export function ProfileAvatarUpload({
       if (updateError) throw updateError
 
       onAvatarChange(null)
+      await queryClient.invalidateQueries({ queryKey: ['user-profile'] })
     } catch {
       setError(getMessage(MessageCode.DASHBOARD_AVATAR_REMOVE_FAILED))
     } finally {
@@ -153,7 +161,7 @@ export function ProfileAvatarUpload({
       />
 
       <div className="relative h-[160px] w-[150px]">
-        {avatarUrl ? (
+        {hasUploadedAvatar ? (
           <button
             type="button"
             disabled={!userId || disabled || isBusy}
@@ -169,19 +177,17 @@ export function ProfileAvatarUpload({
           </button>
         ) : null}
 
-        <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_25%_20%,#54606a,#212a32_72%)]">
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt="Profile photo"
-              fill
-              unoptimized
-              className="pointer-events-none object-cover"
-              sizes="150px"
-            />
-          ) : null}
+        <div className="relative h-full w-full overflow-hidden bg-white">
+          <Image
+            src={displayAvatarSrc}
+            alt="Profile photo"
+            fill
+            className="pointer-events-none object-cover"
+            sizes="150px"
+            priority={!hasUploadedAvatar}
+          />
 
-          {!avatarUrl ? (
+          {!hasUploadedAvatar ? (
             <label
               htmlFor={canUpload ? inputId : undefined}
               onClick={(e) => {

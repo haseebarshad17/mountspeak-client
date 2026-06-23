@@ -7,7 +7,7 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Calendar, ChevronLeft, ChevronRight, MessageCircle, ThumbsUp } from 'lucide-react'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import React, { useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -31,7 +31,7 @@ function BlogCard({
             style={{ borderColor: STATIC_UI_COLORS.borderLight }}
         >
             <div className='relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-white/20'>
-                <Image
+                <StorageMediaImage
                     src={image}
                     alt={title}
                     fill

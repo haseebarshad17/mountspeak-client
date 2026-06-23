@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookMarked, LogOut, UserRound } from "lucide-react";
+import { BookMarked, UserRound } from "lucide-react";
 import { useInternalPathname, usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 
 interface DashboardSidebarProps {
@@ -64,7 +64,7 @@ const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
           </Link>
         </nav>
 
-        <button
+        {/* <button
           type="button"
           className="mt-12 !inline-flex min-h-12 items-center gap-3 px-4 text-[#b71c1c] transition hover:text-[#8e1414]"
         >
@@ -76,7 +76,7 @@ const DashboardSidebar = ({ onNavigate }: DashboardSidebarProps) => {
           >
             Sign Out
           </span>
-        </button>
+        </button> */}
       </div>
     </aside>
   );
