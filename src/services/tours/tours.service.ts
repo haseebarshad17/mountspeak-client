@@ -1,8 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { TourSearchFilters } from './tours.search.types'
-import type { TourRow } from './tours.types'
-
 import { filterToursForSearch } from './tours.search.utils'
 import { TOUR_PUBLICATION_STATUS, type TourRow } from './tours.types'
 
