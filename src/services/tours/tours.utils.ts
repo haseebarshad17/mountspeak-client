@@ -45,11 +45,18 @@ export function getTourCoverImage(tour: Pick<TourRow, 'header' | 'overview' | 'v
     return TOUR_MEDIA_PLACEHOLDER
 }
 
-export function toTourListItem(
-    tour: TourRow,
-    confirmedSeats = 0,
-): TourListItem {
-    const totalBooked = confirmedSeats
+export function getTourSeatCounts(tour: Pick<TourRow, 'capacity_total' | 'confirmed_seats'>) {
+    const confirmedSeats = Math.max(0, tour.confirmed_seats ?? 0)
+
+    return {
+        totalBooked: confirmedSeats,
+        remainingSeats: getAvailableSeats(tour.capacity_total, confirmedSeats),
+        confirmedSeats,
+    }
+}
+
+export function toTourListItem(tour: TourRow): TourListItem {
+    const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
 
     return {
         id: tour.id,
@@ -62,7 +69,7 @@ export function toTourListItem(
                 : Number(tour.discount_percent),
         image: getTourCoverImage(tour),
         totalBooked,
-        remainingSeats: getAvailableSeats(tour.capacity_total, totalBooked),
+        remainingSeats,
     }
 }
 

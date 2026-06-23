@@ -1,5 +1,6 @@
 export type TourSearchFilters = {
     from?: string
     to?: string
-    date?: string
+    start_date?: string
+    end_date?: string
 }

@@ -6,7 +6,9 @@ import type { HeroSearch } from '@/services/homepage/homepage.page.types'
 export const DEFAULT_HERO_SEARCH_FILTERS: HomepagePage['sections']['hero']['searchFilters'] = {
     fromPlaceholder: 'From',
     toPlaceholder: 'To',
-    datePlaceholder: 'Date of stay',
+    datePlaceholder: 'Travel dates',
+    startDateLabel: 'Start date',
+    endDateLabel: 'End date',
     searchButtonLabel: 'Find trip now',
     searchingButtonLabel: 'Searching...',
     loadingCities: 'Loading cities...',
