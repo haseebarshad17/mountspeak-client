@@ -138,6 +138,8 @@ export interface SearchFilters {
     fromPlaceholder:    string;
     toPlaceholder:      string;
     datePlaceholder:    string;
+    startDateLabel?:    string;
+    endDateLabel?:      string;
     searchButtonLabel:  string;
     searchingButtonLabel?: string;
     loadingCities:           string;

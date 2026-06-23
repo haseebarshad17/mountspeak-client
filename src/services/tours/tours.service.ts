@@ -1,7 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { TourSearchFilters } from './tours.search.types'
-import { sortToursForSearch } from './tours.search.utils'
+import type { TourRow } from './tours.types'
+
+import { filterToursForSearch } from './tours.search.utils'
 import { TOUR_PUBLICATION_STATUS, type TourRow } from './tours.types'
 
 const tourColumns = [
@@ -16,6 +18,7 @@ const tourColumns = [
     'discount_percent',
     'kids_discount',
     'capacity_total',
+    'confirmed_seats',
     'publication_status',
     'driver_id',
     'agency_id',
@@ -70,19 +73,23 @@ export const toursService = ({ supabase, agencyId }: ToursServiceProps) => {
 
             const from = filters.from?.trim()
             const to = filters.to?.trim()
+            const startDate = filters.start_date?.trim()
+            const endDate = filters.end_date?.trim()
 
-            // When from is set, load all tours from that city (exact matches sorted first in app).
-            // When only to is set, filter by destination at the database.
-            if (from) {
+            if (from && to) {
+                query = query.ilike('from_location', `%${from}%`).ilike('to_location', `%${to}%`)
+            } else if (from) {
                 query = query.ilike('from_location', `%${from}%`)
             } else if (to) {
                 query = query.ilike('to_location', `%${to}%`)
             }
 
-            if (filters.date?.trim()) {
-                query = query
-                    .lte('start_date', filters.date.trim())
-                    .gte('end_date', filters.date.trim())
+            if (startDate && endDate) {
+                query = query.lte('start_date', endDate).gte('end_date', startDate)
+            } else if (startDate) {
+                query = query.lte('start_date', startDate).gte('end_date', startDate)
+            } else if (endDate) {
+                query = query.lte('start_date', endDate).gte('end_date', endDate)
             }
 
             const { data, error } = await query.order('created_at', { ascending: false })
@@ -91,11 +98,7 @@ export const toursService = ({ supabase, agencyId }: ToursServiceProps) => {
 
             const rows = (data ?? []) as unknown as TourRow[]
 
-            if (from || to) {
-                return sortToursForSearch(rows, filters)
-            }
-
-            return rows
+            return filterToursForSearch(rows, filters)
         },
 
         getPublishedTourLocations: async (): Promise<string[]> => {

@@ -14,10 +14,7 @@ import { hasTourSearchFilters } from './tours.search.utils'
 import { toursService } from './tours.service'
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
 
-import {
-    fetchConfirmedSeatsByTourId,
-    mapTourRowsToListItems,
-} from './tour-seat-availability'
+import { mapTourRowsToListItems } from './tour-seat-availability'
 
 import type { TourListItem, TourRow } from './tours.types'
 
@@ -48,11 +45,7 @@ async function getToursApi(scope: AgencyTourScope) {
 }
 
 async function mapRowsToTourListItems(rows: TourRow[]): Promise<TourListItem[]> {
-    const supabase = await getServerSupabase()
-    const tourIds = rows.map((row) => row.id)
-    const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, tourIds)
-
-    return mapTourRowsToListItems(rows, confirmedSeatsByTourId)
+    return mapTourRowsToListItems(rows)
 }
 
 export async function fetchPublishedTours(): Promise<TourListItem[]> {
@@ -104,13 +97,10 @@ export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null
     return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
 
-function toBookingTourOption(
-    row: TourRow,
-    confirmedSeatsByTourId: Record<string, number>,
-): BookingTourOption | null {
+function toBookingTourOption(row: TourRow): BookingTourOption | null {
     if (row.price_per_seat == null || row.price_per_seat <= 0) return null
 
-    const confirmedSeats = confirmedSeatsByTourId[row.id] ?? 0
+    const confirmedSeats = Math.max(0, row.confirmed_seats ?? 0)
     const availableSeats = getAvailableSeats(row.capacity_total, confirmedSeats)
     const startDate = row.start_date ?? null
     const isBookingClosed = isTourBookingClosed(startDate)
@@ -132,12 +122,8 @@ function toBookingTourOption(
 }
 
 async function mapRowsToBookingTourOptions(rows: TourRow[]): Promise<BookingTourOption[]> {
-    const supabase = await getServerSupabase()
-    const tourIds = rows.map((row) => row.id)
-    const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, tourIds)
-
     return rows
-        .map((row) => toBookingTourOption(row, confirmedSeatsByTourId))
+        .map((row) => toBookingTourOption(row))
         .filter((option): option is BookingTourOption => option !== null)
         .filter((option) => isTourBookable(option))
 }
@@ -170,9 +156,7 @@ export async function fetchBookingTourBySlug(slug: string): Promise<BookingTourO
         const row = await fetchPublishedTourBySlug(slug)
         if (!row) return null
 
-        const supabase = await getServerSupabase()
-        const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, [row.id])
-        return toBookingTourOption(row, confirmedSeatsByTourId)
+        return toBookingTourOption(row)
     } catch {
         return null
     }

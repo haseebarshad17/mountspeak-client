@@ -74,6 +74,7 @@ export type TourRecord = {
     /** Supabase column for child seat discount (ages 4–8). */
     kids_discount: number | null
     capacity_total: number | null
+    confirmed_seats: number | null
     publication_status: TourPublicationStatus
     driver_id: string | null
     agency_id: string | null
