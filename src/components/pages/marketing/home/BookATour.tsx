@@ -10,6 +10,7 @@ import { getApiErrorMessage } from '@/lib/api/errors'
 import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
+import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -71,6 +72,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const formCopy = section.form
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
+    const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
@@ -108,6 +110,15 @@ const BookATour = ({ page }: HomepagePageProps) => {
         event.preventDefault()
         setFieldErrors({})
 
+        if (!isReady) {
+            return
+        }
+
+        if (isAgencySite && !resolvedAgencyId) {
+            toast.error(getMessage(MessageCode.BOOKING_MISSING_AGENCY))
+            return
+        }
+
         const form = event.currentTarget
         const formData = new FormData(form)
         const raw = {
@@ -132,6 +143,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
         const payload = {
             ...parsed.data,
             request_message: parsed.data.request_message || undefined,
+            ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
         }
 
         try {
