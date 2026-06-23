@@ -1,5 +1,7 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
+import { resolveThemeButtons } from '@/lib/homepage/theme'
+import type { Theme } from '@/services/homepage/homepage.page.types'
 
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
 
@@ -8,11 +10,30 @@ import { tourDetailPath } from './tours.utils'
 
 const DEFAULT_THEME: TourPage['theme'] = {
     primaryColor: '#0E3B43',
-    secondaryColor: '#F26A3D',
+    secondaryColor: '#0E3B43',
     backgroundColor: '#F5F5F2',
     textColor: '#1F1F1F',
     fontHeading: 'Jost',
     fontBody: 'Roboto',
+}
+
+export function applyAgencyThemeToTourPage(
+    page: TourPage,
+    homepageTheme?: Theme | null,
+): TourPage {
+    if (!homepageTheme) return page
+
+    const { primary } = resolveThemeButtons(homepageTheme)
+    const accentColor = primary.background
+
+    return {
+        ...page,
+        theme: {
+            ...page.theme,
+            primaryColor: accentColor,
+            secondaryColor: accentColor,
+        },
+    }
 }
 
 const PERK_ICON_ALIASES: Record<string, string> = {
@@ -147,15 +168,19 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 row.to_location && row.from_location
                     ? `From ${row.from_location} to ${row.to_location}, explore the highlights of this expedition.`
                     : 'Discover the landmarks included on this journey.',
-            cards: (row.places_visited ?? []).map((place, index) => ({
-                id: slugifyId(place.name, index),
-                title: place.name,
-                location: place.location_label.toUpperCase(),
-                category: place.location_label.toUpperCase(),
-                thumbnail: resolveTourMediaUrlOrPlaceholder(place.image_url),
-                gallery: [resolveTourMediaUrlOrPlaceholder(place.image_url)],
-                description: place.name,
-            })),
+            cards: (row.places_visited ?? []).map((place, index) => {
+                const locationLabel = place.location_label?.trim() ?? ''
+
+                return {
+                    id: slugifyId(place.name, index),
+                    title: place.name,
+                    location: locationLabel ? locationLabel.toUpperCase() : '',
+                    category: locationLabel ? locationLabel.toUpperCase() : '',
+                    thumbnail: resolveTourMediaUrlOrPlaceholder(place.image_url),
+                    gallery: [resolveTourMediaUrlOrPlaceholder(place.image_url)],
+                    description: place.name,
+                }
+            }),
         },
         itinerarySection: {
             id: 'itinerary',

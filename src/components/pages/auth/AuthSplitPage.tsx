@@ -35,6 +35,11 @@ import AuthSidePanel from "./AuthSidePanel";
 import {
   authInputBorderClassName,
   authInputClassName,
+  authFormContentClassName,
+  authFormPanelClassName,
+  authFormPanelInnerClassName,
+  authPageSectionClassName,
+  authPageShellClassName,
   authPasswordToggleClassName,
   HP_THEME_LINK_CLASS,
   HP_THEME_TAB_ACTIVE_CLASS,
@@ -132,6 +137,9 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     return agencyId;
   }, [agencyId, isAgencySite]);
 
+  const resolveAuthAgencyId = async () =>
+    signupAgencyId ?? (await fetchSignupAgencyId());
+
   const isSubmitting = isLogin ? isLoginPending : isSignupPending;
 
   const queryError = useMemo(() => {
@@ -141,6 +149,9 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     }
     if (error === "oauth_failed") {
       return getMessage(MessageCode.API_AUTH_OAUTH_FAILED);
+    }
+    if (error === "agency_mismatch") {
+      return getMessage(MessageCode.AUTH_AGENCY_MISMATCH);
     }
 
     return null;
@@ -196,6 +207,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
       const siteUrl = getClientSiteUrl();
       const emailRedirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
+      const resolvedAgencyId = await resolveAuthAgencyId();
+
+      if (isAgencySite === true && !resolvedAgencyId) {
+        throw new Error(MessageCode.AUTH_MISSING_AGENCY);
+      }
+
       let authenticatedUser = null;
 
       if (!isLogin) {
@@ -206,9 +223,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         if (password !== confirmPassword) {
           throw new Error(MessageCode.AUTH_PASSWORD_MISMATCH);
         }
-
-        const resolvedAgencyId =
-          signupAgencyId ?? (await fetchSignupAgencyId());
 
         const signupResult = await signup({
           email,
@@ -233,7 +247,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           authenticatedUser = signupResult.user;
         }
       } else {
-        const loginResult = await login({ email, password });
+        const loginResult = await login({
+          email,
+          password,
+          ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+        });
         if (!loginResult.user) {
           throw new Error(MessageCode.AUTH_SIGN_IN_FAILED);
         }
@@ -280,8 +298,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     try {
       const siteUrl = getClientSiteUrl();
       const redirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
-      const resolvedAgencyId =
-        signupAgencyId ?? (await fetchSignupAgencyId());
+      const resolvedAgencyId = await resolveAuthAgencyId();
+
+      if (isAgencySite === true && !resolvedAgencyId) {
+        throw new Error(MessageCode.AUTH_MISSING_AGENCY);
+      }
 
       await loginWithGoogle({
         redirectTo,
@@ -297,12 +318,13 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   };
 
   return (
-    <section className="h-full  flex justify-center">
-      <div className="flex h-full w-full max-w-[100%] border-none flex-col overflow-hidden  bg-white md:flex-row">
+    <section className={authPageSectionClassName}>
+      <div className={authPageShellClassName}>
         <AuthSidePanel />
 
-        <div className="flex w-full items-center justify-center bg-white px-6  sm:px-10 md:w-1/2 lg:px-[100px]">
-          <div className="w-full max-w-[500px]">
+        <div className={authFormPanelClassName}>
+          <div className={authFormPanelInnerClassName}>
+          <div className={authFormContentClassName}>
             <h1 className="mb-3 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[#1A1C1E] sm:text-5xl sm:leading-[56px]">
               Welcome back.
             </h1>
@@ -351,7 +373,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     type="text"
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
-                    placeholder="Muhammad Ahmed"
+                    placeholder="John Doe"
                     className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>
@@ -450,9 +472,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
               <span>Google</span>
             </Button>
 
-            <p className="mt-16 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
+            <p className="mt-10 pb-4 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
               © {new Date().getFullYear()} {brandName}
             </p>
+          </div>
           </div>
         </div>
       </div>

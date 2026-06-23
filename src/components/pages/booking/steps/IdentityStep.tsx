@@ -402,7 +402,7 @@ export function IdentityStep({
             <div className='grid gap-5 sm:grid-cols-2'>
                 <FormInput
                     label='First Name'
-                    placeholder='Jack'
+                    placeholder='John'
                     required
                     staticField={false}
                     value={firstName}
@@ -414,7 +414,7 @@ export function IdentityStep({
                 />
                 <FormInput
                     label='Last Name'
-                    placeholder='Smith'
+                    placeholder='Doe'
                     required
                     staticField={false}
                     value={lastName}

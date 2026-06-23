@@ -5,13 +5,21 @@ import React, { useEffect, useMemo, useState } from "react"
 import { z } from "zod"
 
 import { supabase } from "@/lib/supabase/supabase.client"
+import { resolveProfileAvatarUrl } from "@/lib/profile/avatar-url"
 import { getMessage, mapZodIssuesToFieldErrors } from "@/lib/messages/get-message"
 import { MessageCode } from "@/lib/messages/codes"
 import { useOptionalUser } from "@/services/auth/auth.queries"
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { SectionEmptyState } from "@/components/ui/section-empty-state"
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase"
+import { useIsAgencySite } from "@/hooks/useIsAgencySite"
+import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage"
+import { useAppSelector } from "@/store/hooks"
+import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors"
+
+import { Compass } from "lucide-react"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
 
@@ -56,8 +64,19 @@ export default function DashboardPage() {
   const [savedProfile, setSavedProfile] = useState<ProfileSnapshot | null>(null)
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({})
   const { data: currentUser } = useOptionalUser()
+  const agencyId = useAppSelector(selectHomepageAgencyId)
+  const isAgencySite = useIsAgencySite()
+  const resolvedAgencyId = useMemo(() => {
+    if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
+      return undefined
+    }
+
+    return agencyId
+  }, [agencyId, isAgencySite])
   const { data: bookingsData, isLoading: bookingsLoading } = useUserBookings(
     currentUser?.email ?? email,
+    resolvedAgencyId,
+    { agencyScoped: isAgencySite === true },
   )
 
   const upcomingBookings = useMemo(
@@ -101,10 +120,6 @@ export default function DashboardPage() {
           .eq("id", id)
           .single()
 
-        const metadata = user.user_metadata as Record<string, string | undefined>
-        const fallbackAvatar =
-          metadata?.avatar_url || metadata?.picture || metadata?.avatar || null
-
         if (error) {
           // Profile row may not exist yet; keep UI empty but editable.
           const emptyProfile = { fullName: "", phoneNumber: "", location: "" }
@@ -113,7 +128,7 @@ export default function DashboardPage() {
           setLocation(emptyProfile.location)
           setSavedProfile(emptyProfile)
           setEmail(user.email ?? "")
-          setAvatarUrl(fallbackAvatar)
+          setAvatarUrl(null)
           setLoading(false)
           return
         }
@@ -129,7 +144,7 @@ export default function DashboardPage() {
         setLocation(loadedProfile.location)
         setSavedProfile(loadedProfile)
         setEmail(data?.email ?? user.email ?? "")
-        setAvatarUrl(data?.avatar_url || fallbackAvatar)
+        setAvatarUrl(resolveProfileAvatarUrl(data?.avatar_url))
       } catch {
         // If auth/profile fails, still render the page.
       } finally {
@@ -239,6 +254,7 @@ export default function DashboardPage() {
               <input
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
               />
               {errors.fullName ? (
@@ -330,7 +346,7 @@ export default function DashboardPage() {
                   ? "Loading your upcoming expeditions..."
                   : upcomingCount > 0
                     ? `You have ${confirmedCount} confirmed booking${confirmedCount === 1 ? "" : "s"} and ${upcomingCount} upcoming expedition${upcomingCount === 1 ? "" : "s"}.`
-                    : "You do not have any upcoming expeditions yet."}
+                    : "Your booked expeditions will appear here."}
               </p>
             </div>
             <Button
@@ -397,11 +413,13 @@ export default function DashboardPage() {
                 </article>
               ))
             ) : (
-              <p
-                className="text-[16px] leading-[24px] text-[#FFFFFFB2]"
-              >
-                Book your next expedition from our tours page to see it here.
-              </p>
+              <div className="md:col-span-2">
+                <SectionEmptyState
+                  icon={Compass}
+                  title="No upcoming expeditions"
+                  description="Book your next expedition from our tours page to see it here."
+                />
+              </div>
             )}
           </div>
         </section>

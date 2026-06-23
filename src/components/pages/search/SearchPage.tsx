@@ -1,17 +1,16 @@
 'use client'
 
-import { ArrowRight, Compass, SearchX } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import { Compass, SearchX } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
+import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
-import { TourDiscountBadge } from '@/components/tours/TourDiscountBadge'
+import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
-import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { cn } from '@/lib/utils/clsxUtils'
 import {
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
@@ -25,7 +24,6 @@ import {
     type UmrahSearchFilters,
 } from '@/services/tours/tours.umrah-search.utils'
 import type { TourListItem } from '@/services/tours/tours.types'
-import { tourDetailPath } from '@/services/tours/tours.utils'
 
 const TOURS_PER_SCROLL = 6
 
@@ -34,48 +32,6 @@ type SearchPageProps = {
     filters: TourSearchFilters
     umrahFilters: UmrahSearchFilters
     tourLocations: string[]
-}
-
-function SearchResultCard({
-    discountPercent,
-    title,
-    image,
-    slug,
-}: {
-    discountPercent: number | null
-    title: string
-    image: string
-    slug: string
-}) {
-    const detailPath = usePrefixedHref(tourDetailPath(slug)) ?? tourDetailPath(slug)
-
-    return (
-        <article className='group relative mx-auto w-full max-w-[416px] min-h-[240px] overflow-hidden rounded-[10px] lg:mx-0 lg:min-h-[300px]'>
-            <Image
-                src={image}
-                alt={title}
-                fill
-                className='object-cover'
-                sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 416px'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10' />
-
-            <TourDiscountBadge discountPercent={discountPercent} />
-
-            <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-5 pt-14 text-center'>
-                <h3 className='font-jost text-[20px] font-medium uppercase leading-snug tracking-wide text-white'>
-                    {title}
-                </h3>
-                <Link
-                    href={detailPath}
-                    className='mt-3 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white'
-                >
-                    View Details
-                    <ArrowRight className='h-4 w-4 shrink-0' strokeWidth={2} aria-hidden />
-                </Link>
-            </div>
-        </article>
-    )
 }
 
 export default function SearchPage({ tours, filters, umrahFilters, tourLocations }: SearchPageProps) {
@@ -135,24 +91,20 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
 
     return (
         <>
-            <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div
-                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                    style={{ backgroundImage: `url("${backgroundImage}")` }}
-                >
-                    <div className='px-4 pb-8 pt-[120px] text-center text-white sm:px-6 sm:pb-10 sm:pt-36 md:pb-12 md:pt-44 lg:pb-14 lg:pt-48'>
-                        <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
-                            {heroCopy.eyebrow}
-                        </p>
-                        <h1 className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
-                            {heroCopy.title}
-                        </h1>
-                        <p className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'>
-                            {heroCopy.description}
-                        </p>
-                    </div>
+            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight='tall'>
+                    <div className={cn(PAGE_HERO_CONTENT_CLASS, 'justify-start gap-6 pb-8 sm:gap-8 sm:pb-10')}>
+                        <div>
+                            <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
+                                {heroCopy.eyebrow}
+                            </p>
+                            <h1 className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
+                                {heroCopy.title}
+                            </h1>
+                            <p className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'>
+                                {heroCopy.description}
+                            </p>
+                        </div>
 
-                    <div className='px-4 pb-10 sm:px-6 sm:pb-12 md:pb-14 lg:pb-16'>
                         <div className='mx-auto w-full max-w-[867px]'>
                             <HeroFilters
                                 page={page ?? undefined}
@@ -162,10 +114,9 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                             />
                         </div>
                     </div>
-                </div>
-            </section>
+            </PageHeroBanner>
 
-            <main className='bg-[#F7F8FA] pb-20 pt-4 sm:pt-6'>
+            <main className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'>
                 <div className='agency-container'>
                     <div className='mx-auto max-w-[900px] text-center'>
                         <h2 className='text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'>
@@ -189,12 +140,14 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                         <>
                             <div className='grid grid-cols-1 justify-items-center gap-5 pt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:justify-items-stretch'>
                                 {visibleTours.map((tour) => (
-                                    <SearchResultCard
+                                    <TourExploreCard
                                         key={tour.id}
                                         slug={tour.slug}
                                         discountPercent={tour.discountPercent}
                                         title={tour.title}
                                         image={tour.image}
+                                        totalBooked={tour.totalBooked}
+                                        remainingSeats={tour.remainingSeats}
                                     />
                                 ))}
                             </div>

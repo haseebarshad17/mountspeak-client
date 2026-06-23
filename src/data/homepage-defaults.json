@@ -390,7 +390,7 @@
           "errorToast": "Unable to submit booking request. Please try again.",
           "validationToast": "Please fix the highlighted fields.",
           "placeholders": {
-            "fullName": "Your Name *",
+            "fullName": "John Doe",
             "email": "example@gmail.com",
             "phone": "Your Phone *",
             "destination": "Select Destination",

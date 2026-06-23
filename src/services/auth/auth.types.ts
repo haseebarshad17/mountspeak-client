@@ -11,6 +11,8 @@ export type UserRoleEnum =
 export type LoginDTO = {
     email: string
     password: string
+    /** Agency context for sign-in on an agency site. */
+    agency_id?: string
 }
 
 // Forgot password DTO

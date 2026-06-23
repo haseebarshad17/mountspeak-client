@@ -46,9 +46,11 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                             <h3 className="mt-4 font-heading font-heading text-lg font-semibold text-[#191C1C] sm:text-xl">
                                 {card.title}
                             </h3>
-                            <p className="mt-1.5 text-xs font-medium font-roboto uppercase  text-[#434849]">
-                                {card.category} • {card.location}
-                            </p>
+                            {card.location?.trim() ? (
+                                <p className="mt-1.5 text-xs font-medium font-roboto uppercase text-[#434849]">
+                                    {card.location}
+                                </p>
+                            ) : null}
                         </article>
                     ))}
                 </div>

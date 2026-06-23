@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { useStorageBackgroundImage } from '@/hooks/useStorageBackgroundImage'
 import { DEFAULT_HERO_BANNER_IMAGE, resolveHeroBackgroundImage } from '@/lib/homepage/hero-banner'
 import {
     selectHomepageSpecializationId,
@@ -20,7 +21,7 @@ export function useHeroBackgroundImage(defaultBackgroundImage?: string | null) {
         page?.sections.hero.backgroundImage ??
         DEFAULT_HERO_BANNER_IMAGE
 
-    return useMemo(
+    const resolved = useMemo(
         () =>
             resolveHeroBackgroundImage({
                 specializationId,
@@ -29,4 +30,6 @@ export function useHeroBackgroundImage(defaultBackgroundImage?: string | null) {
             }),
         [resolvedDefault, specializationId, specializations],
     )
+
+    return useStorageBackgroundImage(resolved, DEFAULT_HERO_BANNER_IMAGE)
 }

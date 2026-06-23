@@ -8,7 +8,7 @@ import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { filterDestinationCards } from '@/data/popular-destinations'
 import { cn } from '@/lib/utils/clsxUtils'
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import React, { useMemo, useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -134,7 +134,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                                 >
                                     <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 pb-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:p-3.5 sm:pb-4'>
                                         <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[332px]'>
-                                            <Image
+                                            <StorageMediaImage
                                                 src={destination.image}
                                                 alt={destination.name}
                                                 fill

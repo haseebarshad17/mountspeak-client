@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 import { cn } from '@/lib/utils/clsxUtils'
+import { resolveProfileAvatarUrl } from '@/lib/profile/avatar-url'
+import { useOptionalUserProfile } from '@/services/auth/auth.queries'
 import { LayoutDashboard, LogOut, UserRound } from 'lucide-react'
 
 import { PrefixedLink } from '@/components/ui/prefixed-link'
@@ -26,6 +29,8 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
     const [open, setOpen] = useState(false)
     const rootRef = useRef<HTMLDivElement>(null)
+    const { data: profile } = useOptionalUserProfile()
+    const avatarUrl = resolveProfileAvatarUrl(profile?.avatar_url)
 
     useEffect(() => {
         if (!open) return
@@ -60,14 +65,25 @@ export function ProfileMenu({
                 aria-haspopup='menu'
                 onClick={() => setOpen((current) => !current)}
                 className={cn(
-                    'relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                    'relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                    avatarUrl ? 'p-0' : '',
                     useLightNav
                         ? 'border-[#C0C8C9] bg-white text-[#00292C] hover:bg-neutral-50 focus-visible:ring-[#00292C]/30'
                         : 'border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 focus-visible:ring-white/40',
                     triggerClassName,
                 )}
             >
-                <UserRound className='h-5 w-5' />
+                {avatarUrl ? (
+                    <Image
+                        src={avatarUrl}
+                        alt='Profile photo'
+                        width={40}
+                        height={40}
+                        className='h-full w-full object-cover'
+                    />
+                ) : (
+                    <UserRound className='h-5 w-5' />
+                )}
             </button>
 
             {open ? (

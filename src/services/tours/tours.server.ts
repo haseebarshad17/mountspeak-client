@@ -8,14 +8,18 @@ import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 
-import { mapTourRecordToPage } from './tours.mapper'
+import { applyAgencyThemeToTourPage, mapTourRecordToPage } from './tours.mapper'
 import type { TourSearchFilters } from './tours.search.types'
 import { hasTourSearchFilters } from './tours.search.utils'
 import { toursService } from './tours.service'
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
 
+import {
+    fetchConfirmedSeatsByTourId,
+    mapTourRowsToListItems,
+} from './tour-seat-availability'
+
 import type { TourListItem, TourRow } from './tours.types'
-import { toTourListItem } from './tours.utils'
 
 type AgencyTourScope = {
     isAgencySite: boolean
@@ -31,12 +35,24 @@ async function getAgencyTourScope(): Promise<AgencyTourScope> {
     }
 }
 
+async function getServerSupabase() {
+    return createServerSupabase()
+}
+
 async function getToursApi(scope: AgencyTourScope) {
-    const supabase = await createServerSupabase()
+    const supabase = await getServerSupabase()
     return toursService({
         supabase,
         agencyId: scope.agencyId ?? undefined,
     })
+}
+
+async function mapRowsToTourListItems(rows: TourRow[]): Promise<TourListItem[]> {
+    const supabase = await getServerSupabase()
+    const tourIds = rows.map((row) => row.id)
+    const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, tourIds)
+
+    return mapTourRowsToListItems(rows, confirmedSeatsByTourId)
 }
 
 export async function fetchPublishedTours(): Promise<TourListItem[]> {
@@ -45,7 +61,7 @@ export async function fetchPublishedTours(): Promise<TourListItem[]> {
 
     const tours = await getToursApi(scope)
     const rows = await tours.getPublishedTours()
-    return rows.map(toTourListItem)
+    return mapRowsToTourListItems(rows)
 }
 
 export async function searchPublishedTours(
@@ -59,7 +75,7 @@ export async function searchPublishedTours(
         ? await tours.searchPublishedTours(filters)
         : await tours.getPublishedTours()
 
-    return rows.map(toTourListItem)
+    return mapRowsToTourListItems(rows)
 }
 
 export async function fetchTourLocationOptions(): Promise<string[]> {
@@ -81,44 +97,11 @@ export async function fetchPublishedTourBySlug(slug: string): Promise<TourRow | 
 export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null> {
     const row = await fetchPublishedTourBySlug(slug)
     if (!row) return null
-    return mapTourRecordToPage(row)
-}
 
-const CONFIRMED_BOOKING_STATUSES = ['CONFIRMED', 'confirmed', 'Confirmed'] as const
+    const homepage = await fetchAgencyHomepage()
+    const page = mapTourRecordToPage(row)
 
-type BookingSeatRow = {
-    tour_id: string
-    male_seat: number | null
-    female_seat: number | null
-    kids_seats: number | null
-}
-
-async function fetchConfirmedSeatsByTourId(
-    tourIds: string[],
-): Promise<Record<string, number>> {
-    if (tourIds.length === 0) return {}
-
-    const supabase = await createServerSupabase()
-    const { data, error } = await supabase
-        .from('bookings')
-        .select('tour_id, male_seat, female_seat, kids_seats')
-        .in('tour_id', tourIds)
-        .in('status', [...CONFIRMED_BOOKING_STATUSES])
-
-    if (error) return {}
-
-    const totals: Record<string, number> = {}
-
-    for (const row of (data ?? []) as BookingSeatRow[]) {
-        const seats =
-            Number(row.male_seat ?? 0) +
-            Number(row.female_seat ?? 0) +
-            Number(row.kids_seats ?? 0)
-
-        totals[row.tour_id] = (totals[row.tour_id] ?? 0) + seats
-    }
-
-    return totals
+    return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
 
 function toBookingTourOption(
@@ -149,8 +132,9 @@ function toBookingTourOption(
 }
 
 async function mapRowsToBookingTourOptions(rows: TourRow[]): Promise<BookingTourOption[]> {
+    const supabase = await getServerSupabase()
     const tourIds = rows.map((row) => row.id)
-    const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(tourIds)
+    const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, tourIds)
 
     return rows
         .map((row) => toBookingTourOption(row, confirmedSeatsByTourId))
@@ -186,7 +170,8 @@ export async function fetchBookingTourBySlug(slug: string): Promise<BookingTourO
         const row = await fetchPublishedTourBySlug(slug)
         if (!row) return null
 
-        const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId([row.id])
+        const supabase = await getServerSupabase()
+        const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(supabase, [row.id])
         return toBookingTourOption(row, confirmedSeatsByTourId)
     } catch {
         return null

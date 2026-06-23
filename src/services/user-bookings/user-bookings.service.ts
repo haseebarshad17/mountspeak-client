@@ -33,19 +33,29 @@ type UserBookingsServiceProps = {
     supabase: SupabaseClient
 }
 
+type FetchUserBookingsParams = {
+    email: string
+    agencyId?: string
+}
+
 export const userBookingsService = ({ supabase }: UserBookingsServiceProps) => {
     return {
-        fetchUserBookings: async (email: string) => {
+        fetchUserBookings: async ({ email, agencyId }: FetchUserBookingsParams) => {
             const normalizedEmail = email.trim().toLowerCase()
             if (!normalizedEmail) {
                 return { upcoming: [], past: [], hasLiveData: false }
             }
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from('bookings')
                 .select(USER_BOOKINGS_SELECT)
                 .ilike('email', normalizedEmail)
-                .order('created_at', { ascending: false })
+
+            if (agencyId) {
+                query = query.eq('agency_id', agencyId)
+            }
+
+            const { data, error } = await query.order('created_at', { ascending: false })
 
             if (error) {
                 throw toApiError(error, MessageCode.API_BOOKINGS_LOAD_FAILED)

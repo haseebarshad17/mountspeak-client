@@ -17,4 +17,6 @@ export type TourListItem = {
     discountLabel: string
     discountPercent: number | null
     image: string
+    totalBooked: number
+    remainingSeats: number | null
 }

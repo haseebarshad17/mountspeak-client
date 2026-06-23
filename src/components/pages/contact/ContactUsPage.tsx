@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
@@ -17,7 +18,7 @@ import {
     type ConsultationTitle,
 } from '@/services/consultation-requests/consultation-requests.types'
 import type { HomepagePage } from '@/data/homepage'
-import { HP_THEME_INPUT_FOCUS_CLASS, HP_THEME_LINK_CLASS, HP_THEME_TEXT_CLASS } from '@/data/homepage'
+import { HP_THEME_INPUT_FOCUS_CLASS, HP_THEME_TEXT_CLASS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
@@ -83,7 +84,7 @@ function ContactDetailItem({
             {href ? (
                 <a
                     href={href}
-                    className={cn('hover:underline', HP_THEME_LINK_CLASS)}
+                    className='text-[#404849] hover:underline'
                 >
                     {children}
                 </a>
@@ -170,12 +171,8 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
 
     return (
         <>
-            <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div
-                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                    style={{ backgroundImage: `url("${backgroundImage}")` }}
-                >
-                    <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
+            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
+                    <div className={PAGE_HERO_CONTENT_CLASS}>
                         <h1
                             className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
                         >
@@ -188,10 +185,9 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                             respond as soon as possible.
                         </p>
                     </div>
-                </div>
-            </section>
+            </PageHeroBanner>
 
-            <main className='bg-[#F7F8FA] pb-20 pt-4 sm:pt-6'>
+            <main className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'>
                 <div className='agency-container'>
                     <div className='mx-auto grid max-w-[1182px] gap-10 px-[15px] lg:grid-cols-[340px_1fr] lg:gap-16'>
                     <aside className='space-y-6'>
@@ -246,7 +242,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         id='contact-name'
                                         name='name'
                                         type='text'
-                                        placeholder='Your full name'
+                                        placeholder='John Doe'
                                         aria-invalid={Boolean(fieldErrors.name)}
                                         className={inputClass}
                                     />

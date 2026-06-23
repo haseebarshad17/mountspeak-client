@@ -1,0 +1,13 @@
+<svg width="150" height="160" viewBox="0 0 150 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Profile photo placeholder">
+  <defs>
+    <radialGradient id="profileAvatarBg" cx="0.25" cy="0.2" r="0.85">
+      <stop offset="0%" stop-color="#54606A"/>
+      <stop offset="72%" stop-color="#212A32"/>
+    </radialGradient>
+  </defs>
+  <rect width="150" height="160" fill="url(#profileAvatarBg)"/>
+  <circle cx="75" cy="80" r="20" fill="black" fill-opacity="0.5"/>
+  <path d="M68.5 76.25C68.5 74.7312 69.7312 73.5 71.25 73.5H78.75C80.2688 73.5 81.5 74.7312 81.5 76.25V78.75C81.5 80.2688 80.2688 81.5 78.75 81.5H71.25C69.7312 81.5 68.5 80.2688 68.5 78.75V76.25Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="75" cy="76.25" r="2.25" stroke="white" stroke-width="1.5"/>
+  <path d="M69.5 81.5L72.25 78.75C73.0784 77.9216 74.4216 77.9216 75.25 78.75L78 81.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

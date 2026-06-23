@@ -13,4 +13,6 @@ export const DEMO_TOUR_LIST_ITEM: TourListItem = {
     discountLabel: '10% Off',
     discountPercent: 10,
     image: DEMO_TOUR_PAGE.heroSection.backgroundMedia.desktop,
+    totalBooked: 8,
+    remainingSeats: 12,
 }

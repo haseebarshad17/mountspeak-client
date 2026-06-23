@@ -80,6 +80,25 @@ export const useOptionalUser = () => {
     })
 }
 
+// USER PROFILE (optional — safe for headers when logged in)
+export const useOptionalUserProfile = () => {
+    const { data: user } = useOptionalUser()
+
+    return useQuery({
+        queryKey: ['user-profile', user?.id ?? 'anonymous'],
+        queryFn: async () => {
+            if (!user?.id) return null
+
+            const rows = await auth.getUserProfile(user.id)
+            const profile = Array.isArray(rows) ? rows[0] : rows
+
+            return profile ?? null
+        },
+        enabled: Boolean(user?.id),
+        retry: false,
+    })
+}
+
 // CURRENT USER
 export const useUser = () => {
     return useQuery({

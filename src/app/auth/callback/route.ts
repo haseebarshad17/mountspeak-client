@@ -53,6 +53,18 @@ export async function GET(request: NextRequest) {
       : null;
 
   if (agencyId) {
+    const { data: profile, error: agencyProfileError } = await supabase
+      .from("users")
+      .select("agency_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!agencyProfileError && profile?.agency_id && profile.agency_id !== agencyId) {
+      await supabase.auth.signOut();
+      loginUrl.searchParams.set("error", "agency_mismatch");
+      return NextResponse.redirect(loginUrl);
+    }
+
     if (!user.user_metadata?.agency_id) {
       await supabase.auth.updateUser({
         data: { agency_id: agencyId },

@@ -3,6 +3,7 @@
 import React from 'react'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
+import { PageHeroBanner } from '@/components/ui/page-hero-banner'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 
@@ -15,12 +16,8 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
 
     return (
-        <section className='p-2 sm:p-3 md:p-4 lg:p-5 xl:p-[30px]'>
-            <div
-                className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                style={{ backgroundImage: `url("${backgroundImage}")` }}
-            >
-                <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
+        <PageHeroBanner backgroundImage={backgroundImage}>
+            <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
                     <div className='agency-container'>
                         <div className='w-full max-w-[828px] mx-auto text-center'>
                             <h1
@@ -41,9 +38,8 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                             <HeroFilters page={page} tourLocations={tourLocations} />
                         </div>
                     </div>
-                </main>
-            </div>
-        </section>
+            </main>
+        </PageHeroBanner>
     )
 }
 

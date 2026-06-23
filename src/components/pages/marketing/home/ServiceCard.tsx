@@ -1,7 +1,7 @@
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import type { OurServicesItem } from '@/services/homepage/homepage.page.types'
 import { cn } from '@/lib/utils/clsxUtils'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 
 type ServiceCardProps = OurServicesItem
 
@@ -19,7 +19,7 @@ export function ServiceCard({
                 iconPosition === 'end' ? 'order-1 sm:order-2' : 'order-1',
             )}
         >
-            <Image
+            <StorageMediaImage
                 src={iconSrc}
                 alt={iconAlt}
                 width={64}
