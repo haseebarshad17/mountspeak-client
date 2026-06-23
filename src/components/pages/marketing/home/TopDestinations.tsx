@@ -1,8 +1,7 @@
 'use client'
 
-import { HP_CSS_VARS, HP_OUTLINE_BTN_STYLE, HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_CSS_VARS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 
-import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { filterDestinationCards } from '@/data/popular-destinations'
@@ -49,43 +48,32 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                         </h2>
                     </div>
 
-                    <div className='flex items-center gap-3'>
-                        {canSlide ? (
-                            <div className='flex items-center gap-2'>
-                                <button
-                                    ref={prevRef}
-                                    type='button'
-                                    aria-label='Previous destinations'
-                                    className={cn(
-                                        'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
-                                        HP_THEME_TEXT_CLASS,
-                                    )}
-                                >
-                                    <ChevronLeft className='h-5 w-5' aria-hidden />
-                                </button>
-                                <button
-                                    ref={nextRef}
-                                    type='button'
-                                    aria-label='Next destinations'
-                                    className={cn(
-                                        'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
-                                        HP_THEME_TEXT_CLASS,
-                                    )}
-                                >
-                                    <ChevronRight className='h-5 w-5' aria-hidden />
-                                </button>
-                            </div>
-                        ) : null}
-
-                        <Button
-                            variant='outline'
-                            style={HP_OUTLINE_BTN_STYLE}
-                            className={cn('w-max', HP_THEME_OUTLINE_BTN_CLASS)}
-                            href={section.seeAllHref ?? '/search'}
-                        >
-                            {section.seeAllLabel}
-                        </Button>
-                    </div>
+                    {canSlide ? (
+                        <div className='flex items-center gap-2'>
+                            <button
+                                ref={prevRef}
+                                type='button'
+                                aria-label='Previous destinations'
+                                className={cn(
+                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
+                            >
+                                <ChevronLeft className='h-5 w-5' aria-hidden />
+                            </button>
+                            <button
+                                ref={nextRef}
+                                type='button'
+                                aria-label='Next destinations'
+                                className={cn(
+                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
+                            >
+                                <ChevronRight className='h-5 w-5' aria-hidden />
+                            </button>
+                        </div>
+                    ) : null}
                 </div>
 
                 <div className='overflow-x-hidden pt-4 sm:pt-6'>

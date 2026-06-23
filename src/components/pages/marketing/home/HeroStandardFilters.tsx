@@ -92,7 +92,8 @@ function LocationDropdownList({
 export type HeroFiltersValues = {
     from?: string
     to?: string
-    date?: string
+    start_date?: string
+    end_date?: string
 }
 
 type HeroStandardFiltersProps = {
@@ -111,14 +112,16 @@ export default function HeroStandardFilters({
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [from, setFrom] = useState(initialValues?.from ?? "")
     const [to, setTo] = useState(initialValues?.to ?? "")
-    const [date, setDate] = useState(initialValues?.date ?? "")
+    const [startDate, setStartDate] = useState(initialValues?.start_date ?? "")
+    const [endDate, setEndDate] = useState(initialValues?.end_date ?? "")
     const [open, setOpen] = useState<string | null>(null)
 
     useEffect(() => {
         setFrom(initialValues?.from ?? "")
         setTo(initialValues?.to ?? "")
-        setDate(initialValues?.date ?? "")
-    }, [initialValues?.from, initialValues?.to, initialValues?.date])
+        setStartDate(initialValues?.start_date ?? "")
+        setEndDate(initialValues?.end_date ?? "")
+    }, [initialValues?.from, initialValues?.to, initialValues?.start_date, initialValues?.end_date])
 
     const cityOptions = useMemo(() => {
         const merged = new Set<string>([...pakistanCities, ...tourLocations])
@@ -130,9 +133,36 @@ export default function HeroStandardFilters({
         [cityOptions, from],
     )
 
+    const minTravelDate = new Date().toISOString().slice(0, 10)
+
+    const travelDatesLabel = useMemo(() => {
+        const formatLabel = (value: string) =>
+            new Date(`${value}T00:00:00`).toLocaleDateString('en-PK', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            })
+
+        if (startDate && endDate) {
+            return `${formatLabel(startDate)} – ${formatLabel(endDate)}`
+        }
+
+        if (startDate) return formatLabel(startDate)
+        if (endDate) return formatLabel(endDate)
+
+        return ''
+    }, [endDate, startDate])
+
     const handleSearch = () => {
         startSearchTransition(() => {
-            router.push(buildTourSearchPath({ from, to, date }))
+            router.push(
+                buildTourSearchPath({
+                    from,
+                    to,
+                    start_date: startDate || undefined,
+                    end_date: endDate || undefined,
+                }),
+            )
         })
     }
 
@@ -240,20 +270,51 @@ export default function HeroStandardFilters({
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
                             <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{date || heroSearch.datePlaceholder}</span>
+                            <span className="truncate min-w-0 w-full">
+                                {travelDatesLabel || heroSearch.datePlaceholder}
+                            </span>
                         </Button>
                     </PopoverTrigger>
 
                     <PopoverContent className={popCls} align="start">
-                        <input
-                            type="date"
-                            value={date}
-                            min={new Date().toISOString().slice(0, 10)}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="w-full h-10 border rounded-md px-2"
-                        />
-                        <div className="flex justify-end gap-2 mt-2">
-                            <Button type="button" size="sm" variant="outline" onClick={() => setDate("")}>
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-neutral-700">
+                                {heroSearch.startDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.startDateLabel}
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    min={minTravelDate}
+                                    onChange={(event) => {
+                                        const nextStart = event.target.value
+                                        setStartDate(nextStart)
+                                        if (endDate && nextStart && endDate < nextStart) {
+                                            setEndDate(nextStart)
+                                        }
+                                    }}
+                                    className="mt-1 w-full h-10 border rounded-md px-2"
+                                />
+                            </label>
+                            <label className="block text-sm font-medium text-neutral-700">
+                                {heroSearch.endDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.endDateLabel}
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    min={startDate || minTravelDate}
+                                    onChange={(event) => setEndDate(event.target.value)}
+                                    className="mt-1 w-full h-10 border rounded-md px-2"
+                                />
+                            </label>
+                        </div>
+                        <div className="flex justify-end gap-2 mt-3">
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    setStartDate("")
+                                    setEndDate("")
+                                }}
+                            >
                                 {heroSearch.clearDate}
                             </Button>
                             <Button type="button" size="sm" onClick={() => setOpen(null)}>

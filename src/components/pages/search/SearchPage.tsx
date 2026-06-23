@@ -77,13 +77,13 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
 
     const heroCopy = isUmrahSearch
         ? {
-              eyebrow: 'Umrah Search',
+              eyebrow: '',
               title: 'Find your Umrah package',
               description:
                   'Select package duration, number of passengers, and package type to browse available Umrah tours.',
           }
         : {
-              eyebrow: 'Search',
+              eyebrow: '',
               title: 'Find your trip',
               description:
                   'Choose your route and travel dates to browse published tours from our partners.',
@@ -91,7 +91,7 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
 
     return (
         <>
-            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight='tall'>
+            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
                     <div className={cn(PAGE_HERO_CONTENT_CLASS, 'justify-start gap-6 pb-8 sm:gap-8 sm:pb-10')}>
                         <div>
                             <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
@@ -170,7 +170,7 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                                     isFiltered
                                         ? isUmrahSearch
                                             ? 'No packages found'
-                                            : 'No trips found'
+                                            : 'No results found'
                                         : 'No tours published yet'
                                 }
                                 description={

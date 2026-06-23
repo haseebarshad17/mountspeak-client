@@ -1,6 +1,14 @@
 import type { TourSearchFilters } from './tours.search.types'
 import type { TourRow } from './tours.types'
 
+function formatSearchDateLabel(value: string): string {
+    return new Date(value).toLocaleDateString('en-PK', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
 export function parseTourSearchParams(
     params: Record<string, string | string[] | undefined>,
 ): TourSearchFilters {
@@ -10,10 +18,13 @@ export function parseTourSearchParams(
         return value?.trim() ?? ''
     }
 
+    const legacyDate = pick('date')
+
     return {
         from: pick('from') || undefined,
         to: pick('to') || undefined,
-        date: pick('date') || undefined,
+        start_date: pick('start_date') || legacyDate || undefined,
+        end_date: pick('end_date') || legacyDate || undefined,
     }
 }
 
@@ -22,7 +33,8 @@ export function buildTourSearchPath(filters: TourSearchFilters): string {
 
     if (filters.from?.trim()) search.set('from', filters.from.trim())
     if (filters.to?.trim()) search.set('to', filters.to.trim())
-    if (filters.date?.trim()) search.set('date', filters.date.trim())
+    if (filters.start_date?.trim()) search.set('start_date', filters.start_date.trim())
+    if (filters.end_date?.trim()) search.set('end_date', filters.end_date.trim())
 
     const query = search.toString()
     return query ? `/search?${query}` : '/search'
@@ -33,20 +45,22 @@ export function formatTourSearchSummary(filters: TourSearchFilters): string | nu
 
     if (filters.from) parts.push(`From ${filters.from}`)
     if (filters.to) parts.push(`To ${filters.to}`)
-    if (filters.date) {
-        const formatted = new Date(filters.date).toLocaleDateString('en-PK', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-        })
-        parts.push(`Date ${formatted}`)
+
+    if (filters.start_date && filters.end_date) {
+        parts.push(
+            `${formatSearchDateLabel(filters.start_date)} – ${formatSearchDateLabel(filters.end_date)}`,
+        )
+    } else if (filters.start_date) {
+        parts.push(`From ${formatSearchDateLabel(filters.start_date)}`)
+    } else if (filters.end_date) {
+        parts.push(`Until ${formatSearchDateLabel(filters.end_date)}`)
     }
 
     return parts.length > 0 ? parts.join(' · ') : null
 }
 
 export function hasTourSearchFilters(filters: TourSearchFilters): boolean {
-    return Boolean(filters.from || filters.to || filters.date)
+    return Boolean(filters.from || filters.to || filters.start_date || filters.end_date)
 }
 
 export function normalizeTourLocation(value: string | null | undefined): string {
@@ -58,6 +72,57 @@ export function isExactTourLocationMatch(
     tourValue: string | null | undefined,
 ): boolean {
     return normalizeTourLocation(searchValue) === normalizeTourLocation(tourValue)
+}
+
+export function tourMatchesDateFilter(
+    tour: Pick<TourRow, 'start_date' | 'end_date'>,
+    filters: Pick<TourSearchFilters, 'start_date' | 'end_date'>,
+): boolean {
+    const tourStart = tour.start_date?.trim()
+    const tourEnd = tour.end_date?.trim()
+
+    if (!tourStart || !tourEnd) return false
+
+    const userStart = filters.start_date?.trim()
+    const userEnd = filters.end_date?.trim()
+
+    if (!userStart && !userEnd) return true
+
+    if (userStart && userEnd) {
+        return tourStart <= userEnd && tourEnd >= userStart
+    }
+
+    const singleDate = userStart ?? userEnd!
+    return tourStart <= singleDate && tourEnd >= singleDate
+}
+
+/**
+ * When both from and to are set, only tours on that exact route are returned.
+ * Date filters require overlap with the tour's published date range.
+ */
+export function filterToursForSearch(tours: TourRow[], filters: TourSearchFilters): TourRow[] {
+    const from = filters.from?.trim()
+    const to = filters.to?.trim()
+
+    let result = tours
+
+    if (from && to) {
+        result = result.filter(
+            (tour) =>
+                isExactTourLocationMatch(from, tour.from_location) &&
+                isExactTourLocationMatch(to, tour.to_location),
+        )
+    }
+
+    if (filters.start_date || filters.end_date) {
+        result = result.filter((tour) => tourMatchesDateFilter(tour, filters))
+    }
+
+    if (from || to) {
+        return sortToursForSearch(result, filters)
+    }
+
+    return result
 }
 
 /**

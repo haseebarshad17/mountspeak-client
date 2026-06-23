@@ -1,29 +1,33 @@
 'use client'
 
-import { STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
 import { useQuery } from '@tanstack/react-query'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
+import { cn } from '@/lib/utils/clsxUtils'
 import { DEMO_TOUR_DETAIL_PATH, DEMO_TOUR_LIST_ITEM } from '@/lib/tours/default-tour-page'
 import { supabase } from '@/lib/supabase/supabase.client'
 import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
-import {
-    fetchConfirmedSeatsByTourId,
-    mapTourRowsToListItems,
-} from '@/services/tours/tour-seat-availability'
+import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
 import { Compass } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+const TOURS_PER_BATCH = 6
+const INITIAL_VISIBLE_TOURS = 6
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
     const isAgencySite = useIsAgencySite()
     const agencyId = useAppSelector(selectHomepageAgencyId)
+    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_TOURS)
 
     const { data: tours = [], isLoading } = useQuery({
         queryKey: ['published-tours', isAgencySite, agencyId],
@@ -31,17 +35,29 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
         queryFn: async () => {
             const api = toursService({ supabase, agencyId: agencyId ?? undefined })
             const rows = await api.getPublishedTours()
-            const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(
-                supabase,
-                rows.map((row) => row.id),
-            )
-            return mapTourRowsToListItems(rows, confirmedSeatsByTourId)
+            return mapTourRowsToListItems(rows)
         },
         staleTime: 60_000,
     })
 
     const displayTours = isAgencySite === false ? [DEMO_TOUR_LIST_ITEM] : tours
     const showLoading = isAgencySite === null || (isAgencySite === true && isLoading)
+    const showToggleButton = displayTours.length > INITIAL_VISIBLE_TOURS
+    const isFullyExpanded = visibleCount >= displayTours.length
+    const visibleTours = displayTours.slice(0, visibleCount)
+
+    useEffect(() => {
+        setVisibleCount(INITIAL_VISIBLE_TOURS)
+    }, [displayTours.length, isAgencySite, agencyId])
+
+    const handleToggleTours = () => {
+        if (isFullyExpanded) {
+            setVisibleCount(INITIAL_VISIBLE_TOURS)
+            return
+        }
+
+        setVisibleCount((current) => Math.min(current + TOURS_PER_BATCH, displayTours.length))
+    }
 
     return (
         <section
@@ -80,22 +96,38 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         ))}
                     </div>
                 ) : displayTours.length > 0 ? (
-                    <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
-                        {displayTours.map((tour) => (
-                            <TourExploreCard
-                                key={tour.id}
-                                slug={tour.slug}
-                                discountPercent={tour.discountPercent}
-                                title={tour.title}
-                                image={tour.image}
-                                totalBooked={tour.totalBooked}
-                                remainingSeats={tour.remainingSeats}
-                                detailHref={
-                                    isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
-                                }
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
+                            {visibleTours.map((tour) => (
+                                <TourExploreCard
+                                    key={tour.id}
+                                    slug={tour.slug}
+                                    discountPercent={tour.discountPercent}
+                                    title={tour.title}
+                                    image={tour.image}
+                                    totalBooked={tour.totalBooked}
+                                    remainingSeats={tour.remainingSeats}
+                                    detailHref={
+                                        isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
+                                    }
+                                />
+                            ))}
+                        </div>
+
+                        {showToggleButton ? (
+                            <div className='mt-8 flex justify-center sm:mt-10'>
+                                <Button
+                                    type='button'
+                                    variant='default'
+                                    style={HP_THEME_BTN_STYLE}
+                                    className={cn('w-max min-w-[140px]', HP_THEME_BTN_CLASS)}
+                                    onClick={handleToggleTours}
+                                >
+                                    {isFullyExpanded ? 'See Less' : 'See More'}
+                                </Button>
+                            </div>
+                        ) : null}
+                    </>
                 ) : (
                     <div className='pt-8 sm:pt-10 md:pt-12 lg:pt-14'>
                         <SectionEmptyState
