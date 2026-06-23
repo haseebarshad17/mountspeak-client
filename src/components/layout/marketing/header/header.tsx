@@ -3,7 +3,14 @@
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
-import { HP_CSS_VARS, HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
+import {
+    HP_CSS_VARS,
+    HP_THEME_BG_CLASS,
+    HP_THEME_BTN_CLASS,
+    HP_THEME_BTN_STYLE,
+    HP_THEME_TEXT_CLASS,
+    STATIC_UI_COLORS,
+} from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -332,7 +339,8 @@ const Header = ({ page }: HeaderProps) => {
 
                 <aside
                     className={cn(
-                        'absolute right-0 top-0 z-10 flex h-full w-[min(88vw,360px)] flex-col bg-primary-500 px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 sm:px-6',
+                        'absolute right-0 top-0 z-10 flex h-full w-[min(88vw,360px)] flex-col px-5 pb-6 pt-5 shadow-2xl transition-transform duration-300 sm:px-6',
+                        HP_THEME_BG_CLASS,
                         isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full',
                     )}
                 >
@@ -384,7 +392,7 @@ const Header = ({ page }: HeaderProps) => {
                                     <>
                                         <Button
                                             variant='secondary'
-                                            className='!w-full rounded-md bg-white text-primary-700'
+                                            className={cn('!w-full rounded-md bg-white', HP_THEME_TEXT_CLASS)}
                                             href={dashboardHref}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
@@ -410,7 +418,7 @@ const Header = ({ page }: HeaderProps) => {
                                     </Button>
                                     <Button
                                         variant='secondary'
-                                        className='flex-1 !w-full rounded-md bg-white text-primary-700'
+                                        className={cn('flex-1 !w-full rounded-md bg-white', HP_THEME_TEXT_CLASS)}
                                         href={signUpHref}
                                     >
                                         {header.auth.signUp.label}
