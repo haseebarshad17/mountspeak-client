@@ -25,3 +25,17 @@ export {
     HP_THEME_TAB_INACTIVE_CLASS,
     HP_THEME_TAB_INDICATOR_CLASS,
 }
+
+export const authPageSectionClassName = 'flex min-h-dvh w-full justify-center'
+
+export const authPageShellClassName =
+    'flex min-h-dvh w-full max-w-full flex-col border-none bg-white md:h-dvh md:min-h-0 md:flex-row md:overflow-hidden'
+
+export const authFormPanelClassName =
+    'flex min-h-0 w-full flex-1 overflow-y-auto md:w-1/2'
+
+export const authFormPanelInnerClassName =
+    'flex min-h-full w-full flex-col bg-white px-6 py-10 sm:px-10 lg:px-[100px]'
+
+/** Centers when content fits; scrolls from top when content overflows. */
+export const authFormContentClassName = 'm-auto w-full max-w-[500px]'

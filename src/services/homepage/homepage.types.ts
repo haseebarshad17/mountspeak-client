@@ -6,6 +6,7 @@ export type AgencySiteThemeRow = {
     agency_id: string
     site_url: string | null
     theme: unknown
+    payment?: unknown
     specialization_id?: string | null
     created_at?: string
     updated_at?: string

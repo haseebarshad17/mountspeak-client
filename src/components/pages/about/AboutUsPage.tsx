@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import {
     HP_THEME_BG_CLASS,
     HP_THEME_BORDER_CLASS,
@@ -24,12 +25,8 @@ export default function AboutUsPage() {
 
     return (
         <>
-            <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
-                <div
-                    className='rounded-[16px] bg-cover bg-center bg-no-repeat'
-                    style={{ backgroundImage: `url("${backgroundImage}")` }}
-                >
-                    <div className='px-4 pb-12 pt-[120px] text-center text-white sm:px-6 sm:pb-14 sm:pt-36 md:pb-16 md:pt-44 lg:pb-20 lg:pt-48'>
+            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
+                    <div className={PAGE_HERO_CONTENT_CLASS}>
                         <p
                             className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'
                         >
@@ -46,10 +43,9 @@ export default function AboutUsPage() {
                             {aboutHero.description}
                         </p>
                     </div>
-                </div>
-            </section>
+            </PageHeroBanner>
 
-            <main className='bg-[#F7F8FA] pb-20 pt-4 sm:pt-6'>
+            <main className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'>
                 <div className='agency-container space-y-16 sm:space-y-20'>
                     <section className='mx-auto max-w-[820px] px-[15px] text-center'>
                         <h2

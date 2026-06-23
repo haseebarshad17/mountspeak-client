@@ -7,17 +7,28 @@ import { userBookingsService } from './user-bookings.service'
 
 const userBookings = userBookingsService({ supabase })
 
-export const userBookingsQueryKey = (email: string | null) =>
-    ['user-bookings', email?.trim().toLowerCase() ?? 'anonymous'] as const
+export const userBookingsQueryKey = (
+    email: string | null,
+    agencyId?: string | null,
+) => ['user-bookings', email?.trim().toLowerCase() ?? 'anonymous', agencyId ?? 'all'] as const
 
-export const useUserBookings = (email: string | null) => {
+export const useUserBookings = (
+    email: string | null,
+    agencyId?: string | null,
+    options?: { agencyScoped?: boolean },
+) => {
+    const agencyScoped = options?.agencyScoped ?? Boolean(agencyId)
+
     return useQuery({
-        queryKey: userBookingsQueryKey(email),
-        enabled: Boolean(email?.trim()),
+        queryKey: userBookingsQueryKey(email, agencyId),
+        enabled: Boolean(email?.trim()) && (!agencyScoped || Boolean(agencyId)),
         queryFn: async () => {
-            const result = await userBookings.fetchUserBookings(email ?? '')
+            const result = await userBookings.fetchUserBookings({
+                email: email ?? '',
+                ...(agencyId ? { agencyId } : {}),
+            })
 
-            if (result.hasLiveData) {
+            if (result.hasLiveData || agencyScoped) {
                 return result
             }
 

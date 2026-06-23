@@ -5,7 +5,7 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import React, { useMemo, useRef, useState } from 'react'
 import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -67,7 +67,7 @@ function DottedAvatarFrame({
             </svg>
 
             <div className='absolute left-1/2 top-1/2 h-[72px] w-[72px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[2.5px] border-white sm:h-20 sm:w-20'>
-                <Image src={src} alt={alt} fill className='object-cover' sizes='80px' />
+                <StorageMediaImage src={src} alt={alt} fill className='object-cover' sizes='80px' />
             </div>
         </div>
     )

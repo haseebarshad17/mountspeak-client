@@ -1,7 +1,6 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
@@ -15,6 +14,13 @@ type TourExploreCardProps = {
     title: string
     image: string
     detailHref?: string
+    totalBooked?: number
+    remainingSeats?: number | null
+}
+
+function formatRemainingSeats(remainingSeats: number | null | undefined): string {
+    if (remainingSeats == null) return 'N/A'
+    return String(remainingSeats)
 }
 
 export function TourExploreCard({
@@ -23,38 +29,47 @@ export function TourExploreCard({
     title,
     image,
     detailHref,
+    totalBooked = 0,
+    remainingSeats = null,
 }: TourExploreCardProps) {
     const detailPath = usePrefixedHref(detailHref ?? tourDetailPath(slug)) ?? tourDetailPath(slug)
 
     return (
-        <article className='group relative mx-auto w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'>
-            <Image
+        <Link
+            href={detailPath}
+            aria-label={`View ${title}`}
+            className='group relative mx-auto block w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(0,0,0,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'
+        >
+            <StorageMediaImage
                 src={image}
-                alt={title}
+                alt=''
                 fill
-                className='object-cover'
+                className='object-cover transition-transform duration-500 group-hover:scale-[1.06]'
                 sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 416px'
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10' />
+            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/15 transition-colors duration-300 group-hover:from-black/88 group-hover:via-black/45' />
 
             <TourDiscountBadge discountPercent={discountPercent} />
 
             <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-12 text-center sm:px-4 sm:pb-5 sm:pt-14 lg:px-5 lg:pb-6 lg:pt-16'>
-                <h3 className='font-jost text-[20px] font-medium uppercase leading-snug tracking-wide text-white'>
+                <h3 className='font-jost text-[18px] font-medium uppercase leading-snug tracking-wide text-white transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[20px]'>
                     {title}
                 </h3>
-                <Link
-                    href={detailPath}
-                    className='mt-2 !inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-roboto text-base font-normal text-white/95 transition-colors hover:text-white sm:mt-3'
-                >
-                    View Details
-                    <ArrowRight
-                        className='h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4'
-                        strokeWidth={2}
-                        aria-hidden
-                    />
-                </Link>
+
+                <div className='mt-3 inline-flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 font-roboto text-[11px] text-white/95 backdrop-blur-sm transition-colors duration-300 group-hover:border-white/35 group-hover:bg-black/50 sm:gap-2.5 sm:px-4 sm:py-2 sm:text-xs'>
+                    <span className='inline-flex items-center gap-1 whitespace-nowrap'>
+                        <span className='font-semibold text-white'>{totalBooked}</span>
+                        <span className='text-white/80'>booked</span>
+                    </span>
+                    <span className='h-3 w-px shrink-0 bg-white/35' aria-hidden />
+                    <span className='inline-flex items-center gap-1 whitespace-nowrap'>
+                        <span className='font-semibold text-white'>
+                            {formatRemainingSeats(remainingSeats)}
+                        </span>
+                        <span className='text-white/80'>seats left</span>
+                    </span>
+                </div>
             </div>
-        </article>
+        </Link>
     )
 }

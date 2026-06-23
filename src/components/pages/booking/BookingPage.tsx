@@ -20,8 +20,12 @@ import {
     uploadBookingPaymentScreenshot,
     useCreateTourBooking,
 } from '@/services/tour-bookings/tour-bookings.queries'
+import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
+import { useAppSelector } from '@/store/hooks'
+import { selectHomepageAgencyId, selectIsAgencySite } from '@/store/homepage/homepage.selectors'
 
 import { BookingHeaderSection } from './BookingHeaderSection'
+import { BookingPageSkeleton } from './BookingPageSkeleton'
 import { OnboardIntro } from './OnboardIntro'
 import { OnboardStepper } from './OnboardStepper'
 import type { BookingDetailsForm, BookingTourOption } from './booking.types'
@@ -78,6 +82,12 @@ export default function BookingPage({
 
     const { mutateAsync: createTourBooking } = useCreateTourBooking()
     const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
+    const agencyId = useAppSelector(selectHomepageAgencyId)
+    const isAgencySite = useAppSelector(selectIsAgencySite)
+    const { data: paymentAccounts = [], isLoading: paymentAccountsLoading } = useAgencyPaymentAccounts(
+        agencyId,
+        !isDemoMode && isAgencySite === true,
+    )
 
     useEffect(() => {
         const draft = loadBookingDraft()
@@ -140,6 +150,11 @@ export default function BookingPage({
     const handleSubmit = async () => {
         if (isDemoMode) {
             toast.info(getMessage(MessageCode.BOOKING_DEMO_PREVIEW))
+            return
+        }
+
+        if (paymentAccounts.length === 0) {
+            toast.error(getMessage(MessageCode.BOOKING_PAYMENT_STEP_INCOMPLETE))
             return
         }
 
@@ -272,14 +287,7 @@ export default function BookingPage({
     }
 
     if (!authReady) {
-        return (
-            <>
-                <BookingHeaderSection />
-                <div className='agency-container flex min-h-[40vh] items-center justify-center py-20'>
-                    <p className='text-sm text-neutral-500'>Checking your session…</p>
-                </div>
-            </>
-        )
+        return <BookingPageSkeleton />
     }
 
     const lockedTourUnavailable =
@@ -366,6 +374,9 @@ export default function BookingPage({
                             <FinalizeStep
                                 tourTitle={selectedTour?.title}
                                 totalAmount={totalAmount}
+                                paymentAccounts={paymentAccounts}
+                                paymentAccountsLoading={paymentAccountsLoading}
+                                showFallbackPaymentMethods={isDemoMode}
                                 paymentScreenshot={paymentScreenshot}
                                 onPaymentScreenshotChange={setPaymentScreenshot}
                                 onBack={handleBack}

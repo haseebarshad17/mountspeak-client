@@ -14,7 +14,10 @@ import { supabase } from '@/lib/supabase/supabase.client'
 import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
-import { toTourListItem } from '@/services/tours/tours.utils'
+import {
+    fetchConfirmedSeatsByTourId,
+    mapTourRowsToListItems,
+} from '@/services/tours/tour-seat-availability'
 import { Compass } from 'lucide-react'
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
@@ -28,7 +31,11 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
         queryFn: async () => {
             const api = toursService({ supabase, agencyId: agencyId ?? undefined })
             const rows = await api.getPublishedTours()
-            return rows.map(toTourListItem)
+            const confirmedSeatsByTourId = await fetchConfirmedSeatsByTourId(
+                supabase,
+                rows.map((row) => row.id),
+            )
+            return mapTourRowsToListItems(rows, confirmedSeatsByTourId)
         },
         staleTime: 60_000,
     })
@@ -81,6 +88,8 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                 discountPercent={tour.discountPercent}
                                 title={tour.title}
                                 image={tour.image}
+                                totalBooked={tour.totalBooked}
+                                remainingSeats={tour.remainingSeats}
                                 detailHref={
                                     isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
                                 }

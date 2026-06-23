@@ -1,5 +1,5 @@
 import React from 'react'
-import { CalendarDays, CircleDollarSign, Mountain, type LucideIcon } from 'lucide-react'
+import { Banknote, CalendarDays, Mountain, type LucideIcon } from 'lucide-react'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
@@ -7,7 +7,7 @@ import type { TourPage } from './tour-page.types'
 
 const heroHighlightIcons: Record<string, LucideIcon> = {
     calendar: CalendarDays,
-    price: CircleDollarSign,
+    price: Banknote,
     mountain: Mountain,
 }
 
@@ -16,7 +16,7 @@ type ExpeditionHeroSectionProps = {
 }
 
 export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
-    const { heroSection } = page
+    const { heroSection, theme } = page
     const { backgroundMedia, overlay, eyebrow, title, subtitle, tripHighlights } = heroSection
 
     return (
@@ -50,7 +50,10 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     <div className="agency-container !px-16">
                         <div className="max-w-3xl text-white">
                             {eyebrow ? (
-                                <p className="mb-3 font-roboto text-base font-semibold uppercase text-[#FFDBD0]">
+                                <p
+                                    className="mb-3 font-roboto text-base font-semibold uppercase"
+                                    style={{ color: theme.secondaryColor }}
+                                >
                                     {eyebrow}
                                 </p>
                             ) : null}

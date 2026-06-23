@@ -80,8 +80,8 @@ export function BookingHeader() {
                                         key={`${link.label}-${href}`}
                                         href={href}
                                         className={cn(
-                                            'inline-flex text-sm font-normal text-neutral-800 transition-colors hover:text-primary-700 xl:text-base',
-                                            isActive && 'font-medium text-primary-700',
+                                            'inline-flex text-sm font-normal text-[#00292C] transition-colors hover:opacity-80 xl:text-base',
+                                            isActive && 'font-medium',
                                         )}
                                     >
                                         {resolveNavLinkDisplayLabel(link.label, href)}

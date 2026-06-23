@@ -6,7 +6,7 @@ import { HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import type { Member } from '@/services/homepage/homepage.page.types'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Image from 'next/image'
+import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import React, { useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -15,7 +15,7 @@ function TeamCard({ name, role, image }: Member) {
     return (
         <article className='h-auto w-full overflow-hidden rounded-xl bg-neutral-100 shadow-sm sm:max-w-[306px] sm:rounded-2xl sm:h-[424px]'>
             <div className='relative aspect-[3/4] w-full bg-neutral-200 sm:aspect-auto sm:h-[300px]'>
-                <Image
+                <StorageMediaImage
                     src={image}
                     alt={name}
                     fill
