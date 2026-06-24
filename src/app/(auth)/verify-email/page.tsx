@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Verify Email',
         homepage,
     })

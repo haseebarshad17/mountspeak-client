@@ -2,8 +2,9 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { isEmailVerified } from "@/lib/auth/email-verification";
+import { getAgencyPreviewHostFromPathname } from "@/lib/homepage/agency-preview";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getAuthSiteUrl } from "@/lib/utils/site-url";
 import { getMessage } from "@/lib/messages/get-message";
@@ -13,19 +14,28 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
-import { selectHomepageSiteUrl } from "@/store/homepage/homepage.selectors";
+import { selectHomepageSiteUrl, selectIsAgencySite } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
 import AuthSidePanel from "./AuthSidePanel";
 import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const loginPath = usePreviewPath("/login");
   const dashboardPath = usePreviewPath("/dashboard");
   const emailFromQuery = searchParams.get("email") ?? "";
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
-  const authSiteUrl = getAuthSiteUrl(homepageSiteUrl);
+  const isAgencySite = useAppSelector(selectIsAgencySite);
+  const previewAgencyHost = useMemo(
+    () => getAgencyPreviewHostFromPathname(pathname),
+    [pathname],
+  );
+  const authSiteUrl = useMemo(
+    () => getAuthSiteUrl(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
+    [homepageSiteUrl, previewAgencyHost, isAgencySite],
+  );
   const [email, setEmail] = useState(emailFromQuery);
   const [sent, setSent] = useState(false);
   const [sessionEmail, setSessionEmail] = useState("");
@@ -68,8 +78,13 @@ export default function VerifyEmailPage() {
       return;
     }
 
+    if (isAgencySite === true && !authSiteUrl) {
+      toast.error(getMessage(MessageCode.AUTH_SITE_URL_NOT_READY));
+      return;
+    }
+
     try {
-      const siteUrl = authSiteUrl;
+      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
       await resendVerification({
         email: targetEmail,
         emailRedirectTo: buildAuthCallbackUrl(siteUrl, "/dashboard"),

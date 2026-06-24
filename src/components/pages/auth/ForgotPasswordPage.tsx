@@ -1,13 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { getAgencyPreviewHostFromPathname } from "@/lib/homepage/agency-preview";
 import { getAuthSiteUrl } from "@/lib/utils/site-url";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode } from "@/lib/messages/codes";
 import { useForgotPassword } from "@/services/auth/auth.queries";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
-import { selectHomepageSiteUrl } from "@/store/homepage/homepage.selectors";
+import { selectHomepageSiteUrl, selectIsAgencySite } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,8 +20,17 @@ import { authInputBorderClassName, authInputClassName, authFormContentClassName,
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const pathname = usePathname();
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
-  const authSiteUrl = getAuthSiteUrl(homepageSiteUrl);
+  const isAgencySite = useAppSelector(selectIsAgencySite);
+  const previewAgencyHost = useMemo(
+    () => getAgencyPreviewHostFromPathname(pathname),
+    [pathname],
+  );
+  const authSiteUrl = useMemo(
+    () => getAuthSiteUrl(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
+    [homepageSiteUrl, previewAgencyHost, isAgencySite],
+  );
   const loginPath = usePreviewPath("/login");
   const { mutateAsync: sendResetLink, isPending } = useForgotPassword();
 
@@ -31,10 +42,16 @@ export default function ForgotPasswordPage() {
       return;
     }
 
+    if (isAgencySite === true && !authSiteUrl) {
+      toast.error(getMessage(MessageCode.AUTH_SITE_URL_NOT_READY));
+      return;
+    }
+
     try {
+      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
       await sendResetLink({
         email: email.trim(),
-        redirectTo: `${authSiteUrl}/reset-password`,
+        redirectTo: `${siteUrl}/reset-password`,
       });
       setSent(true);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_RESET_LINK_SENT));

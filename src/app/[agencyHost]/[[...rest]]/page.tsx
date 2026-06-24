@@ -19,9 +19,10 @@ import TourDetailPage from '@/app/tours/[slug]/page'
 import BlogDetailRoutePage from '@/app/blogs/[slug]/page'
 import VerifyEmailPage from '@/app/(auth)/verify-email/page'
 import DashboardShell from '@/components/pages/dashboard/DashboardShell'
-import { defaultMeta } from '@/assests/meta'
+import { buildPlatformMetadata } from '@/assests/meta'
 import { isAgencyHostPathSegment } from '@/lib/homepage/agency-preview'
 import { getHomepageMetadata } from '@/lib/homepage/homepage-meta'
+import { getRequestSiteUrl } from '@/lib/homepage/resolve-request-host'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 
 type AgencyPreviewPageProps = {
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     try {
         return getHomepageMetadata(agencyHomepage)
     } catch {
-        return defaultMeta
+        return buildPlatformMetadata(await getRequestSiteUrl())
     }
 }
 

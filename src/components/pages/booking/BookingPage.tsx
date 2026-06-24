@@ -22,7 +22,7 @@ import {
 } from '@/services/tour-bookings/tour-bookings.queries'
 import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
 import { useAppSelector } from '@/store/hooks'
-import { selectHomepageAgencyId, selectIsAgencySite } from '@/store/homepage/homepage.selectors'
+import { selectHomepageAgencyId, selectHomepageSiteUrl, selectIsAgencySite } from '@/store/homepage/homepage.selectors'
 
 import { BookingHeaderSection } from './BookingHeaderSection'
 import { BookingPageSkeleton } from './BookingPageSkeleton'
@@ -83,6 +83,7 @@ export default function BookingPage({
     const { mutateAsync: createTourBooking } = useCreateTourBooking()
     const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
     const agencyId = useAppSelector(selectHomepageAgencyId)
+    const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl)
     const isAgencySite = useAppSelector(selectIsAgencySite)
     const { data: paymentAccounts = [], isLoading: paymentAccountsLoading } = useAgencyPaymentAccounts(
         agencyId,
@@ -258,7 +259,7 @@ export default function BookingPage({
                 emergencyPhone: details.emergencyPhone.trim(),
                 cnic: details.cnic.trim(),
                 notes: details.note,
-                siteUrl: getClientSiteUrl(),
+                siteUrl: homepageSiteUrl ?? getClientSiteUrl(),
                 branding: emailBranding,
             }).catch(() => {
                 // Booking succeeded; email is best-effort and should not block the user.

@@ -1,6 +1,7 @@
 import HomePageContent from '@/components/pages/marketing/home/HomePageContent'
-import { defaultMeta } from '@/assests/meta'
+import { buildPlatformMetadata } from '@/assests/meta'
 import { getHomepageMetadata } from '@/lib/homepage/homepage-meta'
+import { getRequestSiteUrl } from '@/lib/homepage/resolve-request-host'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { fetchTourLocationOptions } from '@/services/tours/tours.server'
 import type { Metadata, Viewport } from 'next'
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     try {
         return getHomepageMetadata(agencyHomepage)
     } catch {
-        return defaultMeta
+        return buildPlatformMetadata(await getRequestSiteUrl())
     }
 }
 

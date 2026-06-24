@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Booking',
         description: 'Begin your journey with us — partner booking and registration.',
         homepage,

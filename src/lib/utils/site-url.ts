@@ -1,15 +1,15 @@
-import { stripAgencyPreviewBase } from '@/lib/homepage/agency-preview'
+import {
+    isAgencyPreviewPlatformHost,
+    stripAgencyPreviewBase,
+} from '@/lib/homepage/agency-preview'
 import type { NextRequest } from 'next/server'
 
 export function normalizeSiteUrl(url: string): string {
     return url.replace(/\/$/, '')
 }
 
-/** Client-side app origin. Prefer NEXT_PUBLIC_SITE_URL in production. */
+/** Client-side app origin from the current browser location. */
 export function getClientSiteUrl(): string {
-    const configured = process.env.NEXT_PUBLIC_SITE_URL
-    if (configured) return normalizeSiteUrl(configured)
-
     if (typeof window !== 'undefined') {
         return window.location.origin
     }
@@ -17,18 +17,43 @@ export function getClientSiteUrl(): string {
     return ''
 }
 
+export type AuthSiteUrlOptions = {
+    previewAgencyHost?: string | null
+    isAgencySite?: boolean | null
+}
+
 /** Prefer canonical agency siteUrl from homepage when available. */
-export function getAuthSiteUrl(siteUrl: string | null | undefined): string {
-    return normalizeSiteUrl(siteUrl?.trim() || getClientSiteUrl())
+export function getAuthSiteUrl(
+    homepageSiteUrl: string | null | undefined,
+    options?: AuthSiteUrlOptions,
+): string {
+    if (homepageSiteUrl?.trim()) {
+        return normalizeSiteUrl(homepageSiteUrl)
+    }
+
+    const previewHost = options?.previewAgencyHost?.trim()
+    if (previewHost) {
+        return normalizeSiteUrl(`https://${previewHost.replace(/^https?:\/\//, '')}`)
+    }
+
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname
+        if (!isAgencyPreviewPlatformHost(hostname)) {
+            return window.location.origin
+        }
+    }
+
+    if (options?.isAgencySite) {
+        return ''
+    }
+
+    return getClientSiteUrl()
 }
 
 /** Server-side app origin for auth redirects (OAuth callback, emails). */
 export function getServerSiteUrl(request: NextRequest): string {
-    const configured = process.env.NEXT_PUBLIC_SITE_URL
-    if (configured) return normalizeSiteUrl(configured)
-
-    const forwardedHost = request.headers.get('x-forwarded-host')
-    const forwardedProto = request.headers.get('x-forwarded-proto') ?? 'https'
+    const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim()
+    const forwardedProto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() ?? 'https'
     if (forwardedHost) {
         return normalizeSiteUrl(`${forwardedProto}://${forwardedHost}`)
     }

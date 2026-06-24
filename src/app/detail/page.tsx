@@ -7,7 +7,7 @@ import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Tour Detail',
         description: 'Detailed itinerary, places, stay and visuals for your selected trip.',
         homepage,

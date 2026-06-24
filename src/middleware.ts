@@ -113,6 +113,6 @@ export const config = {
         { source: '/:path*', has: [{ type: 'host', value: 'localhost:3001' }] },
         { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3000' }] },
         { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3001' }] },
-        { source: '/:path*', has: [{ type: 'host', value: 'trip-connect-agency-site.vercel.app' }] },
+        { source: '/:path*', has: [{ type: 'host', value: 'mountspeak.com' }] },
     ],
 }
