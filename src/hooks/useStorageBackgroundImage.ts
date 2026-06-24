@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 
 import {
     STORAGE_MEDIA_PLACEHOLDER,
-    isSupabaseStoragePublicUrl,
 } from '@/lib/supabase/storage-media-placeholder'
 
 export function useStorageBackgroundImage(
@@ -35,13 +34,7 @@ export function useStorageBackgroundImage(
 
         probe.onerror = () => {
             if (cancelled) return
-
-            if (isSupabaseStoragePublicUrl(trimmed)) {
-                setBackgroundImage(STORAGE_MEDIA_PLACEHOLDER)
-                return
-            }
-
-            setBackgroundImage(fallback)
+            setBackgroundImage(STORAGE_MEDIA_PLACEHOLDER)
         }
 
         probe.src = trimmed

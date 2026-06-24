@@ -383,7 +383,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     type="text"
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
-                    placeholder="John Doe"
+                    placeholder="Full Name"
                     className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>

@@ -6,9 +6,10 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
-import { Calendar, ChevronLeft, ChevronRight, MessageCircle, ThumbsUp } from 'lucide-react'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useRef } from 'react'
+import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -16,8 +17,6 @@ function BlogCard({
     title,
     author,
     date,
-    likes,
-    comments,
     excerpt,
     image,
     href,
@@ -31,7 +30,7 @@ function BlogCard({
             style={{ borderColor: STATIC_UI_COLORS.borderLight }}
         >
             <div className='relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-white/20'>
-                <StorageMediaImage
+                <HomepageMediaImage
                     src={image}
                     alt={title}
                     fill
@@ -39,17 +38,9 @@ function BlogCard({
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
                 />
                 <div className='absolute inset-x-0 bottom-0 flex items-stretch border-t border-white/25 bg-black/35'>
-                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 border-r border-white/80 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
+                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
                         <Calendar className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
                         <span className='truncate'>{date}</span>
-                    </div>
-                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 border-r border-white/80 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
-                        <ThumbsUp className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
-                        <span className='truncate'>{likes}</span>
-                    </div>
-                    <div className='flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2 text-[11px] font-normal leading-4 text-white sm:gap-1.5 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5'>
-                        <MessageCircle className='h-3 w-3 shrink-0 stroke-[1.5] sm:h-3.5 sm:w-3.5' aria-hidden />
-                        <span className='truncate'>{comments}</span>
                     </div>
                 </div>
             </div>
@@ -76,8 +67,11 @@ function BlogCard({
                 <Button
                     variant='default'
                     style={HP_THEME_BTN_STYLE}
-                    className={cn('mt-3 w-max min-w-[100px] sm:mt-4 sm:min-w-[110px]', HP_THEME_BTN_CLASS)}
-                    href={href || '#'}
+                    className={cn(
+                        'swiper-no-swiping mt-3 w-max min-w-[100px] sm:mt-4 sm:min-w-[110px]',
+                        HP_THEME_BTN_CLASS,
+                    )}
+                    href={resolveBlogPostHref(href)}
                 >
                     {section.readMoreLabel}
                 </Button>
@@ -113,38 +107,25 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                     >
                         {section.paragraph}
                     </p>
+                </header>
 
-                    {useCarousel ? (
-                        <div className='mt-5 flex items-center justify-center gap-2 sm:mt-6'>
+                {useCarousel ? (
+                    <div className='mx-auto max-w-[1240px] pt-6 sm:pt-8 lg:pt-10'>
+                        <div className='flex items-center gap-2 sm:gap-4'>
                             <button
                                 ref={prevRef}
                                 type='button'
                                 aria-label='Previous blog posts'
                                 className={cn(
-                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
+                                    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11',
                                     HP_THEME_TEXT_CLASS,
                                 )}
                             >
                                 <ChevronLeft className='h-5 w-5' aria-hidden />
                             </button>
-                            <button
-                                ref={nextRef}
-                                type='button'
-                                aria-label='Next blog posts'
-                                className={cn(
-                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
-                                    HP_THEME_TEXT_CLASS,
-                                )}
-                            >
-                                <ChevronRight className='h-5 w-5' aria-hidden />
-                            </button>
-                        </div>
-                    ) : null}
-                </header>
 
-                {useCarousel ? (
-                    <div className='mx-auto max-w-[1200px] overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
-                        <Swiper
+                            <div className='min-w-0 flex-1 overflow-x-hidden'>
+                                <Swiper
                             modules={[Navigation, Autoplay]}
                             slidesPerView={1}
                             spaceBetween={16}
@@ -185,7 +166,21 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                                     <BlogCard {...post} section={section} />
                                 </SwiperSlide>
                             ))}
-                        </Swiper>
+                                </Swiper>
+                            </div>
+
+                            <button
+                                ref={nextRef}
+                                type='button'
+                                aria-label='Next blog posts'
+                                className={cn(
+                                    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
+                            >
+                                <ChevronRight className='h-5 w-5' aria-hidden />
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <div className='mx-auto grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>

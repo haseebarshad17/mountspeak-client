@@ -35,8 +35,8 @@ export const DEMO_UPCOMING_BOOKINGS: UserBookingDisplay[] = [
         memberCount: 2,
         warning: 'Please upload a copy of your passport to confirm booking.',
         slug: 'hunza-valley-fairy-meadows',
-        primaryAction: 'Complete Booking',
-        secondaryAction: 'Request Cancellation',
+        primaryAction: 'View Itinerary',
+        secondaryAction: '',
         isPast: false,
     },
 ]

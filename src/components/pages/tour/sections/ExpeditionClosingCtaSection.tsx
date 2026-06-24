@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils/clsxUtils'
+import { ExpeditionCtaButtons } from '@/components/pages/tour/sections/ExpeditionCtaButtons'
 
 import type { TourPage } from './tour-page.types'
 
@@ -23,32 +22,11 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                     {finalCtaSection.title}
                 </h2>
 
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-                    {finalCtaSection.buttons.map((btn) => {
-                        const isPrimary = btn.style === 'primary'
-                        return (
-                            <Button
-                                key={btn.label}
-                                href={btn.url}
-                                variant={isPrimary ? 'default' : 'outline'}
-                                className={cn(
-                                    'w-full max-w-[257px]',
-                                    !isPrimary && 'border-[#737879] text-neutral-900 hover:bg-neutral-50',
-                                )}
-                                style={
-                                    isPrimary
-                                        ? {
-                                              backgroundColor: theme.secondaryColor,
-                                              borderColor: theme.secondaryColor,
-                                          }
-                                        : undefined
-                                }
-                            >
-                                {btn.label}
-                            </Button>
-                        )
-                    })}
-                </div>
+                <ExpeditionCtaButtons
+                    buttons={finalCtaSection.buttons}
+                    theme={theme}
+                    className="mt-10 items-center justify-center"
+                />
             </div>
         </section>
     )

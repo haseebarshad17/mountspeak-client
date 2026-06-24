@@ -5,6 +5,16 @@ const PLATFORM_HOST_FALLBACKS = ['trip-connect-agency-site.vercel.app']
 
 export const AGENCY_PREVIEW_HOST_COOKIE = 'agency-preview-host'
 
+export function readAgencyPreviewHostCookie(): string | null {
+    if (typeof document === 'undefined') return null
+
+    const match = document.cookie.match(
+        new RegExp(`(?:^|; )${AGENCY_PREVIEW_HOST_COOKIE}=([^;]*)`),
+    )
+
+    return match?.[1] ? decodeURIComponent(match[1]) : null
+}
+
 /** Matches hostname-style path segments, e.g. trip-connect-agency-site.vercel.app or my-agency.com */
 const AGENCY_HOST_SEGMENT =
     /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
@@ -98,6 +108,10 @@ export function prefixHref(href: string, previewBase: string | null | undefined)
     return `${previewBase}${href === '/' ? '' : href}`
 }
 
+export function isBookingRoute(pathname: string): boolean {
+    return pathname === '/booking' || pathname.startsWith('/booking/')
+}
+
 export function getHostnameFromHostHeader(hostHeader: string | null): string {
     return hostHeader?.split(':')[0]?.toLowerCase() ?? ''
 }
@@ -106,5 +120,12 @@ export function getAgencyPreviewHostFromPathname(pathname: string): string | nul
     const requestHostname =
         typeof window !== 'undefined' ? window.location.hostname : ''
 
-    return resolveAgencyPreviewForRequest(pathname, requestHostname)?.agencyHost ?? null
+    const fromPath = resolveAgencyPreviewForRequest(pathname, requestHostname)?.agencyHost
+    if (fromPath) return fromPath
+
+    if (typeof window !== 'undefined' && isAgencyPreviewPlatformHost(requestHostname)) {
+        return readAgencyPreviewHostCookie()
+    }
+
+    return null
 }

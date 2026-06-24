@@ -125,7 +125,13 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             title: header?.title ?? row.title,
             subtitle: header?.subtitle ?? '',
             tripHighlights,
-            ctaGroup: [],
+            ctaGroup: [
+                {
+                    label: 'BOOK AN EXPEDITION',
+                    url: buildBookingHref(row.slug),
+                    style: 'primary',
+                },
+            ],
         },
         overviewSection: {
             id: 'overview',

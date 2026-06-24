@@ -66,9 +66,9 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
     const labels = DEFAULT_UMRAH_HERO_SEARCH
 
     const triggerCls = cn(
-        '!justify-start flex h-11 !w-full min-w-0 flex-col items-start gap-0 overflow-hidden px-4 py-2 !text-sm !font-medium !normal-case !tracking-normal sm:h-14',
+        '!justify-start flex !h-12 !w-full min-w-0 flex-col items-start gap-0 overflow-hidden px-4 py-2 !text-sm !font-medium !normal-case !tracking-normal xl:!h-full',
         'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator',
-        'xl:h-[56px] xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:py-2 xl:hover:bg-[#F8FAFB]',
+        'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:py-2 xl:hover:bg-[#F8FAFB]',
     )
 
     const popCls = cn(
@@ -93,7 +93,7 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                 handleSearch()
             }}
         >
-            <div className='grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_170px] xl:gap-0'>
+            <div className='grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_170px] xl:h-12 xl:items-stretch xl:gap-0'>
                 <Popover open={open === 'duration'} onOpenChange={(v) => setOpen(v ? 'duration' : null)}>
                     <PopoverTrigger asChild>
                         <Button
@@ -196,7 +196,7 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                     </PopoverContent>
                 </Popover>
 
-                <div className='xl:col-span-1 xl:flex xl:items-center xl:px-[6px]'>
+                <div className='xl:col-span-1 xl:flex xl:h-full xl:px-[6px]'>
                     <Button
                         type='submit'
                         size='max'
@@ -205,7 +205,7 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-11 w-full !rounded-xl !font-medium !normal-case !tracking-normal sm:!h-14 xl:!h-[44px] xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
+                            '!h-12 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-full xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
                         )}
                     >
                         {labels.searchButtonLabel}

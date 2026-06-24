@@ -253,8 +253,6 @@ export interface Post {
     title:    string;
     author:   string;
     date:     string;
-    likes:    number;
-    comments: number;
     excerpt:  string;
     image:    string;
     href:     string;

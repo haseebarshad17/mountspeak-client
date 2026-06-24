@@ -43,32 +43,44 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
 
     const ShouldShowHeader = !isExcludedRoute(pathname, HeaderExcludeRoutes);
     const ShouldShowFooter = !isExcludedRoute(pathname, FooterExcludeRoutes);
+    const isBookingRoute = isExcludedRoute(pathname, ["/booking", "/booking/*"]);
     const headerPage = page ?? DUMMY_HOMEPAGE_PAGE;
+
+    const toaster = (
+        <Toaster
+            position='bottom-right'
+            closeButton
+            toastOptions={{
+                classNames: {
+                    toast:
+                        'border border-white/20 bg-black/45 text-white backdrop-blur-lg shadow-xl shadow-black/30',
+                    title: 'text-sm font-semibold',
+                    description: 'text-xs text-white/80',
+                    error: 'border-[#ffb4b4]/40',
+                    success: 'border-[#86efac]/40',
+                },
+            }}
+        />
+    );
 
     return (
         <TanstackQueryProvider>
             {ShouldShowHeader ? <Header page={headerPage} /> : null}
-            <div
-                id='app-scroll-container'
-                className='w-full h-dvh overflow-y-auto scrollbar-content'
-            >
-                {children}
-                {ShouldShowFooter && <MarketingFooter />}
-                <Toaster
-                    position='bottom-right'
-                    closeButton
-                    toastOptions={{
-                        classNames: {
-                            toast:
-                                'border border-white/20 bg-black/45 text-white backdrop-blur-lg shadow-xl shadow-black/30',
-                            title: 'text-sm font-semibold',
-                            description: 'text-xs text-white/80',
-                            error: 'border-[#ffb4b4]/40',
-                            success: 'border-[#86efac]/40',
-                        },
-                    }}
-                />
-            </div>
+            {isBookingRoute ? (
+                <div className='w-full min-h-dvh'>
+                    {children}
+                    {toaster}
+                </div>
+            ) : (
+                <div
+                    id='app-scroll-container'
+                    className='w-full h-dvh overflow-y-auto scrollbar-content'
+                >
+                    {children}
+                    {ShouldShowFooter && <MarketingFooter />}
+                    {toaster}
+                </div>
+            )}
         </TanstackQueryProvider>
     )
 }
