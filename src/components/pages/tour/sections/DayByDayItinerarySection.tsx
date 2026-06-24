@@ -36,27 +36,27 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
 
                             const textBlock = (
                                 <div
-                                    className={`flex flex-col justify-center lg:px-6 ${
+                                    className={`order-2 flex flex-col justify-center text-center lg:order-none lg:px-6 ${
                                         imageOnRight ? 'lg:items-end lg:text-right' : 'lg:items-start lg:text-left'
                                     }`}
                                 >
                                     <span
-                                        className="mb-4 inline-flex h-9 w-9 items-start justify-center rounded-full text-xs font-bold text-white lg:hidden"
+                                        className="mb-4 flex h-9 w-9 items-center justify-center self-center rounded-full text-xs font-bold text-white lg:hidden"
                                         style={{ backgroundColor: theme.primaryColor }}
                                     >
                                         {dayLabel}
                                     </span>
-                                    <h3 className="font-heading text-xl font-heading font-semibold text-neutral-900 sm:text-2xl">
+                                    <h3 className="font-heading text-xl font-semibold text-neutral-900 sm:text-2xl">
                                         {day.title}
                                     </h3>
-                                    <p className="mt-4 max-w-md text-sm font-roboto leading-relaxed text-[#434849] sm:text-base">
+                                    <p className="mx-auto mt-4 max-w-md text-sm font-roboto leading-normal text-[#434849] sm:text-base lg:mx-0">
                                         {day.description}
                                     </p>
                                 </div>
                             )
 
                             const visual = (
-                                <div className="relative h-[180px] w-full max-w-full overflow-hidden rounded-2xl sm:h-[192px] lg:max-w-[516px]">
+                                <div className="relative order-1 h-[180px] w-full max-w-full overflow-hidden rounded-2xl sm:h-[192px] lg:order-none lg:max-w-[516px]">
                                     <TourMediaImage
                                         src={day.image}
                                         alt={day.alt}
@@ -74,7 +74,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                 >
                                     {imageOnRight ? (
                                         <>
-                                            <div className="w-full max-w-xl justify-self-start lg:pr-2">{textBlock}</div>
+                                            <div className="order-2 w-full max-w-xl justify-self-start lg:order-none lg:pr-2">{textBlock}</div>
                                             <div className="relative hidden flex-col items-center justify-self-center lg:flex">
                                                 <span
                                                     className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -86,12 +86,12 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                                     <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
                                                 ) : null}
                                             </div>
-                                            <div className="w-full max-w-xl justify-self-end lg:pl-2">{visual}</div>
+                                            <div className="order-1 w-full max-w-xl justify-self-end lg:order-none lg:pl-2">{visual}</div>
                                         </>
                                     ) : (
                                         <>
-                                                <div className="order-2 w-full max-w-xl justify-self-start lg:order-1 lg:pr-2">{visual}</div>
-                                                <div className="relative order-1 hidden flex-col items-center justify-self-center lg:order-2 lg:flex">
+                                                <div className="order-1 w-full max-w-xl justify-self-start lg:order-none lg:pr-2">{visual}</div>
+                                                <div className="relative hidden flex-col items-center justify-self-center lg:flex">
                                                 <span
                                                     className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
                                                     style={{ backgroundColor: theme.primaryColor }}
@@ -102,7 +102,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                                                     <span className="mt-2 min-h-[120px] w-px flex-1 bg-neutral-300" />
                                                 ) : null}
                                             </div>
-                                                <div className="order-3 w-full max-w-xl justify-self-end lg:order-3 lg:pl-2">{textBlock}</div>
+                                                <div className="order-2 w-full max-w-xl justify-self-end lg:order-none lg:pl-2">{textBlock}</div>
                                         </>
                                     )}
                                 </div>

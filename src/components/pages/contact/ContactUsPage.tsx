@@ -171,7 +171,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                             Get in touch
                         </h1>
                         <p
-                            className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'
+                            className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'
                         >
                             Share your travel plans or questions. Our team will review your consultation request and
                             respond as soon as possible.
@@ -181,7 +181,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
 
             <main className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'>
                 <div className='agency-container'>
-                    <div className='mx-auto grid max-w-[1182px] gap-10 px-[15px] lg:grid-cols-[340px_1fr] lg:gap-16'>
+                    <div className='mx-auto grid max-w-[1182px] gap-10 px-0 lg:grid-cols-[340px_1fr] lg:gap-16'>
                     <aside className='space-y-6'>
                         <div className='border border-[#C0C8C9] bg-white p-6'>
                             <h2

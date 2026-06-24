@@ -69,10 +69,7 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
         >
             <div className='agency-container px-4 sm:px-8 lg:px-16'>
                 <div>
-                    <p className='font-roboto text-sm uppercase tracking-[0.1em] text-readable-uppercase text-[#D2E9C7] sm:text-base'>
-                        {gallerySection.eyebrow}
-                    </p>
-                    <h2 className='mt-3 font-heading text-2xl font-bold text-white sm:mt-4 sm:text-3xl lg:text-4xl'>
+                    <h2 className='font-heading text-2xl font-bold text-white sm:text-3xl lg:text-4xl'>
                         {gallerySection.title}
                     </h2>
                 </div>

@@ -16,7 +16,7 @@ const ClientFooter = () => {
                             </div>
                             <span className='text-2xl tracking-tight'>{clientFooterContent.brand}</span>
                         </div>
-                        <p className='leading-relaxed text-neutral-400'>{clientFooterContent.description}</p>
+                        <p className='leading-normal text-neutral-400'>{clientFooterContent.description}</p>
                     </div>
 
                     {clientFooterContent.columns.map((column) => (

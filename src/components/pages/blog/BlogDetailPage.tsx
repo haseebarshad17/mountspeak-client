@@ -73,7 +73,7 @@ function BlogContentBlockView({ block }: { block: BlogContentBlock }) {
                     {block.items.map((item) => (
                         <li
                             key={item}
-                            className='list-disc text-base leading-7'
+                            className='list-disc text-base leading-6'
                             style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {item}
@@ -85,7 +85,7 @@ function BlogContentBlockView({ block }: { block: BlogContentBlock }) {
         default:
             return (
                 <p
-                    className='text-base leading-7 sm:text-[17px] sm:leading-8'
+                    className='text-base leading-6 sm:text-[17px] sm:leading-6'
                     style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                 >
                     {block.content}
@@ -105,10 +105,7 @@ export default function BlogDetailPage({ page }: BlogDetailPageProps) {
         <>
             <PageHeroBanner backgroundImage={hero.image} fixedHeight='tall' overlayClassName='bg-black/40'>
                 <div className={PAGE_HERO_CONTENT_CLASS}>
-                    <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
-                        {hero.eyebrow}
-                    </p>
-                    <h1 className='mx-auto mt-3 max-w-4xl text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
+                    <h1 className='mx-auto max-w-4xl text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
                         {hero.title}
                     </h1>
 
@@ -125,7 +122,7 @@ export default function BlogDetailPage({ page }: BlogDetailPageProps) {
 
             <main className='bg-[#F7F8FA] pb-20 pt-10 sm:pt-12 lg:pt-16'>
                 <div className='agency-container'>
-                    <div className='mx-auto max-w-[860px] px-[15px]'>
+                    <div className='mx-auto max-w-[860px] px-0'>
                         <Button
                             variant='ghost'
                             href='/'
@@ -192,7 +189,7 @@ export default function BlogDetailPage({ page }: BlogDetailPageProps) {
                                 {relatedCta.title}
                             </h2>
                             <p
-                                className='mx-auto mt-4 max-w-xl text-sm leading-7 text-white/90 sm:text-base'
+                                className='mx-auto mt-4 max-w-xl text-sm leading-6 text-white/90 sm:text-base'
                                 style={{ fontFamily: 'var(--hp-font-body)' }}
                             >
                                 {relatedCta.description}

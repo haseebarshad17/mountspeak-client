@@ -24,7 +24,7 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                         <h2 className="font-heading text-xl font-bold tracking-tight text-[#191C1C] sm:text-2xl lg:text-4xl lg:leading-10">
                             {overviewSection.title}
                         </h2>
-                        <p className="font-roboto mt-6 max-w-xl text-base font-normal leading-relaxed text-[#434849] lg:text-lg">
+                        <p className="font-roboto mt-6 max-w-xl text-base font-normal leading-normal text-[#434849] lg:text-lg">
                             {overviewSection.description}
                         </p>
 

@@ -16,8 +16,8 @@ type ExpeditionHeroSectionProps = {
 }
 
 export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
-    const { heroSection, theme } = page
-    const { backgroundMedia, overlay, eyebrow, title, subtitle, tripHighlights } = heroSection
+    const { heroSection } = page
+    const { backgroundMedia, overlay, title, subtitle, tripHighlights } = heroSection
 
     return (
         <section
@@ -49,14 +49,6 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                 <div className="relative z-10 flex min-h-[min(85vh,820px)] flex-col justify-end pb-10 pt-32 sm:min-h-[82vh] sm:pb-14 sm:pt-40 lg:min-h-[631px] lg:pb-16 lg:pt-44">
                     <div className="agency-container px-4 sm:px-8 lg:px-16">
                         <div className="max-w-3xl text-white">
-                            {eyebrow ? (
-                                <p
-                                    className="mb-3 font-roboto text-sm font-semibold uppercase sm:text-base"
-                                    style={{ color: theme.secondaryColor }}
-                                >
-                                    {eyebrow}
-                                </p>
-                            ) : null}
                             <h1
                                 className="font-heading w-full max-w-[672px] text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[48px] lg:leading-[57px]"
                                 style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
@@ -64,7 +56,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                 {title}
                             </h1>
                             {subtitle ? (
-                                <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#FFFFFFCC] sm:text-base">
+                                <p className="mt-4 max-w-xl text-sm leading-normal text-[#FFFFFFCC] sm:text-base">
                                     {subtitle}
                                 </p>
                             ) : null}
