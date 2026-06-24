@@ -21,7 +21,7 @@ function toRpcArgs(payload: CreateConsultationRequestDTO) {
         title: payload.title.trim(),
         description: payload.description.trim(),
         inquiry_type: payload.inquiry_type ?? null,
-        agency_id: payload.agency_id ?? null,
+        ...(payload.agency_id ? { p_agency_id: payload.agency_id } : {}),
     }
 }
 
