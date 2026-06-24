@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: TourDetailPageProps): Promise
     const pageTitle = page?.seo?.metaTitle ?? 'Tour Detail'
     const description = page?.seo?.metaDescription
 
-    const base = buildPageMetadata({
+    const base = await buildPageMetadata({
         pageTitle,
         description,
         homepage,

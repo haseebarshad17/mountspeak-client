@@ -175,8 +175,8 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
         if (shouldScale) setIsPressed(false);
     };
 
-    const handleClick = (e: React.MouseEvent<ButtonElement>) => {
-        userOnClick?.(e)
+    const handleClick = (e: React.MouseEvent<Element>) => {
+        ;(userOnClick as React.MouseEventHandler<Element> | undefined)?.(e)
         if (!resolvedHref || e.defaultPrevented) return
         if (
             e.metaKey ||

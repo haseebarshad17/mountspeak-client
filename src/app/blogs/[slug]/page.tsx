@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
     const page = getStaticBlogDetailPage()
 
-    const base = buildPageMetadata({
+    const base = await buildPageMetadata({
         pageTitle: page.seo.metaTitle,
         description: page.seo.metaDescription,
         homepage,

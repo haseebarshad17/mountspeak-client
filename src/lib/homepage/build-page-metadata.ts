@@ -1,8 +1,9 @@
-import { defaultMeta } from '@/assests/meta'
+import { buildPlatformMetadata } from '@/assests/meta'
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 import type { Metadata } from 'next'
 
 import { getAgencyLayoutMetadata } from './homepage-meta'
+import { getRequestSiteUrl } from './resolve-request-host'
 
 type BuildPageMetadataOptions = {
     pageTitle: string
@@ -10,11 +11,11 @@ type BuildPageMetadataOptions = {
     homepage?: AgencyHomepage | null
 }
 
-export function buildPageMetadata({
+export async function buildPageMetadata({
     pageTitle,
     description,
     homepage,
-}: BuildPageMetadataOptions): Metadata {
+}: BuildPageMetadataOptions): Promise<Metadata> {
     if (homepage?.isAgencySite && homepage.siteUrl) {
         const agencyMeta = getAgencyLayoutMetadata(homepage)
 
@@ -35,8 +36,10 @@ export function buildPageMetadata({
         }
     }
 
+    const platformMeta = buildPlatformMetadata(await getRequestSiteUrl())
+
     return {
-        ...defaultMeta,
+        ...platformMeta,
         title: pageTitle,
         ...(description ? { description } : {}),
     }

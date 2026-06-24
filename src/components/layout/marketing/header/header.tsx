@@ -282,7 +282,7 @@ const Header = ({ page }: HeaderProps) => {
                           : 'border border-transparent bg-transparent',
                 )}
             >
-                <div className={cn(useLightNav ? 'mx-auto w-full max-w-[1182px] px-[15px]' : '')}>
+                <div className={cn(useLightNav ? 'mx-auto w-full max-w-[1182px] px-0 sm:px-[15px]' : '')}>
                 <div className='flex w-full items-center justify-between gap-4'>
                     {/* Logo  */}
                     <div>

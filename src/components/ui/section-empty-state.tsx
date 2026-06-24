@@ -39,7 +39,7 @@ export function SectionEmptyState({
 
                 <p
                     className={cn(
-                        'max-w-[420px] text-sm leading-6 text-white/75 sm:text-base sm:leading-7',
+                        'max-w-[420px] text-sm leading-6 text-white/75 sm:text-base sm:leading-6',
                         title ? 'mt-2' : undefined,
                     )}
                     style={{ fontFamily: 'var(--hp-font-body)' }}
@@ -84,7 +84,7 @@ export function SectionEmptyState({
 
             <p
                 className={cn(
-                    'max-w-[420px] text-sm leading-6 sm:text-base sm:leading-7',
+                    'max-w-[420px] text-sm leading-6 sm:text-base sm:leading-6',
                     title ? 'mt-2' : 'mt-5 sm:mt-6',
                 )}
                 style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}

@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Login',
         homepage,
     })

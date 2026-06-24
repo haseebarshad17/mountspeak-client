@@ -39,7 +39,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                     {section.paragraphs.map((p, i) => (
                         <p
                             key={i}
-                            className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                            className='text-base leading-normal text-neutral-600 sm:text-lg'
                         >
                             {p}
                         </p>
@@ -97,7 +97,7 @@ function SectionContent({ section }: { section: TermsSection }) {
             {section.paragraphs && isDataProtectionSection && (
                 <div className='mt-6 max-w-[832px]'>
                     <p
-                        className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                        className='text-base leading-normal text-neutral-600 sm:text-lg'
                     >
                         {section.paragraphs[0]}
                     </p>
@@ -106,7 +106,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                         {section.paragraphs.slice(1).map((p, i) => (
                             <p
                                 key={i}
-                                className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                                className='text-base leading-normal text-neutral-600 sm:text-lg'
                             >
                                 {p}
                             </p>
@@ -128,7 +128,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                                 />
                             </span>
                             <div>
-                                <p className='font-semibold text-[var(--hp-color-primary)] text-[20px] leading-7 max-w-[710px]'>{item.title}</p>
+                                <p className='font-semibold text-[var(--hp-color-primary)] text-[20px] leading-6 max-w-[710px]'>{item.title}</p>
                                 <p className='mt-2 text-base  text-[#404849]'>
                                     {item.body}
                                 </p>
@@ -165,7 +165,7 @@ function SectionContent({ section }: { section: TermsSection }) {
                     {section.paragraphs.map((p, i) => (
                         <p
                             key={i}
-                            className='text-base leading-relaxed text-neutral-600 sm:text-lg'
+                            className='text-base leading-normal text-neutral-600 sm:text-lg'
                         >
                             {p}
                         </p>
@@ -247,7 +247,7 @@ export default function TermsPage() {
         <main className='min-h-screen bg-[#F7F8FA]'>
 
             <div className='bg-[#F7F8FA] pt-8 sm:pt-[40px] lg:pt-[55px]'>
-                <div className='mx-auto w-full max-w-[1182px] px-[15px]'>
+                <div className='mx-auto w-full max-w-[1182px] px-0'>
                     <h1
                         className='font-heading text-[36px] font-bold leading-tight text-[var(--hp-color-primary)] sm:text-[48px] lg:text-[72px]'
                     >
@@ -260,7 +260,7 @@ export default function TermsPage() {
                 </div>
             </div>
 
-            <div className='mx-auto w-full max-w-[1182px] px-[15px] pb-20 pt-16'>
+            <div className='mx-auto w-full max-w-[1182px] px-0 pb-20 pt-16'>
                 <div className='flex flex-col gap-4 lg:flex-row lg:gap-8'>
 
                     {/* Sticky sidebar TOC */}

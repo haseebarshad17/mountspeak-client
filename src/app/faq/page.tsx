@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'FAQ',
         description:
             'Find answers to common questions about tour packages, bookings, payments, and trip planning.',

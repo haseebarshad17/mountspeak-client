@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   getUserRole,
   persistUserAgencyId,
@@ -23,6 +23,7 @@ import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/h
 import { cn } from "@/lib/utils/clsxUtils";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getAuthSiteUrl, normalizeAuthRedirectPath } from "@/lib/utils/site-url";
+import { getAgencyPreviewHostFromPathname } from "@/lib/homepage/agency-preview";
 import {
   selectHomepageAgencyId,
   selectHomepagePage,
@@ -137,7 +138,15 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const isAgencySite = useAppSelector(selectIsAgencySite);
   const homepagePage = useAppSelector(selectHomepagePage);
   const brandName = homepagePage?.branding?.name?.trim() || "Pakistan Travel Systems";
-  const authSiteUrl = useMemo(() => getAuthSiteUrl(homepageSiteUrl), [homepageSiteUrl]);
+  const pathname = usePathname();
+  const previewAgencyHost = useMemo(
+    () => getAgencyPreviewHostFromPathname(pathname),
+    [pathname],
+  );
+  const authSiteUrl = useMemo(
+    () => getAuthSiteUrl(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
+    [homepageSiteUrl, previewAgencyHost, isAgencySite],
+  );
 
   const signupAgencyId = useMemo(() => {
     if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
@@ -214,7 +223,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         throw new Error(MessageCode.AUTH_EMAIL_PASSWORD_REQUIRED);
       }
 
-      const siteUrl = authSiteUrl;
+      if (isAgencySite === true && !authSiteUrl) {
+        throw new Error(MessageCode.AUTH_SITE_URL_NOT_READY);
+      }
+
+      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
       const emailRedirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
       const resolvedAgencyId = await resolveAuthAgencyId();
 
@@ -241,7 +254,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           avatar_url: "",
           emailRedirectTo,
           ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
-          ...(homepageSiteUrl ? { agency_site_url: homepageSiteUrl } : {}),
+          ...(homepageSiteUrl
+            ? { agency_site_url: homepageSiteUrl }
+            : previewAgencyHost
+              ? { agency_site_url: `https://${previewAgencyHost}` }
+              : {}),
         });
 
         if (signupResult.user) {
@@ -306,7 +323,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onGoogleSignIn = async () => {
     try {
-      const siteUrl = authSiteUrl;
+      if (isAgencySite === true && !authSiteUrl) {
+        throw new Error(MessageCode.AUTH_SITE_URL_NOT_READY);
+      }
+
+      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
       const redirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
       const resolvedAgencyId = await resolveAuthAgencyId();
 

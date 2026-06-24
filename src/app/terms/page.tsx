@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Terms & Privacy Policy',
         description:
             'Read our Terms and Conditions and Privacy Policy before booking your adventure across Pakistan.',

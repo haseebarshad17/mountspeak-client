@@ -186,14 +186,14 @@ const BookATour = ({ page }: HomepagePageProps) => {
                         </h2>
 
                         <p
-                            className='pt-5 text-base font-normal leading-7 sm:text-base sm:leading-8'
+                            className='pt-5 text-base font-normal leading-6 sm:text-base sm:leading-6'
                             style={{ color: colors.textOnDarkMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.paragraphs[0]}
                         </p>
 
                         <p
-                            className='pt-7 text-base font-normal leading-7 sm:text-base sm:leading-8'
+                            className='pt-7 text-base font-normal leading-6 sm:text-base sm:leading-6'
                             style={{ color: colors.textOnDarkMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.paragraphs[1].includes(section.promoHighlight) ? (

@@ -57,7 +57,7 @@ function FaqItem({
             >
                 <div className='overflow-hidden'>
                     <p
-                        className='text-readable pb-5 text-sm font-normal leading-7 sm:pb-6 sm:text-base'
+                        className='text-readable pb-5 text-sm font-normal leading-6 sm:pb-6 sm:text-base'
                         style={{ color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {faq.answer}

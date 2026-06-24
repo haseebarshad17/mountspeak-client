@@ -5,6 +5,7 @@ import {
     isAgencyPreviewPlatformHost,
 } from '@/lib/homepage/agency-preview'
 import { readAgencyPreviewHostForRequest } from '@/lib/homepage/agency-preview-request'
+import { normalizeSiteUrl } from '@/lib/utils/site-url'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
 
 export async function getRequestSiteHost(): Promise<string> {
@@ -38,4 +39,12 @@ export async function getRequestSiteHost(): Promise<string> {
     }
 
     return raw.toLowerCase()
+}
+
+export async function getRequestSiteUrl(): Promise<string> {
+    const headersList = await headers()
+    const host = await getRequestSiteHost()
+    const proto =
+        headersList.get('x-forwarded-proto')?.split(',')[0]?.trim() || 'https'
+    return normalizeSiteUrl(`${proto}://${host}`)
 }

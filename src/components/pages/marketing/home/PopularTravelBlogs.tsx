@@ -102,7 +102,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                         {section.title}
                     </h2>
                     <p
-                        className='mx-auto pt-4 text-base font-normal leading-7 sm:pt-5'
+                        className='mx-auto pt-4 text-base font-normal leading-6 sm:pt-5'
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.paragraph}

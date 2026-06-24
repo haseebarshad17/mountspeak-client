@@ -17,15 +17,15 @@ export function StayAndDineCardsSection({ page }: StayAndDineCardsSectionProps) 
             className="bg-white py-8 sm:py-10 lg:py-16"
             style={{ color: theme.textColor }}
         >
-            <div className="agency-container !px-16">
-                <h2 className="font-heading text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
+            <div className="agency-container px-4 sm:px-8 lg:px-16">
+                <h2 className="font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl lg:text-4xl">
                     {stayAndDineSection.title}
                 </h2>
 
                 <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                     {stayAndDineSection.properties.map((prop) => (
                         <article key={prop.id} className="flex flex-col">
-                            <div className="relative h-[256px] w-full max-w-[368px] overflow-hidden rounded-2xl">
+                            <div className="relative h-[220px] w-full overflow-hidden rounded-2xl sm:h-[256px]">
                                 <TourMediaImage
                                     src={prop.thumbnail}
                                     alt={prop.name}

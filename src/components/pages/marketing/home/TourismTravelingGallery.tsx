@@ -146,7 +146,7 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
                         {section.title}
                     </h2>
                     <p
-                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-7 md:pt-5 md:text-lg md:leading-8'
+                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6'
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.paragraph}
