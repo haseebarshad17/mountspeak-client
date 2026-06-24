@@ -79,6 +79,9 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                             role: payload.role,
                             avatar_url: payload.avatar_url ?? "",
                             ...(payload.agency_id ? { agency_id: payload.agency_id } : {}),
+                            ...(payload.agency_site_url
+                                ? { agency_site_url: payload.agency_site_url }
+                                : {}),
                         }
                     }
                 })
