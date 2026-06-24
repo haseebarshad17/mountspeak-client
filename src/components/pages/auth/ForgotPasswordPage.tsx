@@ -2,11 +2,13 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { getClientSiteUrl } from "@/lib/utils/site-url";
+import { getAuthSiteUrl } from "@/lib/utils/site-url";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode } from "@/lib/messages/codes";
 import { useForgotPassword } from "@/services/auth/auth.queries";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
+import { selectHomepageSiteUrl } from "@/store/homepage/homepage.selectors";
+import { useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
@@ -16,8 +18,9 @@ import { authInputBorderClassName, authInputClassName, authFormContentClassName,
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
+  const authSiteUrl = getAuthSiteUrl(homepageSiteUrl);
   const loginPath = usePreviewPath("/login");
-  const resetPasswordPath = usePreviewPath("/reset-password");
   const { mutateAsync: sendResetLink, isPending } = useForgotPassword();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -31,7 +34,7 @@ export default function ForgotPasswordPage() {
     try {
       await sendResetLink({
         email: email.trim(),
-        redirectTo: `${getClientSiteUrl()}${resetPasswordPath}`,
+        redirectTo: `${authSiteUrl}/reset-password`,
       });
       setSent(true);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_RESET_LINK_SENT));

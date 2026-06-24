@@ -51,5 +51,7 @@ export type SignupDTO = {
     emailRedirectTo?: string
     /** Agency the user is signing up under (from agency site theme). */
     agency_id?: string
+    /** Canonical agency site URL for auth email branding. */
+    agency_site_url?: string
 }
 

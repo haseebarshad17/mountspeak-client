@@ -8,6 +8,9 @@ export const selectHomepageData = (state: RootState) => state.homepage.data
 export const selectHomepageAgencyId = (state: RootState): string | null =>
     state.homepage.data?.agencyId ?? null
 
+export const selectHomepageSiteUrl = (state: RootState): string | null =>
+    state.homepage.data?.siteUrl ?? null
+
 export const selectHomepageSpecializationId = (state: RootState): string | null =>
     state.homepage.data?.specializationId ?? null
 
