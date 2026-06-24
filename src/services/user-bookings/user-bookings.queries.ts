@@ -7,6 +7,26 @@ import { userBookingsService } from './user-bookings.service'
 
 const userBookings = userBookingsService({ supabase })
 
+export type UseUserBookingsOptions = {
+    agencyScoped?: boolean
+    /** Pass `isAgencySite !== null` so agency sites wait for homepage context. */
+    agencyContextResolved?: boolean
+    /** Pass `isLoading` from `useOptionalUser()`. */
+    isUserLoading?: boolean
+}
+
+function isUserBookingsQueryReady(
+    email: string | null,
+    agencyId: string | null | undefined,
+    agencyScoped: boolean,
+    agencyContextResolved: boolean,
+): boolean {
+    if (!agencyContextResolved) return false
+    if (!email?.trim()) return false
+    if (agencyScoped && !agencyId) return false
+    return true
+}
+
 export const userBookingsQueryKey = (
     email: string | null,
     agencyId?: string | null,
@@ -15,13 +35,22 @@ export const userBookingsQueryKey = (
 export const useUserBookings = (
     email: string | null,
     agencyId?: string | null,
-    options?: { agencyScoped?: boolean },
+    options?: UseUserBookingsOptions,
 ) => {
     const agencyScoped = options?.agencyScoped ?? Boolean(agencyId)
+    const agencyContextResolved = options?.agencyContextResolved ?? true
+    const isUserLoading = options?.isUserLoading ?? false
 
-    return useQuery({
+    const queryReady = isUserBookingsQueryReady(
+        email,
+        agencyId,
+        agencyScoped,
+        agencyContextResolved,
+    )
+
+    const query = useQuery({
         queryKey: userBookingsQueryKey(email, agencyId),
-        enabled: Boolean(email?.trim()) && (!agencyScoped || Boolean(agencyId)),
+        enabled: queryReady,
         queryFn: async () => {
             const result = await userBookings.fetchUserBookings({
                 email: email ?? '',
@@ -39,4 +68,15 @@ export const useUserBookings = (
             }
         },
     })
+
+    const isBookingsLoading =
+        isUserLoading ||
+        !agencyContextResolved ||
+        (agencyScoped && agencyContextResolved && !agencyId) ||
+        (queryReady && query.isPending)
+
+    return {
+        ...query,
+        isBookingsLoading,
+    }
 }

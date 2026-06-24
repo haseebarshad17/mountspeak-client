@@ -15,7 +15,7 @@ import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -208,26 +208,51 @@ const Header = ({ page }: HeaderProps) => {
     }
 
     const logoutButtonClassName = cn(
-        'w-max',
-        useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
+        'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
+        useLightNav
+            ? 'border-[#00292C] bg-white text-[#00292C] hover:bg-[#00292C]/5'
+            : 'border-white bg-transparent text-white hover:bg-white/10',
     )
 
-    const logoutButtonStyle = {
-        color: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
-        fontFamily: 'var(--hp-font-body)',
+    const logoutButtonStyle = useLightNav
+        ? {
+              backgroundColor: '#FFFFFF',
+              borderColor: LIGHT_NAV_LINK_COLOR,
+              color: LIGHT_NAV_LINK_COLOR,
+              fontFamily: 'var(--hp-font-body)',
+          }
+        : undefined
+
+    const renderLogoutButton = (options?: { className?: string; onNavigate?: () => void; mobile?: boolean }) => {
+        const isMobileMenu = options?.mobile === true
+
+        const onLogoutClick = async () => {
+            options?.onNavigate?.()
+            await handleLogout()
+        }
+
+        return (
+            <Button
+                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                size='sm'
+                onClick={onLogoutClick}
+                style={!isMobileMenu && useLightNav ? logoutButtonStyle : undefined}
+                className={cn(
+                    isMobileMenu
+                        ? mobileLoginButtonClassName
+                        : logoutButtonClassName,
+                    !isMobileMenu && !useLightNav && '!text-white',
+                    options?.className,
+                )}
+            >
+                {header.auth.logout.label}
+            </Button>
+        )
     }
 
     const renderLoggedInAuthAction = () =>
         isDashboardPage ? (
-            <Button
-                variant='transparent'
-                size='nav'
-                className={logoutButtonClassName}
-                style={logoutButtonStyle}
-                onClick={handleLogout}
-            >
-                {header.auth.logout.label}
-            </Button>
+            renderLogoutButton()
         ) : (
             <ProfileMenu
                 useLightNav={useLightNav}
@@ -261,7 +286,7 @@ const Header = ({ page }: HeaderProps) => {
                 <div className='flex w-full items-center justify-between gap-4'>
                     {/* Logo  */}
                     <div>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={
                                 useLightNav
                                     ? branding.logo.default.src
@@ -360,7 +385,7 @@ const Header = ({ page }: HeaderProps) => {
                     )}
                 >
                     <div className='flex items-center justify-between'>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={branding.logo.onDark.src}
                             alt={branding.logo.onDark.alt}
                             width={150}
@@ -396,13 +421,7 @@ const Header = ({ page }: HeaderProps) => {
                         <div className='flex flex-col gap-3 pt-4'>
                             {isLoggedIn ? (
                                 isDashboardPage ? (
-                                    <Button
-                                        variant='transparent'
-                                        className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                        onClick={handleLogout}
-                                    >
-                                        {header.auth.logout.label}
-                                    </Button>
+                                    renderLogoutButton({ mobile: true })
                                 ) : (
                                     <>
                                         <Button

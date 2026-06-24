@@ -7,7 +7,7 @@ import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { filterDestinationCards } from '@/data/popular-destinations'
 import { cn } from '@/lib/utils/clsxUtils'
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useMemo, useRef } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -41,7 +41,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                         </span>
                         <h2
                             id='top-destinations-heading'
-                            className='agency-section-heading pt-1 text-[40px] font-medium leading-[48px]'
+                            className='agency-section-heading pt-1 text-[28px] font-medium leading-tight sm:text-[34px] sm:leading-[40px] lg:text-[36px] lg:leading-[44px]'
                             style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {section.title}
@@ -85,8 +85,12 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             spaceBetween={16}
                             breakpoints={{
                                 640: {
-                                    slidesPerView: 'auto',
-                                    spaceBetween: 37,
+                                    slidesPerView: 2.2,
+                                    spaceBetween: 20,
+                                },
+                                1024: {
+                                    slidesPerView: 3.5,
+                                    spaceBetween: 24,
                                 },
                             }}
                             loop={canSlide}
@@ -116,13 +120,10 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             className='select-none !overflow-hidden'
                         >
                             {destinations.map((destination) => (
-                                <SwiperSlide
-                                    key={destination.id}
-                                    className='!w-full shrink-0 sm:!w-[520px]'
-                                >
+                                <SwiperSlide key={destination.id} className='!h-auto'>
                                     <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 pb-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:p-3.5 sm:pb-4'>
-                                        <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[332px]'>
-                                            <StorageMediaImage
+                                        <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[240px] lg:h-[260px]'>
+                                            <HomepageMediaImage
                                                 src={destination.image}
                                                 alt={destination.name}
                                                 fill
@@ -133,7 +134,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
 
                                         <div className='px-1 pt-3 sm:pt-4'>
                                             <h3
-                                                className='font-jost text-[22px] font-medium leading-7 sm:text-[28px] sm:leading-8 lg:text-[32px]'
+                                                className='font-jost font-medium leading-7 text-[22px]'
                                                 style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
                                             >
                                                 {destination.name}

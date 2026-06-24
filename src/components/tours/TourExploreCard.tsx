@@ -1,6 +1,6 @@
 'use client'
 
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
@@ -40,7 +40,7 @@ export function TourExploreCard({
             aria-label={`View ${title}`}
             className='group relative mx-auto block w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(0,0,0,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'
         >
-            <StorageMediaImage
+            <TourMediaImage
                 src={image}
                 alt=''
                 fill

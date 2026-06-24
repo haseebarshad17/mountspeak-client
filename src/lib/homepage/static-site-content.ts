@@ -1,14 +1,16 @@
 import type { Column, Header } from '@/services/homepage/homepage.page.types'
 
+const STATIC_SITE_LINKS = [
+    { label: 'Home', href: '/' },
+    { label: 'Discover', href: '/discover' },
+    { label: 'About Us', href: '/about-us' },
+    { label: 'FAQ', href: '/faq' },
+    { label: 'Contact', href: '/contact-us' },
+] as const
+
 /** Header nav is hardcoded — not managed in agency_site_theme payload. */
 export const STATIC_HEADER: Header = {
-    navigation: [
-        { label: 'Home', href: '/' },
-        { label: 'Discover', href: '/discover' },
-        { label: 'About Us', href: '/about-us' },
-        { label: 'FAQ', href: '/faq' },
-        { label: 'Contact', href: '/contact-us' },
-    ],
+    navigation: STATIC_SITE_LINKS.filter((link) => link.label !== 'FAQ'),
     auth: {
         login: { label: 'Login', href: '/login' },
         signUp: { label: 'Sign Up', href: '/register' },
@@ -25,7 +27,7 @@ export const STATIC_HEADER: Header = {
 export function getStaticFooterLinksColumn(): Column {
     return {
         title: 'Links',
-        links: STATIC_HEADER.navigation.map(({ label, href }) => ({
+        links: STATIC_SITE_LINKS.map(({ label, href }) => ({
             label,
             href,
         })),

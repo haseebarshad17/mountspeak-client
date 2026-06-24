@@ -2,11 +2,14 @@ import { HP_CSS_VARS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homep
 import { cn } from '@/lib/utils/clsxUtils'
 import type { LucideIcon } from 'lucide-react'
 
+type SectionEmptyStateVariant = 'default' | 'on-dark'
+
 type SectionEmptyStateProps = {
-    icon: LucideIcon
+    icon?: LucideIcon
     title?: string
     description: string
     className?: string
+    variant?: SectionEmptyStateVariant
 }
 
 export function SectionEmptyState({
@@ -14,7 +17,39 @@ export function SectionEmptyState({
     title,
     description,
     className,
+    variant = 'default',
 }: SectionEmptyStateProps) {
+    if (variant === 'on-dark') {
+        return (
+            <div
+                role='status'
+                className={cn(
+                    'mx-auto flex w-full max-w-[560px] flex-col items-center px-6 py-6 text-center sm:px-10 sm:py-8',
+                    className,
+                )}
+            >
+                {title ? (
+                    <h3
+                        className='text-lg font-medium text-white sm:text-xl'
+                        style={{ fontFamily: 'var(--hp-font-heading)' }}
+                    >
+                        {title}
+                    </h3>
+                ) : null}
+
+                <p
+                    className={cn(
+                        'max-w-[420px] text-sm leading-6 text-white/75 sm:text-base sm:leading-7',
+                        title ? 'mt-2' : undefined,
+                    )}
+                    style={{ fontFamily: 'var(--hp-font-body)' }}
+                >
+                    {description}
+                </p>
+            </div>
+        )
+    }
+
     return (
         <div
             role='status'
@@ -27,14 +62,16 @@ export function SectionEmptyState({
                 backgroundColor: STATIC_UI_COLORS.backgroundMuted,
             }}
         >
-            <div
-                className='flex h-16 w-16 items-center justify-center rounded-full sm:h-[72px] sm:w-[72px]'
-                style={{
-                    backgroundColor: 'color-mix(in srgb, var(--hp-color-primary) 14%, white)',
-                }}
-            >
-                <Icon className={cn('h-7 w-7 sm:h-8 sm:w-8', HP_THEME_TEXT_CLASS)} aria-hidden />
-            </div>
+            {Icon ? (
+                <div
+                    className='flex h-16 w-16 items-center justify-center rounded-full sm:h-[72px] sm:w-[72px]'
+                    style={{
+                        backgroundColor: 'color-mix(in srgb, var(--hp-color-primary) 14%, white)',
+                    }}
+                >
+                    <Icon className={cn('h-7 w-7 sm:h-8 sm:w-8', HP_THEME_TEXT_CLASS)} aria-hidden />
+                </div>
+            ) : null}
 
             {title ? (
                 <h3

@@ -61,6 +61,23 @@ export const toursService = ({ supabase, agencyId }: ToursServiceProps) => {
             return (data ?? []) as unknown as TourRow[]
         },
 
+        getLatestPublishedTours: async (limit: number): Promise<TourRow[]> => {
+            let query = supabase
+                .from('tours')
+                .select(tourColumns)
+                .eq('publication_status', TOUR_PUBLICATION_STATUS.published)
+
+            query = applyAgencyFilter(query)
+
+            const { data, error } = await query
+                .order('created_at', { ascending: false })
+                .limit(limit)
+
+            if (error) throw error
+
+            return (data ?? []) as unknown as TourRow[]
+        },
+
         searchPublishedTours: async (filters: TourSearchFilters = {}): Promise<TourRow[]> => {
             let query = supabase
                 .from('tours')

@@ -5,8 +5,8 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
-import React, { useMemo, useRef, useState } from 'react'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
+import React, { useRef, useState } from 'react'
 import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper/types'
@@ -67,7 +67,7 @@ function DottedAvatarFrame({
             </svg>
 
             <div className='absolute left-1/2 top-1/2 h-[72px] w-[72px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[2.5px] border-white sm:h-20 sm:w-20'>
-                <StorageMediaImage src={src} alt={alt} fill className='object-cover' sizes='80px' />
+                <HomepageMediaImage src={src} alt={alt} fill className='object-cover' sizes='80px' />
             </div>
         </div>
     )
@@ -127,28 +127,10 @@ function TestimonialCard({
     )
 }
 
-const MAX_SLIDES_PER_VIEW = 3
-const MIN_SLIDES_FOR_LOOP = MAX_SLIDES_PER_VIEW * 2
-
-function buildLoopSlides(items: NonNullable<HomepagePageProps['page']['sections']['testimonials']['items']>) {
-    if (items.length >= MIN_SLIDES_FOR_LOOP) return items
-
-    const loopSlides = [...items]
-    let index = 0
-
-    while (loopSlides.length < MIN_SLIDES_FOR_LOOP) {
-        loopSlides.push(items[index % items.length])
-        index += 1
-    }
-
-    return loopSlides
-}
-
 const Testimonials = ({ page }: HomepagePageProps) => {
     const section = page.sections.testimonials
     const items = section.items ?? []
-    const loopSlides = useMemo(() => buildLoopSlides(items), [items])
-    const canLoop = items.length > 1
+    const canAutoplay = items.length > 1
 
     const swiperRef = useRef<SwiperType | null>(null)
     const [activeIndex, setActiveIndex] = useState(0)
@@ -172,12 +154,11 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                         key={`${items.length}-${items.map((item) => item.name).join('|')}`}
                         modules={[Autoplay]}
                         slidesPerView={1}
-                        loop={canLoop}
-                        loopAdditionalSlides={MAX_SLIDES_PER_VIEW}
+                        loop={false}
                         speed={500}
                         spaceBetween={20}
                         autoplay={
-                            canLoop
+                            canAutoplay
                                 ? {
                                       delay: 4500,
                                       disableOnInteraction: false,
@@ -194,12 +175,11 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                             swiperRef.current = swiper
                         }}
                         onSlideChange={(swiper) => {
-                            if (items.length === 0) return
-                            setActiveIndex(swiper.realIndex % items.length)
+                            setActiveIndex(swiper.activeIndex)
                         }}
                         className='testimonials-swiper !overflow-visible px-2'
                     >
-                        {loopSlides.map((item, index) => (
+                        {items.map((item, index) => (
                             <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
                                 <TestimonialCard
                                     {...item}
@@ -216,7 +196,7 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                             key={idx}
                             type='button'
                             aria-label={`Go to testimonial ${idx + 1}`}
-                            onClick={() => swiperRef.current?.slideToLoop(idx)}
+                            onClick={() => swiperRef.current?.slideTo(idx)}
                             className={cn(
                                 'transition-all duration-300',
                                 idx === activeIndex

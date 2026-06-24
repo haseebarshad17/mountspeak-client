@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { GalleryImageZoomModal } from '@/components/ui/gallery-image-zoom-modal'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { cn } from '@/lib/utils/clsxUtils'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 const IMAGES_PER_ROW = 6
@@ -53,7 +53,7 @@ function GalleryImageCard({
                     aria-hidden
                 />
             ) : null}
-            <StorageMediaImage
+            <HomepageMediaImage
                 src={src}
                 alt={alt}
                 fill

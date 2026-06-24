@@ -5,7 +5,7 @@ import type { HomepagePage } from '@/data/homepage'
 import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
 import { getFooterDisplayColumns } from '@/lib/homepage/normalize-homepage'
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
@@ -143,7 +143,7 @@ const Footer = ({ footer }: FooterProps) => {
             <div className='agency-container'>
                 <section className='flex flex-col items-center gap-6 py-8 text-center sm:gap-8 sm:py-10 lg:gap-10 lg:py-12'>
                     <Link href={homeHref} className='inline-block'>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={footer.logo.src}
                             alt={footer.logo.alt}
                             width={180}

@@ -4,9 +4,11 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SectionEmptyState } from "@/components/ui/section-empty-state";
+import { HP_THEME_BG_CLASS, HP_THEME_TEXT_CLASS } from "@/data/homepage";
 
 import { useIsAgencySite } from "@/hooks/useIsAgencySite";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { cn } from "@/lib/utils/clsxUtils";
 import { useAppSelector } from "@/store/hooks";
 import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors";
 import { useOptionalUser } from "@/services/auth/auth.queries";
@@ -17,7 +19,7 @@ import type {
 } from "@/services/user-bookings/user-bookings.types";
 import { tourDetailPath } from "@/services/tours/tours.utils";
 
-import { CalendarDays, History } from "lucide-react";
+import { CalendarDays, History, RotateCcw, ShieldCheck, Star } from "lucide-react";
 
 type BookingsTab = "upcoming" | "past";
 
@@ -43,79 +45,59 @@ function tabButtonClassName(isActive: boolean): string {
 function BookingsPolicyPanels() {
   return (
     <div className="flex flex-col gap-8 md:flex-row md:items-stretch">
-      <section className="bg-[#002a31] px-6 py-7 text-white md:w-[362px] md:shrink-0">
+      <section className={cn("px-6 py-7 text-white md:w-[362px] md:shrink-0", HP_THEME_BG_CLASS)}>
         <h3
           className="text-[20px] leading-[28px]"
         >
           Our Commitment
         </h3>
-        <p
-          className="mt-4 text-base text-[#c6d6da]"
-        >
+        <p className="mt-4 text-base text-white">
           Adventure is unpredictable. We provide the most flexible cancellation terms
           in the region to ensure your peace of mind while protecting our local
           guides.
         </p>
-        <button
-          type="button"
-          className="mt-6 inline-flex items-center gap-2 border-b border-b-[#FFFFFF4D] pb-1 text-xs font-medium uppercase tracking-[1.2px] text-[#e5eff2]"
-        >
-          <span>Full Policy Details</span>
-          <Image
-            src="/images/pages/booking/arrow.svg"
-            alt="Arrow icon"
-            width={14}
-            height={14}
-          />
-        </button>
       </section>
 
       <section className="border border-[#C0C8C9] bg-white p-8 md:w-[362px] md:shrink-0">
         <h3
-          className="text-xs font-medium uppercase tracking-[1.2px] text-[#404849]"
+          className={cn(
+            "text-xs font-medium uppercase tracking-[1.2px]",
+            HP_THEME_TEXT_CLASS,
+          )}
         >
           Cancellation Summary
         </h3>
 
         <div className="mt-6 space-y-4 max-w-[280px]">
           <div className="flex items-start gap-3">
-            <Image
-              src="/images/pages/booking/sheild.svg"
-              alt="Shield icon"
-              width={16}
-              height={24}
-              className="mt-1"
+            <ShieldCheck
+              className={cn("mt-1 h-6 w-4 shrink-0", HP_THEME_TEXT_CLASS)}
+              aria-hidden
             />
             <div>
-              <p className="text-base font-medium text-[#1A1C1E]">100% Refund</p>
+              <p className={cn("text-base font-medium", HP_THEME_TEXT_CLASS)}>100% Refund</p>
               <p className="text-sm text-[#5f6870]">Cancel up to 30 days before departure.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <Image
-              src="/images/pages/booking/redo.svg"
-              alt="Redo icon"
-              width={18}
-              height={22}
-              className="mt-1"
+            <RotateCcw
+              className={cn("mt-1 h-[22px] w-[18px] shrink-0", HP_THEME_TEXT_CLASS)}
+              aria-hidden
             />
             <div>
-              <p className="text-base font-semibold text-[#1A1C1E]">50% Credit</p>
+              <p className={cn("text-base font-semibold", HP_THEME_TEXT_CLASS)}>50% Credit</p>
               <p className="text-sm text-[#5f6870]">Cancel 15–29 days before departure.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <Image
-              src="/images/pages/booking/star.svg"
-              alt="Star icon"
-              width={18}
-              height={22}
-              className="mt-1"
+            <Star
+              className={cn("mt-1 h-[22px] w-[18px] shrink-0", HP_THEME_TEXT_CLASS)}
+              aria-hidden
             />
             <div>
-              <p className="text-base font-semibold text-[#1A1C1E]">Emergency Cases</p>
+              <p className={cn("text-base font-semibold", HP_THEME_TEXT_CLASS)}>Emergency Cases</p>
               <p className="text-sm text-[#5f6870]">Full credit for unforeseen political or weather events.</p>
             </div>
           </div>
@@ -178,7 +160,7 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
 
 const BookingsPage = () => {
   const [activeTab, setActiveTab] = useState<BookingsTab>("upcoming");
-  const { data: currentUser } = useOptionalUser();
+  const { data: currentUser, isLoading: isUserLoading } = useOptionalUser();
   const agencyId = useAppSelector(selectHomepageAgencyId);
   const isAgencySite = useIsAgencySite();
   const resolvedAgencyId = useMemo(() => {
@@ -188,10 +170,14 @@ const BookingsPage = () => {
 
     return agencyId;
   }, [agencyId, isAgencySite]);
-  const { data: bookingsData, isLoading } = useUserBookings(
+  const { data: bookingsData, isBookingsLoading } = useUserBookings(
     currentUser?.email ?? null,
     resolvedAgencyId,
-    { agencyScoped: isAgencySite === true },
+    {
+      agencyScoped: isAgencySite === true,
+      agencyContextResolved: isAgencySite !== null,
+      isUserLoading,
+    },
   );
 
   const upcomingTours = bookingsData?.upcoming ?? [];
@@ -221,7 +207,7 @@ const BookingsPage = () => {
               aria-selected={activeTab === "upcoming"}
               role="tab"
             >
-              Upcoming ({isLoading ? "…" : upcomingTours.length})
+              Upcoming ({isBookingsLoading ? "…" : upcomingTours.length})
             </button>
             <button
               type="button"
@@ -230,14 +216,14 @@ const BookingsPage = () => {
               aria-selected={activeTab === "past"}
               role="tab"
             >
-              Past Expeditions ({isLoading ? "…" : pastTours.length})
+              Past Expeditions ({isBookingsLoading ? "…" : pastTours.length})
             </button>
           </div>
         </div>
 
         {activeTab === "upcoming" ? (
           <div className="mt-8 space-y-8 lg:mt-12">
-              {isLoading ? (
+              {isBookingsLoading ? (
                 <div className="min-h-[265px] w-full animate-pulse border border-[#C0C8C9] bg-white" />
               ) : upcomingTours.length > 0 ? (
                 upcomingTours.map((tour, index) => (
@@ -349,7 +335,7 @@ const BookingsPage = () => {
           </div>
         ) : (
           <div className="mt-8 lg:mt-12">
-            {isLoading ? (
+            {isBookingsLoading ? (
               <div className="h-[180px] max-w-[362px] animate-pulse border border-[#C0C8C9] bg-[#F3F3F6]" />
             ) : pastTours.length > 0 ? (
               <div className="flex flex-col gap-8 md:flex-row md:flex-wrap">

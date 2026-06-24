@@ -6,13 +6,11 @@ import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import type { BlogContentBlock, BlogDetailPageContent } from '@/components/pages/blog/blog.types'
 import {
     HP_THEME_BG_CLASS,
-    HP_THEME_BTN_CLASS,
-    HP_THEME_BTN_STYLE,
     HP_THEME_TEXT_CLASS,
     STATIC_UI_COLORS,
 } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
-import { Calendar, ChevronLeft, MessageCircle, ThumbsUp } from 'lucide-react'
+import { Calendar, ChevronLeft } from 'lucide-react'
 
 function BlogContentBlockView({ block }: { block: BlogContentBlock }) {
     switch (block.type) {
@@ -121,15 +119,6 @@ export default function BlogDetailPage({ page }: BlogDetailPageProps) {
                             <Calendar className='h-4 w-4' aria-hidden />
                             {hero.date}
                         </span>
-                        <span className='hidden h-4 w-px bg-white/40 sm:block' aria-hidden />
-                        <span className='inline-flex items-center gap-1.5'>
-                            <ThumbsUp className='h-4 w-4' aria-hidden />
-                            {hero.likes}
-                        </span>
-                        <span className='inline-flex items-center gap-1.5'>
-                            <MessageCircle className='h-4 w-4' aria-hidden />
-                            {hero.comments}
-                        </span>
                     </div>
                 </div>
             </PageHeroBanner>
@@ -209,10 +198,12 @@ export default function BlogDetailPage({ page }: BlogDetailPageProps) {
                                 {relatedCta.description}
                             </p>
                             <Button
-                                variant='default'
+                                variant='secondary'
                                 href={relatedCta.buttonHref}
-                                className={cn('mt-6', HP_THEME_BTN_CLASS)}
-                                style={HP_THEME_BTN_STYLE}
+                                className={cn(
+                                    'mt-6 min-w-[180px] !border-transparent !bg-white hover:!bg-white/90',
+                                    HP_THEME_TEXT_CLASS,
+                                )}
                             >
                                 {relatedCta.buttonLabel}
                             </Button>

@@ -18,8 +18,6 @@ export type BlogDetailPageContent = {
             title: string
             author: string
             date: string
-            likes: number
-            comments: number
             image: string
         }
         article: {

@@ -16,6 +16,30 @@ function findContactColumn(footer: Footer) {
     return footer.columns.find((column) => column.title.toLowerCase().includes('contact'))
 }
 
+function stripLabelPrefix(label: string, prefix: string): string {
+    return label.replace(new RegExp(`^${prefix}\\s*:?\\s*`, 'i'), '').trim()
+}
+
+const CONTACT_LABEL_PREFIXES = ['email', 'phone', 'address', 'maps', 'map'] as const
+
+function getContactLabelValue(label: string): string {
+    const trimmed = label.trim()
+    if (!trimmed) return ''
+
+    for (const prefix of CONTACT_LABEL_PREFIXES) {
+        const stripped = stripLabelPrefix(trimmed, prefix)
+        if (stripped !== trimmed) return stripped
+    }
+
+    return trimmed
+}
+
+/** Hide footer/contact rows when the field has no value (empty label line, prefix-only label, etc.). */
+export function isFooterContactItemVisible(item: Login): boolean {
+    if (getContactLabelValue(item.label ?? '').length > 0) return true
+    return Boolean(item.href?.trim())
+}
+
 function classifyContactItem(item: Login): FooterContactItem['kind'] {
     const lower = item.label.toLowerCase()
 
@@ -42,14 +66,12 @@ export function getFooterContactColumnItems(footer: Footer): FooterContactItem[]
     const column = findContactColumn(footer)
     if (!column) return []
 
-    return (column.items ?? column.links ?? []).map((item) => ({
-        ...item,
-        kind: classifyContactItem(item),
-    }))
-}
-
-function stripLabelPrefix(label: string, prefix: string): string {
-    return label.replace(new RegExp(`^${prefix}\\s*:?\\s*`, 'i'), '').trim()
+    return (column.items ?? column.links ?? [])
+        .filter(isFooterContactItemVisible)
+        .map((item) => ({
+            ...item,
+            kind: classifyContactItem(item),
+        }))
 }
 
 export function getFooterContactDetails(footer: Footer): FooterContactDetails {
@@ -102,12 +124,13 @@ export function getFooterContactDetails(footer: Footer): FooterContactDetails {
         }
 
         if (lower.startsWith('address')) {
-            addressLines.push(stripLabelPrefix(label, 'address'))
+            const addressValue = stripLabelPrefix(label, 'address')
+            if (addressValue) addressLines.push(addressValue)
             inAddress = true
             continue
         }
 
-        if (inAddress && !item.href) {
+        if (inAddress && !item.href && label) {
             addressLines.push(label)
         }
     }
