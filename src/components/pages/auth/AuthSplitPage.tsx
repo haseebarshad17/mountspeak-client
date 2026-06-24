@@ -22,10 +22,11 @@ import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/homepage";
 import { cn } from "@/lib/utils/clsxUtils";
 import { supabase } from "@/lib/supabase/supabase.client";
-import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
+import { buildAuthCallbackUrl, getAuthSiteUrl, normalizeAuthRedirectPath } from "@/lib/utils/site-url";
 import {
   selectHomepageAgencyId,
   selectHomepagePage,
+  selectHomepageSiteUrl,
   selectIsAgencySite,
 } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
@@ -112,6 +113,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     return dashboardPath;
   }, [searchParams, dashboardPath]);
 
+  const authRedirectAfterAuth = useMemo(() => {
+    const next = searchParams.get("next");
+    if (next?.startsWith("/")) return normalizeAuthRedirectPath(next);
+    return "/dashboard";
+  }, [searchParams]);
+
   const nextQuery = useMemo(() => {
     const next = searchParams.get("next");
     if (!next?.startsWith("/")) return "";
@@ -126,9 +133,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const { mutateAsync: loginWithGoogle, isPending: isGooglePending } = useGoogleLogin();
   const { mutateAsync: logout } = useLogout();
   const agencyId = useAppSelector(selectHomepageAgencyId);
+  const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useAppSelector(selectIsAgencySite);
   const homepagePage = useAppSelector(selectHomepagePage);
   const brandName = homepagePage?.branding?.name?.trim() || "Pakistan Travel Systems";
+  const authSiteUrl = useMemo(() => getAuthSiteUrl(homepageSiteUrl), [homepageSiteUrl]);
 
   const signupAgencyId = useMemo(() => {
     if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
@@ -205,8 +214,8 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         throw new Error(MessageCode.AUTH_EMAIL_PASSWORD_REQUIRED);
       }
 
-      const siteUrl = getClientSiteUrl();
-      const emailRedirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
+      const siteUrl = authSiteUrl;
+      const emailRedirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
       const resolvedAgencyId = await resolveAuthAgencyId();
 
       if (isAgencySite === true && !resolvedAgencyId) {
@@ -232,6 +241,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           avatar_url: "",
           emailRedirectTo,
           ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+          ...(homepageSiteUrl ? { agency_site_url: homepageSiteUrl } : {}),
         });
 
         if (signupResult.user) {
@@ -296,8 +306,8 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onGoogleSignIn = async () => {
     try {
-      const siteUrl = getClientSiteUrl();
-      const redirectTo = buildAuthCallbackUrl(siteUrl, redirectAfterAuth);
+      const siteUrl = authSiteUrl;
+      const redirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
       const resolvedAgencyId = await resolveAuthAgencyId();
 
       if (isAgencySite === true && !resolvedAgencyId) {
