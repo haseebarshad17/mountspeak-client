@@ -19,6 +19,8 @@ import { useAppSelector } from "@/store/hooks";
 import AuthSidePanel from "./AuthSidePanel";
 import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
+const RESEND_COOLDOWN_SECONDS = 30;
+
 export default function VerifyEmailPage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -39,7 +41,11 @@ export default function VerifyEmailPage() {
   const [email, setEmail] = useState(emailFromQuery);
   const [sent, setSent] = useState(false);
   const [sessionEmail, setSessionEmail] = useState("");
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { mutateAsync: resendVerification, isPending } = useResendVerificationEmail();
+
+  const isCooldownActive = cooldownRemaining > 0;
+  const isResendDisabled = isPending || isCooldownActive;
 
   const displayEmail = useMemo(() => {
     if (sessionEmail) return sessionEmail;
@@ -69,8 +75,20 @@ export default function VerifyEmailPage() {
     void checkVerificationStatus();
   }, [router, dashboardPath]);
 
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+
+    const timer = window.setTimeout(() => {
+      setCooldownRemaining((current) => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [cooldownRemaining]);
+
   const onResend = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isResendDisabled) return;
 
     const targetEmail = displayEmail;
     if (!targetEmail) {
@@ -90,6 +108,7 @@ export default function VerifyEmailPage() {
         emailRedirectTo: buildAuthCallbackUrl(siteUrl, "/dashboard"),
       });
       setSent(true);
+      setCooldownRemaining(RESEND_COOLDOWN_SECONDS);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_VERIFICATION_SENT));
     } catch {
       toast.error(getMessage(MessageCode.API_AUTH_VERIFY_RESEND_FAILED));
@@ -148,8 +167,13 @@ export default function VerifyEmailPage() {
 
               <Button
                 type="submit"
-                loading={isPending}
-                loadingText="Sending..."
+                disabled={isResendDisabled}
+                loading={isResendDisabled}
+                loadingText={
+                  isPending
+                    ? "Sending..."
+                    : `Resend in ${cooldownRemaining}s`
+                }
                 className={displayEmail ? "mt-4 w-full" : "w-full"}
               >
                 {sent ? "Resend Again" : "Resend Verification Email"}
