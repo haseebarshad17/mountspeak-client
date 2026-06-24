@@ -10,7 +10,7 @@ import { fetchTourLocationOptions, searchPublishedTours } from '@/services/tours
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
-    return buildPageMetadata({
+    return await buildPageMetadata({
         pageTitle: 'Search Trips',
         description: 'Browse available trips and destinations.',
         homepage,

@@ -1,7 +1,7 @@
 const LOCAL_DEV_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0'])
 
 /** Platform hosts that support `/{site-url}/...` agency preview paths. */
-const PLATFORM_HOST_FALLBACKS = ['trip-connect-agency-site.vercel.app']
+const PLATFORM_HOST_FALLBACKS = ['mountspeak.com']
 
 export const AGENCY_PREVIEW_HOST_COOKIE = 'agency-preview-host'
 
@@ -15,7 +15,7 @@ export function readAgencyPreviewHostCookie(): string | null {
     return match?.[1] ? decodeURIComponent(match[1]) : null
 }
 
-/** Matches hostname-style path segments, e.g. trip-connect-agency-site.vercel.app or my-agency.com */
+/** Matches hostname-style path segments, e.g. mountspeak.com or my-agency.com */
 const AGENCY_HOST_SEGMENT =
     /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
 
@@ -37,7 +37,7 @@ function parseHostnameFromSiteConfig(value: string): string | null {
 export function getAgencyPreviewPlatformHostnames(): Set<string> {
     const hosts = new Set<string>(PLATFORM_HOST_FALLBACKS)
 
-    for (const raw of [process.env.NEXT_PUBLIC_SITE_URL, process.env.VERCEL_URL]) {
+    for (const raw of [process.env.VERCEL_URL]) {
         if (!raw) continue
         const hostname = parseHostnameFromSiteConfig(raw)
         if (hostname) hosts.add(hostname)

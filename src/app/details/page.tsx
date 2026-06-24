@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
     if (homepage.isAgencySite) {
-        return buildPageMetadata({
+        return await buildPageMetadata({
             pageTitle: 'Tour Detail',
             homepage,
         })

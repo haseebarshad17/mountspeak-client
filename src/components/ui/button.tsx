@@ -176,7 +176,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     };
 
     const handleClick = (e: React.MouseEvent<ButtonElement>) => {
-        userOnClick?.(e)
+        ;(userOnClick as ((event: React.MouseEvent<ButtonElement>) => void) | undefined)?.(e)
         if (!resolvedHref || e.defaultPrevented) return
         if (
             e.metaKey ||
