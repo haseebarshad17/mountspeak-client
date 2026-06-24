@@ -18,17 +18,17 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
             className=" bg-[#F3F4F3] py-8 sm:py-10 lg:pt-16 lg:pb-[112px]"
         >
             <div className="agency-container">
-                <h2 className="text-center font-heading font-heading text-3xl font-bold tracking-tight text-[#191C1C] sm:text-4xl">
+                <h2 className="text-center font-heading text-2xl font-bold tracking-tight text-[#191C1C] sm:text-3xl lg:text-4xl">
                     {itinerarySection.title}
                 </h2>
 
-                <div className="relative mx-auto mt-14 max-w-6xl">
+                <div className="relative mx-auto mt-8 max-w-6xl sm:mt-12 lg:mt-14">
                     <div
                         className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-neutral-300 lg:block"
                         aria-hidden
                     />
 
-                    <div className="space-y-[40px] lg:space-y-[56px]">
+                    <div className="space-y-8 sm:space-y-10 lg:space-y-[56px]">
                         {days.map((day, index) => {
                             const imageOnRight = index % 2 === 0
                             const isLast = index === days.length - 1
@@ -56,7 +56,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                             )
 
                             const visual = (
-                                <div className="relative h-[192px] w-full max-w-[516px] overflow-hidden rounded-2xl">
+                                <div className="relative h-[180px] w-full max-w-full overflow-hidden rounded-2xl sm:h-[192px] lg:max-w-[516px]">
                                     <TourMediaImage
                                         src={day.image}
                                         alt={day.alt}
@@ -70,7 +70,7 @@ export function DayByDayItinerarySection({ page }: DayByDayItinerarySectionProps
                             return (
                                 <div
                                     key={day.day}
-                                    className="grid gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-8"
+                                    className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-8"
                                 >
                                     {imageOnRight ? (
                                         <>

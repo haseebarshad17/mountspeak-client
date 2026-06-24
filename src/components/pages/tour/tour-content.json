@@ -76,7 +76,11 @@
                     "label": "HIGH ALTITUDE"
                 }
             ],
-            "ctaGroup": []
+            "ctaGroup": [{
+                    "label": "BOOK AN EXPEDITION",
+                    "url": "/booking",
+                    "style": "primary"
+                }]
         },
         "overviewSection": {
             "id": "overview",

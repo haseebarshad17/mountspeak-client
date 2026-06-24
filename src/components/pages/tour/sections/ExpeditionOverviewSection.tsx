@@ -18,10 +18,10 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
             id={overviewSection.id}
             style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
         >
-            <div className="agency-container p-8 sm:p-10 lg:p-16">
-                <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+            <div className="agency-container p-4 sm:p-8 lg:p-16">
+                <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
                     <div>
-                        <h2 className="font-heading text-2xl font-bold tracking-tight text-[#191C1C] sm:text-3xl lg:text-4xl lg:leading-10">
+                        <h2 className="font-heading text-xl font-bold tracking-tight text-[#191C1C] sm:text-2xl lg:text-4xl lg:leading-10">
                             {overviewSection.title}
                         </h2>
                         <p className="font-roboto mt-6 max-w-xl text-base font-normal leading-relaxed text-[#434849] lg:text-lg">
@@ -44,22 +44,22 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                         <ExpeditionCtaButtons
                             buttons={finalCtaSection.buttons.filter((btn) => btn.style === 'primary')}
                             theme={theme}
-                            className="mt-10"
+                            className="mt-8 sm:mt-10"
                         />
                     </div>
 
-                    <div className="relative h-[442px] w-[442px] overflow-hidden border border-black/[0.08] bg-neutral-100 shadow-sm">
+                    <div className="relative aspect-square w-full max-w-full overflow-hidden border border-black/[0.08] bg-neutral-100 shadow-sm sm:h-[442px] sm:w-[442px] sm:max-w-[442px] sm:aspect-auto">
                         <div className="relative h-full w-full">
                             <TourMediaImage
                                 src={overviewSection.sideCard.image}
                                 alt={overviewSection.sideCard.alt}
                                 fill
                                 className="object-cover"
-                                sizes="442px"
+                                sizes="(max-width: 639px) 100vw, 442px"
                             />
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center p-6">
-                            <span className="font-roboto bg-white max-w-[211px] min-h-[24px] py-4 w-full flez justify-center text-center text-base font-semibold uppercase tracking-[0.12em] text-[#091416] shadow-md">
+                            <span className="font-roboto flex w-full max-w-[211px] min-h-[24px] justify-center bg-white py-4 text-center text-base font-semibold uppercase tracking-[0.12em] text-[#091416] shadow-md">
                                 {overviewSection.sideCard.title}
                             </span>
                         </div>

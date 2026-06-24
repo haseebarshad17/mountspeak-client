@@ -31,7 +31,7 @@ export function ExpeditionCtaButtons({
                         href={btn.url}
                         variant={isPrimary ? 'default' : 'outline'}
                         className={cn(
-                            'w-full max-w-[257px]',
+                            'w-full sm:max-w-[257px]',
                             !isPrimary && 'border-[#737879] text-neutral-900 hover:bg-neutral-50',
                             buttonClassName,
                         )}

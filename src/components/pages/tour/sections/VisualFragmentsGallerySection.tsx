@@ -64,15 +64,15 @@ export function VisualFragmentsGallerySection({ page }: VisualFragmentsGallerySe
     return (
         <section
             id={gallerySection.id}
-            className='min-h-[860px] py-8 sm:py-10 lg:py-16'
+            className='py-8 sm:py-10 lg:min-h-[860px] lg:py-16'
             style={{ backgroundColor: '#091416', color: '#F5F5F2' }}
         >
-            <div className='agency-container !px-16'>
+            <div className='agency-container px-4 sm:px-8 lg:px-16'>
                 <div>
-                    <p className='font-roboto text-base uppercase tracking-[0.1em] text-readable-uppercase text-[#D2E9C7]'>
+                    <p className='font-roboto text-sm uppercase tracking-[0.1em] text-readable-uppercase text-[#D2E9C7] sm:text-base'>
                         {gallerySection.eyebrow}
                     </p>
-                    <h2 className='mt-4 font-heading text-3xl font-bold text-white sm:text-4xl'>
+                    <h2 className='mt-3 font-heading text-2xl font-bold text-white sm:mt-4 sm:text-3xl lg:text-4xl'>
                         {gallerySection.title}
                     </h2>
                 </div>
