@@ -5,9 +5,9 @@ import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
 import {
     HP_CSS_VARS,
+    HP_OUTLINE_BTN_STYLE,
     HP_THEME_BG_CLASS,
-    HP_THEME_BTN_CLASS,
-    HP_THEME_BTN_STYLE,
+    HP_THEME_OUTLINE_BTN_CLASS,
     HP_THEME_TEXT_CLASS,
     STATIC_UI_COLORS,
 } from '@/data/homepage'
@@ -116,7 +116,6 @@ const Header = ({ page }: HeaderProps) => {
     const { header, branding } = page
     const colors = STATIC_UI_COLORS
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
-    const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
 
     useEffect(() => {
@@ -171,6 +170,41 @@ const Header = ({ page }: HeaderProps) => {
         setIsMobileMenuOpen(false)
         router.push(loginHref)
         router.refresh()
+    }
+
+    const loginButtonClassName = cn(
+        'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
+        useLightNav
+            ? HP_THEME_OUTLINE_BTN_CLASS
+            : 'border-white bg-transparent text-white hover:bg-white/10',
+    )
+
+    const loginButtonStyle = useLightNav ? HP_OUTLINE_BTN_STYLE : undefined
+
+    const mobileLoginButtonClassName =
+        '!w-full border border-white bg-transparent text-white hover:bg-white/10'
+
+    const renderLoginButton = (options?: { className?: string; onNavigate?: () => void; mobile?: boolean }) => {
+        const isMobileMenu = options?.mobile === true
+
+        return (
+            <Button
+                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                size='sm'
+                href={loginHref}
+                onClick={options?.onNavigate}
+                style={!isMobileMenu && useLightNav ? loginButtonStyle : undefined}
+                className={cn(
+                    isMobileMenu
+                        ? mobileLoginButtonClassName
+                        : loginButtonClassName,
+                    !isMobileMenu && !useLightNav && '!text-white',
+                    options?.className,
+                )}
+            >
+                {header.auth.login.label}
+            </Button>
+        )
     }
 
     const logoutButtonClassName = cn(
@@ -265,27 +299,8 @@ const Header = ({ page }: HeaderProps) => {
 
                         {/* Buttons  */}
                         {showAuthActions ? (
-                            <div className='ml-10 flex items-center gap-10'>
-                                {isLoggedIn ? (
-                                    renderLoggedInAuthAction()
-                                ) : (
-                                    <>
-                                        <HeaderNavLink
-                                            href={header.auth.login.href ?? '/login'}
-                                            label={header.auth.login.label}
-                                            useLightNav={useLightNav}
-                                            color={useLightNav ? HP_CSS_VARS.primary : colors.textOnDark}
-                                        />
-                                        <Button
-                                            variant='secondary'
-                                            style={useLightNav ? HP_THEME_BTN_STYLE : undefined}
-                                            className={cn('w-max', useLightNav && HP_THEME_BTN_CLASS)}
-                                            href={signUpHref}
-                                        >
-                                            {header.auth.signUp.label}
-                                        </Button>
-                                    </>
-                                )}
+                            <div className='ml-10 flex items-center'>
+                                {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
                             </div>
                         ) : null}
                     </nav>
@@ -408,22 +423,7 @@ const Header = ({ page }: HeaderProps) => {
                                     </>
                                 )
                             ) : (
-                                <div className='flex items-center gap-3'>
-                                    <Button
-                                        variant='transparent'
-                                        className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                        href={loginHref}
-                                    >
-                                        {header.auth.login.label}
-                                    </Button>
-                                    <Button
-                                        variant='secondary'
-                                        className={cn('flex-1 !w-full rounded-md bg-white', HP_THEME_TEXT_CLASS)}
-                                        href={signUpHref}
-                                    >
-                                        {header.auth.signUp.label}
-                                    </Button>
-                                </div>
+                                renderLoginButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
                             )}
                         </div>
                     ) : null}

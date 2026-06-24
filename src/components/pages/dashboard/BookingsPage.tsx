@@ -331,15 +331,6 @@ const BookingsPage = () => {
                               className="shrink-0"
                             >
                               <span>{tour.secondaryAction}</span>
-                              {tour.statusTone === "action" || tour.statusTone === "pending" ? (
-                                <Image
-                                  src="/images/pages/booking/arrow.svg"
-                                  alt="Arrow icon"
-                                  width={9}
-                                  height={9}
-                                  className="brightness-0 opacity-80"
-                                />
-                              ) : null}
                             </Button>
                           ) : null}
                         </div>

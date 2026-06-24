@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/clsxUtils'
 import { Calendar, ChevronLeft, ChevronRight, MessageCircle, ThumbsUp } from 'lucide-react'
 import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import React, { useRef } from 'react'
+import { blogDetailPath } from '@/services/blog/blog.utils'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -77,7 +78,7 @@ function BlogCard({
                     variant='default'
                     style={HP_THEME_BTN_STYLE}
                     className={cn('mt-3 w-max min-w-[100px] sm:mt-4 sm:min-w-[110px]', HP_THEME_BTN_CLASS)}
-                    href={href || '#'}
+                    href={href || blogDetailPath()}
                 >
                     {section.readMoreLabel}
                 </Button>

@@ -392,7 +392,7 @@
           "errorToast": "Unable to submit booking request. Please try again.",
           "validationToast": "Please fix the highlighted fields.",
           "placeholders": {
-            "fullName": "John Doe",
+            "fullName": "Full Name",
             "email": "example@gmail.com",
             "phone": "Your Phone *",
             "destination": "Select Destination",
@@ -429,7 +429,7 @@
             "comments": 0,
             "excerpt": "Discover the thrill of trekking through the stunning trails of Hunza Valley.",
             "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
-            "href": "#"
+            "href": "/blogs/detail"
           },
           {
             "title": "The Living History of Baltistan — Traditions That Time Preserved",
@@ -439,7 +439,7 @@
             "comments": 0,
             "excerpt": "Experience the timeless culture and heritage of Baltistan with guided cultural tours.",
             "image": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
-            "href": "#"
+            "href": "/blogs/detail"
           },
           {
             "title": "Taste of the North — Traditional Flavors of Gilgit-Baltistan",
@@ -449,7 +449,7 @@
             "comments": 0,
             "excerpt": "Savor the authentic flavors of Gilgit-Baltistan with our guided food tours.",
             "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-            "href": "#"
+            "href": "/blogs/detail"
           }
         ]
       },
