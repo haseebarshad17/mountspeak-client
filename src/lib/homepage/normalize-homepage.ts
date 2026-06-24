@@ -1,6 +1,7 @@
 import homepageDefaultsDocument from '@/data/homepage-defaults.json'
 import type { HomepagePage } from '@/data/homepage'
 import type { Footer, Theme } from '@/services/homepage/homepage.page.types'
+import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 
 import { STATIC_HEADER, getStaticFooterLinksColumn } from './static-site-content'
 
@@ -43,6 +44,23 @@ function normalizeFooter(footer?: Partial<Footer>): Footer {
     }
 }
 
+function normalizePopularTravelBlogs(
+    section?: Partial<HomepagePage['sections']['popularTravelBlogs']>,
+): HomepagePage['sections']['popularTravelBlogs'] {
+    const base = BASE_PAGE.sections.popularTravelBlogs
+    const merged = { ...base, ...section }
+    const posts = section?.posts ?? base.posts
+
+    return {
+        ...merged,
+        posts: posts.map((post, index) => ({
+            ...(base.posts[index] ?? {}),
+            ...post,
+            href: resolveBlogPostHref(post.href ?? base.posts[index]?.href),
+        })),
+    }
+}
+
 export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
     return {
         ...BASE_PAGE,
@@ -59,7 +77,11 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
         },
         header: STATIC_HEADER,
         footer: normalizeFooter(page.footer),
-        sections: { ...BASE_PAGE.sections, ...page.sections },
+        sections: {
+            ...BASE_PAGE.sections,
+            ...page.sections,
+            popularTravelBlogs: normalizePopularTravelBlogs(page.sections?.popularTravelBlogs),
+        },
     }
 }
 

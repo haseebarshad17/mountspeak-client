@@ -2,6 +2,8 @@ import React from 'react'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 
+import { ExpeditionCtaButtons } from '@/components/pages/tour/sections/ExpeditionCtaButtons'
+
 import type { TourPage } from './tour-page.types'
 
 type ExpeditionOverviewSectionProps = {
@@ -9,7 +11,7 @@ type ExpeditionOverviewSectionProps = {
 }
 
 export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionProps) {
-    const { overviewSection, theme } = page
+    const { overviewSection, finalCtaSection, theme } = page
 
     return (
         <section
@@ -38,6 +40,12 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                                 </div>
                             ))}
                         </dl>
+
+                        <ExpeditionCtaButtons
+                            buttons={finalCtaSection.buttons.filter((btn) => btn.style === 'primary')}
+                            theme={theme}
+                            className="mt-10"
+                        />
                     </div>
 
                     <div className="relative h-[442px] w-[442px] overflow-hidden border border-black/[0.08] bg-neutral-100 shadow-sm">

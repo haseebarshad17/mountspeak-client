@@ -5,7 +5,6 @@ import { useState } from 'react'
 
 import {
     STORAGE_MEDIA_PLACEHOLDER,
-    isSupabaseStoragePublicUrl,
 } from '@/lib/supabase/storage-media-placeholder'
 
 type StorageMediaImageProps = Omit<ImageProps, 'src'> & {
@@ -26,11 +25,7 @@ export function StorageMediaImage({ src, alt, onError, ...props }: StorageMediaI
             onError={(event) => {
                 onError?.(event)
 
-                if (imageSrc === STORAGE_MEDIA_PLACEHOLDER) {
-                    return
-                }
-
-                if (!src?.trim() || isSupabaseStoragePublicUrl(src) || isSupabaseStoragePublicUrl(imageSrc)) {
+                if (imageSrc !== STORAGE_MEDIA_PLACEHOLDER) {
                     setImageSrc(STORAGE_MEDIA_PLACEHOLDER)
                 }
             }}

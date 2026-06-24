@@ -16,6 +16,7 @@ import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 import SearchPage from '@/app/search/page'
 import TermsPage from '@/app/terms/page'
 import TourDetailPage from '@/app/tours/[slug]/page'
+import BlogDetailRoutePage from '@/app/blogs/[slug]/page'
 import VerifyEmailPage from '@/app/(auth)/verify-email/page'
 import DashboardShell from '@/components/pages/dashboard/DashboardShell'
 import { defaultMeta } from '@/assests/meta'
@@ -129,6 +130,10 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
 
     if (rest[0] === 'tours' && rest[1]) {
         return <TourDetailPage params={Promise.resolve({ slug: rest[1] })} />
+    }
+
+    if (rest[0] === 'blogs' && rest[1]) {
+        return <BlogDetailRoutePage params={Promise.resolve({ slug: rest[1] })} />
     }
 
     notFound()

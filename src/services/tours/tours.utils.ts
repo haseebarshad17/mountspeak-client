@@ -55,6 +55,13 @@ export function getTourSeatCounts(tour: Pick<TourRow, 'capacity_total' | 'confir
     }
 }
 
+/** Newest tours first; `created_at` is the publish-order proxy (no `published_at` column). */
+export function sortToursByLatestPublished(tours: TourRow[]): TourRow[] {
+    return [...tours].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    )
+}
+
 export function toTourListItem(tour: TourRow): TourListItem {
     const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
 

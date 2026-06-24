@@ -1,0 +1,79 @@
+{
+    "page": {
+        "slug": "detail",
+        "seo": {
+            "metaTitle": "Conquer the Heights — Trekking Across Hunza Valley",
+            "metaDescription": "Discover the thrill of trekking through the stunning trails of Hunza Valley — routes, seasons, culture, and practical tips for your next northern Pakistan adventure.",
+            "ogImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+        },
+        "hero": {
+            "eyebrow": "Travel Blog",
+            "title": "Conquer the Heights — Trekking Across Hunza Valley",
+            "author": "tayyib",
+            "date": "01 Nov 2025",
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=80"
+        },
+        "article": {
+            "intro": "Hunza Valley is not just a destination — it is a journey through time, culture, and some of the most dramatic mountain scenery on earth. From ancient forts perched on cliffs to trails that open onto glaciers and snow peaks, every step here feels earned.",
+            "sections": [
+                {
+                    "type": "paragraph",
+                    "content": "Whether you are a seasoned trekker or planning your first high-altitude hike in Pakistan, Hunza offers routes for every level. Spring brings cherry blossoms along the Karakoram Highway, while autumn paints the valley in gold — both seasons reward travelers with clear skies and unforgettable views."
+                },
+                {
+                    "type": "heading",
+                    "content": "Why Hunza belongs on every trekker's list"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "The valley sits at the crossroads of the Karakoram and Hindu Kush ranges, with iconic peaks like Rakaposhi and Ultar Sar dominating the horizon. Trails connect villages where hospitality is a way of life, and local guides share stories passed down through generations."
+                },
+                {
+                    "type": "list",
+                    "items": [
+                        "Moderate day hikes from Karimabad to Baltit and Altit Fort",
+                        "Multi-day treks toward Ultar Base Camp and surrounding glaciers",
+                        "Cultural stops in traditional villages along the Hunza River",
+                        "Seasonal fruit orchards and local cuisine in family-run guesthouses"
+                    ]
+                },
+                {
+                    "type": "image",
+                    "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80",
+                    "alt": "Mountain peaks above Hunza Valley at sunrise",
+                    "caption": "Morning light over the Karakoram — best enjoyed after an early start on the trail."
+                },
+                {
+                    "type": "heading",
+                    "content": "Planning your trek"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Most travelers fly into Gilgit or drive the legendary Karakoram Highway from Islamabad. Allow at least five to seven days in Hunza to acclimatize, explore Karimabad, and complete at least one full-day trek. Pack layers, sun protection, and sturdy footwear — weather can shift quickly above 3,000 meters."
+                },
+                {
+                    "type": "quote",
+                    "content": "In Hunza, the mountains do not rush you — they invite you to slow down, breathe deeply, and travel with intention.",
+                    "attribution": "Local guide, Karimabad"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Travel with a licensed operator who knows the terrain and works with local communities. Responsible trekking keeps trails open, supports village economies, and preserves the landscapes that make this region extraordinary."
+                }
+            ]
+        },
+        "tags": [
+            "Hunza Valley",
+            "Trekking",
+            "Pakistan",
+            "Karakoram",
+            "Adventure Travel"
+        ],
+        "relatedCta": {
+            "title": "Ready to plan your Hunza expedition?",
+            "description": "Browse curated tours, verified local agencies, and flexible packages tailored to your travel style.",
+            "buttonLabel": "Explore Tours",
+            "buttonHref": "/discover"
+        }
+    }
+}

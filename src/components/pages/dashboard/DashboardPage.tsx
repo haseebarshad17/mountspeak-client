@@ -13,13 +13,13 @@ import { useUserBookings } from "@/services/user-bookings/user-bookings.queries"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { SectionEmptyState } from "@/components/ui/section-empty-state"
+import { HP_THEME_BG_CLASS } from "@/data/homepage"
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase"
 import { useIsAgencySite } from "@/hooks/useIsAgencySite"
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage"
+import { cn } from "@/lib/utils/clsxUtils"
 import { useAppSelector } from "@/store/hooks"
 import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors"
-
-import { Compass } from "lucide-react"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
 
@@ -63,7 +63,7 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false)
   const [savedProfile, setSavedProfile] = useState<ProfileSnapshot | null>(null)
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({})
-  const { data: currentUser } = useOptionalUser()
+  const { data: currentUser, isLoading: isUserLoading } = useOptionalUser()
   const agencyId = useAppSelector(selectHomepageAgencyId)
   const isAgencySite = useIsAgencySite()
   const resolvedAgencyId = useMemo(() => {
@@ -73,10 +73,14 @@ export default function DashboardPage() {
 
     return agencyId
   }, [agencyId, isAgencySite])
-  const { data: bookingsData, isLoading: bookingsLoading } = useUserBookings(
+  const { data: bookingsData, isBookingsLoading: bookingsLoading } = useUserBookings(
     currentUser?.email ?? email,
     resolvedAgencyId,
-    { agencyScoped: isAgencySite === true },
+    {
+      agencyScoped: isAgencySite === true,
+      agencyContextResolved: isAgencySite !== null,
+      isUserLoading: isUserLoading || loading,
+    },
   )
 
   const upcomingBookings = useMemo(
@@ -254,7 +258,7 @@ export default function DashboardPage() {
               <input
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="John Doe"
+                placeholder="Full Name"
                 className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
               />
               {errors.fullName ? (
@@ -331,7 +335,18 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <section className="mt-8 max-w-[856px] min-h-[338px] bg-[#00292C] px-6 py-8 md:px-10 md:py-10">
+        <section
+          className={cn(
+            "mt-8 max-w-[856px] min-h-[338px] px-6 py-8 md:px-10 md:py-10",
+            HP_THEME_BG_CLASS,
+          )}
+          style={
+            {
+              "--dashboard-panel-bg": "color-mix(in srgb, black 24%, var(--hp-color-primary))",
+              "--dashboard-panel-border": "color-mix(in srgb, white 18%, var(--hp-color-primary))",
+            } as React.CSSProperties
+          }
+        >
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <h3
@@ -369,14 +384,14 @@ export default function DashboardPage() {
           <div className="mt-10 grid gap-8 md:grid-cols-2">
             {bookingsLoading ? (
               <>
-                <div className="h-[149px] max-w-[372px] animate-pulse border border-[#22484f] bg-[#08343c]/70" />
-                <div className="h-[149px] max-w-[372px] animate-pulse border border-[#22484f] bg-[#08343c]/70" />
+                <div className="h-[149px] max-w-[372px] animate-pulse border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
+                <div className="h-[149px] max-w-[372px] animate-pulse border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
               </>
             ) : upcomingBookings.length > 0 ? (
               upcomingBookings.map((tour) => (
                 <article
                   key={tour.id}
-                  className="border border-[#22484f] bg-[#08343c] p-6 max-w-[372px] min-h-[149px]"
+                  className="min-h-[149px] max-w-[372px] border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)] p-6"
                 >
                   <p
                     className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"
@@ -415,7 +430,7 @@ export default function DashboardPage() {
             ) : (
               <div className="md:col-span-2">
                 <SectionEmptyState
-                  icon={Compass}
+                  variant="on-dark"
                   title="No upcoming expeditions"
                   description="Book your next expedition from our tours page to see it here."
                 />

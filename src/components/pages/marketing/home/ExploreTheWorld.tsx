@@ -18,46 +18,33 @@ import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
 import { Compass } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
-const TOURS_PER_BATCH = 6
-const INITIAL_VISIBLE_TOURS = 6
+const HOMEPAGE_TOUR_LIMIT = 6
 
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
     const isAgencySite = useIsAgencySite()
     const agencyId = useAppSelector(selectHomepageAgencyId)
-    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_TOURS)
 
-    const { data: tours = [], isLoading } = useQuery({
-        queryKey: ['published-tours', isAgencySite, agencyId],
+    const { data: homepageTours, isLoading } = useQuery({
+        queryKey: ['homepage-latest-tours', isAgencySite, agencyId],
         enabled: isAgencySite === true && !!agencyId,
         queryFn: async () => {
             const api = toursService({ supabase, agencyId: agencyId ?? undefined })
-            const rows = await api.getPublishedTours()
-            return mapTourRowsToListItems(rows)
+            const rows = await api.getLatestPublishedTours(HOMEPAGE_TOUR_LIMIT + 1)
+            const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
+
+            return {
+                tours: mapTourRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+                hasMore,
+            }
         },
         staleTime: 60_000,
     })
 
-    const displayTours = isAgencySite === false ? [DEMO_TOUR_LIST_ITEM] : tours
+    const displayTours = isAgencySite === false ? [DEMO_TOUR_LIST_ITEM] : (homepageTours?.tours ?? [])
     const showLoading = isAgencySite === null || (isAgencySite === true && isLoading)
-    const showToggleButton = displayTours.length > INITIAL_VISIBLE_TOURS
-    const isFullyExpanded = visibleCount >= displayTours.length
-    const visibleTours = displayTours.slice(0, visibleCount)
-
-    useEffect(() => {
-        setVisibleCount(INITIAL_VISIBLE_TOURS)
-    }, [displayTours.length, isAgencySite, agencyId])
-
-    const handleToggleTours = () => {
-        if (isFullyExpanded) {
-            setVisibleCount(INITIAL_VISIBLE_TOURS)
-            return
-        }
-
-        setVisibleCount((current) => Math.min(current + TOURS_PER_BATCH, displayTours.length))
-    }
+    const showViewAllButton = isAgencySite === false ? false : (homepageTours?.hasMore ?? false)
 
     return (
         <section
@@ -88,7 +75,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         aria-busy='true'
                         aria-label='Loading tours'
                     >
-                        {Array.from({ length: 3 }).map((_, index) => (
+                        {Array.from({ length: HOMEPAGE_TOUR_LIMIT }).map((_, index) => (
                             <Skeleton
                                 key={index}
                                 className='aspect-[416/300] w-full max-w-[416px] rounded-[10px] lg:max-w-none'
@@ -98,7 +85,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                 ) : displayTours.length > 0 ? (
                     <>
                         <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
-                            {visibleTours.map((tour) => (
+                            {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}
                                     slug={tour.slug}
@@ -114,16 +101,15 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                             ))}
                         </div>
 
-                        {showToggleButton ? (
+                        {showViewAllButton ? (
                             <div className='mt-8 flex justify-center sm:mt-10'>
                                 <Button
-                                    type='button'
                                     variant='default'
+                                    href='/search'
                                     style={HP_THEME_BTN_STYLE}
                                     className={cn('w-max min-w-[140px]', HP_THEME_BTN_CLASS)}
-                                    onClick={handleToggleTours}
                                 >
-                                    {isFullyExpanded ? 'See Less' : 'See More'}
+                                    View All
                                 </Button>
                             </div>
                         ) : null}

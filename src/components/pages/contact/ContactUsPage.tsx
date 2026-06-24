@@ -234,7 +234,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                         id='contact-name'
                                         name='name'
                                         type='text'
-                                        placeholder='John Doe'
+                                        placeholder='Full Name'
                                         aria-invalid={Boolean(fieldErrors.name)}
                                         className={inputClass}
                                     />

@@ -5,9 +5,9 @@ import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import type { HomepagePage } from '@/data/homepage'
 import {
     HP_CSS_VARS,
+    HP_OUTLINE_BTN_STYLE,
     HP_THEME_BG_CLASS,
-    HP_THEME_BTN_CLASS,
-    HP_THEME_BTN_STYLE,
+    HP_THEME_OUTLINE_BTN_CLASS,
     HP_THEME_TEXT_CLASS,
     STATIC_UI_COLORS,
 } from '@/data/homepage'
@@ -15,7 +15,7 @@ import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -116,7 +116,6 @@ const Header = ({ page }: HeaderProps) => {
     const { header, branding } = page
     const colors = STATIC_UI_COLORS
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
-    const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
 
     useEffect(() => {
@@ -173,27 +172,87 @@ const Header = ({ page }: HeaderProps) => {
         router.refresh()
     }
 
-    const logoutButtonClassName = cn(
-        'w-max',
-        useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
+    const loginButtonClassName = cn(
+        'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
+        useLightNav
+            ? HP_THEME_OUTLINE_BTN_CLASS
+            : 'border-white bg-transparent text-white hover:bg-white/10',
     )
 
-    const logoutButtonStyle = {
-        color: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
-        fontFamily: 'var(--hp-font-body)',
+    const loginButtonStyle = useLightNav ? HP_OUTLINE_BTN_STYLE : undefined
+
+    const mobileLoginButtonClassName =
+        '!w-full border border-white bg-transparent text-white hover:bg-white/10'
+
+    const renderLoginButton = (options?: { className?: string; onNavigate?: () => void; mobile?: boolean }) => {
+        const isMobileMenu = options?.mobile === true
+
+        return (
+            <Button
+                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                size='sm'
+                href={loginHref}
+                onClick={options?.onNavigate}
+                style={!isMobileMenu && useLightNav ? loginButtonStyle : undefined}
+                className={cn(
+                    isMobileMenu
+                        ? mobileLoginButtonClassName
+                        : loginButtonClassName,
+                    !isMobileMenu && !useLightNav && '!text-white',
+                    options?.className,
+                )}
+            >
+                {header.auth.login.label}
+            </Button>
+        )
+    }
+
+    const logoutButtonClassName = cn(
+        'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
+        useLightNav
+            ? 'border-[#00292C] bg-white text-[#00292C] hover:bg-[#00292C]/5'
+            : 'border-white bg-transparent text-white hover:bg-white/10',
+    )
+
+    const logoutButtonStyle = useLightNav
+        ? {
+              backgroundColor: '#FFFFFF',
+              borderColor: LIGHT_NAV_LINK_COLOR,
+              color: LIGHT_NAV_LINK_COLOR,
+              fontFamily: 'var(--hp-font-body)',
+          }
+        : undefined
+
+    const renderLogoutButton = (options?: { className?: string; onNavigate?: () => void; mobile?: boolean }) => {
+        const isMobileMenu = options?.mobile === true
+
+        const onLogoutClick = async () => {
+            options?.onNavigate?.()
+            await handleLogout()
+        }
+
+        return (
+            <Button
+                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                size='sm'
+                onClick={onLogoutClick}
+                style={!isMobileMenu && useLightNav ? logoutButtonStyle : undefined}
+                className={cn(
+                    isMobileMenu
+                        ? mobileLoginButtonClassName
+                        : logoutButtonClassName,
+                    !isMobileMenu && !useLightNav && '!text-white',
+                    options?.className,
+                )}
+            >
+                {header.auth.logout.label}
+            </Button>
+        )
     }
 
     const renderLoggedInAuthAction = () =>
         isDashboardPage ? (
-            <Button
-                variant='transparent'
-                size='nav'
-                className={logoutButtonClassName}
-                style={logoutButtonStyle}
-                onClick={handleLogout}
-            >
-                {header.auth.logout.label}
-            </Button>
+            renderLogoutButton()
         ) : (
             <ProfileMenu
                 useLightNav={useLightNav}
@@ -227,7 +286,7 @@ const Header = ({ page }: HeaderProps) => {
                 <div className='flex w-full items-center justify-between gap-4'>
                     {/* Logo  */}
                     <div>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={
                                 useLightNav
                                     ? branding.logo.default.src
@@ -265,27 +324,8 @@ const Header = ({ page }: HeaderProps) => {
 
                         {/* Buttons  */}
                         {showAuthActions ? (
-                            <div className='ml-10 flex items-center gap-10'>
-                                {isLoggedIn ? (
-                                    renderLoggedInAuthAction()
-                                ) : (
-                                    <>
-                                        <HeaderNavLink
-                                            href={header.auth.login.href ?? '/login'}
-                                            label={header.auth.login.label}
-                                            useLightNav={useLightNav}
-                                            color={useLightNav ? HP_CSS_VARS.primary : colors.textOnDark}
-                                        />
-                                        <Button
-                                            variant='secondary'
-                                            style={useLightNav ? HP_THEME_BTN_STYLE : undefined}
-                                            className={cn('w-max', useLightNav && HP_THEME_BTN_CLASS)}
-                                            href={signUpHref}
-                                        >
-                                            {header.auth.signUp.label}
-                                        </Button>
-                                    </>
-                                )}
+                            <div className='ml-10 flex items-center'>
+                                {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
                             </div>
                         ) : null}
                     </nav>
@@ -345,7 +385,7 @@ const Header = ({ page }: HeaderProps) => {
                     )}
                 >
                     <div className='flex items-center justify-between'>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={branding.logo.onDark.src}
                             alt={branding.logo.onDark.alt}
                             width={150}
@@ -381,13 +421,7 @@ const Header = ({ page }: HeaderProps) => {
                         <div className='flex flex-col gap-3 pt-4'>
                             {isLoggedIn ? (
                                 isDashboardPage ? (
-                                    <Button
-                                        variant='transparent'
-                                        className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                        onClick={handleLogout}
-                                    >
-                                        {header.auth.logout.label}
-                                    </Button>
+                                    renderLogoutButton({ mobile: true })
                                 ) : (
                                     <>
                                         <Button
@@ -408,22 +442,7 @@ const Header = ({ page }: HeaderProps) => {
                                     </>
                                 )
                             ) : (
-                                <div className='flex items-center gap-3'>
-                                    <Button
-                                        variant='transparent'
-                                        className='flex-1 !w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                        href={loginHref}
-                                    >
-                                        {header.auth.login.label}
-                                    </Button>
-                                    <Button
-                                        variant='secondary'
-                                        className={cn('flex-1 !w-full rounded-md bg-white', HP_THEME_TEXT_CLASS)}
-                                        href={signUpHref}
-                                    >
-                                        {header.auth.signUp.label}
-                                    </Button>
-                                </div>
+                                renderLoginButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
                             )}
                         </div>
                     ) : null}

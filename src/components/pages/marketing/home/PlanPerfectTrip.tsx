@@ -2,7 +2,7 @@
 
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import { StorageMediaImage } from '@/components/ui/storage-media-image'
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React from 'react'
 
 const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
@@ -12,7 +12,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
             <div className='agency-container'>
                 <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-8 lg:gap-12 xl:gap-[100px]'>
                     <div className='w-full max-w-[580px] justify-self-center md:justify-self-start'>
-                        <StorageMediaImage
+                        <HomepageMediaImage
                             src={section.image.src}
                             alt={section.image.alt}
                             width={580}

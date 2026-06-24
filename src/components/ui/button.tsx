@@ -3,7 +3,8 @@ import * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { usePrefixedHref } from "@/hooks/useAgencyPreviewBase";
+import { usePrefixedHref, useInternalPathname } from "@/hooks/useAgencyPreviewBase";
+import { isBookingRoute } from "@/lib/homepage/agency-preview";
 import { cn } from "@/lib/utils/clsxUtils";
 
 /** Shared CTA typography — matches auth / form primary buttons site-wide */
@@ -56,10 +57,10 @@ const buttonVariants = tv({
                 "border border-transparent bg-white text-primary-600 hover:border-primary-600 hover:bg-primary-50",
         },
         size: {
-            default: "h-11 min-h-11 rounded-md px-6 sm:h-14 sm:min-h-14 sm:px-8",
+            default: "h-12 min-h-12 rounded-md px-6 sm:px-8",
             sm: "h-9 min-h-9 rounded-md px-4 sm:h-10 sm:min-h-10 sm:px-5",
-            md: "h-11 min-h-11 rounded-md px-6 sm:h-14 sm:min-h-14 sm:px-8",
-            lg: "h-11 min-h-11 rounded-md px-6 sm:h-14 sm:min-h-14 sm:px-8",
+            md: "h-12 min-h-12 rounded-md px-6 sm:px-8",
+            lg: "h-12 min-h-12 rounded-md px-6 sm:px-8",
             nav: "h-auto min-h-0 rounded-md px-0 !text-sm xl:!text-base !font-normal !normal-case !tracking-normal",
             icon: "h-10 w-10 min-h-0 rounded-md p-0",
             max: "h-max min-h-0 w-max px-0 !font-normal !normal-case !tracking-normal",
@@ -113,6 +114,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     loading = false,
     loadingText,
     disabled,
+    onClick: userOnClick,
     ...props
 }, ref) => {
 
@@ -123,6 +125,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     const pressStart = React.useRef(0);
     const releaseTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
+    const internalPathname = useInternalPathname()
     const resolvedHref = usePrefixedHref(href)
     const isDisabled = Boolean(disabled || loading)
 
@@ -172,6 +175,25 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
         if (shouldScale) setIsPressed(false);
     };
 
+    const handleClick = (e: React.MouseEvent<ButtonElement>) => {
+        userOnClick?.(e)
+        if (!resolvedHref || e.defaultPrevented) return
+        if (
+            e.metaKey ||
+            e.ctrlKey ||
+            e.shiftKey ||
+            e.altKey ||
+            e.button !== 0
+        ) {
+            return
+        }
+
+        if (isBookingRoute(internalPathname)) {
+            e.preventDefault()
+            window.location.assign(resolvedHref)
+        }
+    }
+
     return (
         <Component
             ref={ref}
@@ -190,6 +212,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
             href={resolvedHref}
             disabled={isDisabled}
             aria-busy={loading || undefined}
+            onClick={handleClick}
 
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}

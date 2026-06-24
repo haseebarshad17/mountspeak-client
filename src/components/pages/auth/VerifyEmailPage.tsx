@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isEmailVerified } from "@/lib/auth/email-verification";
 import { supabase } from "@/lib/supabase/supabase.client";
-import { buildAuthCallbackUrl, getClientSiteUrl } from "@/lib/utils/site-url";
+import { buildAuthCallbackUrl, getAuthSiteUrl } from "@/lib/utils/site-url";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode } from "@/lib/messages/codes";
 import { useResendVerificationEmail } from "@/services/auth/auth.queries";
@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
+import { selectHomepageSiteUrl } from "@/store/homepage/homepage.selectors";
+import { useAppSelector } from "@/store/hooks";
 import AuthSidePanel from "./AuthSidePanel";
 import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
@@ -22,6 +24,8 @@ export default function VerifyEmailPage() {
   const loginPath = usePreviewPath("/login");
   const dashboardPath = usePreviewPath("/dashboard");
   const emailFromQuery = searchParams.get("email") ?? "";
+  const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
+  const authSiteUrl = getAuthSiteUrl(homepageSiteUrl);
   const [email, setEmail] = useState(emailFromQuery);
   const [sent, setSent] = useState(false);
   const [sessionEmail, setSessionEmail] = useState("");
@@ -65,10 +69,10 @@ export default function VerifyEmailPage() {
     }
 
     try {
-      const siteUrl = getClientSiteUrl();
+      const siteUrl = authSiteUrl;
       await resendVerification({
         email: targetEmail,
-        emailRedirectTo: buildAuthCallbackUrl(siteUrl, dashboardPath),
+        emailRedirectTo: buildAuthCallbackUrl(siteUrl, "/dashboard"),
       });
       setSent(true);
       toast.success(getMessage(MessageCode.SUCCESS_AUTH_VERIFICATION_SENT));

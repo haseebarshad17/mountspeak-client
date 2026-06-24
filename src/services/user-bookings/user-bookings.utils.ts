@@ -117,17 +117,10 @@ function mapStatus(
     return { label: 'Pending', tone: 'pending', warning: '' }
 }
 
-function mapActions(tone: UserBookingStatusTone): {
+function mapActions(): {
     primaryAction: string
     secondaryAction: string
 } {
-    if (tone === 'action' || tone === 'pending') {
-        return {
-            primaryAction: 'Complete Booking',
-            secondaryAction: 'Request Cancellation',
-        }
-    }
-
     return {
         primaryAction: 'View Itinerary',
         secondaryAction: '',
@@ -138,7 +131,7 @@ export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay 
     const tour = parseTour(row)
     const members = formatMemberCount(row.male_seat, row.female_seat, row.kids_seats)
     const status = mapStatus(row.status, Boolean(row.booking_payment_screenshot))
-    const actions = mapActions(status.tone)
+    const actions = mapActions()
     const location = tour?.to_location ?? tour?.from_location ?? 'Pakistan'
     const region = tour?.from_location ?? tour?.to_location ?? location
 
