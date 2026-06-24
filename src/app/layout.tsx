@@ -3,7 +3,7 @@ import "@/env/client";
 import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
-import { defaultMeta } from "@/assests/meta";
+import { buildPlatformMetadata } from "@/assests/meta";
 import { jost, roboto } from "@/assests/fonts";
 import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
@@ -12,6 +12,7 @@ import HomepageThemeSync from "@/components/providers/HomepageThemeSync";
 import StoreProvider from "@/store/StoreProvider";
 import { getHomepageThemeCssVars } from "@/data/homepage";
 import { getAgencyLayoutMetadata } from "@/lib/homepage/homepage-meta";
+import { getRequestSiteUrl } from "@/lib/homepage/resolve-request-host";
 import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,11 +22,11 @@ export async function generateMetadata(): Promise<Metadata> {
         try {
             return getAgencyLayoutMetadata(agencyHomepage)
         } catch {
-            return defaultMeta
+            return buildPlatformMetadata(await getRequestSiteUrl())
         }
     }
 
-    return defaultMeta
+    return buildPlatformMetadata(await getRequestSiteUrl())
 }
 
 export const viewport: Viewport = {
