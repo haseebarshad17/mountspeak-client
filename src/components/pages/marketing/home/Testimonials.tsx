@@ -92,7 +92,7 @@ function TestimonialCard({
                 className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
                 style={{ backgroundColor: STATIC_UI_COLORS.quoteBackground, color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
             >
-                <p className='text-readable text-sm font-normal leading-7 sm:text-base'>{quote}</p>
+                <p className='text-readable text-sm font-normal leading-6 sm:text-base'>{quote}</p>
 
                 <div className='testimonial-avatar-wrap absolute -bottom-11 left-1/2 -translate-x-1/2 sm:-bottom-12'>
                     <DottedAvatarFrame

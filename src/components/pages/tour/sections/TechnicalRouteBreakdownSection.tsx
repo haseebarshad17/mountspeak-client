@@ -12,20 +12,20 @@ export function TechnicalRouteBreakdownSection({ page }: TechnicalRouteBreakdown
 
     return (
         <section id={technicalRouteSection.id} className="pb-8 sm:pb-10 lg:pb-16 " style={{ backgroundColor: theme.backgroundColor }}>
-            <div className="agency-container !px-16">
-                <div className="rounded-2xl bg-[#ECECE8] px-6 py-8 sm:px-8 sm:py-10 lg:px-10">
+            <div className="agency-container px-4 sm:px-8 lg:px-16">
+                <div className="rounded-2xl bg-[#ECECE8] px-4 py-6 sm:px-8 sm:py-10 lg:px-10">
                     <div className="flex items-start gap-3">
-                        <Map className="mt-1 h-5 w-5 shrink-0" style={{ color: theme.secondaryColor }} />
-                        <h2 className="font-heading text-xl font-heading font-semibold tracking-tight text-[#191C1C] sm:text-2xl">
+                        <Map className="mt-0.5 h-5 w-5 shrink-0" style={{ color: theme.secondaryColor }} />
+                        <h2 className="min-w-0 flex-1 font-heading text-base font-semibold leading-snug tracking-tight text-[#191C1C] sm:text-xl lg:text-2xl">
                             {technicalRouteSection.title}
                         </h2>
                     </div>
 
-                    <div className="mt-8 grid gap-8 md:grid-cols-3 md:gap-10">
+                    <div className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 md:grid-cols-3 md:gap-10">
                         {technicalRouteSection.segments.map((seg) => (
-                            <article key={seg.segmentId} className='max-w-[340px]'>
+                            <article key={seg.segmentId} className="w-full max-w-full">
                                 <h3
-                                    className="relative pl-6 text-base font-roboto font-semibold leading-snug"
+                                    className="relative pl-6 text-sm font-roboto font-semibold leading-snug sm:text-base"
                                     style={{ color: theme.secondaryColor }}
                                 >
                                     <span

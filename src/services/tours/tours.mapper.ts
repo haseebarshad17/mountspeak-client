@@ -4,6 +4,7 @@ import { resolveThemeButtons } from '@/lib/homepage/theme'
 import type { Theme } from '@/services/homepage/homepage.page.types'
 
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
+import { applyTourSectionFallbacks } from '@/lib/tours/tour-section-fallbacks'
 
 import type { TourRecord } from './tours.payload.types'
 import { tourDetailPath } from './tours.utils'
@@ -90,7 +91,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             : []),
     ]
 
-    return {
+    return applyTourSectionFallbacks({
         id: row.id,
         slug: row.slug,
         type: 'expedition_detail',
@@ -129,7 +130,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 {
                     label: 'BOOK AN EXPEDITION',
                     url: buildBookingHref(row.slug),
-                    style: 'primary',
+                    style: 'primary' as const,
                 },
             ],
         },
@@ -252,5 +253,5 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 { label: 'SPEAK WITH AN EXPERT', url: '/contact-us', style: 'secondary' },
             ],
         },
-    }
+    })
 }

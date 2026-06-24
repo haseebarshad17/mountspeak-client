@@ -77,13 +77,11 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
 
     const heroCopy = isUmrahSearch
         ? {
-              eyebrow: '',
               title: 'Find your Umrah package',
               description:
                   'Select package duration, number of passengers, and package type to browse available Umrah tours.',
           }
         : {
-              eyebrow: '',
               title: 'Find your trip',
               description:
                   'Choose your route and travel dates to browse published tours from our partners.',
@@ -91,16 +89,22 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
 
     return (
         <>
-            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
-                    <div className={cn(PAGE_HERO_CONTENT_CLASS, 'justify-start gap-6 pb-8 sm:gap-8 sm:pb-10')}>
+            <PageHeroBanner
+                backgroundImage={backgroundImage}
+                bannerClassName='h-auto sm:h-[400px]'
+                className='pt-4'
+            >
+                    <div
+                        className={cn(
+                            PAGE_HERO_CONTENT_CLASS,
+                            'h-auto pt-[120px] sm:h-full sm:pt-[108px] justify-start gap-6 pb-8 sm:gap-8 sm:pb-10',
+                        )}
+                    >
                         <div>
-                            <p className='text-xs font-semibold uppercase tracking-[0.6px] text-white/80'>
-                                {heroCopy.eyebrow}
-                            </p>
-                            <h1 className='mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
+                            <h1 className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
                                 {heroCopy.title}
                             </h1>
-                            <p className='mx-auto mt-4 max-w-[640px] text-sm leading-7 text-white/90 sm:text-base xl:text-lg'>
+                            <p className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'>
                                 {heroCopy.description}
                             </p>
                         </div>

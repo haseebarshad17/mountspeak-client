@@ -38,7 +38,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
                         </h2>
 
                         <p
-                            className='pt-4 text-sm font-normal leading-7 sm:pt-5 sm:text-base'
+                            className='pt-4 text-sm font-normal leading-6 sm:pt-5 sm:text-base'
                             style={{ color: STATIC_UI_COLORS.text, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {section.paragraph}

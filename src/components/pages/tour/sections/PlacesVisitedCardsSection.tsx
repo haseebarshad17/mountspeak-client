@@ -9,24 +9,18 @@ type PlacesVisitedCardsSectionProps = {
 }
 
 export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionProps) {
-    const { placesVisitedSection, theme } = page
+    const { placesVisitedSection } = page
 
     return (
         <section id={placesVisitedSection.id} className="bg-white py-8 sm:py-10 lg:py-16 ">
-            <div className="agency-container !px-16">
+            <div className="agency-container px-4 sm:px-8 lg:px-16">
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
                     <div className="shrink-0">
-                        <p
-                            className="text-base font-roboto uppercase"
-                            style={{ color: theme.secondaryColor }}
-                        >
-                            {placesVisitedSection.eyebrow}
-                        </p>
-                        <h2 className="mt-2 font-heading text-3xl font-heading font-semibold tracking-tight text-[#191C1C] sm:text-4xl">
+                        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[#191C1C] sm:text-3xl lg:text-4xl">
                             {placesVisitedSection.title}
                         </h2>
                     </div>
-                    <p className="lg:max-w-md text-sm leading-relaxed text-[#434849] lg:pt-6 lg:text-base">
+                    <p className="lg:max-w-md text-sm leading-normal text-[#434849] lg:pt-6 lg:text-base">
                         {placesVisitedSection.intro}
                     </p>
                 </div>

@@ -31,8 +31,8 @@ export function ExpeditionPerksTechnicalsSection({
             id={perksAndTechnicalsSection.id}
             className="border-t border-black/[0.06] bg-[#ECECE8] py-8 sm:py-10 lg:py-16"
         >
-            <div className="agency-container !px-16">
-                <h2 className="text-center font-heading text-3xl font-bold font-heading text-[#191C1C] sm:text-4xl">
+            <div className="agency-container px-4 sm:px-8 lg:px-16">
+                <h2 className="text-center font-heading text-2xl font-bold text-[#191C1C] sm:text-3xl lg:text-4xl">
                     {perksAndTechnicalsSection.title}
                 </h2>
                 <div className="mt-[48px] grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -41,7 +41,7 @@ export function ExpeditionPerksTechnicalsSection({
                         return (
                             <article
                                 key={item.title}
-                                className="flex flex-col items-center  bg-white px-8 py-8 text-center shadow-sm"
+                                className="flex flex-col items-center bg-white px-5 py-6 text-center shadow-sm sm:px-8 sm:py-8"
                             >
                                 <Icon
                                     className="h-8 w-8"
