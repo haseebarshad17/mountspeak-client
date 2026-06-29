@@ -212,7 +212,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="w-full pl-8 pr-4">
+    <main className="w-full md:pl-4">
       <section className="mx-auto w-full max-w-[1100px]">
         <h1
           className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
@@ -366,7 +366,7 @@ export default function DashboardPage() {
             </div>
             <Button
               href={bookingsPath}
-              variant="outline-on-dark"
+              variant="secondary"
               className="shrink-0"
             >
               View All Bookings

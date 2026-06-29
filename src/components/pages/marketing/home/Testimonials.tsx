@@ -137,7 +137,7 @@ const Testimonials = ({ page }: HomepagePageProps) => {
 
     return (
         <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
-            <div className='agency-container pb-[100px]'>
+            <div className='agency-container pb-12 sm:pb-20 lg:pb-[100px]'>
                 <header className='mx-auto max-w-3xl text-center'>
                     <SectionEyebrow name={section.eyebrow} />
                     <h2
@@ -206,7 +206,7 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                             style={
                                 idx === activeIndex
                                     ? { backgroundColor: HP_CSS_VARS.primary }
-                                    : { borderColor: STATIC_UI_COLORS.accent }
+                                    : { borderColor: STATIC_UI_COLORS.textNeutral }
                             }
                         />
                     ))}

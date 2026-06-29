@@ -10,7 +10,7 @@ import { Calendar, MapPin, Navigation, Search } from "lucide-react"
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { DEFAULT_HERO_SEARCH_FILTERS } from '@/components/pages/marketing/home/hero-search.defaults'
-import { useEffect, useMemo, useRef, useState, useTransition } from "react"
+import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent } from "react"
 
 type LocationDropdownListProps = {
     options: string[]
@@ -50,9 +50,9 @@ function LocationDropdownList({
     }, [options, query])
 
     return (
-        <>
-            <div className="sticky top-0 z-10 shrink-0 bg-white pb-2">
-                <div className="relative">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="sticky top-0 z-10 min-w-0 shrink-0 bg-white pb-2">
+                <div className="relative min-w-0">
                     <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
                     <input
                         ref={inputRef}
@@ -63,13 +63,13 @@ function LocationDropdownList({
                             if (event.key === "Enter") event.preventDefault()
                         }}
                         placeholder={searchPlaceholder}
-                        className="h-9 w-full rounded-md border border-neutral-200 bg-neutral-50 pl-8 pr-3 text-sm outline-none focus:border-neutral-300 focus:bg-white"
+                        className="h-9 w-full min-w-0 rounded-md border border-neutral-200 bg-neutral-50 pl-8 pr-3 text-sm outline-none focus:border-neutral-300 focus:bg-white"
                     />
                 </div>
             </div>
-            <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto">
                 {filteredOptions.length === 0 ? (
-                    <p className="px-3 py-2 text-sm text-neutral-500">{noResultsMessage}</p>
+                    <p className="truncate px-3 py-2 text-sm text-neutral-500">{noResultsMessage}</p>
                 ) : (
                     filteredOptions.map((city) => (
                         <Button
@@ -80,12 +80,54 @@ function LocationDropdownList({
                             className={cn(itemClassName, selected === city && "bg-neutral-100")}
                             onClick={() => onSelect(city)}
                         >
-                            {city}
+                            <span className="block min-w-0 flex-1 truncate text-left">{city}</span>
                         </Button>
                     ))
                 )}
             </div>
-        </>
+        </div>
+    )
+}
+
+type DateFieldProps = {
+    id: string
+    label: string
+    value: string
+    min: string
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void
+    className?: string
+}
+
+function DateField({ id, label, value, min, onChange, className }: DateFieldProps) {
+    return (
+        <div className={cn("min-w-0 w-full", className)}>
+            <label
+                htmlFor={id}
+                className={cn(
+                    "flex h-12 w-full min-w-0 items-center gap-2 overflow-hidden rounded-md border border-layout-separator bg-neutral-50 px-3 text-left transition hover:bg-neutral-100",
+                    "xs:gap-2.5 xs:px-4",
+                    "xl:h-full xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB]",
+                )}
+            >
+                <Calendar className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
+                <span className="sr-only">{label}</span>
+                <input
+                    id={id}
+                    type="date"
+                    value={value}
+                    min={min}
+                    onChange={onChange}
+                    aria-label={label}
+                    className={cn(
+                        "min-w-0 flex-1 border-0 bg-transparent p-0 text-xs font-medium text-neutral-700 outline-none",
+                        "xs:text-sm",
+                        "[&::-webkit-calendar-picker-indicator]:ml-1 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
+                        "[&::-webkit-datetime-edit]:min-w-0 [&::-webkit-datetime-edit-fields-wrapper]:min-w-0",
+                        !value && "text-neutral-400",
+                    )}
+                />
+            </label>
+        </div>
     )
 }
 
@@ -114,7 +156,7 @@ export default function HeroStandardFilters({
     const [to, setTo] = useState(initialValues?.to ?? "")
     const [startDate, setStartDate] = useState(initialValues?.start_date ?? "")
     const [endDate, setEndDate] = useState(initialValues?.end_date ?? "")
-    const [open, setOpen] = useState<string | null>(null)
+    const [open, setOpen] = useState<"from" | "to" | null>(null)
 
     useEffect(() => {
         setFrom(initialValues?.from ?? "")
@@ -135,24 +177,6 @@ export default function HeroStandardFilters({
 
     const minTravelDate = new Date().toISOString().slice(0, 10)
 
-    const travelDatesLabel = useMemo(() => {
-        const formatLabel = (value: string) =>
-            new Date(`${value}T00:00:00`).toLocaleDateString('en-PK', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-            })
-
-        if (startDate && endDate) {
-            return `${formatLabel(startDate)} – ${formatLabel(endDate)}`
-        }
-
-        if (startDate) return formatLabel(startDate)
-        if (endDate) return formatLabel(endDate)
-
-        return ''
-    }, [endDate, startDate])
-
     const handleSearch = () => {
         startSearchTransition(() => {
             router.push(
@@ -167,164 +191,146 @@ export default function HeroStandardFilters({
     }
 
     const triggerCls = cn(
-        "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2.5 overflow-hidden px-4 !text-sm !font-medium !normal-case !tracking-normal xl:!h-full",
+        "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal",
+        "xs:gap-2.5 xs:px-4 xs:!text-sm",
         "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
-        "xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:hover:bg-[#F8FAFB]"
+        "xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full",
     )
 
     const popCls = cn(
-        "w-[min(92vw,22rem)] rounded-xl border bg-white p-2 shadow-xl",
-        "border-neutral-200 flex flex-col"
+        "w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] min-w-0",
+        "rounded-xl border border-neutral-200 bg-white p-2 shadow-xl",
+        "flex flex-col overflow-hidden",
     )
 
     const dropdownItemCls =
-        "!flex !h-auto !w-full min-w-0 justify-start rounded-md !px-3 py-2.5 text-left sm:!flex sm:!w-full"
+        "!flex !h-auto !w-full !max-w-full min-w-0 justify-start overflow-hidden rounded-md !px-3 py-2.5 text-left"
 
     const heroSearch = page?.sections.hero.searchFilters ?? DEFAULT_HERO_SEARCH_FILTERS
+    const startDateLabel = heroSearch.startDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.startDateLabel
+    const endDateLabel = heroSearch.endDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.endDateLabel
 
     return (
         <form
-            className="overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md sm:p-3 xl:mx-auto xl:max-w-[760px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0"
+            className="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:mx-auto xl:max-w-[900px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0"
             onSubmit={(event) => {
                 event.preventDefault()
                 handleSearch()
             }}
         >
-            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_170px] xl:h-12 xl:items-stretch xl:gap-0">
-                <Popover open={open === "from"} onOpenChange={(v) => setOpen(v ? "from" : null)}>
-                    <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
-                            <MapPin className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{from || heroSearch.fromPlaceholder}</span>
-                        </Button>
-                    </PopoverTrigger>
+            <div
+                className={cn(
+                    "grid min-w-0 grid-cols-1 gap-2",
+                    "xs:grid-cols-2",
+                    "xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)] xl:items-stretch xl:gap-0 xl:h-12",
+                )}
+            >
+                <div className="min-w-0 w-full">
+                    <Popover open={open === "from"} onOpenChange={(isOpen) => setOpen(isOpen ? "from" : null)}>
+                        <PopoverTrigger asChild>
+                            <Button type="button" variant="ghost" size="max" className={triggerCls}>
+                                <MapPin className="h-4 w-4 shrink-0 text-neutral-500" />
+                                <span className="min-w-0 flex-1 truncate text-left">
+                                    {from || heroSearch.fromPlaceholder}
+                                </span>
+                            </Button>
+                        </PopoverTrigger>
 
-                    <PopoverContent className={cn(popCls, "max-h-60 overflow-hidden")} align="start">
-                        {isCitiesLoading ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
-                        ) : cityOptions.length === 0 ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
-                        ) : (
-                            <LocationDropdownList
-                                options={cityOptions}
-                                selected={from}
-                                isOpen={open === "from"}
-                                searchPlaceholder={
-                                    heroSearch.searchCitiesPlaceholder
-                                    ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
-                                }
-                                noResultsMessage={
-                                    heroSearch.noMatchingCities
-                                    ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
-                                }
-                                itemClassName={dropdownItemCls}
-                                onSelect={(city) => {
-                                    setFrom(city)
-                                    if (to === city) setTo("")
-                                    setOpen(null)
-                                }}
-                            />
-                        )}
-                    </PopoverContent>
-                </Popover>
-
-                <Popover open={open === "to"} onOpenChange={(v) => setOpen(v ? "to" : null)}>
-                    <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
-                            <Navigation className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">{to || heroSearch.toPlaceholder}</span>
-                        </Button>
-                    </PopoverTrigger>
-
-                    <PopoverContent className={cn(popCls, "max-h-60 overflow-hidden")} align="start">
-                        {isCitiesLoading ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
-                        ) : !from ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.pickDepartureFirst}</p>
-                        ) : toOptions.length === 0 ? (
-                            <p className="px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
-                        ) : (
-                            <LocationDropdownList
-                                options={toOptions}
-                                selected={to}
-                                isOpen={open === "to"}
-                                searchPlaceholder={
-                                    heroSearch.searchCitiesPlaceholder
-                                    ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
-                                }
-                                noResultsMessage={
-                                    heroSearch.noMatchingCities
-                                    ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
-                                }
-                                itemClassName={dropdownItemCls}
-                                onSelect={(city) => {
-                                    setTo(city)
-                                    setOpen(null)
-                                }}
-                            />
-                        )}
-                    </PopoverContent>
-                </Popover>
-
-                <Popover open={open === "date"} onOpenChange={(v) => setOpen(v ? "date" : null)}>
-                    <PopoverTrigger asChild>
-                        <Button type="button" variant="ghost" size="max" className={cn(triggerCls, "xl:border-r xl:border-[#D6D9DC]")}>
-                            <Calendar className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                            <span className="truncate min-w-0 w-full">
-                                {travelDatesLabel || heroSearch.datePlaceholder}
-                            </span>
-                        </Button>
-                    </PopoverTrigger>
-
-                    <PopoverContent className={popCls} align="start">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-neutral-700">
-                                {heroSearch.startDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.startDateLabel}
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    min={minTravelDate}
-                                    onChange={(event) => {
-                                        const nextStart = event.target.value
-                                        setStartDate(nextStart)
-                                        if (endDate && nextStart && endDate < nextStart) {
-                                            setEndDate(nextStart)
-                                        }
+                        <PopoverContent className={cn(popCls, "max-h-60")} align="start" collisionPadding={8}>
+                            {isCitiesLoading ? (
+                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
+                            ) : cityOptions.length === 0 ? (
+                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
+                            ) : (
+                                <LocationDropdownList
+                                    options={cityOptions}
+                                    selected={from}
+                                    isOpen={open === "from"}
+                                    searchPlaceholder={
+                                        heroSearch.searchCitiesPlaceholder
+                                        ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
+                                    }
+                                    noResultsMessage={
+                                        heroSearch.noMatchingCities
+                                        ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
+                                    }
+                                    itemClassName={dropdownItemCls}
+                                    onSelect={(city) => {
+                                        setFrom(city)
+                                        if (to === city) setTo("")
+                                        setOpen(null)
                                     }}
-                                    className="mt-1 w-full h-10 border rounded-md px-2"
                                 />
-                            </label>
-                            <label className="block text-sm font-medium text-neutral-700">
-                                {heroSearch.endDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.endDateLabel}
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    min={startDate || minTravelDate}
-                                    onChange={(event) => setEndDate(event.target.value)}
-                                    className="mt-1 w-full h-10 border rounded-md px-2"
-                                />
-                            </label>
-                        </div>
-                        <div className="flex justify-end gap-2 mt-3">
-                            <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                    setStartDate("")
-                                    setEndDate("")
-                                }}
-                            >
-                                {heroSearch.clearDate}
-                            </Button>
-                            <Button type="button" size="sm" onClick={() => setOpen(null)}>
-                                {heroSearch.doneDate}
-                            </Button>
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                </div>
 
-                <div className="xl:col-span-1 xl:flex xl:h-full">
+                <div className="min-w-0 w-full">
+                    <Popover open={open === "to"} onOpenChange={(isOpen) => setOpen(isOpen ? "to" : null)}>
+                        <PopoverTrigger asChild>
+                            <Button type="button" variant="ghost" size="max" className={triggerCls}>
+                                <Navigation className="h-4 w-4 shrink-0 text-neutral-500" />
+                                <span className="min-w-0 flex-1 truncate text-left">
+                                    {to || heroSearch.toPlaceholder}
+                                </span>
+                            </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className={cn(popCls, "max-h-60")} align="start" collisionPadding={8}>
+                            {isCitiesLoading ? (
+                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
+                            ) : !from ? (
+                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.pickDepartureFirst}</p>
+                            ) : toOptions.length === 0 ? (
+                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
+                            ) : (
+                                <LocationDropdownList
+                                    options={toOptions}
+                                    selected={to}
+                                    isOpen={open === "to"}
+                                    searchPlaceholder={
+                                        heroSearch.searchCitiesPlaceholder
+                                        ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
+                                    }
+                                    noResultsMessage={
+                                        heroSearch.noMatchingCities
+                                        ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
+                                    }
+                                    itemClassName={dropdownItemCls}
+                                    onSelect={(city) => {
+                                        setTo(city)
+                                        setOpen(null)
+                                    }}
+                                />
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+                <DateField
+                    id="hero-start-date"
+                    label={startDateLabel ?? 'Start date'}
+                    value={startDate}
+                    min={minTravelDate}
+                    onChange={(event) => {
+                        const nextStart = event.target.value
+                        setStartDate(nextStart)
+                        if (endDate && nextStart && endDate < nextStart) {
+                            setEndDate(nextStart)
+                        }
+                    }}
+                />
+
+                <DateField
+                    id="hero-end-date"
+                    label={endDateLabel ?? 'End date'}
+                    value={endDate}
+                    min={startDate || minTravelDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                />
+
+                <div className="min-w-0 w-full xs:col-span-2 xl:col-span-1">
                     <Button
                         type="submit"
                         size="max"
@@ -333,11 +339,12 @@ export default function HeroStandardFilters({
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-12 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-full xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
+                            '!h-12 w-full min-w-0 !rounded-xl !font-medium !normal-case !tracking-normal !text-sm',
+                            'xl:!h-full xl:!rounded-[3px] xl:!px-4',
                         )}
                     >
-                        {heroSearch.searchButtonLabel}
-                        {!isSearching ? <Search className="ml-2 w-4 h-4 flex-shrink-0" /> : null}
+                        <span className="truncate">{heroSearch.searchButtonLabel}</span>
+                        {!isSearching ? <Search className="ml-2 h-4 w-4 shrink-0" /> : null}
                     </Button>
                 </div>
             </div>

@@ -112,11 +112,10 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
     <article className="border border-[#C0C8C9] bg-[#F3F3F6] p-6 md:max-w-[362px] md:flex-1">
       <div className="flex items-center justify-between">
         <span
-          className={`px-2 py-1 text-xs font-medium uppercase ${
-            tour.statusTone === "completed"
+          className={`px-2 py-1 text-xs font-medium uppercase ${tour.statusTone === "completed"
               ? "bg-[#E2E2E5] text-[#404849]"
               : "bg-[#FFDAD6] text-[#93000A]"
-          }`}
+            }`}
         >
           {tour.status}
         </span>
@@ -184,7 +183,7 @@ const BookingsPage = () => {
   const pastTours = bookingsData?.past ?? [];
 
   return (
-    <main className="w-full pl-8 pr-4">
+    <main className="w-full md:pl-4">
       <section className="mx-auto w-full max-w-[1100px]">
         <h1
           className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
@@ -223,115 +222,115 @@ const BookingsPage = () => {
 
         {activeTab === "upcoming" ? (
           <div className="mt-8 space-y-8 lg:mt-12">
-              {isBookingsLoading ? (
-                <div className="min-h-[265px] w-full animate-pulse border border-[#C0C8C9] bg-white" />
-              ) : upcomingTours.length > 0 ? (
-                upcomingTours.map((tour, index) => (
-                  <article key={tour.id} className="min-h-[265px] w-full border border-[#C0C8C9] bg-white p-8">
-                    <div className="grid gap-2 md:grid-cols-[220px_1fr]">
-                      <div className="relative h-[192px] w-[192px] shrink-0 overflow-hidden bg-[#0b4552]">
-                        <Image
-                          src={tour.image}
-                          alt={tour.title}
-                          fill
-                          className="object-cover"
-                          sizes="192px"
-                        />
+            {isBookingsLoading ? (
+              <div className="min-h-[265px] w-full animate-pulse border border-[#C0C8C9] bg-white" />
+            ) : upcomingTours.length > 0 ? (
+              upcomingTours.map((tour, index) => (
+                <article key={tour.id} className="min-h-[265px] w-full border border-[#C0C8C9] bg-white p-8">
+                  <div className="grid gap-2 md:grid-cols-[220px_1fr]">
+                    <div className="relative h-[192px] w-[192px] shrink-0 overflow-hidden bg-[#0b4552]">
+                      <Image
+                        src={tour.image}
+                        alt={tour.title}
+                        fill
+                        className="object-cover"
+                        sizes="192px"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-4 ">
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
+                        >
+                          {tour.status}
+                        </span>
+                        <span
+                          className="text-xs font-medium uppercase text-[#404849]"
+                        >
+                          {tour.referenceId}
+                        </span>
                       </div>
-                      <div className="flex flex-col justify-between">
-                        <div className="flex flex-wrap items-center justify-between gap-4 ">
-                          <span
-                            className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
+
+                      <h2
+                        className="mt-2 text-[22px] leading-[32px] text-[#00292C]"
+                      >
+                        {tour.title}
+                      </h2>
+
+                      <div
+                        className={`mt-2 flex flex-wrap items-center gap-4 text-lg text-[#404849] ${tour.warning ? "" : "mb-[30px]"}`}
+                      >
+                        <span className="inline-flex items-center gap-1 text-lg">
+                          <Image
+                            src="/images/pages/dashboard/calendar.svg"
+                            alt="Calendar icon"
+                            width={10}
+                            height={11}
+                            className="brightness-0 opacity-70"
+                          />
+                          {tour.schedule}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-lg">
+                          <Image
+                            src="/images/pages/booking/location.svg"
+                            alt="Location icon"
+                            width={9}
+                            height={11}
+                            className="brightness-0 opacity-70"
+                          />
+                          {tour.location}
+                        </span>
+                      </div>
+
+                      {tour.warning ? (
+                        <div className="mt-[14px] inline-flex items-center gap-2">
+                          <Image
+                            src="/images/pages/booking/warning.svg"
+                            alt="Warning icon"
+                            width={12}
+                            height={12}
+                          />
+                          <p
+                            className="text-[16px] text-[#BA1A1A]"
                           >
-                            {tour.status}
-                          </span>
-                          <span
-                            className="text-xs font-medium uppercase text-[#404849]"
-                          >
-                            {tour.referenceId}
-                          </span>
+                            {tour.warning}
+                          </p>
                         </div>
+                      ) : null}
 
-                        <h2
-                          className="mt-2 text-[22px] leading-[32px] text-[#00292C]"
+                      <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
+                        <Button
+                          className="shrink-0"
+                          href={
+                            tour.primaryAction === "View Itinerary" && tour.slug
+                              ? tourDetailPath(tour.slug)
+                              : undefined
+                          }
                         >
-                          {tour.title}
-                        </h2>
-
-                        <div
-                          className={`mt-2 flex flex-wrap items-center gap-4 text-lg text-[#404849] ${tour.warning ? "" : "mb-[30px]"}`}
-                        >
-                          <span className="inline-flex items-center gap-1 text-lg">
-                            <Image
-                              src="/images/pages/dashboard/calendar.svg"
-                              alt="Calendar icon"
-                              width={10}
-                              height={11}
-                              className="brightness-0 opacity-70"
-                            />
-                            {tour.schedule}
-                          </span>
-                          <span className="inline-flex items-center gap-1 text-lg">
-                            <Image
-                              src="/images/pages/booking/location.svg"
-                              alt="Location icon"
-                              width={9}
-                              height={11}
-                              className="brightness-0 opacity-70"
-                            />
-                            {tour.location}
-                          </span>
-                        </div>
-
-                        {tour.warning ? (
-                          <div className="mt-[14px] inline-flex items-center gap-2">
-                            <Image
-                              src="/images/pages/booking/warning.svg"
-                              alt="Warning icon"
-                              width={12}
-                              height={12}
-                            />
-                            <p
-                              className="text-[16px] text-[#BA1A1A]"
-                            >
-                              {tour.warning}
-                            </p>
-                          </div>
-                        ) : null}
-
-                        <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
+                          {tour.primaryAction}
+                        </Button>
+                        {tour.secondaryAction ? (
                           <Button
+                            type="button"
+                            variant="outline"
                             className="shrink-0"
-                            href={
-                              tour.primaryAction === "View Itinerary" && tour.slug
-                                ? tourDetailPath(tour.slug)
-                                : undefined
-                            }
                           >
-                            {tour.primaryAction}
+                            <span>{tour.secondaryAction}</span>
                           </Button>
-                          {tour.secondaryAction ? (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="shrink-0"
-                            >
-                              <span>{tour.secondaryAction}</span>
-                            </Button>
-                          ) : null}
-                        </div>
+                        ) : null}
                       </div>
                     </div>
-                  </article>
-                ))
-              ) : (
-                <SectionEmptyState
-                  icon={CalendarDays}
-                  title="No upcoming bookings"
-                  description="You do not have any upcoming bookings yet. Explore our tours to plan your next adventure."
-                  className="max-w-none"
-                />
-              )}
+                  </div>
+                </article>
+              ))
+            ) : (
+              <SectionEmptyState
+                icon={CalendarDays}
+                title="No upcoming bookings"
+                description="You do not have any upcoming bookings yet. Explore our tours to plan your next adventure."
+                className="max-w-none"
+              />
+            )}
           </div>
         ) : (
           <div className="mt-8 lg:mt-12">

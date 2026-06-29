@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
+import { AccountNavLinks } from '@/components/pages/dashboard/AccountNavLinks'
 import type { HomepagePage } from '@/data/homepage'
 import {
     HP_CSS_VARS,
@@ -15,6 +16,10 @@ import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
+import {
+    headerLogoClassName,
+    mobileDrawerLogoClassName,
+} from '@/components/layout/marketing/header/header-logo-classes'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -32,17 +37,17 @@ function isNavLinkActive(pathname: string, href: string | null | undefined): boo
 
 const LIGHT_NAV_LINK_COLOR = '#00292C'
 
-const navLinkClassName = (isActive: boolean, useLightNav: boolean) =>
+const navLinkClassName = (isActive: boolean, useDarkChrome: boolean) =>
     cn(
         'group relative inline-block pb-1 text-sm font-normal transition duration-200 xl:text-base',
-        useLightNav ? 'hover:opacity-80' : 'hover:opacity-90',
+        useDarkChrome ? 'hover:opacity-80' : 'hover:opacity-90',
         isActive && 'font-medium',
     )
 
 type HeaderNavLinkProps = {
     href: string
     label: string
-    useLightNav: boolean
+    useDarkChrome: boolean
     color: string
     onNavigate?: () => void
     className?: string
@@ -51,7 +56,7 @@ type HeaderNavLinkProps = {
 function HeaderNavLink({
     href,
     label,
-    useLightNav,
+    useDarkChrome,
     color,
     onNavigate,
     className,
@@ -66,16 +71,16 @@ function HeaderNavLink({
             href={resolvedHref}
             onClick={onNavigate}
             className={cn(
-                className ?? navLinkClassName(isActive, useLightNav),
-                !className && useLightNav && 'text-[#00292C]',
+                className ?? navLinkClassName(isActive, useDarkChrome),
+                !className && useDarkChrome && 'text-[#00292C]',
             )}
             style={
                 isMobileStyle
                     ? undefined
                     : {
-                          color,
-                          fontFamily: 'var(--hp-font-body)',
-                      }
+                        color,
+                        fontFamily: 'var(--hp-font-body)',
+                    }
             }
         >
             {className ? (
@@ -103,7 +108,8 @@ const Header = ({ page }: HeaderProps) => {
     const isTermsPage = internalPathname === '/terms' || internalPathname.startsWith('/terms/')
     const isDashboardPage = internalPathname === '/dashboard' || internalPathname.startsWith('/dashboard/')
     const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
-    const useLightNav = isTermsPage || isDashboardPage || isBookingsPage
+    const isAccountPage = isDashboardPage || isBookingsPage
+    const useFixedHeader = isTermsPage
     const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
@@ -111,15 +117,16 @@ const Header = ({ page }: HeaderProps) => {
     const showAuthActions = isAgencySite === true
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(useLightNav)
+    const [isScrolled, setIsScrolled] = useState(useFixedHeader)
 
     const { header, branding } = page
     const colors = STATIC_UI_COLORS
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
     const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
+    const useDarkChrome = useFixedHeader || (isAccountPage && !isScrolled)
 
     useEffect(() => {
-        if (useLightNav) {
+        if (useFixedHeader) {
             setIsScrolled(true)
             return
         }
@@ -149,7 +156,7 @@ const Header = ({ page }: HeaderProps) => {
 
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [useLightNav])
+    }, [useFixedHeader])
 
     useEffect(() => {
         document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -174,12 +181,12 @@ const Header = ({ page }: HeaderProps) => {
 
     const loginButtonClassName = cn(
         'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
-        useLightNav
+        useDarkChrome
             ? HP_THEME_OUTLINE_BTN_CLASS
             : 'border-white bg-transparent text-white hover:bg-white/10',
     )
 
-    const loginButtonStyle = useLightNav ? HP_OUTLINE_BTN_STYLE : undefined
+    const loginButtonStyle = useDarkChrome ? HP_OUTLINE_BTN_STYLE : undefined
 
     const mobileLoginButtonClassName =
         '!w-full border border-white bg-transparent text-white hover:bg-white/10'
@@ -189,16 +196,16 @@ const Header = ({ page }: HeaderProps) => {
 
         return (
             <Button
-                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                variant={isMobileMenu || !useDarkChrome ? 'transparent' : 'outline'}
                 size='sm'
                 href={loginHref}
                 onClick={options?.onNavigate}
-                style={!isMobileMenu && useLightNav ? loginButtonStyle : undefined}
+                style={!isMobileMenu && useDarkChrome ? loginButtonStyle : undefined}
                 className={cn(
                     isMobileMenu
                         ? mobileLoginButtonClassName
                         : loginButtonClassName,
-                    !isMobileMenu && !useLightNav && '!text-white',
+                    !isMobileMenu && !useDarkChrome && '!text-white',
                     options?.className,
                 )}
             >
@@ -209,18 +216,18 @@ const Header = ({ page }: HeaderProps) => {
 
     const logoutButtonClassName = cn(
         'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
-        useLightNav
+        useDarkChrome
             ? 'border-[#00292C] bg-white text-[#00292C] hover:bg-[#00292C]/5'
             : 'border-white bg-transparent text-white hover:bg-white/10',
     )
 
-    const logoutButtonStyle = useLightNav
+    const logoutButtonStyle = useDarkChrome
         ? {
-              backgroundColor: '#FFFFFF',
-              borderColor: LIGHT_NAV_LINK_COLOR,
-              color: LIGHT_NAV_LINK_COLOR,
-              fontFamily: 'var(--hp-font-body)',
-          }
+            backgroundColor: '#FFFFFF',
+            borderColor: LIGHT_NAV_LINK_COLOR,
+            color: LIGHT_NAV_LINK_COLOR,
+            fontFamily: 'var(--hp-font-body)',
+        }
         : undefined
 
     const renderLogoutButton = (options?: { className?: string; onNavigate?: () => void; mobile?: boolean }) => {
@@ -233,15 +240,15 @@ const Header = ({ page }: HeaderProps) => {
 
         return (
             <Button
-                variant={isMobileMenu || !useLightNav ? 'transparent' : 'outline'}
+                variant={isMobileMenu || !useDarkChrome ? 'transparent' : 'outline'}
                 size='sm'
                 onClick={onLogoutClick}
-                style={!isMobileMenu && useLightNav ? logoutButtonStyle : undefined}
+                style={!isMobileMenu && useDarkChrome ? logoutButtonStyle : undefined}
                 className={cn(
                     isMobileMenu
                         ? mobileLoginButtonClassName
                         : logoutButtonClassName,
-                    !isMobileMenu && !useLightNav && '!text-white',
+                    !isMobileMenu && !useDarkChrome && '!text-white',
                     options?.className,
                 )}
             >
@@ -255,7 +262,7 @@ const Header = ({ page }: HeaderProps) => {
             renderLogoutButton()
         ) : (
             <ProfileMenu
-                useLightNav={useLightNav}
+                useLightNav={useDarkChrome}
                 logoutLabel={header.auth.logout.label}
                 onLogout={handleLogout}
             />
@@ -266,100 +273,96 @@ const Header = ({ page }: HeaderProps) => {
             <header
                 className={cn(
                     'pointer-events-auto z-[100] ease duration-300',
-                    useLightNav
+                    useFixedHeader
                         ? 'fixed top-0 left-0 right-0 w-full border-b'
                         : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
-                    useLightNav
+                    useFixedHeader
                         ? [
                             'border-[#C0C8C9]/60 bg-white shadow-sm',
                             'py-4',
                         ]
                         : isScrolled
-                          ? [
+                            ? [
                                 "border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg",
                                 "xl:py-4 xl:px-10 lg:py-4 lg:px-6 sm:py-3 sm:px-5 py-4 px-4"
                             ]
-                          : 'border border-transparent bg-transparent',
+                            : 'border border-transparent bg-transparent',
                 )}
             >
-                <div className={cn(useLightNav ? 'mx-auto w-full max-w-[1182px] px-0 sm:px-[15px]' : '')}>
-                <div className='flex w-full items-center justify-between gap-4'>
-                    {/* Logo  */}
-                    <div>
-                        <HomepageMediaImage
-                            src={
-                                useLightNav
-                                    ? branding.logo.default.src
-                                    : branding.logo.onDark.src
-                            }
-                            alt={branding.logo.default.alt}
-                            width={150}
-                            height={100}
-                            className={cn(
-                                'object-contain transition-all duration-300 max-w-[150px] object-left',
-                                isScrolled
-                                    ? 'w-auto max-h-[50px]'
-                                    : 'max-h-[100px] min-h-[50px] w-[90px] sm:w-[110px] lg:w-[130px] xl:w-[150px]',
-                            )}
-                            priority
-                            fetchPriority='high'
-                            quality={100}
-                        />
-                    </div>
+                <div className={cn(useFixedHeader ? 'mx-auto w-full max-w-[1182px] px-0 sm:px-[15px]' : '')}>
+                    <div className='flex w-full items-center justify-between gap-4'>
+                        {/* Logo  */}
+                        <Link href='/' className='shrink-0 inline-block'>
+                            <HomepageMediaImage
+                                src={
+                                    useDarkChrome
+                                        ? branding.logo.default.src
+                                        : branding.logo.onDark.src
+                                }
+                                alt={branding.logo.default.alt}
+                                width={212}
+                                height={88}
+                                className={headerLogoClassName(isScrolled)}
+                                priority
+                                fetchPriority='high'
+                                quality={100}
+                            />
+                        </Link>
 
-                    {/* Navigations + Buttons  */}
-                    <nav className='hidden flex-1 items-center justify-end lg:flex'>
-                        <div className='flex items-center gap-[54px]'>
-                            {header.navigation.map((link) => (
-                                <HeaderNavLink
-                                    key={link.href}
-                                    href={link.href ?? '/'}
-                                    label={link.label}
-                                    useLightNav={useLightNav}
-                                    color={useLightNav ? LIGHT_NAV_LINK_COLOR : colors.textOnDark}
-                                />
-                            ))}
-                        </div>
-
-
-                        {/* Buttons  */}
-                        {showAuthActions ? (
-                            <div className='ml-10 flex items-center'>
-                                {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
+                        {/* Navigations + Buttons  */}
+                        <nav className='hidden flex-1 items-center justify-end lg:flex'>
+                            <div className='flex items-center gap-[54px]'>
+                                {header.navigation.map((link) => (
+                                    <HeaderNavLink
+                                        key={link.href}
+                                        href={link.href ?? '/'}
+                                        label={link.label}
+                                        useDarkChrome={useDarkChrome}
+                                        color={useDarkChrome ? LIGHT_NAV_LINK_COLOR : colors.textOnDark}
+                                    />
+                                ))}
                             </div>
-                        ) : null}
-                    </nav>
 
-                    {/* Mobile profile + menu trigger */}
-                    <div className='flex items-center gap-2 lg:hidden'>
-                        {showAuthActions && isLoggedIn ? renderLoggedInAuthAction() : null}
-                        <button
-                            type='button'
-                            aria-label={header.mobileMenu.openLabel}
-                            aria-expanded={isMobileMenuOpen}
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className={cn(
-                                'group flex h-10 w-10 items-center justify-center rounded-md transition',
-                                useLightNav ? 'hover:opacity-90' : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
-                            )}
-                        >
-                            <span className='flex flex-col items-end gap-[5px]'>
-                                <span
-                                    className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
-                                    style={{
-                                        backgroundColor: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
-                                    }}
-                                />
-                                <span
-                                    className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
-                                    style={{
-                                        backgroundColor: useLightNav ? HP_CSS_VARS.primary : colors.textOnDark,
-                                    }}
-                                />
-                            </span>
-                        </button>
+
+                            {/* Buttons  */}
+                            {showAuthActions ? (
+                                <div className='ml-10 flex items-center'>
+                                    {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
+                                </div>
+                            ) : null}
+                        </nav>
+
+                        {/* Mobile menu trigger (auth actions live inside the drawer) */}
+                        <div className='flex items-center gap-2 lg:hidden'>
+                            <button
+                                type='button'
+                                aria-label={header.mobileMenu.openLabel}
+                                aria-expanded={isMobileMenuOpen}
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className={cn(
+                                    'group flex h-10 w-10 items-center justify-center rounded-md transition',
+                                    useDarkChrome ? 'hover:opacity-90' : 'bg-white/10 backdrop-blur-sm hover:bg-white/20',
+                                )}
+                            >
+                                <span className='flex flex-col items-end gap-[5px]'>
+                                    <span
+                                        className='h-[2.5px] w-6 rounded-full transition-transform duration-300 group-hover:translate-x-[1px]'
+                                        style={{
+                                            backgroundColor: useDarkChrome ? HP_CSS_VARS.primary : colors.textOnDark,
+                                        }}
+                                    />
+                                    <span
+                                        className='h-[2.5px] w-4 rounded-full transition-transform duration-300 group-hover:-translate-x-[1px]'
+                                        style={{
+                                            backgroundColor: useDarkChrome
+                                                ? HP_CSS_VARS.primary
+                                                : colors.textOnDark,
+                                        }}
+                                    />
+                                </span>
+                            </button>
+                        </div>
                     </div>
-                </div>
                 </div>
             </header>
 
@@ -388,9 +391,9 @@ const Header = ({ page }: HeaderProps) => {
                         <HomepageMediaImage
                             src={branding.logo.onDark.src}
                             alt={branding.logo.onDark.alt}
-                            width={150}
-                            height={100}
-                            className='h-auto w-[60px] sm:w-[70px] lg:w-[80px] xl:w-[95px]'
+                            width={128}
+                            height={48}
+                            className={mobileDrawerLogoClassName()}
                             quality={100}
                         />
                         <button
@@ -403,25 +406,35 @@ const Header = ({ page }: HeaderProps) => {
                         </button>
                     </div>
 
-                    <nav className='mt-10 flex flex-1 flex-col gap-2'>
+                    <nav className='mt-10 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto'>
                         {header.navigation.map((link) => (
                             <HeaderNavLink
                                 key={link.href}
                                 href={link.href ?? '/'}
                                 label={link.label}
-                                useLightNav={useLightNav}
+                                useDarkChrome={false}
                                 color={colors.textOnDark}
                                 onNavigate={() => setIsMobileMenuOpen(false)}
                                 className='rounded-lg px-3 py-3 text-base font-medium text-white transition hover:bg-white/15'
                             />
                         ))}
+
+                        {isAccountPage ? (
+                            <>
+                                <div className='my-2 h-px shrink-0 bg-white/20' aria-hidden />
+                                <AccountNavLinks
+                                    variant='drawer'
+                                    onNavigate={() => setIsMobileMenuOpen(false)}
+                                />
+                            </>
+                        ) : null}
                     </nav>
 
                     {showAuthActions ? (
-                        <div className='flex flex-col gap-3 pt-4'>
+                        <div className='flex shrink-0 flex-col gap-3 border-t border-white/15 pt-4'>
                             {isLoggedIn ? (
-                                isDashboardPage ? (
-                                    renderLogoutButton({ mobile: true })
+                                isAccountPage ? (
+                                    renderLogoutButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
                                 ) : (
                                     <>
                                         <Button

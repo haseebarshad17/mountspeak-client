@@ -61,27 +61,27 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
 
         const isFieldVariant = variant === 'field'
         const labelClassName = isFieldVariant
-            ? 'text-base font-normal leading-6 tracking-normal text-neutral-900'
+            ? 'min-w-0 flex-1 truncate text-sm font-normal leading-6 tracking-normal text-neutral-400 sm:text-base'
             : 'text-sm font-semibold text-neutral-800'
         const buttonClassName = isFieldVariant
-            ? 'flex h-8 w-8 items-center justify-center rounded-full border border-primary-700 text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40'
+            ? 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary-700 text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40 sm:h-9 sm:w-9'
             : 'flex h-9 w-9 items-center justify-center rounded-full border border-primary-700 text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40'
         const inputClassName = isFieldVariant
-            ? 'flex h-8 w-12 items-center justify-center rounded-sm border border-gray-300 bg-neutral-100 px-1 text-center text-base font-normal leading-6 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-primary-700/30'
+            ? 'flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 px-1 text-center text-sm font-normal leading-6 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-primary-700/30 sm:h-9 sm:w-11 sm:text-base'
             : 'flex h-11 w-[72px] items-center justify-center rounded-sm border border-gray-300 bg-neutral-100 px-2 text-center text-sm font-medium text-neutral-800 outline-none focus:ring-2 focus:ring-primary-700/30'
 
         return (
             <div
                 className={cn(
-                    'flex items-center justify-between gap-4',
+                    'flex items-center justify-between gap-2',
                     isFieldVariant &&
-                        'box-border h-11 w-full max-w-none rounded-[10px] bg-white px-4 font-roboto sm:h-[58px] sm:max-w-[304px]',
+                        'box-border h-12 w-full min-w-0 max-w-full rounded-[10px] bg-white px-3 font-roboto shadow-sm sm:h-[58px] sm:gap-3 sm:px-4',
                     className,
                 )}
             >
                 <span className={labelClassName}>{label}</span>
 
-                <div className='flex shrink-0 items-center gap-2'>
+                <div className='flex shrink-0 items-center gap-1.5 sm:gap-2'>
                     <button
                         type='button'
                         onClick={decrement}

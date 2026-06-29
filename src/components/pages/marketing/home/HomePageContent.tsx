@@ -28,7 +28,7 @@ export default function HomePageContent({ tourLocations = [] }: HomePageContentP
     }
 
     return (
-        <div className='homepage flex flex-col gap-[100px]'>
+        <div className='homepage flex flex-col gap-12 sm:gap-16 md:gap-20 lg:gap-24 xl:gap-[100px]'>
             <Hero page={page} tourLocations={tourLocations} />
             <PlanPerfectTrip page={page} />
             <OurServices page={page} />
