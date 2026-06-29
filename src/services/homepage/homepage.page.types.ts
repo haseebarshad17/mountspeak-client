@@ -112,6 +112,7 @@ export interface Placeholders {
     fullName:           string;
     email:              string;
     phone:              string;
+    travelDate:         string;
     destination:        string;
     destinationLoading: string;
     category:           string;

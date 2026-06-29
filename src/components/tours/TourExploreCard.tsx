@@ -1,6 +1,8 @@
 'use client'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
+import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
@@ -37,7 +39,7 @@ export function TourExploreCard({
     return (
         <Link
             href={detailPath}
-            aria-label={`View ${title}`}
+            aria-label={`Book now: ${title}`}
             className='group relative mx-auto block w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(0,0,0,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'
         >
             <TourMediaImage
@@ -51,7 +53,7 @@ export function TourExploreCard({
 
             <TourDiscountBadge discountPercent={discountPercent} />
 
-            <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-12 text-center sm:px-4 sm:pb-5 sm:pt-14 lg:px-5 lg:pb-6 lg:pt-16'>
+            <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-14 text-center sm:px-4 sm:pb-5 sm:pt-16 lg:px-5 lg:pb-6 lg:pt-[4.5rem]'>
                 <h3 className='font-jost text-[18px] font-medium uppercase leading-snug tracking-wide text-white transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[20px]'>
                     {title}
                 </h3>
@@ -69,6 +71,16 @@ export function TourExploreCard({
                         <span className='text-white/80'>seats left</span>
                     </span>
                 </div>
+
+                <span
+                    className={cn(
+                        'mt-3 inline-flex h-10 min-w-[128px] items-center justify-center rounded-full px-5 text-sm font-semibold uppercase tracking-[0.1em] transition-transform duration-300 group-hover:scale-[1.02] sm:mt-4 sm:h-11 sm:min-w-[140px]',
+                        HP_THEME_BTN_CLASS,
+                    )}
+                    style={HP_THEME_BTN_STYLE}
+                >
+                    Book Now
+                </span>
             </div>
         </Link>
     )

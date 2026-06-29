@@ -14,7 +14,7 @@ const OurServices = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='py-14 sm:py-[100px]'
+            className='py-10 sm:py-16 lg:py-[100px]'
             style={{ backgroundColor: section.backgroundColor }}
             aria-labelledby='our-services-heading'
         >

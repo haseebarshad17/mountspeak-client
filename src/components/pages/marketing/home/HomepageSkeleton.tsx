@@ -42,7 +42,7 @@ function HeroSkeleton() {
 
 function PlanPerfectTripSkeleton() {
     return (
-        <section className='pb-16 sm:pb-20 lg:pb-[112px]'>
+        <section className='pb-10 sm:pb-20 lg:pb-[112px]'>
             <div className='agency-container'>
                 <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-8 lg:gap-12 xl:gap-[100px]'>
                     <Skeleton className='aspect-[580/448] w-full max-w-[580px] justify-self-center rounded-2xl md:justify-self-start' />
@@ -67,7 +67,7 @@ function PlanPerfectTripSkeleton() {
 
 function OurServicesSkeleton() {
     return (
-        <section className='bg-[#F7F8FA] py-16 sm:py-20 lg:py-[96px]'>
+        <section className='bg-[#F7F8FA] py-10 sm:py-20 lg:py-[96px]'>
             <div className='agency-container'>
                 <SectionHeadingSkeleton />
                 <div className='mx-auto grid w-full max-w-[1312px] grid-cols-1 gap-4 pt-8 sm:gap-5 sm:pt-8 md:grid-cols-2 md:pt-10 lg:gap-6 lg:pt-12'>
@@ -93,7 +93,7 @@ function OurServicesSkeleton() {
 
 function PopularDestinationSkeleton() {
     return (
-        <section className='overflow-hidden bg-white pt-[100px] pb-8 sm:pb-10 lg:pb-12'>
+        <section className='overflow-hidden bg-white pb-6 sm:pb-10 lg:pb-12'>
             <div className='agency-container'>
                 <SectionHeadingSkeleton />
                 <div className='mx-auto flex max-w-[1300px] flex-wrap items-center justify-center gap-3 pt-8 sm:gap-4 sm:pt-10 lg:pt-12'>
@@ -108,7 +108,7 @@ function PopularDestinationSkeleton() {
 
 function TopDestinationsSkeleton() {
     return (
-        <section className='bg-white pb-[100px]'>
+        <section className='bg-white pb-12 sm:pb-20 lg:pb-[100px]'>
             <div className='agency-container'>
                 <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end'>
                     <div className='flex w-full max-w-md flex-col gap-2'>
@@ -158,7 +158,7 @@ function ExploreTheWorldSkeleton() {
 export default function HomepageSkeleton() {
     return (
         <div
-            className='homepage'
+            className='homepage flex flex-col gap-12 sm:gap-16 md:gap-20 lg:gap-24 xl:gap-[100px]'
             aria-busy='true'
             aria-label='Loading homepage'
         >

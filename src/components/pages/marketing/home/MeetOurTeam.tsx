@@ -67,7 +67,7 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
                     </h2>
 
                     {useCarousel ? (
-                        <div className='mt-5 flex items-center justify-center gap-2 sm:mt-6'>
+                        <div className='mt-5 hidden items-center justify-center gap-2 sm:mt-6 sm:flex'>
                             <button
                                 ref={prevRef}
                                 type='button'
