@@ -65,11 +65,26 @@
         {
           "title": "Contact",
           "items": [
-            { "label": "Address: Pe.Holandia No.205A", "href": null },
-            { "label": "Millennium City, PH17", "href": null },
-            { "label": "Phone: 023 456 7890", "href": "tel:0234567890" },
-            { "label": "Email: phnes.travels@gmail.com", "href": "mailto:phnes.travels@gmail.com" },
-            { "label": "Maps: Millennium City, Accra", "href": "https://maps.google.com" }
+            {
+              "label": "Address: Pe.Holandia No.205A",
+              "href": null
+            },
+            {
+              "label": "Millennium City, PH17",
+              "href": null
+            },
+            {
+              "label": "Phone: 023 456 7890",
+              "href": "tel:0234567890"
+            },
+            {
+              "label": "Email: phnes.travels@gmail.com",
+              "href": "mailto:phnes.travels@gmail.com"
+            },
+            {
+              "label": "Maps: Millennium City, Accra",
+              "href": "https://maps.google.com"
+            }
           ]
         }
       ]
@@ -104,10 +119,22 @@
           "alt": "Traveler planning a trip"
         },
         "stats": [
-          { "value": "150+", "label": "Flight Destinations" },
-          { "value": "250+", "label": "Hotels" },
-          { "value": "80", "label": "Elite Transportation" },
-          { "value": "40+", "label": "We help to find your dream place" }
+          {
+            "value": "150+",
+            "label": "Flight Destinations"
+          },
+          {
+            "value": "250+",
+            "label": "Hotels"
+          },
+          {
+            "value": "80",
+            "label": "Elite Transportation"
+          },
+          {
+            "value": "40+",
+            "label": "We help to find your dream place"
+          }
         ]
       },
       "ourServices": {
@@ -115,7 +142,10 @@
         "eyebrow": "Services",
         "title": "Our Services",
         "backgroundColor": "#F2F2F2",
-        "cta": { "label": "View All Services", "href": "/discover" },
+        "cta": {
+          "label": "View All Services",
+          "href": "/discover"
+        },
         "items": [
           {
             "title": "Honeymoon Packages",
@@ -382,7 +412,10 @@
           "Get 50% Off on your first adventure trip with us. Submit your booking request today and enjoy unforgettable travel experiences at the best prices."
         ],
         "promoHighlight": "50% Off",
-        "cta": { "label": "View All Packages", "href": "/search" },
+        "cta": {
+          "label": "View All Packages",
+          "href": "/search"
+        },
         "form": {
           "title": "Booking Request",
           "subtitle": "Share your travel details and our team will confirm availability for your trip.",
@@ -395,6 +428,7 @@
             "fullName": "Full Name",
             "email": "example@gmail.com",
             "phone": "Your Phone *",
+            "travelDate": "Select Travel Date",
             "destination": "Select Destination",
             "destinationLoading": "Loading cities...",
             "category": "Select Category",
@@ -407,10 +441,26 @@
         "eyebrow": "Travel Guide",
         "title": "Meet Our Team",
         "members": [
-          { "name": "Waleed", "role": "CEO", "image": "https://i.pravatar.cc/400?img=11" },
-          { "name": "Hamayun", "role": "Adventure & Trekking Guide", "image": "https://i.pravatar.cc/400?img=12" },
-          { "name": "Saif", "role": "Mountain Expedition Leader", "image": "https://i.pravatar.cc/400?img=15" },
-          { "name": "Ali", "role": "Tour Guide", "image": "https://i.pravatar.cc/400?img=20" }
+          {
+            "name": "Waleed",
+            "role": "CEO",
+            "image": "https://i.pravatar.cc/400?img=11"
+          },
+          {
+            "name": "Hamayun",
+            "role": "Adventure & Trekking Guide",
+            "image": "https://i.pravatar.cc/400?img=12"
+          },
+          {
+            "name": "Saif",
+            "role": "Mountain Expedition Leader",
+            "image": "https://i.pravatar.cc/400?img=13"
+          },
+          {
+            "name": "Ali",
+            "role": "Tour Guide",
+            "image": "https://i.pravatar.cc/400?img=33"
+          }
         ]
       },
       "popularTravelBlogs": {

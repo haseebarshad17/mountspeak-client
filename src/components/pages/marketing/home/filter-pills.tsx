@@ -53,7 +53,7 @@ export function FilterPills({
     return (
         <div
             className={cn(
-                'mb-10 -mx-3 flex flex-nowrap items-center gap-2 overflow-x-auto px-3 pb-1 scrollbar-hide sm:mx-0 sm:mb-[60px] sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-5 sm:overflow-visible sm:px-0',
+                'mb-6 -mx-3 flex flex-nowrap items-center gap-2 overflow-x-auto px-3 pb-1 scrollbar-hide sm:mx-0 sm:mb-10 sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-5 sm:overflow-visible sm:px-0 md:mb-[60px]',
                 className,
             )}
         >

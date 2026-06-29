@@ -117,7 +117,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                                 type='button'
                                 aria-label='Previous blog posts'
                                 className={cn(
-                                    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11',
+                                    'hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:inline-flex sm:h-11 sm:w-11',
                                     HP_THEME_TEXT_CLASS,
                                 )}
                             >
@@ -174,7 +174,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                                 type='button'
                                 aria-label='Next blog posts'
                                 className={cn(
-                                    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11',
+                                    'hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:inline-flex sm:h-11 sm:w-11',
                                     HP_THEME_TEXT_CLASS,
                                 )}
                             >

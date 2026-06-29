@@ -30,9 +30,13 @@ function GalleryImageCard({
     alt,
     onOpen,
     eager = false,
+    className,
+    imageSizes = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 229px',
 }: GalleryImage & {
     onOpen: () => void
     eager?: boolean
+    className?: string
+    imageSizes?: string
 }) {
     const [isLoaded, setIsLoaded] = useState(false)
 
@@ -44,7 +48,10 @@ function GalleryImageCard({
         <button
             type='button'
             onClick={onOpen}
-            className='group relative aspect-[229.33/305.77] w-full overflow-hidden rounded-[10px] cursor-zoom-in bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-color-primary)] focus-visible:ring-offset-2'
+            className={cn(
+                'group relative aspect-[229.33/305.77] w-full overflow-hidden rounded-[10px] cursor-zoom-in bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-color-primary)] focus-visible:ring-offset-2',
+                className,
+            )}
             aria-label={`View larger image: ${alt}`}
         >
             {!isLoaded ? (
@@ -65,7 +72,7 @@ function GalleryImageCard({
                     'object-cover transition-[opacity,transform] duration-300 group-hover:scale-105',
                     isLoaded ? 'opacity-100' : 'opacity-0',
                 )}
-                sizes='(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 229px'
+                sizes={imageSizes}
             />
         </button>
     )
@@ -111,11 +118,21 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
         }
     }, [preloadRowImages, totalRows, visibleRows])
 
+    const mobilePreviewImage = filteredImages[0] ?? null
+
     useEffect(() => {
-        if (selectedImageIndex !== null && selectedImageIndex >= visibleImages.length) {
+        if (selectedImageIndex !== null && selectedImageIndex >= filteredImages.length) {
             setSelectedImageIndex(null)
         }
-    }, [selectedImageIndex, visibleImages.length])
+    }, [selectedImageIndex, filteredImages.length])
+
+    const openCategorySlider = useCallback(
+        (index: number) => {
+            if (filteredImages.length === 0) return
+            setSelectedImageIndex(index)
+        },
+        [filteredImages.length],
+    )
 
     const handleToggleRows = () => {
         if (isFullyExpanded) {
@@ -159,20 +176,34 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
                     className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10'
                 />
 
-                <div className='mx-auto mt-6 grid max-w-[1424px] grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-3 sm:gap-[12px] lg:mt-2 lg:grid-cols-6'>
+                {mobilePreviewImage ? (
+                    <div className='mx-auto mt-6 max-w-[420px] sm:hidden'>
+                        <GalleryImageCard
+                            key={`${mobilePreviewImage.src}-mobile`}
+                            src={mobilePreviewImage.src}
+                            alt={mobilePreviewImage.alt}
+                            eager
+                            imageSizes='100vw'
+                            className='aspect-[4/5] max-h-[420px]'
+                            onOpen={() => openCategorySlider(0)}
+                        />
+                    </div>
+                ) : null}
+
+                <div className='mx-auto mt-6 hidden max-w-[1424px] sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-[12px] lg:mt-2 lg:grid-cols-6'>
                     {visibleImages.map((image, index) => (
                         <GalleryImageCard
                             key={`${image.src}-${index}`}
                             src={image.src}
                             alt={image.alt}
                             eager={index < IMAGES_PER_ROW || index >= firstLazyRowIndex}
-                            onOpen={() => setSelectedImageIndex(index)}
+                            onOpen={() => openCategorySlider(index)}
                         />
                     ))}
                 </div>
 
                 {showToggleButton ? (
-                    <div className='mt-8 flex justify-center sm:mt-10'>
+                    <div className='mt-8 hidden justify-center sm:mt-10 sm:flex'>
                         <Button
                             type='button'
                             variant='default'
@@ -189,7 +220,7 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
 
                 {selectedImageIndex !== null ? (
                     <GalleryImageZoomModal
-                        images={visibleImages}
+                        images={filteredImages}
                         activeIndex={selectedImageIndex}
                         onClose={closeImageModal}
                         onNavigate={setSelectedImageIndex}

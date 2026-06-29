@@ -109,7 +109,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     style={HP_THEME_BTN_STYLE}
                                     className={cn('w-max min-w-[140px]', HP_THEME_BTN_CLASS)}
                                 >
-                                    View All
+                                    View All Tours
                                 </Button>
                             </div>
                         ) : null}
