@@ -3,6 +3,7 @@ import type { Column, Header } from '@/services/homepage/homepage.page.types'
 const STATIC_SITE_LINKS = [
     { label: 'Home', href: '/' },
     { label: 'Discover', href: '/discover' },
+    { label: 'Tours', href: '/search' },
     { label: 'About Us', href: '/about-us' },
     { label: 'FAQ', href: '/faq' },
     { label: 'Contact', href: '/contact-us' },
