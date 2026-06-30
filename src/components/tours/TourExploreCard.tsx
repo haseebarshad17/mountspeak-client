@@ -2,6 +2,7 @@
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
+import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
@@ -34,7 +35,10 @@ export function TourExploreCard({
     totalBooked = 0,
     remainingSeats = null,
 }: TourExploreCardProps) {
-    const detailPath = usePrefixedHref(detailHref ?? tourDetailPath(slug)) ?? tourDetailPath(slug)
+    const rawDetailPath = detailHref ?? tourDetailPath(slug)
+    const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
+    const prefixedDetailPath = usePrefixedHref(isDemoDetail ? undefined : rawDetailPath)
+    const detailPath = isDemoDetail ? DEMO_TOUR_DETAIL_PATH : (prefixedDetailPath ?? rawDetailPath)
 
     return (
         <Link

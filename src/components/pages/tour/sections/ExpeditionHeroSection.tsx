@@ -24,7 +24,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
             id={heroSection.id}
             className="px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:pt-[30px] xl:px-[18px]"
         >
-            <div className="relative min-h-[min(85vh,820px)] overflow-hidden rounded-[16px] sm:min-h-[82vh] lg:h-[631px] lg:min-h-[631px]">
+            <div className="relative h-[min(52vh,400px)] overflow-hidden rounded-[16px] sm:h-[460px] md:h-[540px] lg:h-[631px]">
                 <div className="absolute inset-0">
                     <TourMediaImage
                         src={backgroundMedia.desktop}
@@ -46,23 +46,23 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     ) : null}
                 </div>
 
-                <div className="relative z-10 flex min-h-[min(85vh,820px)] flex-col justify-end pb-10 pt-32 sm:min-h-[82vh] sm:pb-14 sm:pt-40 lg:min-h-[631px] lg:pb-16 lg:pt-44">
+                <div className="relative z-10 flex h-full flex-col justify-end pb-8 pt-20 sm:pb-12 sm:pt-24 md:pb-14 md:pt-28 lg:pb-16 lg:pt-36">
                     <div className="agency-container px-4 sm:px-8 lg:px-16">
                         <div className="max-w-3xl text-white">
                             <h1
-                                className="font-heading w-full max-w-[672px] text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[48px] lg:leading-[57px]"
+                                className="font-heading w-full max-w-[672px] text-2xl font-semibold leading-tight tracking-tight xs:text-[26px] sm:text-4xl lg:text-[48px] lg:leading-[57px]"
                                 style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
                             >
                                 {title}
                             </h1>
                             {subtitle ? (
-                                <p className="mt-4 max-w-xl text-sm leading-normal text-[#FFFFFFCC] sm:text-base">
+                                <p className="mt-2 max-w-xl text-sm leading-normal text-[#FFFFFFCC] sm:mt-4 sm:text-base">
                                     {subtitle}
                                 </p>
                             ) : null}
 
                             {tripHighlights.length > 0 ? (
-                                <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium text-white/95 sm:text-base">
+                                <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-white/95 sm:mt-6 sm:gap-x-8 sm:gap-y-3 sm:text-base">
                                     {tripHighlights.map((item) => {
                                         const Icon = heroHighlightIcons[item.icon] ?? CalendarDays
                                         return (

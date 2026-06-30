@@ -2,10 +2,10 @@
 
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
+import { AccountNavLinks } from '@/components/pages/dashboard/AccountNavLinks'
 import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { useInternalPathname, usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
-import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import Image from 'next/image'
@@ -29,11 +29,9 @@ export function BookingHeader() {
     const internalPathname = useInternalPathname()
     const router = usePreviewRouter()
     const page = useHomepagePageWithFallback()
-    const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
-    const showAuthActions = isAgencySite === true
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     const handleLogout = async () => {
@@ -90,34 +88,24 @@ export function BookingHeader() {
                             })}
                         </nav>
 
-                        {showAuthActions ? (
-                            <div className='flex items-center gap-2'>
-                                {isLoggedIn ? (
-                                    <ProfileMenu
-                                        useLightNav
-                                        logoutLabel={logoutLabel}
-                                        onLogout={handleLogout}
-                                    />
-                                ) : (
-                                    <div className='hidden items-center gap-3 sm:flex'>
-                                        <Button
-                                            variant='transparent'
-                                            size='nav'
-                                            className='!w-auto text-neutral-800 hover:bg-transparent'
-                                            href={header.auth?.login?.href ?? '/login'}
-                                        >
-                                            {header.auth?.login?.label ?? 'Login'}
-                                        </Button>
-                                        <Button
-                                            variant='secondary'
-                                            href={header.auth?.signUp?.href ?? '/register'}
-                                        >
-                                            {header.auth?.signUp?.label ?? 'Sign Up'}
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
+                        <div className='flex items-center gap-2'>
+                            {isLoggedIn ? (
+                                <ProfileMenu
+                                    useLightNav
+                                    logoutLabel={logoutLabel}
+                                    onLogout={handleLogout}
+                                />
+                            ) : (
+                                <Button
+                                    variant='transparent'
+                                    size='nav'
+                                    className='!w-auto text-neutral-800 hover:bg-transparent'
+                                    href={header.auth?.login?.href ?? '/login'}
+                                >
+                                    {header.auth?.login?.label ?? 'Login'}
+                                </Button>
+                            )}
+                        </div>
 
                         <button
                             type='button'
@@ -177,48 +165,48 @@ export function BookingHeader() {
                                     </PrefixedLink>
                                 )
                             })}
+                            {isLoggedIn ? (
+                                <>
+                                    <div className='my-2 h-px shrink-0 bg-neutral-200' aria-hidden />
+                                    <AccountNavLinks
+                                        variant='drawer'
+                                        drawerTone='light'
+                                        onNavigate={() => setIsMobileMenuOpen(false)}
+                                    />
+                                </>
+                            ) : null}
                         </nav>
 
-                        {showAuthActions ? (
-                            <div className='flex flex-col gap-3 pt-4'>
-                                {isLoggedIn ? (
-                                    <>
-                                        <Button
-                                            variant='secondary'
-                                            className='!w-full rounded-md'
-                                            href='/dashboard'
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            Dashboard
-                                        </Button>
-                                        <Button
-                                            variant='outline'
-                                            className='!w-full rounded-md'
-                                            onClick={handleLogout}
-                                        >
-                                            {logoutLabel}
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <div className='flex flex-col gap-3'>
-                                        <Button
-                                            variant='outline'
-                                            className='!w-full rounded-md'
-                                            href={header.auth?.login?.href ?? '/login'}
-                                        >
-                                            {header.auth?.login?.label ?? 'Login'}
-                                        </Button>
-                                        <Button
-                                            variant='secondary'
-                                            className='!w-full rounded-md'
-                                            href={header.auth?.signUp?.href ?? '/register'}
-                                        >
-                                            {header.auth?.signUp?.label ?? 'Sign Up'}
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
+                        <div className='flex flex-col gap-3 pt-4'>
+                            {isLoggedIn ? (
+                                <Button
+                                    variant='outline'
+                                    className='!w-full rounded-md'
+                                    onClick={handleLogout}
+                                >
+                                    {logoutLabel}
+                                </Button>
+                            ) : (
+                                <div className='flex flex-col gap-3'>
+                                    <Button
+                                        variant='outline'
+                                        className='!w-full rounded-md'
+                                        href={header.auth?.login?.href ?? '/login'}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        {header.auth?.login?.label ?? 'Login'}
+                                    </Button>
+                                    <Button
+                                        variant='secondary'
+                                        className='!w-full rounded-md'
+                                        href={header.auth?.signUp?.href ?? '/register'}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        {header.auth?.signUp?.label ?? 'Sign Up'}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     </aside>
                 </div>
             ) : null}

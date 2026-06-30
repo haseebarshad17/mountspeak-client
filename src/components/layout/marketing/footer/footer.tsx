@@ -147,7 +147,7 @@ const Footer = ({ footer }: FooterProps) => {
     const contactColumn = columns.find((column) => column.title.toLowerCase().includes('contact'))
 
     return (
-        <footer style={{ backgroundColor: footer.backgroundColor }}>
+        <footer id="marketing-footer" style={{ backgroundColor: footer.backgroundColor }}>
             <div className='agency-container'>
                 <section className='flex flex-col items-center gap-7 py-10 text-center sm:gap-9 sm:py-12 lg:gap-11 lg:py-14'>
                     <Link href={homeHref} className='inline-block'>
