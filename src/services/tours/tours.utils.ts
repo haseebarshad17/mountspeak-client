@@ -31,6 +31,20 @@ export function formatTourDiscount(percent: number | null | undefined): string {
     return `${value}% Off`
 }
 
+export function formatTourPrice(amount: number): string {
+    return `PKR ${amount.toLocaleString('en-PK')}`
+}
+
+export function getTourDiscountedPricePerSeat(
+    pricePerSeat: number,
+    discountPercent: number | null | undefined,
+): number {
+    const percent = discountPercent ?? 0
+    if (percent <= 0) return Math.round(pricePerSeat)
+
+    return Math.round(pricePerSeat - (percent / 100) * pricePerSeat)
+}
+
 export function getTourCoverImage(tour: Pick<TourRow, 'header' | 'overview' | 'visual_fragments'>): string {
     const hero = resolveTourMediaUrl(tour.header?.hero_image_url)
     if (hero) return hero
@@ -74,6 +88,10 @@ export function toTourListItem(tour: TourRow): TourListItem {
             tour.discount_percent == null || Number.isNaN(Number(tour.discount_percent))
                 ? null
                 : Number(tour.discount_percent),
+        pricePerSeat:
+            tour.price_per_seat != null && Number(tour.price_per_seat) > 0
+                ? Number(tour.price_per_seat)
+                : null,
         image: getTourCoverImage(tour),
         totalBooked,
         remainingSeats,

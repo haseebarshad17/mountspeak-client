@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookMarked, UserRound } from "lucide-react";
+import { BookMarked, Compass, UserRound } from "lucide-react";
 import { useInternalPathname, usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { cn } from "@/lib/utils/clsxUtils";
 
@@ -24,13 +24,13 @@ const drawerLinkClassName = (isActive: boolean, tone: "dark" | "light") =>
     "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition",
     tone === "light"
       ? cn(
-          "text-neutral-800 hover:bg-neutral-100",
-          isActive && "bg-neutral-100 font-semibold",
-        )
+        "text-neutral-800 hover:bg-neutral-100",
+        isActive && "bg-neutral-100 font-semibold",
+      )
       : cn(
-          "text-white hover:bg-white/15",
-          isActive && "bg-white/15 font-semibold",
-        ),
+        "text-white hover:bg-white/15",
+        isActive && "bg-white/15 font-semibold",
+      ),
   );
 
 export function AccountNavLinks({
@@ -41,8 +41,10 @@ export function AccountNavLinks({
   const internalPathname = useInternalPathname();
   const dashboardPath = usePreviewPath("/dashboard");
   const bookingsPath = usePreviewPath("/bookings");
+  const toursPath = usePreviewPath("/search");
   const isProfileActive = internalPathname.startsWith("/dashboard");
   const isBookingsActive = internalPathname.startsWith("/bookings");
+  const isToursActive = internalPathname === "/search" || internalPathname.startsWith("/search/");
   const linkClassName =
     variant === "drawer"
       ? (isActive: boolean) => drawerLinkClassName(isActive, drawerTone)
@@ -104,6 +106,12 @@ export function AccountNavLinks({
           <BookMarked className="h-4 w-4 text-[#4b5964]" />
         </span>
         <span className="text-base font-normal">Bookings</span>
+      </Link>
+      <Link href={toursPath} onClick={onNavigate} className={linkClassName(isToursActive)}>
+        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center">
+          <Compass className="h-4 w-4 text-[#4b5964]" />
+        </span>
+        <span className="text-base font-normal">Tours</span>
       </Link>
     </nav>
   );

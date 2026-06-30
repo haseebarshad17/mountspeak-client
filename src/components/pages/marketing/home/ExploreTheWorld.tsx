@@ -78,18 +78,21 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         {Array.from({ length: HOMEPAGE_TOUR_LIMIT }).map((_, index) => (
                             <Skeleton
                                 key={index}
-                                className='aspect-[416/300] w-full max-w-[416px] rounded-[10px] lg:max-w-none'
+                                className='aspect-[16/10] w-full max-w-[416px] rounded-xl lg:max-w-none'
                             />
                         ))}
                     </div>
                 ) : displayTours.length > 0 ? (
                     <>
-                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
+                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 
+                        sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch 
+                        lg:gap-6 lg:pt-14'>
                             {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}
                                     slug={tour.slug}
                                     discountPercent={tour.discountPercent}
+                                    pricePerSeat={tour.pricePerSeat}
                                     title={tour.title}
                                     image={tour.image}
                                     totalBooked={tour.totalBooked}

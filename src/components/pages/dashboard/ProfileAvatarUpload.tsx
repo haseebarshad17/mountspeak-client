@@ -150,7 +150,7 @@ export function ProfileAvatarUpload({
   }
 
   return (
-    <div className="flex w-[236px] flex-col items-start">
+    <div className="mx-auto flex w-full max-w-[236px] flex-col items-center md:items-start">
       <input
         id={inputId}
         type="file"
@@ -160,13 +160,13 @@ export function ProfileAvatarUpload({
         onChange={handleFileChange}
       />
 
-      <div className="relative h-[160px] w-[150px]">
+      <div className="relative size-[150px]">
         {hasUploadedAvatar ? (
           <button
             type="button"
             disabled={!userId || disabled || isBusy}
             onClick={handleDelete}
-            className="absolute left-0 top-0 z-30 flex h-7 w-7 items-center justify-center bg-[#00292C] text-white transition hover:bg-[#07363d] disabled:cursor-not-allowed disabled:opacity-60"
+            className="absolute -right-1 -top-1 z-30 flex size-7 items-center justify-center rounded-full bg-[#00292C] text-white shadow-sm transition hover:bg-[#07363d] disabled:cursor-not-allowed disabled:opacity-60"
             aria-label="Delete profile photo"
           >
             {deleting ? (
@@ -177,7 +177,7 @@ export function ProfileAvatarUpload({
           </button>
         ) : null}
 
-        <div className="relative h-full w-full overflow-hidden bg-white">
+        <div className="relative size-full overflow-hidden rounded-full bg-white ring-2 ring-[#E4E9EB]">
           <Image
             src={displayAvatarSrc}
             alt="Profile photo"
@@ -210,10 +210,9 @@ export function ProfileAvatarUpload({
           ) : null}
 
           {uploading ? (
-            <span
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-black/60 py-1 text-center text-[10px] font-medium uppercase tracking-[0.6px] text-white"
-            >
-              Uploading…
+            <span className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/50">
+              <Loader2 className="h-6 w-6 animate-spin text-white" aria-hidden />
+              <span className="sr-only">Uploading profile photo</span>
             </span>
           ) : null}
         </div>

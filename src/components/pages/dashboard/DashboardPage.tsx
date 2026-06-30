@@ -22,6 +22,13 @@ import { useAppSelector } from "@/store/hooks"
 import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors"
 
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload"
+import {
+  accountCardClassName,
+  accountFieldInputClassName,
+  accountFieldLabelClassName,
+  accountPageHeadingClassName,
+  accountPageIntroClassName,
+} from "./account-ui"
 
 const profileSchema = z.object({
   fullName: z
@@ -214,52 +221,42 @@ export default function DashboardPage() {
   return (
     <main className="w-full md:pl-4">
       <section className="mx-auto w-full max-w-[1100px]">
-        <h1
-          className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
-        >
+        <h1 className={accountPageHeadingClassName}>
           Manage Account
         </h1>
-        <p
-          className="mt-3 max-w-[670px] text-[16px] leading-[24px] text-[#404849]"
-        >
+        <p className={accountPageIntroClassName}>
           Update your personal details, manage your security settings, and organize your
           travel preferences for future adventures in Pakistan.
         </p>
 
-        <div className="mt-8 border border-[#C0C8C9] bg-white p-6 md:px-10 md:pt-10 max-w-[856px] min-h-[564px]">
-          <div className="grid gap-8 pl-[6px] pt-[14px] max-w-[774px] min-h-160px md:grid-cols-[236px_1fr] md:items-center">
+        <div className={cn(accountCardClassName, "mt-6 max-w-[856px] p-5 sm:mt-8 sm:p-6 md:px-10 md:pt-10")}>
+          <div className="grid justify-items-center gap-6 text-center sm:gap-8 md:grid-cols-[236px_1fr] md:items-center md:justify-items-start md:text-left">
             <ProfileAvatarUpload
               userId={userId}
               avatarUrl={avatarUrl}
               onAvatarChange={setAvatarUrl}
             />
             <div>
-              <h2
-                className="text-[24px]  leading-[32px] text-[#00292C]"
-              >
+              <h2 className="text-xl leading-8 text-[#00292C] sm:text-2xl sm:leading-[32px]">
                 Personal Information
               </h2>
-              <p
-                className="mt-2 max-w-[560px] text-[16px] leading-[24px] text-[#404849]"
-              >
+              <p className="mx-auto mt-2 max-w-[560px] text-sm leading-6 text-[#404849] sm:text-base md:mx-0">
                 Basic info, like your name and photo, that you use on the Pakistan Travel
                 platform.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 grid-cols-1 md:grid-cols-2 md:gap-x-10 md:gap-y-8">
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:mt-8 md:grid-cols-2 md:gap-x-10 md:gap-y-8">
             <div>
-              <p
-                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-              >
+              <p className={accountFieldLabelClassName}>
                 Full Name
               </p>
               <input
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Full Name"
-                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                className={accountFieldInputClassName}
               />
               {errors.fullName ? (
                 <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
@@ -269,23 +266,19 @@ export default function DashboardPage() {
             </div>
 
             <div>
-              <p
-                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-              >
+              <p className={accountFieldLabelClassName}>
                 Email Address
               </p>
               <input
                 value={email}
                 disabled
                 readOnly
-                className="mt-2 w-full cursor-not-allowed border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] opacity-60 outline-none"
+                className={cn(accountFieldInputClassName, "cursor-not-allowed opacity-60")}
               />
             </div>
 
             <div>
-              <p
-                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-              >
+              <p className={accountFieldLabelClassName}>
                 Phone Number
               </p>
               <input
@@ -293,7 +286,7 @@ export default function DashboardPage() {
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+92 300 1234567"
                 type="tel"
-                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                className={accountFieldInputClassName}
               />
               {errors.phoneNumber ? (
                 <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
@@ -303,15 +296,14 @@ export default function DashboardPage() {
             </div>
 
             <div>
-              <p
-                className="text-[12px] font-medium uppercase tracking-[0.6px] text-[#707979]"
-              >
+              <p className={accountFieldLabelClassName}>
                 Location
               </p>
               <input
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="mt-2 w-full border-b border-[#87909a] bg-transparent px-3 py-2 text-[16px] font-normal leading-[24px] text-[#1A1C1E] outline-none focus:border-[#00292C]"
+                placeholder="City, Country"
+                className={accountFieldInputClassName}
               />
               {errors.location ? (
                 <p className="mt-1 text-xs font-medium text-[#BA1A1A]">
@@ -321,7 +313,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="mt-16 flex justify-end">
+          <div className="mt-8 flex justify-center sm:mt-10 md:justify-end">
             <Button
               type="button"
               onClick={handleSave}
@@ -337,7 +329,7 @@ export default function DashboardPage() {
 
         <section
           className={cn(
-            "mt-8 max-w-[856px] min-h-[338px] px-6 py-8 md:px-10 md:py-10",
+            "mt-6 max-w-[856px] rounded-xl px-5 py-6 sm:mt-8 sm:px-8 sm:py-8 md:px-10 md:py-10",
             HP_THEME_BG_CLASS,
           )}
           style={
@@ -381,17 +373,17 @@ export default function DashboardPage() {
             </Button>
           </div>
 
-          <div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div className="mt-6 grid gap-6 sm:mt-8 md:grid-cols-2 md:gap-8">
             {bookingsLoading ? (
               <>
-                <div className="h-[149px] max-w-[372px] animate-pulse border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
-                <div className="h-[149px] max-w-[372px] animate-pulse border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
+                <div className="h-[149px] max-w-[372px] animate-pulse rounded-xl border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
+                <div className="h-[149px] max-w-[372px] animate-pulse rounded-xl border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)]" />
               </>
             ) : upcomingBookings.length > 0 ? (
               upcomingBookings.map((tour) => (
                 <article
                   key={tour.id}
-                  className="min-h-[149px] max-w-[372px] border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)] p-6"
+                  className="min-h-[149px] max-w-[372px] rounded-xl border border-[var(--dashboard-panel-border)] bg-[var(--dashboard-panel-bg)] p-5 sm:p-6"
                 >
                   <p
                     className="text-[16px] leading-6 font-medium uppercase tracking-[1.6px] text-[#FFFFFF80]"

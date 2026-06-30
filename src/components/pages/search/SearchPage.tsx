@@ -148,6 +148,7 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                                         key={tour.id}
                                         slug={tour.slug}
                                         discountPercent={tour.discountPercent}
+                                        pricePerSeat={tour.pricePerSeat}
                                         title={tour.title}
                                         image={tour.image}
                                         totalBooked={tour.totalBooked}

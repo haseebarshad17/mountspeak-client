@@ -8,7 +8,7 @@ interface DashboardShellProps {
 
 const DashboardShell = ({ children }: DashboardShellProps) => {
   return (
-    <div className="account-pages min-h-screen bg-[#fcfcfc] pb-[50px] pt-[150px] sm:pt-[160px] md:pt-[168px] lg:pt-[176px]">
+    <div className="account-pages min-h-screen bg-[#fcfcfc] pb-12 pt-[140px] sm:pb-16 sm:pt-[160px] md:pt-[168px] lg:pt-[176px]">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col px-4 sm:px-6 md:flex-row md:px-16">
         <div className="hidden md:block md:w-[264px] md:min-w-[264px] md:shrink-0">
           <DashboardSidebar />
