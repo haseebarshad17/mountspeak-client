@@ -34,7 +34,8 @@
                 "src": "/branding/phnes-travels-logo-white.svg",
                 "alt": "Phnes Travels"
             },
-            "menuItems": [{
+            "menuItems": [
+                {
                     "label": "Home",
                     "url": "/"
                 },
@@ -67,7 +68,8 @@
             "eyebrow": "PREMIUM EXPEDITION",
             "title": "Hunza Valley & Fairy Meadows",
             "subtitle": "",
-            "tripHighlights": [{
+            "tripHighlights": [
+                {
                     "icon": "calendar",
                     "label": "12 DAYS / 11 NIGHTS"
                 },
@@ -76,17 +78,20 @@
                     "label": "HIGH ALTITUDE"
                 }
             ],
-            "ctaGroup": [{
-                    "label": "BOOK AN EXPEDITION",
+            "ctaGroup": [
+                {
+                    "label": "BOOK TOUR NOW",
                     "url": "/booking",
                     "style": "primary"
-                }]
+                }
+            ]
         },
         "overviewSection": {
             "id": "overview",
             "title": "The Vertical Ascent",
             "description": "Journey into the heart of the Karakoram range. This curated expedition balances the soul-stirring tranquility of the Hunza Valley with the raw, untamed majesty of the Fairy Meadows—located at the base of Nanga Parbat, the 'Killer Mountain.' Experience the precision of our logistics and the warmth of Northern hospitality.",
-            "statistics": [{
+            "statistics": [
+                {
                     "label": "MAX ELEVATION",
                     "value": "3,300m"
                 },
@@ -107,7 +112,8 @@
             "id": "technical-route",
             "title": "The Path: Technical Route Breakdown",
             "background": "light-card",
-            "segments": [{
+            "segments": [
+                {
                     "segmentId": "segment-01",
                     "title": "Segment 01: Gilgit to Karimabad",
                     "description": "A 100km drive along the paved KKH, ascending 600m. Focus on smooth transitions and altitude acclimatization at 2,400m.",
@@ -138,7 +144,8 @@
             "eyebrow": "CULTURAL LANDMARKS",
             "title": "Places Visited",
             "intro": "From 700-year-old forts to sacred rock carvings, our expedition covers the most significant heritage sites of Gilgit-Baltistan.",
-            "cards": [{
+            "cards": [
+                {
                     "id": "baltit-fort",
                     "title": "Baltit Fort",
                     "location": "KARIMABAD",
@@ -189,7 +196,8 @@
             "id": "itinerary",
             "title": "Day-by-Day Journey",
             "timelineStyle": "zigzag-cards",
-            "days": [{
+            "days": [
+                {
                     "day": 1,
                     "title": "Arrival in Gilgit",
                     "description": "Arrival at Gilgit airport via a scenic flight over the Himalayas. Check-in at Serena Gilgit and an afternoon visit to the Kargah Buddha rock carving.",
@@ -233,7 +241,8 @@
         "stayAndDineSection": {
             "id": "stay-dine",
             "title": "Stay & Dine",
-            "properties": [{
+            "properties": [
+                {
                     "id": "gilgit-serena",
                     "type": "LUXURY LODGING",
                     "name": "Gilgit Serena Hotel",
@@ -274,7 +283,8 @@
         "perksAndTechnicalsSection": {
             "id": "perks-technicals",
             "title": "Expedition Perks & Technicals",
-            "items": [{
+            "items": [
+                {
                     "icon": "mountain-tools",
                     "title": "Custom 4x4 Rigs",
                     "description": "Modified Toyota Land Cruisers with high-clearance suspension and snorkel kits for water crossings."
@@ -304,7 +314,8 @@
             "actionLabel": "VIEW FULL GALLERY",
             "actionUrl": "/gallery/hunza-expedition",
             "layout": "masonry-grid",
-            "media": [{
+            "media": [
+                {
                     "id": "gallery-01",
                     "type": "image",
                     "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
@@ -334,13 +345,14 @@
             "id": "final-cta",
             "title": "Are you ready to witness the peaks of giants?",
             "description": "Connect with our expedition specialists to customize your journey.",
-            "buttons": [{
-                    "label": "BOOK AN EXPEDITION",
+            "buttons": [
+                {
+                    "label": "BOOK TOUR NOW",
                     "url": "/booking",
                     "style": "primary"
                 },
                 {
-                    "label": "SPEAK WITH AN EXPERT",
+                    "label": "Contact Us",
                     "url": "/contact-us",
                     "style": "secondary"
                 }

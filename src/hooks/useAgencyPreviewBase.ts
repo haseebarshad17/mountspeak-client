@@ -4,32 +4,15 @@ import { useCallback, useMemo } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import {
-    isAgencyPreviewPlatformHost,
+    getAgencyPreviewBaseFromPathname,
     prefixHref,
-    readAgencyPreviewHostCookie,
-    resolveAgencyPreviewFromPathname,
     stripAgencyPreviewBase,
 } from '@/lib/homepage/agency-preview'
-
-function readPreviewHostCookie(): string | null {
-    return readAgencyPreviewHostCookie()
-}
 
 export function useAgencyPreviewBase(): string | null {
     const pathname = usePathname()
 
-    return useMemo(() => {
-        const fromPath = resolveAgencyPreviewFromPathname(pathname)?.previewBase
-        if (fromPath) return fromPath
-
-        if (typeof window === 'undefined') return null
-
-        const hostname = window.location.hostname
-        if (!isAgencyPreviewPlatformHost(hostname)) return null
-
-        const cookieHost = readPreviewHostCookie()
-        return cookieHost ? `/${cookieHost}` : null
-    }, [pathname])
+    return useMemo(() => getAgencyPreviewBaseFromPathname(pathname), [pathname])
 }
 
 export function usePrefixedHref(href: string | undefined): string | undefined {

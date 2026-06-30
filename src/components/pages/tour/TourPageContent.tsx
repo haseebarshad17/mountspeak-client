@@ -10,6 +10,7 @@ import { PlacesVisitedCardsSection } from './sections/PlacesVisitedCardsSection'
 import { TechnicalRouteBreakdownSection } from './sections/TechnicalRouteBreakdownSection'
 import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
+import { TourFloatingBookBar } from './sections/TourFloatingBookBar'
 
 type TourPageContentProps = {
     page: TourPage
@@ -20,7 +21,7 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
 
     return (
         <div
-            className="min-h-screen font-body"
+            className="min-h-screen pb-24 font-body lg:pb-0"
             style={
                 {
                     '--tour-primary': theme.primaryColor,
@@ -39,6 +40,7 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
             <ExpeditionPerksTechnicalsSection page={page} />
             <VisualFragmentsGallerySection page={page} />
             <ExpeditionClosingCtaSection page={page} />
+            <TourFloatingBookBar page={page} />
         </div>
     )
 }

@@ -116,15 +116,25 @@ export function getHostnameFromHostHeader(hostHeader: string | null): string {
     return hostHeader?.split(':')[0]?.toLowerCase() ?? ''
 }
 
+/**
+ * Agency host for homepage/API context — path segment only (not the preview cookie).
+ * Using the cookie here caused local `/` to load agency data while SSR used platform defaults.
+ */
 export function getAgencyPreviewHostFromPathname(pathname: string): string | null {
     const requestHostname =
         typeof window !== 'undefined' ? window.location.hostname : ''
 
-    const fromPath = resolveAgencyPreviewForRequest(pathname, requestHostname)?.agencyHost
+    return resolveAgencyPreviewForRequest(pathname, requestHostname)?.agencyHost ?? null
+}
+
+/** Path or cookie-based preview base for link prefixing on platform hosts. */
+export function getAgencyPreviewBaseFromPathname(pathname: string): string | null {
+    const fromPath = resolveAgencyPreviewFromPathname(pathname)?.previewBase
     if (fromPath) return fromPath
 
-    if (typeof window !== 'undefined' && isAgencyPreviewPlatformHost(requestHostname)) {
-        return readAgencyPreviewHostCookie()
+    if (typeof window !== 'undefined' && isAgencyPreviewPlatformHost(window.location.hostname)) {
+        const cookieHost = readAgencyPreviewHostCookie()
+        return cookieHost ? `/${cookieHost}` : null
     }
 
     return null

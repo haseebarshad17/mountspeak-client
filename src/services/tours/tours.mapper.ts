@@ -83,11 +83,11 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             : []),
         ...(row.price_per_seat != null
             ? [
-                  {
-                      icon: 'price' as const,
-                      label: `FROM PKR ${Number(row.price_per_seat).toLocaleString()} / SEAT`,
-                  },
-              ]
+                {
+                    icon: 'price' as const,
+                    label: `FROM PKR ${Number(row.price_per_seat).toLocaleString()} / SEAT`,
+                },
+            ]
             : []),
     ]
 
@@ -128,7 +128,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             tripHighlights,
             ctaGroup: [
                 {
-                    label: 'BOOK AN EXPEDITION',
+                    label: 'BOOK TOUR NOW',
                     url: buildBookingHref(row.slug),
                     style: 'primary' as const,
                 },
@@ -246,11 +246,11 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
             description: 'Connect with our expedition specialists to customize your journey.',
             buttons: [
                 {
-                    label: 'BOOK AN EXPEDITION',
+                    label: 'BOOK TOUR NOW',
                     url: buildBookingHref(row.slug),
                     style: 'primary',
                 },
-                { label: 'SPEAK WITH AN EXPERT', url: '/contact-us', style: 'secondary' },
+                { label: 'Contact Us', url: '/contact-us', style: 'secondary' },
             ],
         },
     })

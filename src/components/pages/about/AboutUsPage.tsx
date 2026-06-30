@@ -20,6 +20,9 @@ import {
 
 const valueIcons = [Compass, ShieldCheck, MapPin, Users] as const
 
+const aboutCardClassName =
+    'rounded-xl border border-[#C0C8C9] bg-white'
+
 export default function AboutUsPage() {
     const backgroundImage = useHeroBackgroundImage()
 
@@ -65,7 +68,7 @@ export default function AboutUsPage() {
                             {aboutStats.map((stat) => (
                                 <div
                                     key={stat.label}
-                                    className='border border-[#C0C8C9] bg-white px-6 py-8 text-center'
+                                    className={cn(aboutCardClassName, 'px-6 py-8 text-center')}
                                 >
                                     <p
                                         className={cn('text-3xl font-semibold sm:text-4xl', HP_THEME_TEXT_CLASS)}
@@ -96,18 +99,21 @@ export default function AboutUsPage() {
                                 return (
                                     <article
                                         key={value.title}
-                                        className='border border-[#C0C8C9] bg-white p-6 sm:p-8'
+                                        className={cn(aboutCardClassName, 'p-6 sm:p-8')}
                                     >
-                                        <div className={cn('flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF1F3]', HP_THEME_TEXT_CLASS)}>
-                                            <Icon className='h-5 w-5' aria-hidden />
+                                        <div className='flex items-center gap-3'>
+                                            <Icon
+                                                className={cn('h-7 w-7 shrink-0 stroke-[1.75]', HP_THEME_TEXT_CLASS)}
+                                                aria-hidden
+                                            />
+                                            <h3
+                                                className={cn('text-lg font-semibold leading-snug sm:text-xl', HP_THEME_TEXT_CLASS)}
+                                            >
+                                                {value.title}
+                                            </h3>
                                         </div>
-                                        <h3
-                                            className={cn('mt-5 text-xl font-semibold', HP_THEME_TEXT_CLASS)}
-                                        >
-                                            {value.title}
-                                        </h3>
                                         <p
-                                            className='mt-3 text-sm leading-6 text-neutral-600 sm:text-base'
+                                            className='mt-4 text-sm leading-6 text-neutral-600 sm:text-base'
                                         >
                                             {value.description}
                                         </p>
@@ -118,7 +124,7 @@ export default function AboutUsPage() {
                     </section>
 
                     <section className='mx-auto max-w-[820px] px-0'>
-                        <div className='border border-[#C0C8C9] bg-white px-6 py-10 sm:px-10 sm:py-12'>
+                        <div className={cn(aboutCardClassName, 'px-6 py-10 sm:px-10 sm:py-12')}>
                         <h2
                             className='text-center text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'
                         >
@@ -138,7 +144,7 @@ export default function AboutUsPage() {
                     </section>
 
                     <section className='mx-auto max-w-[820px] px-0'>
-                        <div className={cn('border px-6 py-12 text-center text-white sm:px-10 sm:py-14', HP_THEME_BORDER_CLASS, HP_THEME_BG_CLASS)}>
+                        <div className={cn('rounded-xl border px-6 py-12 text-center text-white sm:px-10 sm:py-14', HP_THEME_BORDER_CLASS, HP_THEME_BG_CLASS)}>
                             <h2
                                 className='text-2xl font-semibold sm:text-3xl'
                             >

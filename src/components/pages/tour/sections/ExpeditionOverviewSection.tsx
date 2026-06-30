@@ -16,9 +16,10 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
     return (
         <section
             id={overviewSection.id}
+            className="pt-8 sm:pt-10 lg:pt-16"
             style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
         >
-            <div className="agency-container p-4 sm:p-8 lg:p-16">
+            <div className="agency-container px-4 pb-4 sm:px-8 sm:pb-8 lg:px-16 lg:pb-16">
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
                     <div>
                         <h2 className="font-heading text-xl font-bold tracking-tight text-[#191C1C] sm:text-2xl lg:text-4xl lg:leading-10">
@@ -57,11 +58,6 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                                 className="object-cover"
                                 sizes="(max-width: 639px) 100vw, 442px"
                             />
-                        </div>
-                        <div className="absolute inset-0 flex items-center justify-center p-6">
-                            <span className="font-roboto flex w-full max-w-[211px] min-h-[24px] justify-center bg-white py-4 text-center text-base font-semibold uppercase tracking-[0.12em] text-[#091416] shadow-md">
-                                {overviewSection.sideCard.title}
-                            </span>
                         </div>
                     </div>
                 </div>

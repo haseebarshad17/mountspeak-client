@@ -3,6 +3,11 @@ import { notFound } from 'next/navigation'
 
 import TourPageContent from '@/components/pages/tour/TourPageContent'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import {
+    getHostnameFromHostHeader,
+    isAgencyPreviewPlatformHost,
+} from '@/lib/homepage/agency-preview'
+import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
 import { DEMO_TOUR_PAGE } from '@/lib/tours/default-tour-page'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { applyAgencyThemeToTourPage } from '@/services/tours/tours.mapper'
@@ -31,8 +36,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function DetailsPage() {
     const homepage = await fetchAgencyHomepage()
+    const requestHost = await getRequestSiteHost()
+    const hostname = getHostnameFromHostHeader(requestHost)
+    const isPlatformPreviewHost = isAgencyPreviewPlatformHost(hostname)
 
-    if (homepage.isAgencySite) {
+    if (homepage.isAgencySite && !isPlatformPreviewHost) {
         notFound()
     }
 

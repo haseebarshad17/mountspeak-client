@@ -3,6 +3,11 @@ import { notFound, redirect } from 'next/navigation'
 
 import TourPageContent from '@/components/pages/tour/TourPageContent'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import {
+    getHostnameFromHostHeader,
+    isAgencyPreviewPlatformHost,
+} from '@/lib/homepage/agency-preview'
+import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { fetchPublishedTourBySlug, fetchTourPageBySlug } from '@/services/tours/tours.server'
@@ -52,12 +57,26 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
     const row = await fetchPublishedTourBySlug(slug)
 
     if (!row) {
+        const requestHost = await getRequestSiteHost()
+        const hostname = getHostnameFromHostHeader(requestHost)
+
+        if (isAgencyPreviewPlatformHost(hostname)) {
+            redirect(DEMO_TOUR_DETAIL_PATH)
+        }
+
         notFound()
     }
 
     const page = await fetchTourPageBySlug(slug)
 
     if (!page) {
+        const requestHost = await getRequestSiteHost()
+        const hostname = getHostnameFromHostHeader(requestHost)
+
+        if (isAgencyPreviewPlatformHost(hostname)) {
+            redirect(DEMO_TOUR_DETAIL_PATH)
+        }
+
         notFound()
     }
 
