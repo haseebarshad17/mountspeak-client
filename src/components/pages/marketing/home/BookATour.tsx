@@ -1,6 +1,10 @@
 'use client'
 
-import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_LIGHT_BTN_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
+import {
+    HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE,
+    //  HP_THEME_LIGHT_BTN_CLASS,
+    STATIC_UI_COLORS
+} from '@/data/homepage'
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
