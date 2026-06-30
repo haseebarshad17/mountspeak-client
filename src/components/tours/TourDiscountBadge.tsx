@@ -19,24 +19,20 @@ export function TourDiscountBadge({
     return (
         <div
             className={cn(
-                'absolute right-3 top-3 z-10 sm:right-4 sm:top-4',
+                'absolute left-3 top-5 z-10',
                 className,
             )}
         >
             <span
                 className={cn(
-                    'relative inline-flex min-h-[30px] items-center justify-center',
-                    'py-1 pl-4 pr-2.5 font-roboto text-xs font-normal leading-none text-white shadow-sm',
-                    'sm:min-h-[32px] sm:pl-[18px] sm:pr-3 sm:text-sm',
-                    '[clip-path:polygon(10px_0,100%_0,100%_100%,10px_100%,0_50%)]',
+                    'inline-flex h-10 w-10 items-center justify-center rounded-full sm:h-11 sm:w-11',
+                    'font-roboto text-[10px] font-bold leading-none tabular-nums text-white',
+                    'shadow-[0_4px_12px_rgba(0,41,44,0.22)] ring-1 ring-white/25 sm:text-[11px]',
                     pillClassName,
                 )}
                 style={{ backgroundColor: HP_CSS_VARS.primary }}
             >
-                <span className='whitespace-nowrap tabular-nums'>
-                    {value}%{' '}
-                    <span className='uppercase tracking-[0.04em]'>Off</span>
-                </span>
+                -{value}%
             </span>
         </div>
     )

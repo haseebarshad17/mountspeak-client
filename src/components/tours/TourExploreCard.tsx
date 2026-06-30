@@ -7,13 +7,18 @@ import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
-import { tourDetailPath } from '@/services/tours/tours.utils'
+import {
+    formatTourPrice,
+    getTourDiscountedPricePerSeat,
+    tourDetailPath,
+} from '@/services/tours/tours.utils'
 
 import { TourDiscountBadge } from './TourDiscountBadge'
 
 type TourExploreCardProps = {
     slug: string
     discountPercent?: number | null
+    pricePerSeat?: number | null
     title: string
     image: string
     detailHref?: string
@@ -29,6 +34,7 @@ function formatRemainingSeats(remainingSeats: number | null | undefined): string
 export function TourExploreCard({
     slug,
     discountPercent,
+    pricePerSeat = null,
     title,
     image,
     detailHref,
@@ -40,51 +46,99 @@ export function TourExploreCard({
     const prefixedDetailPath = usePrefixedHref(isDemoDetail ? undefined : rawDetailPath)
     const detailPath = isDemoDetail ? DEMO_TOUR_DETAIL_PATH : (prefixedDetailPath ?? rawDetailPath)
 
+    const hasPrice = pricePerSeat != null && pricePerSeat > 0
+    const discountedPrice = hasPrice
+        ? getTourDiscountedPricePerSeat(pricePerSeat, discountPercent)
+        : null
+    const showOriginalPrice =
+        hasPrice &&
+        discountedPrice != null &&
+        pricePerSeat != null &&
+        discountedPrice < pricePerSeat
+    const showLowSeats =
+        remainingSeats != null && remainingSeats > 0 && remainingSeats <= 5
+
     return (
         <Link
             href={detailPath}
-            aria-label={`Book now: ${title}`}
-            className='group relative mx-auto block w-full max-w-[416px] overflow-hidden rounded-[10px] aspect-[416/300] min-h-[220px] transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(0,0,0,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[260px] lg:mx-0 lg:min-h-[300px]'
+            aria-label={`View tour: ${title}`}
+            className={cn(
+                'group relative mx-auto flex h-full w-full max-w-[416px] flex-col overflow-hidden',
+                'rounded-xl border border-[#E3E8EA] bg-white',
+                'shadow-[0_1px_8px_rgba(0,41,44,0.05)]',
+                'transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C0C8C9] hover:shadow-[0_8px_24px_rgba(0,41,44,0.1)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-color-primary)]/30 focus-visible:ring-offset-2',
+                'lg:mx-0',
+            )}
         >
-            <TourMediaImage
-                src={image}
-                alt=''
-                fill
-                className='object-cover transition-transform duration-500 group-hover:scale-[1.06]'
-                sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 416px'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/15 transition-colors duration-300 group-hover:from-black/88 group-hover:via-black/45' />
+            <div className='relative aspect-[16/10] overflow-hidden bg-[#EEF2F3]'>
+                <TourMediaImage
+                    src={image}
+                    alt=''
+                    fill
+                    className='object-cover transition-transform duration-500 group-hover:scale-[1.03]'
+                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 416px'
+                />
 
-            <TourDiscountBadge discountPercent={discountPercent} />
+                <TourDiscountBadge discountPercent={discountPercent} />
 
-            <div className='absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-14 text-center sm:px-4 sm:pb-5 sm:pt-16 lg:px-5 lg:pb-6 lg:pt-[4.5rem]'>
-                <h3 className='font-jost text-[18px] font-medium uppercase leading-snug tracking-wide text-white transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[20px]'>
+                {showLowSeats ? (
+                    <span className='absolute left-3 top-3 z-10 inline-flex items-center rounded-full border border-white/50 bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-[#012b32] shadow-sm backdrop-blur-sm sm:left-3.5 sm:top-3.5 sm:px-3 sm:text-[11px]'>
+                        Only {remainingSeats} left
+                    </span>
+                ) : null}
+            </div>
+
+            <div className='flex flex-1 flex-col px-3.5 py-3 sm:px-4 sm:py-3.5'>
+                <h3 className='line-clamp-2 font-jost text-[15px] font-semibold leading-5 text-[#14141F] transition-colors group-hover:text-[var(--hp-color-primary)] sm:text-base'>
                     {title}
                 </h3>
 
-                <div className='mt-3 inline-flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 font-roboto text-[11px] text-white/95 backdrop-blur-sm transition-colors duration-300 group-hover:border-white/35 group-hover:bg-black/50 sm:gap-2.5 sm:px-4 sm:py-2 sm:text-xs'>
-                    <span className='inline-flex items-center gap-1 whitespace-nowrap'>
-                        <span className='font-semibold text-white'>{totalBooked}</span>
-                        <span className='text-white/80'>booked</span>
+                <p className='mt-1 text-[11px] leading-4 text-[#707979] sm:text-xs'>
+                    <span className='font-medium text-[#404849]'>{totalBooked}</span> booked
+                    <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
+                        ·
                     </span>
-                    <span className='h-3 w-px shrink-0 bg-white/35' aria-hidden />
-                    <span className='inline-flex items-center gap-1 whitespace-nowrap'>
-                        <span className='font-semibold text-white'>
-                            {formatRemainingSeats(remainingSeats)}
-                        </span>
-                        <span className='text-white/80'>seats left</span>
+                    <span className='font-medium text-[#404849]'>
+                        {formatRemainingSeats(remainingSeats)}
+                    </span>{' '}
+                    seats left
+                </p>
+
+                <div className='mt-3 flex flex-1 flex-col border-t border-[#e0e1e2] pt-3'>
+                    {hasPrice && discountedPrice != null ? (
+                        <div>
+                            <div className='mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5'>
+                                {showOriginalPrice ? (
+                                    <span
+                                        className='text-[13px] font-medium text-[#9AA3A8] line-through decoration-[#9AA3A8] decoration-1'
+                                        aria-label={`Original price ${formatTourPrice(pricePerSeat)}`}
+                                    >
+                                        {formatTourPrice(pricePerSeat)}
+                                    </span>
+                                ) : null}
+                                <span className='font-jost text-lg font-bold leading-none tracking-tight text-[#012b32] tabular-nums sm:text-xl'>
+                                    {formatTourPrice(discountedPrice)}
+                                </span>
+                                <span className='text-[11px] text-[#707979]'>/ seat</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className='text-sm font-medium text-[#707979]'>Price on request</p>
+                    )}
+
+                    <span
+                        className={cn(
+                            'mt-3 inline-flex h-10 w-full items-center justify-center rounded-md',
+                            'text-sm font-semibold text-white',
+                            'transition-opacity duration-300 group-hover:opacity-95',
+                            HP_THEME_BTN_CLASS,
+                        )}
+                        style={HP_THEME_BTN_STYLE}
+                    >
+                        Book Tour
                     </span>
                 </div>
-
-                <span
-                    className={cn(
-                        'mt-3 inline-flex h-10 min-w-[128px] items-center justify-center rounded-full px-5 text-sm font-semibold uppercase tracking-[0.1em] transition-transform duration-300 group-hover:scale-[1.02] sm:mt-4 sm:h-11 sm:min-w-[140px]',
-                        HP_THEME_BTN_CLASS,
-                    )}
-                    style={HP_THEME_BTN_STYLE}
-                >
-                    Book Now
-                </span>
             </div>
         </Link>
     )
