@@ -150,7 +150,7 @@ export function ProfileAvatarUpload({
   }
 
   return (
-    <div className="flex w-[236px] flex-col items-start">
+    <div className="mx-auto flex w-full max-w-[236px] flex-col items-center md:items-start">
       <input
         id={inputId}
         type="file"
@@ -177,7 +177,7 @@ export function ProfileAvatarUpload({
           </button>
         ) : null}
 
-        <div className="relative h-full w-full overflow-hidden bg-white">
+        <div className="relative h-full w-full overflow-hidden rounded-xl bg-white">
           <Image
             src={displayAvatarSrc}
             alt="Profile photo"

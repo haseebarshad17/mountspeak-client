@@ -19,6 +19,12 @@ import type {
 } from "@/services/user-bookings/user-bookings.types";
 import { tourDetailPath } from "@/services/tours/tours.utils";
 
+import {
+  accountCardClassName,
+  accountPageHeadingClassName,
+  accountPageIntroClassName,
+} from "./account-ui";
+
 import { CalendarDays, History, RotateCcw, ShieldCheck, Star } from "lucide-react";
 
 type BookingsTab = "upcoming" | "past";
@@ -44,8 +50,8 @@ function tabButtonClassName(isActive: boolean): string {
 
 function BookingsPolicyPanels() {
   return (
-    <div className="flex flex-col gap-8 md:flex-row md:items-stretch">
-      <section className={cn("px-6 py-7 text-white md:w-[362px] md:shrink-0", HP_THEME_BG_CLASS)}>
+    <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-stretch">
+      <section className={cn("rounded-xl px-5 py-6 text-white sm:px-6 sm:py-7 md:w-[362px] md:shrink-0", HP_THEME_BG_CLASS)}>
         <h3
           className="text-[20px] leading-[28px]"
         >
@@ -58,7 +64,7 @@ function BookingsPolicyPanels() {
         </p>
       </section>
 
-      <section className="border border-[#C0C8C9] bg-white p-8 md:w-[362px] md:shrink-0">
+      <section className={cn(accountCardClassName, "p-5 sm:p-8 md:w-[362px] md:shrink-0")}>
         <h3
           className={cn(
             "text-xs font-medium uppercase tracking-[1.2px]",
@@ -109,7 +115,7 @@ function BookingsPolicyPanels() {
 
 function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
   return (
-    <article className="border border-[#C0C8C9] bg-[#F3F3F6] p-6 md:max-w-[362px] md:flex-1">
+    <article className={cn(accountCardClassName, "bg-[#F3F3F6] p-5 sm:p-6 md:max-w-[362px] md:flex-1")}>
       <div className="flex items-center justify-between">
         <span
           className={`px-2 py-1 text-xs font-medium uppercase ${tour.statusTone === "completed"
@@ -185,19 +191,15 @@ const BookingsPage = () => {
   return (
     <main className="w-full md:pl-4">
       <section className="mx-auto w-full max-w-[1100px]">
-        <h1
-          className="text-5xl font-semibold leading-[1.1] text-[#012b32]"
-        >
+        <h1 className={accountPageHeadingClassName}>
           Your Journeys
         </h1>
-        <p
-          className="mt-3 max-w-[670px] text-[16px] leading-[24px] text-[#404849]"
-        >
+        <p className={accountPageIntroClassName}>
           Manage your upcoming expeditions to the high peaks and serene valleys of
           Pakistan. Authority in every mile.
         </p>
 
-        <div className="mt-10 border-b border-[#C0C8C9] md:mt-16">
+        <div className="mt-6 border-b border-[#C0C8C9] sm:mt-8 md:mt-10">
           <div className="flex items-center gap-6">
             <button
               type="button"
@@ -221,14 +223,14 @@ const BookingsPage = () => {
         </div>
 
         {activeTab === "upcoming" ? (
-          <div className="mt-8 space-y-8 lg:mt-12">
+          <div className="mt-6 space-y-4 sm:mt-8 sm:space-y-6 lg:mt-10">
             {isBookingsLoading ? (
-              <div className="min-h-[265px] w-full animate-pulse border border-[#C0C8C9] bg-white" />
+              <div className={cn(accountCardClassName, "min-h-[220px] w-full animate-pulse sm:min-h-[265px]")} />
             ) : upcomingTours.length > 0 ? (
               upcomingTours.map((tour, index) => (
-                <article key={tour.id} className="min-h-[265px] w-full border border-[#C0C8C9] bg-white p-8">
-                  <div className="grid gap-2 md:grid-cols-[220px_1fr]">
-                    <div className="relative h-[192px] w-[192px] shrink-0 overflow-hidden bg-[#0b4552]">
+                <article key={tour.id} className={cn(accountCardClassName, "w-full p-5 sm:p-8")}>
+                  <div className="flex flex-col items-center gap-5 md:grid md:grid-cols-[220px_1fr] md:items-start">
+                    <div className="relative h-[192px] w-[192px] shrink-0 overflow-hidden rounded-xl bg-[#0b4552]">
                       <Image
                         src={tour.image}
                         alt={tour.title}
@@ -237,7 +239,7 @@ const BookingsPage = () => {
                         sizes="192px"
                       />
                     </div>
-                    <div className="flex flex-col justify-between">
+                    <div className="flex w-full min-w-0 flex-col justify-between md:w-auto">
                       <div className="flex flex-wrap items-center justify-between gap-4 ">
                         <span
                           className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
@@ -333,11 +335,11 @@ const BookingsPage = () => {
             )}
           </div>
         ) : (
-          <div className="mt-8 lg:mt-12">
+          <div className="mt-6 sm:mt-8 lg:mt-10">
             {isBookingsLoading ? (
-              <div className="h-[180px] max-w-[362px] animate-pulse border border-[#C0C8C9] bg-[#F3F3F6]" />
+              <div className={cn(accountCardClassName, "h-[180px] max-w-[362px] animate-pulse bg-[#F3F3F6]")} />
             ) : pastTours.length > 0 ? (
-              <div className="flex flex-col gap-8 md:flex-row md:flex-wrap">
+              <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:flex-wrap">
                 {pastTours.map((tour, index) => (
                   <PastExpeditionCard key={`${tour.title}-${tour.date}-${index}`} tour={tour} />
                 ))}
@@ -353,7 +355,7 @@ const BookingsPage = () => {
           </div>
         )}
 
-        <div className="mt-8 lg:mt-12">
+        <div className="mt-6 sm:mt-8 lg:mt-10">
           <BookingsPolicyPanels />
         </div>
       </section>
