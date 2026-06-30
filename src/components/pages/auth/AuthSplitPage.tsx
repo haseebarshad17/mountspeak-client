@@ -355,158 +355,162 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
         <div className={authFormPanelClassName}>
           <div className={authFormPanelInnerClassName}>
-          <div className={authFormContentClassName}>
-            <h1 className="mb-3 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[#1A1C1E] sm:text-5xl sm:leading-[56px]">
-              Welcome back.
-            </h1>
-            <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]">
-              Please enter your details to access your dashboard.
-            </p>
+            <div className={authFormContentClassName}>
+              <h1 className="mb-3 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[#1A1C1E] sm:text-5xl sm:leading-[56px]">
+                {isLogin ? `Welcome to ${brandName}` : `Join ${brandName}`}
+              </h1>
+              <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]">
+                {isLogin
+                  ? "Please enter your details to explore trips and manage your bookings."
+                  : "Create your account to book tours and plan your next adventure."}
+              </p>
 
-            <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">
-              <Link
-                href={`${loginPath}${nextQuery}`}
-                className={cn(
-                  "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
-                  isLogin ? HP_THEME_TAB_ACTIVE_CLASS : HP_THEME_TAB_INACTIVE_CLASS,
-                )}
-              >
-                Sign In
-                {isLogin ? (
-                  <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
-                ) : null}
-              </Link>
-              <Link
-                href={`${registerPath}${nextQuery}`}
-                className={cn(
-                  "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
-                  isLogin ? HP_THEME_TAB_INACTIVE_CLASS : HP_THEME_TAB_ACTIVE_CLASS,
-                )}
-              >
-                Create Account
+              <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">
+                <Link
+                  href={`${loginPath}${nextQuery}`}
+                  className={cn(
+                    "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
+                    isLogin ? HP_THEME_TAB_ACTIVE_CLASS : HP_THEME_TAB_INACTIVE_CLASS,
+                  )}
+                >
+                  Sign In
+                  {isLogin ? (
+                    <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
+                  ) : null}
+                </Link>
+                <Link
+                  href={`${registerPath}${nextQuery}`}
+                  className={cn(
+                    "relative pb-4 text-xs font-semibold uppercase tracking-[0.6px]",
+                    isLogin ? HP_THEME_TAB_INACTIVE_CLASS : HP_THEME_TAB_ACTIVE_CLASS,
+                  )}
+                >
+                  Create Account
+                  {!isLogin ? (
+                    <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
+                  ) : null}
+                </Link>
+              </div>
+
+              <form onSubmit={onSubmit} className="mt-[33px] space-y-6">
                 {!isLogin ? (
-                  <span className={cn("absolute bottom-0 left-0 h-[2px] w-full", HP_THEME_TAB_INDICATOR_CLASS)} />
+                  <div>
+                    <label
+                      htmlFor="auth-full-name"
+                      className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
+                    >
+                      Full Name
+                    </label>
+                    <input
+                      id="auth-full-name"
+                      type="text"
+                      value={fullName}
+                      onChange={(event) => setFullName(event.target.value)}
+                      placeholder="Full Name"
+                      className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                    />
+                  </div>
                 ) : null}
-              </Link>
-            </div>
 
-            <form onSubmit={onSubmit} className="mt-[33px] space-y-6">
-              {!isLogin ? (
                 <div>
                   <label
-                    htmlFor="auth-full-name"
+                    htmlFor="auth-email"
                     className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
                   >
-                    Full Name
+                    Email Address
                   </label>
                   <input
-                    id="auth-full-name"
-                    type="text"
-                    value={fullName}
-                    onChange={(event) => setFullName(event.target.value)}
-                    placeholder="Full Name"
+                    id="auth-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="example@gmail.com"
                     className={cn("mt-1", authInputClassName, authInputBorderClassName)}
                   />
                 </div>
-              ) : null}
 
-              <div>
-                <label
-                  htmlFor="auth-email"
-                  className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="auth-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="example@gmail.com"
-                  className={cn("mt-1", authInputClassName, authInputBorderClassName)}
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="auth-password"
-                    className="block text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]"
-                  >
-                    Password
-                  </label>
-                  {isLogin ? (
-                    <Link
-                      href={forgotPasswordPath}
-                      className={cn("text-xs font-semibold", HP_THEME_LINK_CLASS)}
-                    >
-                      Forgot?
-                    </Link>
-                  ) : null}
-                </div>
-                <PasswordField
-                  id="auth-password"
-                  value={password}
-                  onChange={setPassword}
-                />
-              </div>
-
-              {!isLogin ? (
                 <div>
-                  <label
-                    htmlFor="auth-confirm-password"
-                    className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                  >
-                    Confirm Password
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="auth-password"
+                      className="block text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]"
+                    >
+                      Password
+                    </label>
+                    {isLogin ? (
+                      <Link
+                        href={forgotPasswordPath}
+                        className={cn("text-xs font-semibold", HP_THEME_LINK_CLASS)}
+                      >
+                        Forgot?
+                      </Link>
+                    ) : null}
+                  </div>
                   <PasswordField
-                    id="auth-confirm-password"
-                    value={confirmPassword}
-                    onChange={setConfirmPassword}
-                    borderClassName="border-[#9aa0a6]"
+                    id="auth-password"
+                    value={password}
+                    onChange={setPassword}
                   />
                 </div>
-              ) : null}
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                loadingText={isLogin ? "Signing In..." : "Creating Account..."}
-                className="mt-10 w-full"
-              >
-                {isLogin ? "Sign In" : "Create Account"}
-              </Button>
-            </form>
-            <div className="mt-8 mb-10 flex items-center gap-4">
-              <span className="h-px flex-1 bg-[#C0C8C966]" />
-              <span className="text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]">
-                or continue with
-              </span>
-              <span className="h-px flex-1 bg-[#C0C8C966]" />
-            </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onGoogleSignIn}
-              loading={isGooglePending}
-              loadingText="Please wait..."
-              className={cn("w-full", HP_THEME_OUTLINE_BTN_CLASS)}
-            >
-              {!isGooglePending ? (
+                {!isLogin ? (
+                  <div>
+                    <label
+                      htmlFor="auth-confirm-password"
+                      className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
+                    >
+                      Confirm Password
+                    </label>
+                    <PasswordField
+                      id="auth-confirm-password"
+                      value={confirmPassword}
+                      onChange={setConfirmPassword}
+                      borderClassName="border-[#9aa0a6]"
+                    />
+                  </div>
+                ) : null}
+                <Button
+                  type="submit"
+                  loading={isSubmitting}
+                  loadingText={isLogin ? "Signing In..." : "Creating Account..."}
+                  className="mt-10 w-full"
+                >
+                  {isLogin ? "Sign In" : "Create Account"}
+                </Button>
+              </form>
+              <div className="mt-8 mb-10 flex items-center gap-4">
+                <span className="h-px flex-1 bg-[#C0C8C966]" />
+                <span className="text-xs font-bold uppercase 
+                tracking-[1.2px] text-[#1A1C1E]"
+                >
+                  or continue with
+                </span>
+                <span className="h-px flex-1 bg-[#C0C8C966]" />
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onGoogleSignIn}
+                loading={isGooglePending}
+                loadingText="Please wait..."
+                className={cn("w-full", HP_THEME_OUTLINE_BTN_CLASS)}
+              >
+
                 <Image
                   src="/images/pages/auth/SVG.svg"
                   alt="Google icon"
                   width={20}
                   height={20}
                 />
-              ) : null}
-              <span>Google</span>
-            </Button>
+                <span>Google</span>
+              </Button>
 
-            <p className="mt-10 pb-4 text-center text-xs font-semibold uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
-              © {new Date().getFullYear()} {brandName}
-            </p>
-          </div>
+              <p className="mt-10 pb-4 text-center text-xs font-semibold 
+              uppercase tracking-[1.2px] leading-[19.5px] text-[#1A1C1E]">
+                © {new Date().getFullYear()} {brandName}
+              </p>
+            </div>
           </div>
         </div>
       </div>

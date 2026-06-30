@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils/clsxUtils'
 import { resolveProfileAvatarUrl } from '@/lib/profile/avatar-url'
 import { useOptionalUserProfile } from '@/services/auth/auth.queries'
-import { LayoutDashboard, LogOut, UserRound } from 'lucide-react'
+import { BookMarked, LogOut, UserRound } from 'lucide-react'
 
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 
@@ -103,8 +103,23 @@ export function ProfileMenu({
                             onNavigate?.()
                         }}
                     >
-                        <LayoutDashboard className='h-4 w-4 shrink-0' />
-                        Dashboard
+                        <UserRound className='h-4 w-4 shrink-0' />
+                        Profile
+                    </PrefixedLink>
+                    <PrefixedLink
+                        href='/bookings'
+                        role='menuitem'
+                        className={cn(
+                            'flex w-full items-center justify-start gap-2 rounded-sm px-2 py-1.5 text-sm text-[#1A1C1E] transition-colors hover:bg-neutral-50',
+                            menuItemClassName,
+                        )}
+                        onClick={() => {
+                            setOpen(false)
+                            onNavigate?.()
+                        }}
+                    >
+                        <BookMarked className='h-4 w-4 shrink-0' />
+                        Bookings
                     </PrefixedLink>
                     <div className='my-1 h-px bg-[#C0C8C9]/40' aria-hidden />
                     <button

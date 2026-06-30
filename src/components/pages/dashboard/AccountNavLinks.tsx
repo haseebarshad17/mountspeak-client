@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils/clsxUtils";
 type AccountNavLinksProps = {
   onNavigate?: () => void;
   variant?: "sidebar" | "drawer";
+  drawerTone?: "dark" | "light";
 };
 
 const sidebarLinkClassName = (isActive: boolean) =>
@@ -18,24 +19,44 @@ const sidebarLinkClassName = (isActive: boolean) =>
       : "border-transparent border-l-transparent text-[#2f3b45] hover:bg-[#0640451A]",
   );
 
-const drawerLinkClassName = (isActive: boolean) =>
+const drawerLinkClassName = (isActive: boolean, tone: "dark" | "light") =>
   cn(
-    "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-white transition hover:bg-white/15",
-    isActive && "bg-white/15 font-semibold",
+    "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition",
+    tone === "light"
+      ? cn(
+          "text-neutral-800 hover:bg-neutral-100",
+          isActive && "bg-neutral-100 font-semibold",
+        )
+      : cn(
+          "text-white hover:bg-white/15",
+          isActive && "bg-white/15 font-semibold",
+        ),
   );
 
-export function AccountNavLinks({ onNavigate, variant = "sidebar" }: AccountNavLinksProps) {
+export function AccountNavLinks({
+  onNavigate,
+  variant = "sidebar",
+  drawerTone = "dark",
+}: AccountNavLinksProps) {
   const internalPathname = useInternalPathname();
   const dashboardPath = usePreviewPath("/dashboard");
   const bookingsPath = usePreviewPath("/bookings");
   const isProfileActive = internalPathname.startsWith("/dashboard");
   const isBookingsActive = internalPathname.startsWith("/bookings");
-  const linkClassName = variant === "drawer" ? drawerLinkClassName : sidebarLinkClassName;
+  const linkClassName =
+    variant === "drawer"
+      ? (isActive: boolean) => drawerLinkClassName(isActive, drawerTone)
+      : sidebarLinkClassName;
 
   if (variant === "drawer") {
     return (
       <div className="flex flex-col gap-1">
-        <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
+        <p
+          className={cn(
+            "px-3 pb-1 text-xs font-semibold uppercase tracking-[0.12em]",
+            drawerTone === "light" ? "text-neutral-500" : "text-white/70",
+          )}
+        >
           Account
         </p>
         <Link
@@ -43,7 +64,13 @@ export function AccountNavLinks({ onNavigate, variant = "sidebar" }: AccountNavL
           onClick={onNavigate}
           className={linkClassName(isProfileActive)}
         >
-          <UserRound className="h-4 w-4 shrink-0 text-white/90" aria-hidden />
+          <UserRound
+            className={cn(
+              "h-4 w-4 shrink-0",
+              drawerTone === "light" ? "text-neutral-600" : "text-white/90",
+            )}
+            aria-hidden
+          />
           <span>Profile</span>
         </Link>
         <Link
@@ -51,7 +78,13 @@ export function AccountNavLinks({ onNavigate, variant = "sidebar" }: AccountNavL
           onClick={onNavigate}
           className={linkClassName(isBookingsActive)}
         >
-          <BookMarked className="h-4 w-4 shrink-0 text-white/90" aria-hidden />
+          <BookMarked
+            className={cn(
+              "h-4 w-4 shrink-0",
+              drawerTone === "light" ? "text-neutral-600" : "text-white/90",
+            )}
+            aria-hidden
+          />
           <span>Bookings</span>
         </Link>
       </div>

@@ -9,11 +9,9 @@ import {
     HP_OUTLINE_BTN_STYLE,
     HP_THEME_BG_CLASS,
     HP_THEME_OUTLINE_BTN_CLASS,
-    HP_THEME_TEXT_CLASS,
     STATIC_UI_COLORS,
 } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
-import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
@@ -110,11 +108,9 @@ const Header = ({ page }: HeaderProps) => {
     const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
     const isAccountPage = isDashboardPage || isBookingsPage
     const useFixedHeader = isTermsPage
-    const isAgencySite = useIsAgencySite()
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
-    const showAuthActions = isAgencySite === true
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(useFixedHeader)
@@ -122,7 +118,7 @@ const Header = ({ page }: HeaderProps) => {
     const { header, branding } = page
     const colors = STATIC_UI_COLORS
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
-    const dashboardHref = usePrefixedHref('/dashboard') ?? '/dashboard'
+    const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const useDarkChrome = useFixedHeader || (isAccountPage && !isScrolled)
 
     useEffect(() => {
@@ -213,6 +209,21 @@ const Header = ({ page }: HeaderProps) => {
             </Button>
         )
     }
+
+    const renderMobileGuestAuthButtons = (onNavigate?: () => void) => (
+        <div className='flex flex-col gap-3'>
+            {renderLoginButton({ mobile: true, onNavigate })}
+            <Button
+                variant='default'
+                size='sm'
+                href={signUpHref}
+                onClick={onNavigate}
+                className='!w-full'
+            >
+                {header.auth.signUp.label}
+            </Button>
+        </div>
+    )
 
     const logoutButtonClassName = cn(
         'w-max min-w-[120px] border px-5 !font-normal !normal-case !tracking-normal',
@@ -325,11 +336,9 @@ const Header = ({ page }: HeaderProps) => {
 
 
                             {/* Buttons  */}
-                            {showAuthActions ? (
-                                <div className='ml-10 flex items-center'>
-                                    {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
-                                </div>
-                            ) : null}
+                            <div className='ml-10 flex items-center'>
+                                {isLoggedIn ? renderLoggedInAuthAction() : renderLoginButton()}
+                            </div>
                         </nav>
 
                         {/* Mobile menu trigger (auth actions live inside the drawer) */}
@@ -419,7 +428,7 @@ const Header = ({ page }: HeaderProps) => {
                             />
                         ))}
 
-                        {isAccountPage ? (
+                        {isLoggedIn ? (
                             <>
                                 <div className='my-2 h-px shrink-0 bg-white/20' aria-hidden />
                                 <AccountNavLinks
@@ -430,35 +439,11 @@ const Header = ({ page }: HeaderProps) => {
                         ) : null}
                     </nav>
 
-                    {showAuthActions ? (
-                        <div className='flex shrink-0 flex-col gap-3 border-t border-white/15 pt-4'>
-                            {isLoggedIn ? (
-                                isAccountPage ? (
-                                    renderLogoutButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
-                                ) : (
-                                    <>
-                                        <Button
-                                            variant='secondary'
-                                            className={cn('!w-full rounded-md bg-white', HP_THEME_TEXT_CLASS)}
-                                            href={dashboardHref}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            Dashboard
-                                        </Button>
-                                        <Button
-                                            variant='transparent'
-                                            className='!w-full rounded-md border border-white/35 text-white hover:bg-white/10'
-                                            onClick={handleLogout}
-                                        >
-                                            {header.auth.logout.label}
-                                        </Button>
-                                    </>
-                                )
-                            ) : (
-                                renderLoginButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
-                            )}
-                        </div>
-                    ) : null}
+                    <div className='flex shrink-0 flex-col gap-3 border-t border-white/15 pt-4'>
+                        {isLoggedIn
+                            ? renderLogoutButton({ mobile: true, onNavigate: () => setIsMobileMenuOpen(false) })
+                            : renderMobileGuestAuthButtons(() => setIsMobileMenuOpen(false))}
+                    </div>
                 </aside>
             </div>
         </>
