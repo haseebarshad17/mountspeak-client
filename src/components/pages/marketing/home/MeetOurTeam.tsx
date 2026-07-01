@@ -2,12 +2,15 @@
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import { HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
-import { cn } from '@/lib/utils/clsxUtils'
 import type { Member } from '@/services/homepage/homepage.page.types'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { STATIC_UI_COLORS } from '@/data/homepage'
+import {
+    configureSwiperNavigation,
+    SwiperSideNavigation,
+    useSwiperNavigationRefs,
+} from '@/components/ui/swiper-side-navigation'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
-import React, { useRef } from 'react'
+import React from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -46,12 +49,53 @@ function TeamCard({ name, role, image }: Member) {
 
 const TEAM_CAROUSEL_THRESHOLD = 4
 
+function TeamMembersSwiper({ members }: { members: Member[] }) {
+    const { prevRef, nextRef } = useSwiperNavigationRefs()
+
+    return (
+        <Swiper
+            modules={[Navigation, Autoplay]}
+            slidesPerView={2}
+            spaceBetween={12}
+            breakpoints={{
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 24,
+                },
+                1024: {
+                    slidesPerView: 4,
+                    spaceBetween: 32,
+                },
+            }}
+            loop
+            speed={600}
+            autoplay={{
+                delay: 4500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            }}
+            navigation={{
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+            }}
+            onBeforeInit={(swiper) => {
+                configureSwiperNavigation(swiper, prevRef.current, nextRef.current)
+            }}
+            className='select-none !overflow-hidden'
+        >
+            {members.map((member) => (
+                <SwiperSlide key={member.name} className='!h-auto'>
+                    <TeamCard {...member} />
+                </SwiperSlide>
+            ))}
+        </Swiper>
+    )
+}
+
 const MeetOurTeam = ({ page }: HomepagePageProps) => {
     const section = page.sections.meetOurTeam
     const members = section.members ?? []
     const useCarousel = members.length > TEAM_CAROUSEL_THRESHOLD
-    const prevRef = useRef<HTMLButtonElement>(null)
-    const nextRef = useRef<HTMLButtonElement>(null)
 
     return (
         <section className='bg-white' aria-labelledby='meet-our-team-heading'>
@@ -65,79 +109,16 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
                     >
                         {section.title}
                     </h2>
-
-                    {useCarousel ? (
-                        <div className='mt-5 hidden items-center justify-center gap-2 sm:mt-6 sm:flex'>
-                            <button
-                                ref={prevRef}
-                                type='button'
-                                aria-label='Previous team members'
-                                className={cn(
-                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
-                                    HP_THEME_TEXT_CLASS,
-                                )}
-                            >
-                                <ChevronLeft className='h-5 w-5' aria-hidden />
-                            </button>
-                            <button
-                                ref={nextRef}
-                                type='button'
-                                aria-label='Next team members'
-                                className={cn(
-                                    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C0C8C966] bg-white transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40',
-                                    HP_THEME_TEXT_CLASS,
-                                )}
-                            >
-                                <ChevronRight className='h-5 w-5' aria-hidden />
-                            </button>
-                        </div>
-                    ) : null}
                 </header>
 
                 {useCarousel ? (
                     <div className='mx-auto max-w-[1200px] overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
-                        <Swiper
-                            modules={[Navigation, Autoplay]}
-                            slidesPerView={2}
-                            spaceBetween={12}
-                            breakpoints={{
-                                640: {
-                                    slidesPerView: 2,
-                                    spaceBetween: 24,
-                                },
-                                1024: {
-                                    slidesPerView: 4,
-                                    spaceBetween: 32,
-                                },
-                            }}
-                            loop
-                            speed={600}
-                            autoplay={{
-                                delay: 4500,
-                                disableOnInteraction: false,
-                                pauseOnMouseEnter: true,
-                            }}
-                            navigation={{
-                                prevEl: prevRef.current,
-                                nextEl: nextRef.current,
-                            }}
-                            onBeforeInit={(swiper) => {
-                                if (
-                                    swiper.params.navigation &&
-                                    typeof swiper.params.navigation !== 'boolean'
-                                ) {
-                                    swiper.params.navigation.prevEl = prevRef.current
-                                    swiper.params.navigation.nextEl = nextRef.current
-                                }
-                            }}
-                            className='select-none !overflow-hidden'
+                        <SwiperSideNavigation
+                            prevLabel='Previous team members'
+                            nextLabel='Next team members'
                         >
-                            {members.map((member) => (
-                                <SwiperSlide key={member.name} className='!h-auto'>
-                                    <TeamCard {...member} />
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
+                            <TeamMembersSwiper members={members} />
+                        </SwiperSideNavigation>
                     </div>
                 ) : (
                     <div className='mx-auto grid max-w-[1200px] grid-cols-2 gap-3 pt-8 sm:gap-8 sm:pt-12 lg:grid-cols-4 lg:gap-8 lg:pt-14'>
