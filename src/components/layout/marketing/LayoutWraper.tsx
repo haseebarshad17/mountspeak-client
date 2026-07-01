@@ -4,7 +4,7 @@ import React from 'react'
 import { useInternalPathname } from '@/hooks/useAgencyPreviewBase';
 import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
-import { Toaster } from 'sonner';
+import { AppToaster } from '@/components/ui/app-toaster';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
 import { DUMMY_HOMEPAGE_PAGE } from '@/lib/homepage/default-homepage';
@@ -46,22 +46,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const isBookingRoute = isExcludedRoute(pathname, ["/booking", "/booking/*"]);
     const headerPage = page ?? DUMMY_HOMEPAGE_PAGE;
 
-    const toaster = (
-        <Toaster
-            position='bottom-right'
-            closeButton
-            toastOptions={{
-                classNames: {
-                    toast:
-                        'border border-white/20 bg-black/45 text-white backdrop-blur-lg shadow-xl shadow-black/30',
-                    title: 'text-sm font-semibold',
-                    description: 'text-xs text-white/80',
-                    error: 'border-[#ffb4b4]/40',
-                    success: 'border-[#86efac]/40',
-                },
-            }}
-        />
-    );
+    const toaster = <AppToaster />;
 
     return (
         <TanstackQueryProvider>
