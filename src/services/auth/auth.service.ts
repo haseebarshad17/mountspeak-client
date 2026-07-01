@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { MessageCode } from '@/lib/messages/codes'
+import { mapAuthErrorToMessageCode } from '@/lib/auth/map-auth-error'
 import type {
     ForgotPasswordDTO,
     GoogleLoginDTO,
@@ -86,7 +87,13 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                     }
                 })
 
-            if (error) throw error
+            if (error) {
+                throw new Error(mapAuthErrorToMessageCode(error, 'signup'))
+            }
+
+            if (data.user?.identities?.length === 0) {
+                throw new Error(MessageCode.AUTH_EMAIL_ALREADY_REGISTERED)
+            }
 
             return data
         },
@@ -99,7 +106,9 @@ export const authService = ({ supabase }: AuthServiceProps) => {
                     password: payload.password
                 })
 
-            if (error) throw error
+            if (error) {
+                throw new Error(mapAuthErrorToMessageCode(error, 'login'))
+            }
 
             if (data.user && payload.agency_id) {
                 await enforceAgencyAccess(supabase, data.user.id, payload.agency_id)

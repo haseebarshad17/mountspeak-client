@@ -15,6 +15,7 @@ import {
 } from "@/services/auth/auth.queries";
 import { isEmailVerified } from "@/lib/auth/email-verification";
 import { fetchSignupAgencyId } from "@/lib/auth/resolve-signup-agency-id";
+import { mapAuthErrorToMessageCode } from "@/lib/auth/map-auth-error";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
@@ -309,15 +310,9 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       router.push(redirectAfterAuth);
       router.refresh();
     } catch (error) {
-      const fallback = isLogin
-        ? MessageCode.API_AUTH_LOGIN_FAILED
-        : MessageCode.API_AUTH_SIGNUP_FAILED;
-
-      if (error instanceof Error && isMessageCode(error.message)) {
-        toast.error(getMessage(error.message));
-      } else {
-        toast.error(getMessage(fallback));
-      }
+      toast.error(
+        getMessage(mapAuthErrorToMessageCode(error, isLogin ? 'login' : 'signup')),
+      );
     }
   };
 
@@ -430,22 +425,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="auth-password"
-                      className="block text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]"
-                    >
-                      Password
-                    </label>
-                    {isLogin ? (
-                      <Link
-                        href={forgotPasswordPath}
-                        className={cn("text-xs font-semibold", HP_THEME_LINK_CLASS)}
-                      >
-                        Forgot?
-                      </Link>
-                    ) : null}
-                  </div>
+                  <label
+                    htmlFor="auth-password"
+                    className="block text-xs font-bold uppercase tracking-[1.2px] text-[#1A1C1E]"
+                  >
+                    Password
+                  </label>
                   <PasswordField
                     id="auth-password"
                     value={password}
@@ -469,14 +454,36 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     />
                   </div>
                 ) : null}
-                <Button
-                  type="submit"
-                  loading={isSubmitting}
-                  loadingText={isLogin ? "Signing In..." : "Creating Account..."}
-                  className="mt-10 w-full"
-                >
-                  {isLogin ? "Sign In" : "Create Account"}
-                </Button>
+
+                {isLogin ? (
+                  <div className="space-y-4">
+                    <div className="flex justify-end">
+                      <Link
+                        href={forgotPasswordPath}
+                        className={cn("text-xs font-semibold", HP_THEME_LINK_CLASS)}
+                      >
+                        Forgot?
+                      </Link>
+                    </div>
+                    <Button
+                      type="submit"
+                      loading={isSubmitting}
+                      loadingText="Signing In..."
+                      className="w-full"
+                    >
+                      Sign In
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    type="submit"
+                    loading={isSubmitting}
+                    loadingText="Creating Account..."
+                    className="mt-10 w-full"
+                  >
+                    Create Account
+                  </Button>
+                )}
               </form>
               <div className="mt-8 mb-10 flex items-center gap-4">
                 <span className="h-px flex-1 bg-[#C0C8C966]" />
