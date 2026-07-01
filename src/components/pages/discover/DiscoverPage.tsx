@@ -41,47 +41,50 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
 
     return (
         <>
-            <PageHeroBanner backgroundImage={backgroundImage} fixedHeight>
-                    <div id='services' className={PAGE_HERO_CONTENT_CLASS}>
-                        <h1
-                            className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                        >
-                            {ourServices.title}
-                        </h1>
-                        <p
-                            className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'
-                        >
-                            Explore the full range of travel services we offer — from curated expeditions and
-                            custom itineraries to on-ground support across Pakistan.
-                        </p>
-                    </div>
+            <PageHeroBanner
+                backgroundImage={backgroundImage}
+                fixedHeight
+                className='px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:px-5 lg:pt-5 pb-0'
+            >
+                <div id='services' className={PAGE_HERO_CONTENT_CLASS}>
+                    <h1
+                        className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
+                    >
+                        {ourServices.title}
+                    </h1>
+                    <p
+                        className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'
+                    >
+                        Explore the full range of travel services we offer — from curated expeditions and
+                        custom itineraries to on-ground support across Pakistan.
+                    </p>
+                </div>
             </PageHeroBanner>
 
             <main
-                className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'
-                style={{ backgroundColor: ourServices.backgroundColor }}
+                className='pb-12 pt-8 sm:pb-20 sm:pt-12 lg:pt-16'
+            // style={{ backgroundColor: ourServices.backgroundColor }}
             >
                 <div className='agency-container'>
-                    <div className='mx-auto w-full max-w-[820px] px-0'>
-                    <header className='text-center'>
+                    <header className='mx-auto max-w-2xl text-center'>
                         <h2
-                            className='agency-section-heading pt-3 text-[32px] font-medium leading-tight sm:pt-4 sm:text-[40px] sm:leading-[48px]'
+                            className='agency-section-heading text-[32px] font-medium leading-tight sm:text-[40px] sm:leading-[48px]'
                             style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             All services
                         </h2>
                     </header>
 
-                    <div className='grid w-full grid-cols-1 gap-4 pt-10 sm:gap-5 sm:pt-12 md:grid-cols-2 md:pt-14 lg:gap-6 lg:pt-16'>
+                    <div className='mx-auto mt-6 grid w-full max-w-[1312px] grid-cols-1 gap-3 sm:mt-8 sm:gap-5 md:grid-cols-2 lg:mt-10 lg:gap-6'>
                         {ourServices.items.map((service) => (
                             <ServiceCard key={service.title} {...service} />
                         ))}
                     </div>
 
-                    <section className='mt-14'>
+                    <section className='mx-auto mt-10 w-full max-w-[1312px] sm:mt-12 lg:mt-16'>
                         <div
                             className={cn(
-                                'border px-6 py-12 text-center text-white sm:px-10 sm:py-14',
+                                'border px-6 py-12 text-center text-white sm:px-10 sm:py-14 rounded-xl',
                                 HP_THEME_BORDER_CLASS,
                                 HP_THEME_BG_CLASS,
                             )}
@@ -115,7 +118,6 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                             </div>
                         </div>
                     </section>
-                    </div>
                 </div>
             </main>
         </>

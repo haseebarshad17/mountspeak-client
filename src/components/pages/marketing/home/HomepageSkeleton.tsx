@@ -44,7 +44,7 @@ function PlanPerfectTripSkeleton() {
     return (
         <section className='pb-10 sm:pb-20 lg:pb-[112px]'>
             <div className='agency-container'>
-                <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-8 lg:gap-12 xl:gap-[100px]'>
+                <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10 lg:gap-12 xl:gap-14'>
                     <Skeleton className='aspect-[580/448] w-full max-w-[580px] justify-self-center rounded-2xl md:justify-self-start' />
                     <div className='flex w-full max-w-[612px] flex-col gap-4'>
                         <Skeleton className='h-4 w-24' />

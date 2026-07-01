@@ -34,7 +34,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                             </p>
                         </div>
 
-                        <div className='mx-auto w-full max-w-[867px] pt-10 sm:pt-14 md:pt-20 lg:pt-24 xl:pt-[180px]'>
+                        <div className='mx-auto w-full max-w-[867px] pt-6 sm:pt-8 md:pt-10 lg:pt-12 xl:pt-14'>
                             <HeroFilters page={page} tourLocations={tourLocations} />
                         </div>
                     </div>

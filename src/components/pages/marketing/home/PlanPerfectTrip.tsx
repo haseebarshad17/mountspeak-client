@@ -10,7 +10,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
     return (
         <section aria-labelledby='plan-perfect-trip-heading'>
             <div className='agency-container'>
-                <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-8 lg:gap-12 xl:gap-[100px]'>
+                <div className='grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10 lg:gap-12 xl:gap-14'>
                     <div className='w-full max-w-[580px] justify-self-center md:justify-self-start'>
                         <HomepageMediaImage
                             src={section.image.src}
@@ -21,7 +21,7 @@ const PlanPerfectTrip = ({ page }: HomepagePageProps) => {
                         />
                     </div>
 
-                    <div className='w-full max-w-[612px] pt-0 md:pt-2 lg:pt-0 xl:pt-[38px]'>
+                    <div className='w-full max-w-[612px]'>
                         <span
                             className='text-sm font-semibold uppercase tracking-[0.12em] sm:text-base'
                             style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-body)' }}

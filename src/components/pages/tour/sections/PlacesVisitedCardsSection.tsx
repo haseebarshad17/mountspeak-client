@@ -1,10 +1,15 @@
 'use client'
 
 import React from 'react'
-import { Autoplay } from 'swiper/modules'
+import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import {
+    configureSwiperNavigation,
+    SwiperSideNavigation,
+    useSwiperNavigationRefs,
+} from '@/components/ui/swiper-side-navigation'
 
 import type { TourPage } from './tour-page.types'
 
@@ -38,6 +43,43 @@ function PlaceVisitedCard({ card }: { card: PlaceCard }) {
     )
 }
 
+function PlacesVisitedSwiper({ cards, canSlide }: { cards: PlaceCard[]; canSlide: boolean }) {
+    const { prevRef, nextRef } = useSwiperNavigationRefs()
+
+    return (
+        <Swiper
+            modules={[Navigation, Autoplay]}
+            slidesPerView={1.12}
+            spaceBetween={16}
+            speed={500}
+            loop={canSlide}
+            navigation={{
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+            }}
+            onBeforeInit={(swiper) => {
+                configureSwiperNavigation(swiper, prevRef.current, nextRef.current)
+            }}
+            autoplay={
+                canSlide
+                    ? {
+                        delay: 4500,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                    }
+                    : false
+            }
+            className="select-none !overflow-visible"
+        >
+            {cards.map((card) => (
+                <SwiperSlide key={card.id} className="!h-auto">
+                    <PlaceVisitedCard card={card} />
+                </SwiperSlide>
+            ))}
+        </Swiper>
+    )
+}
+
 export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionProps) {
     const { placesVisitedSection } = page
     const { cards } = placesVisitedSection
@@ -57,30 +99,15 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                     </p>
                 </div>
 
-                <div className="mt-[35px] overflow-hidden sm:hidden">
-                    <Swiper
-                        modules={[Autoplay]}
-                        slidesPerView={1.12}
-                        spaceBetween={16}
-                        speed={500}
-                        loop={canSlide}
-                        autoplay={
-                            canSlide
-                                ? {
-                                    delay: 4500,
-                                    disableOnInteraction: false,
-                                    pauseOnMouseEnter: true,
-                                }
-                                : false
-                        }
-                        className="select-none !overflow-visible"
+                <div className="mt-[35px] sm:hidden">
+                    <SwiperSideNavigation
+                        enabled={canSlide}
+                        prevLabel="Previous place"
+                        nextLabel="Next place"
+                        className="px-10"
                     >
-                        {cards.map((card) => (
-                            <SwiperSlide key={card.id} className="!h-auto">
-                                <PlaceVisitedCard card={card} />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                        <PlacesVisitedSwiper cards={cards} canSlide={canSlide} />
+                    </SwiperSideNavigation>
                 </div>
 
                 <div className="mt-[35px] hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
