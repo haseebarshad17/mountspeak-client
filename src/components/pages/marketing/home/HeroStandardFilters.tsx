@@ -92,41 +92,87 @@ function LocationDropdownList({
 type DateFieldProps = {
     id: string
     label: string
+    placeholder: string
     value: string
     min: string
     onChange: (event: ChangeEvent<HTMLInputElement>) => void
     className?: string
+    fieldClassName?: string
 }
 
-function DateField({ id, label, value, min, onChange, className }: DateFieldProps) {
+function formatHeroDisplayDate(isoDate: string): string {
+    const date = new Date(`${isoDate}T12:00:00`)
+    if (Number.isNaN(date.getTime())) return isoDate
+
+    return new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    }).format(date)
+}
+
+function DateField({
+    id,
+    label,
+    placeholder,
+    value,
+    min,
+    onChange,
+    className,
+    fieldClassName,
+}: DateFieldProps) {
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    const openDatePicker = () => {
+        const input = inputRef.current
+        if (!input) return
+
+        if (typeof input.showPicker === 'function') {
+            try {
+                input.showPicker()
+                return
+            } catch {
+                // showPicker can throw if not triggered by a user gesture in some browsers
+            }
+        }
+
+        input.focus()
+        input.click()
+    }
+
     return (
-        <div className={cn("min-w-0 w-full", className)}>
-            <label
-                htmlFor={id}
+        <div className={cn('min-w-0 w-full', className)}>
+            <button
+                type="button"
+                onClick={openDatePicker}
                 className={cn(
-                    "flex h-12 w-full min-w-0 items-center gap-2 overflow-hidden rounded-md border border-layout-separator bg-neutral-50 px-3 text-left transition hover:bg-neutral-100",
-                    "xs:gap-2.5 xs:px-4",
-                    "xl:h-full xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB]",
+                    'relative flex h-12 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-layout-separator bg-neutral-50 px-3 text-left transition hover:bg-neutral-100',
+                    'xs:gap-2.5 xs:px-4',
+                    'xl:h-full xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB]',
+                    fieldClassName,
                 )}
             >
                 <Calendar className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
-                <span className="sr-only">{label}</span>
-                <input
-                    id={id}
-                    type="date"
-                    value={value}
-                    min={min}
-                    onChange={onChange}
-                    aria-label={label}
+                <span
                     className={cn(
-                        "min-w-0 flex-1 border-0 bg-transparent p-0 text-xs font-medium text-neutral-700 outline-none",
-                        "xs:text-sm",
-                        "[&::-webkit-calendar-picker-indicator]:ml-1 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
-                        "[&::-webkit-datetime-edit]:min-w-0 [&::-webkit-datetime-edit-fields-wrapper]:min-w-0",
-                        !value && "text-neutral-400",
+                        'min-w-0 flex-1 truncate text-left text-xs font-medium xs:text-sm',
+                        value ? 'text-neutral-700' : 'text-neutral-500',
                     )}
-                />
-            </label>
+                >
+                    {value ? formatHeroDisplayDate(value) : placeholder}
+                </span>
+            </button>
+            <input
+                ref={inputRef}
+                id={id}
+                type="date"
+                value={value}
+                min={min}
+                onChange={onChange}
+                aria-label={label}
+                tabIndex={-1}
+                className="sr-only"
+            />
         </div>
     )
 }
@@ -209,6 +255,8 @@ export default function HeroStandardFilters({
     const heroSearch = page?.sections.hero.searchFilters ?? DEFAULT_HERO_SEARCH_FILTERS
     const startDateLabel = heroSearch.startDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.startDateLabel
     const endDateLabel = heroSearch.endDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.endDateLabel
+    const startDatePlaceholder = startDateLabel ?? 'Start date'
+    const endDatePlaceholder = endDateLabel ?? 'End date'
 
     return (
         <form
@@ -230,7 +278,12 @@ export default function HeroStandardFilters({
                         <PopoverTrigger asChild>
                             <Button type="button" variant="ghost" size="max" className={triggerCls}>
                                 <MapPin className="h-4 w-4 shrink-0 text-neutral-500" />
-                                <span className="min-w-0 flex-1 truncate text-left">
+                                <span
+                                    className={cn(
+                                        'min-w-0 flex-1 truncate text-left',
+                                        !from && 'text-neutral-500',
+                                    )}
+                                >
                                     {from || heroSearch.fromPlaceholder}
                                 </span>
                             </Button>
@@ -271,7 +324,12 @@ export default function HeroStandardFilters({
                         <PopoverTrigger asChild>
                             <Button type="button" variant="ghost" size="max" className={triggerCls}>
                                 <Navigation className="h-4 w-4 shrink-0 text-neutral-500" />
-                                <span className="min-w-0 flex-1 truncate text-left">
+                                <span
+                                    className={cn(
+                                        'min-w-0 flex-1 truncate text-left',
+                                        !to && 'text-neutral-500',
+                                    )}
+                                >
                                     {to || heroSearch.toPlaceholder}
                                 </span>
                             </Button>
@@ -280,8 +338,6 @@ export default function HeroStandardFilters({
                         <PopoverContent className={cn(popCls, "max-h-60")} align="start" collisionPadding={8}>
                             {isCitiesLoading ? (
                                 <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
-                            ) : !from ? (
-                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.pickDepartureFirst}</p>
                             ) : toOptions.length === 0 ? (
                                 <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
                             ) : (
@@ -311,6 +367,7 @@ export default function HeroStandardFilters({
                 <DateField
                     id="hero-start-date"
                     label={startDateLabel ?? 'Start date'}
+                    placeholder={startDatePlaceholder}
                     value={startDate}
                     min={minTravelDate}
                     onChange={(event) => {
@@ -325,6 +382,7 @@ export default function HeroStandardFilters({
                 <DateField
                     id="hero-end-date"
                     label={endDateLabel ?? 'End date'}
+                    placeholder={endDatePlaceholder}
                     value={endDate}
                     min={startDate || minTravelDate}
                     onChange={(event) => setEndDate(event.target.value)}
