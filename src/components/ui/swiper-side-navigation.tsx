@@ -14,7 +14,7 @@ import { HP_THEME_TEXT_CLASS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
 export const swiperSideNavButtonClassName = cn(
-    'absolute top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#C0C8C966] bg-white shadow-sm transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11',
+    'absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#C0C8C966] bg-white shadow-sm transition hover:border-[var(--hp-color-primary)]/40 disabled:cursor-not-allowed disabled:opacity-40 lg:inline-flex lg:h-11 lg:w-11',
     HP_THEME_TEXT_CLASS,
 )
 
@@ -57,7 +57,7 @@ export function SwiperSideNavigation({
 
     return (
         <SwiperNavigationContext.Provider value={{ prevRef, nextRef }}>
-            <div className={cn('relative px-11 sm:px-14', className)}>
+            <div className={cn('relative min-w-0 px-0 lg:px-14', className)}>
                 {enabled ? (
                     <>
                         <button
