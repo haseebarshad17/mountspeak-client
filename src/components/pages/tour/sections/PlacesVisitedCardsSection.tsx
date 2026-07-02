@@ -1,15 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Autoplay, Navigation } from 'swiper/modules'
+import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
-import {
-    configureSwiperNavigation,
-    SwiperSideNavigation,
-    useSwiperNavigationRefs,
-} from '@/components/ui/swiper-side-navigation'
 
 import type { TourPage } from './tour-page.types'
 
@@ -43,23 +38,14 @@ function PlaceVisitedCard({ card }: { card: PlaceCard }) {
     )
 }
 
-function PlacesVisitedSwiper({ cards, canSlide }: { cards: PlaceCard[]; canSlide: boolean }) {
-    const { prevRef, nextRef } = useSwiperNavigationRefs()
-
+function PlacesVisitedMobileSwiper({ cards, canSlide }: { cards: PlaceCard[]; canSlide: boolean }) {
     return (
         <Swiper
-            modules={[Navigation, Autoplay]}
+            modules={[Autoplay]}
             slidesPerView={1.12}
             spaceBetween={16}
             speed={500}
             loop={canSlide}
-            navigation={{
-                prevEl: prevRef.current,
-                nextEl: nextRef.current,
-            }}
-            onBeforeInit={(swiper) => {
-                configureSwiperNavigation(swiper, prevRef.current, nextRef.current)
-            }}
             autoplay={
                 canSlide
                     ? {
@@ -69,7 +55,7 @@ function PlacesVisitedSwiper({ cards, canSlide }: { cards: PlaceCard[]; canSlide
                     }
                     : false
             }
-            className="select-none !overflow-visible"
+            className="select-none !overflow-hidden"
         >
             {cards.map((card) => (
                 <SwiperSlide key={card.id} className="!h-auto">
@@ -86,7 +72,7 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
     const canSlide = cards.length > 1
 
     return (
-        <section id={placesVisitedSection.id} className="bg-white py-8 sm:py-10 lg:py-16">
+        <section id={placesVisitedSection.id} className="overflow-x-hidden bg-white py-8 sm:py-10 lg:py-16">
             <div className="agency-container px-4 sm:px-8 lg:px-16">
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
                     <div className="shrink-0">
@@ -99,15 +85,8 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
                     </p>
                 </div>
 
-                <div className="mt-[35px] sm:hidden">
-                    <SwiperSideNavigation
-                        enabled={canSlide}
-                        prevLabel="Previous place"
-                        nextLabel="Next place"
-                        className="px-10"
-                    >
-                        <PlacesVisitedSwiper cards={cards} canSlide={canSlide} />
-                    </SwiperSideNavigation>
+                <div className="mt-[35px] min-w-0 overflow-x-hidden sm:hidden">
+                    <PlacesVisitedMobileSwiper cards={cards} canSlide={canSlide} />
                 </div>
 
                 <div className="mt-[35px] hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">

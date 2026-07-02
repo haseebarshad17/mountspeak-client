@@ -21,7 +21,7 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
 
     return (
         <div
-            className="min-h-screen pb-24 font-body lg:pb-0"
+            className="min-h-screen overflow-x-hidden pb-24 font-body lg:pb-0"
             style={
                 {
                     '--tour-primary': theme.primaryColor,

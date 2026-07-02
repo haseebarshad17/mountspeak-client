@@ -162,7 +162,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                 </header>
 
                 {useCarousel ? (
-                    <div className='mx-auto max-w-[1240px] pt-6 sm:pt-8 lg:pt-10'>
+                    <div className='mx-auto max-w-[1240px] overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
                         <SwiperSideNavigation
                             prevLabel='Previous blog posts'
                             nextLabel='Next blog posts'

@@ -7,6 +7,7 @@ import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
+import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
@@ -91,42 +92,48 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
         <>
             <PageHeroBanner
                 backgroundImage={backgroundImage}
-                bannerClassName='h-auto sm:h-[400px]'
-                className='pt-4'
+                bannerClassName='h-auto sm:min-h-[400px]'
+                className='px-2 pt-2 pb-0 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:px-5 lg:pt-5'
             >
-                    <div
-                        className={cn(
-                            PAGE_HERO_CONTENT_CLASS,
-                            'h-auto pt-[120px] sm:h-full sm:pt-[108px] justify-start gap-6 pb-8 sm:gap-8 sm:pb-10',
-                        )}
-                    >
-                        <div>
-                            <h1 className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
-                                {heroCopy.title}
-                            </h1>
-                            <p className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'>
-                                {heroCopy.description}
-                            </p>
-                        </div>
-
-                        <div className='mx-auto w-full max-w-[867px]'>
-                            <HeroFilters
-                                page={page ?? undefined}
-                                initialValues={filters}
-                                umrahInitialValues={umrahFilters}
-                                tourLocations={tourLocations}
-                            />
-                        </div>
+                <div
+                    className={cn(
+                        PAGE_HERO_CONTENT_CLASS,
+                        'h-auto justify-start gap-5 pb-8 sm:gap-6 sm:pb-10',
+                    )}
+                >
+                    <div>
+                        <h1 className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
+                            {heroCopy.title}
+                        </h1>
+                        <p className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'>
+                            {heroCopy.description}
+                        </p>
                     </div>
+
+                    <div className='mx-auto w-full max-w-[867px]'>
+                        <HeroFilters
+                            page={page ?? undefined}
+                            initialValues={filters}
+                            umrahInitialValues={umrahFilters}
+                            tourLocations={tourLocations}
+                        />
+                    </div>
+                </div>
             </PageHeroBanner>
 
-            <main className='pb-20 pt-16 sm:pt-20 lg:pt-[100px]'>
+            <main className='pb-12 pt-8 sm:pb-20 sm:pt-12 lg:pt-16'>
                 <div className='agency-container'>
-                    <div className='mx-auto max-w-[900px] text-center'>
-                        <h2 className='text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'>
+                    <header className='mx-auto max-w-[900px] text-center'>
+                        <h2
+                            className='agency-section-heading text-[#14141F]'
+                            style={{ fontFamily: 'var(--hp-font-heading)' }}
+                        >
                             Search results
                         </h2>
-                        <p className='pt-3 text-base text-neutral-600'>
+                        <p
+                            className='mx-auto mt-3 max-w-2xl text-sm font-normal leading-6 sm:mt-4 sm:text-base'
+                            style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
+                        >
                             {summary
                                 ? summary
                                 : isUmrahSearch
@@ -134,15 +141,18 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                                   : 'Explore available trips and pick your next adventure.'}
                         </p>
                         {isFiltered ? (
-                            <p className='pt-2 text-sm text-neutral-500'>
+                            <p
+                                className='mt-2 text-sm text-[#707979]'
+                                style={{ fontFamily: 'var(--hp-font-body)' }}
+                            >
                                 {tours.length} trip{tours.length === 1 ? '' : 's'} found
                             </p>
                         ) : null}
-                    </div>
+                    </header>
 
                     {tours.length > 0 ? (
                         <>
-                            <div className='grid grid-cols-1 justify-items-center gap-5 pt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:justify-items-stretch'>
+                            <div className='mt-6 grid grid-cols-1 justify-items-center gap-4 sm:mt-8 sm:grid-cols-2 sm:gap-6 lg:mt-10 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6'>
                                 {visibleTours.map((tour) => (
                                     <TourExploreCard
                                         key={tour.id}
@@ -160,15 +170,15 @@ export default function SearchPage({ tours, filters, umrahFilters, tourLocations
                             {hasMoreTours ? (
                                 <div
                                     ref={loadMoreRef}
-                                    className='flex justify-center pt-8'
+                                    className='flex justify-center pt-6 sm:pt-8'
                                     aria-hidden
                                 >
-                                    <span className='text-sm text-neutral-500'>Loading more trips...</span>
+                                    <span className='text-sm text-[#707979]'>Loading more trips...</span>
                                 </div>
                             ) : null}
                         </>
                     ) : (
-                        <div className='pt-8 sm:pt-10'>
+                        <div className='mt-6 sm:mt-8'>
                             <SectionEmptyState
                                 icon={isFiltered ? SearchX : Compass}
                                 title={
