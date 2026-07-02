@@ -74,13 +74,13 @@ export function PlacesVisitedCardsSection({ page }: PlacesVisitedCardsSectionPro
     return (
         <section id={placesVisitedSection.id} className="overflow-x-hidden bg-white py-8 sm:py-10 lg:py-16">
             <div className="agency-container px-4 sm:px-8 lg:px-16">
-                <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+                <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
                     <div className="shrink-0">
                         <h2 className="font-heading text-2xl font-semibold tracking-tight text-[#191C1C] sm:text-3xl lg:text-4xl">
                             {placesVisitedSection.title}
                         </h2>
                     </div>
-                    <p className="text-sm leading-normal text-[#434849] lg:max-w-md lg:pt-6 lg:text-base">
+                    <p className="text-sm leading-normal text-[#434849] lg:max-w-md lg:text-base">
                         {placesVisitedSection.intro}
                     </p>
                 </div>

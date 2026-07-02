@@ -1,7 +1,9 @@
 import React from 'react'
 import { Banknote, CalendarDays, Mountain, type LucideIcon } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import { cn } from '@/lib/utils/clsxUtils'
 
 import type { TourPage } from './tour-page.types'
 
@@ -16,8 +18,11 @@ type ExpeditionHeroSectionProps = {
 }
 
 export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
-    const { heroSection } = page
+    const { heroSection, finalCtaSection, theme } = page
     const { backgroundMedia, overlay, title, subtitle, tripHighlights } = heroSection
+    const primaryButton =
+        heroSection.ctaGroup.find((btn) => btn.style === 'primary')
+        ?? finalCtaSection.buttons.find((btn) => btn.style === 'primary')
 
     return (
         <section
@@ -48,31 +53,51 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
 
                 <div className="relative z-10 flex h-full flex-col justify-end pb-8 pt-20 sm:pb-12 sm:pt-24 md:pb-14 md:pt-28 lg:pb-16 lg:pt-36">
                     <div className="agency-container px-4 sm:px-8 lg:px-16">
-                        <div className="max-w-3xl text-white">
-                            <h1
-                                className="font-heading w-full max-w-[672px] text-2xl font-semibold leading-tight tracking-tight xs:text-[26px] sm:text-4xl lg:text-[48px] lg:leading-[57px]"
-                                style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
-                            >
-                                {title}
-                            </h1>
-                            {subtitle ? (
-                                <p className="mt-2 max-w-xl text-sm leading-normal text-[#FFFFFFCC] sm:mt-4 sm:text-base">
-                                    {subtitle}
-                                </p>
-                            ) : null}
+                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+                            <div className="max-w-3xl text-white">
+                                <h1
+                                    className="font-heading w-full max-w-[672px] text-2xl font-semibold leading-tight tracking-tight xs:text-[26px] sm:text-4xl lg:text-[48px] lg:leading-[57px]"
+                                    style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}
+                                >
+                                    {title}
+                                </h1>
+                                {subtitle ? (
+                                    <p className="mt-2 max-w-xl text-sm leading-normal text-[#FFFFFFCC] sm:mt-4 sm:text-base">
+                                        {subtitle}
+                                    </p>
+                                ) : null}
 
-                            {tripHighlights.length > 0 ? (
-                                <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-white/95 sm:mt-6 sm:gap-x-8 sm:gap-y-3 sm:text-base">
-                                    {tripHighlights.map((item) => {
-                                        const Icon = heroHighlightIcons[item.icon] ?? CalendarDays
-                                        return (
-                                            <li key={item.label} className="flex items-center gap-2.5">
-                                                <Icon className="h-5 w-5 shrink-0 opacity-90" strokeWidth={1.75} />
-                                                <span>{item.label}</span>
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
+                                {tripHighlights.length > 0 ? (
+                                    <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-white/95 sm:mt-6 sm:gap-x-8 sm:gap-y-3 sm:text-base">
+                                        {tripHighlights.map((item) => {
+                                            const Icon = heroHighlightIcons[item.icon] ?? CalendarDays
+                                            return (
+                                                <li key={item.label} className="flex items-center gap-2.5">
+                                                    <Icon className="h-5 w-5 shrink-0 opacity-90" strokeWidth={1.75} />
+                                                    <span>{item.label}</span>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                ) : null}
+                            </div>
+
+                            {primaryButton ? (
+                                <div className="hidden shrink-0 lg:block">
+                                    <Button
+                                        href={primaryButton.url}
+                                        variant="default"
+                                        className={cn(
+                                            'h-12 min-w-[200px] rounded-full px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
+                                        )}
+                                        style={{
+                                            backgroundColor: theme.secondaryColor,
+                                            borderColor: theme.secondaryColor,
+                                        }}
+                                    >
+                                        {primaryButton.label}
+                                    </Button>
+                                </div>
                             ) : null}
                         </div>
                     </div>
