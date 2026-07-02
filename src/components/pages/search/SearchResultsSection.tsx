@@ -77,7 +77,7 @@ export function SearchResultsSection({
                         className='mx-auto mt-2 max-w-[900px] text-center text-sm text-[#707979]'
                         style={{ fontFamily: 'var(--hp-font-body)' }}
                     >
-                        {tours.length} trip{tours.length === 1 ? '' : 's'} found
+                        {tours.length} tour{tours.length === 1 ? '' : 's'} found
                     </p>
                 ) : null}
 
