@@ -8,5 +8,5 @@ export default function MarketingFooter() {
 
     if (!page) return null
 
-    return <Footer footer={page.footer} />
+    return <Footer page={page} />
 }

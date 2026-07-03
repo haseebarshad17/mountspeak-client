@@ -1,6 +1,6 @@
 import { HP_CSS_VARS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
-import { formatTourDiscountDisplayValue } from '@/services/tours/tours.utils'
+import { formatTourDiscount, formatTourDiscountDisplayValue } from '@/services/tours/tours.utils'
 
 type TourDiscountBadgeProps = {
     discountPercent: number | null | undefined
@@ -16,23 +16,25 @@ export function TourDiscountBadge({
     const value = formatTourDiscountDisplayValue(discountPercent)
     if (value == null) return null
 
+    const label = formatTourDiscount(discountPercent)
+
     return (
         <div
             className={cn(
-                'absolute left-3 top-5 z-10',
+                'absolute right-3 top-3 z-10 sm:right-3.5 sm:top-3.5',
                 className,
             )}
         >
             <span
                 className={cn(
-                    'inline-flex h-10 w-10 items-center justify-center rounded-full sm:h-11 sm:w-11',
-                    'font-roboto text-[10px] font-bold leading-none tabular-nums text-white',
-                    'shadow-[0_4px_12px_rgba(0,41,44,0.22)] ring-1 ring-white/25 sm:text-[11px]',
+                    'inline-flex min-w-[72px] items-center justify-center rounded-full px-3 py-1.5',
+                    'font-roboto text-[11px] font-semibold leading-none tracking-wide text-white',
+                    'shadow-[0_4px_12px_rgba(0,41,44,0.22)] ring-1 ring-white/25 sm:min-w-[80px] sm:px-3.5 sm:py-2 sm:text-xs',
                     pillClassName,
                 )}
                 style={{ backgroundColor: HP_CSS_VARS.primary }}
             >
-                -{value}%
+                {label}
             </span>
         </div>
     )

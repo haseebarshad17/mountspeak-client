@@ -6,12 +6,12 @@
     "status": "published",
     "locale": "en",
     "seo": {
-      "siteName": "Phnes Travels",
-      "title": "Phnes Travels — Plan Your Perfect Trip",
-      "titleTemplate": "%s | Phnes Travels",
-      "description": "Travel the way you wish to go with Phnes Travels. Discover national and international tour packages, hotel bookings, and complete travel solutions across Pakistan and beyond.",
+      "siteName": "Company name",
+      "title": "Company name — Plan Your Perfect Trip",
+      "titleTemplate": "%s | Company name",
+      "description": "Travel the way you wish to go with Company name. Discover national and international tour packages, hotel bookings, and complete travel solutions across Pakistan and beyond.",
       "keywords": [
-        "Phnes Travels",
+        "Company name",
         "Pakistan tours",
         "Hunza Valley",
         "Skardu",
@@ -22,7 +22,7 @@
       ],
       "canonicalUrl": "/",
       "ogImage": "/images/pages/home/tour-list.png",
-      "ogImageAlt": "Phnes Travels — mountain landscape tour",
+      "ogImageAlt": "Company name — mountain landscape tour",
       "locale": "en_US",
       "robots": {
         "index": true,
@@ -42,16 +42,16 @@
       }
     },
     "branding": {
-      "name": "Phnes Travels",
+      "name": "Company name",
       "tagline": "Don't call it a dream. Call it a plan",
       "logo": {
         "default": {
           "src": "/images/generic/agency-logo.svg",
-          "alt": "Phnes Travels logo"
+          "alt": "Company name logo"
         },
         "onDark": {
           "src": "/images/generic/agency-logo-white.svg",
-          "alt": "Phnes Travels logo"
+          "alt": "Company name logo"
         }
       }
     },
@@ -59,7 +59,7 @@
       "backgroundColor": "#276968",
       "logo": {
         "src": "/images/generic/agency-logo-white.svg",
-        "alt": "Phnes Travels logo"
+        "alt": "Company name logo"
       },
       "columns": [
         {
@@ -87,14 +87,20 @@
             }
           ]
         }
-      ]
+      ],
+      "socialLinks": {
+        "twitter": "https://twitter.com",
+        "facebook": "https://facebook.com",
+        "linkedin": "https://linkedin.com",
+        "instagram": "https://instagram.com"
+      }
     },
     "sections": {
       "hero": {
         "id": "hero",
         "backgroundImage": "/images/pages/home/tour-list.png",
         "title": "Don't call it a dream. Call it a plan",
-        "paragraph": "Travel the way you wish to go with Phnes Travels helping you discover, live and travel at your own pace.",
+        "paragraph": "Travel the way you wish to go with Company name helping you discover, live and travel at your own pace.",
         "searchFilters": {
           "fromPlaceholder": "From",
           "toPlaceholder": "To",
@@ -113,7 +119,7 @@
         "id": "plan-perfect-trip",
         "eyebrow": "about",
         "title": "Plan your perfect trip",
-        "paragraph": "Are you looking for an adventurous travel, or just carrying your work alongside you while you travel and explore new places, then your perfect trip is one with us, Phnes travels help you search flights & places, book your most convenient hotels/places at your comfort while we help you discover the world. Welcome to a new dispensation.",
+        "paragraph": "Are you looking for an adventurous travel, or just carrying your work alongside you while you travel and explore new places, then your perfect trip is one with us, Company name help you search flights & places, book your most convenient hotels/places at your comfort while we help you discover the world. Welcome to a new dispensation.",
         "image": {
           "src": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
           "alt": "Traveler planning a trip"
@@ -442,24 +448,8 @@
         "title": "Meet Our Team",
         "members": [
           {
-            "name": "Waleed",
-            "role": "CEO",
-            "image": "https://i.pravatar.cc/400?img=11"
-          },
-          {
-            "name": "Hamayun",
-            "role": "Adventure & Trekking Guide",
-            "image": "https://i.pravatar.cc/400?img=12"
-          },
-          {
-            "name": "Saif",
-            "role": "Mountain Expedition Leader",
-            "image": "https://i.pravatar.cc/400?img=13"
-          },
-          {
-            "name": "Ali",
-            "role": "Tour Guide",
-            "image": "https://i.pravatar.cc/400?img=33"
+            "name": "Team Name",
+            "role": "CEO"
           }
         ]
       },

@@ -6,6 +6,7 @@ import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
 import { AppToaster } from '@/components/ui/app-toaster';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
+import FloatingSocialIcons from '@/components/layout/marketing/FloatingSocialIcons';
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
 import { DUMMY_HOMEPAGE_PAGE } from '@/lib/homepage/default-homepage';
 
@@ -63,6 +64,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
                 >
                     {children}
                     {ShouldShowFooter && <MarketingFooter />}
+                    {ShouldShowFooter ? <FloatingSocialIcons /> : null}
                     {toaster}
                 </div>
             )}
