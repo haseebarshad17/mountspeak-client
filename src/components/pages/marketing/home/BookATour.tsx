@@ -56,6 +56,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
     const [femaleSeats, setFemaleSeats] = useState(0)
+    const [childSeats, setChildSeats] = useState(0)
     const [travelDate, setTravelDate] = useState('')
     const [destination, setDestination] = useState('')
     const [category, setCategory] = useState('')
@@ -110,6 +111,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
             destination: String(formData.get('destination') ?? ''),
             male_seat: maleSeats,
             female_seat: femaleSeats,
+            child_seat: childSeats,
             category: String(formData.get('category') ?? '') as BookingRequestCategory,
             request_message: String(formData.get('request_message') ?? '').trim(),
         }
@@ -133,6 +135,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
             form.reset()
             setMaleSeats(0)
             setFemaleSeats(0)
+            setChildSeats(0)
             setTravelDate('')
             setDestination('')
             setCategory('')
@@ -360,6 +363,24 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                     />
                                 </MarketingFormField>
                             </div>
+
+                            <MarketingFormField
+                                errorColor={colors.error}
+                                label='Children'
+                                className='block w-full'
+                                error={fieldErrors.child_seat}
+                            >
+                                <QuantityStepper
+                                    variant='field'
+                                    label='Children'
+                                    value={childSeats}
+                                    max={MAX_BOOKING_REQUEST_SEATS}
+                                    onChange={(value) => {
+                                        setChildSeats(value)
+                                        clearFieldError('child_seat')
+                                    }}
+                                />
+                            </MarketingFormField>
 
                             <MarketingFormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
                                 <textarea
