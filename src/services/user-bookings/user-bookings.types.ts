@@ -16,6 +16,10 @@ export type UserBookingTourRow = {
     visual_fragments: string[] | null
 }
 
+export type UserBookingPaymentRow = {
+    status: string | null
+}
+
 export type UserBookingRow = {
     id: string
     status: string | null
@@ -24,6 +28,8 @@ export type UserBookingRow = {
     female_seat: number | null
     kids_seats: number | null
     booking_payment_screenshot: string | null
+    payment_id: string | null
+    payment: UserBookingPaymentRow | UserBookingPaymentRow[] | null
     tours: UserBookingTourRow | UserBookingTourRow[] | null
 }
 
