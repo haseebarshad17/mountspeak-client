@@ -2,6 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
+import {
+    marketingFormInputClass,
+    marketingFormPanelClassName,
+    marketingFormRowClass,
+    marketingFormTextareaClass,
+    MarketingFormField,
+} from '@/components/forms/marketing-form'
+import { BookingFormSelect } from '@/components/pages/marketing/home/BookingFormSelect'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
@@ -18,7 +26,7 @@ import {
     type ConsultationTitle,
 } from '@/services/consultation-requests/consultation-requests.types'
 import type { HomepagePage } from '@/data/homepage'
-import { HP_THEME_INPUT_FOCUS_CLASS, HP_THEME_TEXT_CLASS } from '@/data/homepage'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
@@ -28,53 +36,7 @@ import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import { FormEvent, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
-const FORM_VALUE_CLASS = 'text-[#161b1d]'
-
-const inputClass = cn(
-    'mt-1 w-full border-b border-[#6B7280] bg-transparent px-3 py-2 min-h-[40px] text-base outline-none transition',
-    FORM_VALUE_CLASS,
-    'placeholder:text-[#a0a4a8]',
-    HP_THEME_INPUT_FOCUS_CLASS,
-)
-
-const selectClass = cn(
-    inputClass,
-    'appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10',
-    'invalid:text-[#a0a4a8] valid:text-[#161b1d]',
-)
-
-const chevronBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`
-
 const contactCardClassName = 'rounded-xl border border-[#C0C8C9] bg-white p-6 sm:p-8'
-
-const labelClass =
-    'block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]'
-
-function Field({
-    label,
-    htmlFor,
-    error,
-    children,
-}: {
-    label: string
-    htmlFor: string
-    error?: string
-    children: ReactNode
-}) {
-    return (
-        <div>
-            <label htmlFor={htmlFor} className={labelClass}>
-                {label}
-            </label>
-            {children}
-            {error ? (
-                <p className='mt-1 text-xs text-[#BA1A1A]'>
-                    {error}
-                </p>
-            ) : null}
-        </div>
-    )
-}
 
 function ContactDetailItem({
     icon,
@@ -91,12 +53,12 @@ function ContactDetailItem({
             {href ? (
                 <a
                     href={href}
-                    className='text-[#404849] hover:underline'
+                    className='break-words text-[#404849] hover:underline'
                 >
                     {children}
                 </a>
             ) : (
-                <span>{children}</span>
+                <span className='break-words'>{children}</span>
             )}
         </li>
     )
@@ -120,7 +82,19 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
     const contactItems = page ? getFooterContactColumnItems(page.footer) : []
     const { mutateAsync: createConsultationRequest, isPending } = useCreateConsultationRequest()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const [inquiryType, setInquiryType] = useState('')
+    const [title, setTitle] = useState('')
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const errorColor = STATIC_UI_COLORS.error
+
+    const clearFieldError = (key: string) => {
+        setFieldErrors((prev) => {
+            if (!prev[key]) return prev
+            const next = { ...prev }
+            delete next[key]
+            return next
+        })
+    }
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -166,6 +140,8 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
             await createConsultationRequest(parsed.data)
             toast.success(getMessage(MessageCode.SUCCESS_CONTACT_SUBMITTED))
             form.reset()
+            setInquiryType('')
+            setTitle('')
         } catch (error) {
             toast.error(getApiErrorMessage(error, MessageCode.API_CONTACT_SUBMIT_FAILED))
         }
@@ -189,10 +165,10 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                 </div>
             </PageHeroBanner>
 
-            <main className='pb-12 pt-10 sm:pb-20 sm:pt-16 lg:pt-20'>
-                <div className='agency-container'>
-                    <div className='mx-auto grid max-w-[1182px] gap-6 sm:gap-8 lg:grid-cols-[340px_1fr] lg:gap-16'>
-                        <aside className='space-y-4 sm:space-y-6'>
+            <main className='overflow-x-hidden pb-12 pt-10 sm:pb-20 sm:pt-16 lg:pt-20'>
+                <div className='agency-container min-w-0'>
+                    <div className='mx-auto grid min-w-0 max-w-[1182px] gap-6 sm:gap-8 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:gap-16'>
+                        <aside className='min-w-0 space-y-4 sm:space-y-6'>
                             <div className={contactCardClassName}>                                <h2
                                 className={cn('text-xl font-semibold', HP_THEME_TEXT_CLASS)}
                             >
@@ -223,115 +199,121 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                             </div>
                         </aside>
 
-                        <section className={cn(contactCardClassName, 'lg:p-10')}>                            <h2
-                            className={cn('text-2xl font-semibold', HP_THEME_TEXT_CLASS)}
-                        >
-                            Send a consultation request
-                        </h2>
-                            <p
-                                className='mt-2 text-sm text-[#404849]'
-                            >
+                        <section className={cn(contactCardClassName, 'min-w-0 lg:p-10')}>
+                            <h2 className={cn('text-2xl font-semibold', HP_THEME_TEXT_CLASS)}>
+                                Send a consultation request
+                            </h2>
+                            <p className='mt-2 font-roboto text-base leading-6 text-[#404849]'>
                                 Fields marked with * are required.
                             </p>
 
-                            <form onSubmit={handleSubmit} className='mt-6 space-y-6 sm:mt-8' noValidate>                                <div className='grid gap-6 sm:grid-cols-2'>
-                                <Field label='Full Name *' htmlFor='contact-name' error={fieldErrors.name}>
-                                    <input
-                                        id='contact-name'
-                                        name='name'
-                                        type='text'
-                                        placeholder='Full Name'
-                                        aria-invalid={Boolean(fieldErrors.name)}
-                                        className={inputClass}
-                                    />
-                                </Field>
-                                <Field label='Email *' htmlFor='contact-email' error={fieldErrors.email}>
-                                    <input
-                                        id='contact-email'
-                                        name='email'
-                                        type='email'
-                                        placeholder='example@gmail.com'
-                                        aria-invalid={Boolean(fieldErrors.email)}
-                                        className={inputClass}
-                                    />
-                                </Field>
-                            </div>
+                            <div className={cn('mt-5 sm:mt-8', marketingFormPanelClassName)}>
+                                <form
+                                    onSubmit={handleSubmit}
+                                    className='flex w-full min-w-0 flex-col gap-3 sm:gap-4'
+                                    noValidate
+                                >
+                                <div className={marketingFormRowClass}>
+                                    <MarketingFormField label='Full name *' error={fieldErrors.name} errorColor={errorColor}>
+                                        <input
+                                            id='contact-name'
+                                            name='name'
+                                            type='text'
+                                            placeholder='Full name'
+                                            aria-invalid={Boolean(fieldErrors.name)}
+                                            className={marketingFormInputClass}
+                                        />
+                                    </MarketingFormField>
+                                    <MarketingFormField label='Email *' error={fieldErrors.email} errorColor={errorColor}>
+                                        <input
+                                            id='contact-email'
+                                            name='email'
+                                            type='email'
+                                            placeholder='example@gmail.com'
+                                            aria-invalid={Boolean(fieldErrors.email)}
+                                            className={marketingFormInputClass}
+                                        />
+                                    </MarketingFormField>
+                                </div>
 
-                                <div className='grid gap-6 sm:grid-cols-2'>
-                                    <Field label='Phone *' htmlFor='contact-phone' error={fieldErrors.phone}>
+                                <div className={marketingFormRowClass}>
+                                    <MarketingFormField label='Phone *' error={fieldErrors.phone} errorColor={errorColor}>
                                         <input
                                             id='contact-phone'
                                             name='phone'
                                             type='tel'
                                             placeholder='+92 300 1234567'
                                             aria-invalid={Boolean(fieldErrors.phone)}
-                                            className={inputClass}
+                                            className={marketingFormInputClass}
                                         />
-                                    </Field>
-                                    <Field label='Inquiry Type *' htmlFor='contact-inquiry-type' error={fieldErrors.inquiry_type}>
-                                        <select
-                                            id='contact-inquiry-type'
+                                    </MarketingFormField>
+                                    <MarketingFormField
+                                        label='Inquiry type *'
+                                        error={fieldErrors.inquiry_type}
+                                        errorColor={errorColor}
+                                    >
+                                        <BookingFormSelect
                                             name='inquiry_type'
-                                            defaultValue=''
-                                            required
-                                            aria-invalid={Boolean(fieldErrors.inquiry_type)}
-                                            className={selectClass}
-                                            style={{ backgroundImage: chevronBg }}
-                                        >
-                                            <option value='' disabled hidden>
-                                                Select inquiry type
-                                            </option>                                            {CONSULTATION_INQUIRY_TYPES.map((type) => (
-                                                <option key={type} value={type}>
-                                                    {CONSULTATION_INQUIRY_LABELS[type]}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </Field>
+                                            value={inquiryType}
+                                            onChange={(next) => {
+                                                setInquiryType(next)
+                                                clearFieldError('inquiry_type')
+                                            }}
+                                            placeholder='Select inquiry type'
+                                            options={CONSULTATION_INQUIRY_TYPES.map((type) => ({
+                                                value: type,
+                                                label: CONSULTATION_INQUIRY_LABELS[type],
+                                            }))}
+                                            aria-label='Inquiry type'
+                                        />
+                                    </MarketingFormField>
                                 </div>
 
-                                <Field label='Subject *' htmlFor='contact-title' error={fieldErrors.title}>
-                                    <select
-                                        id='contact-title'
+                                <MarketingFormField label='Subject *' error={fieldErrors.title} errorColor={errorColor}>
+                                    <BookingFormSelect
                                         name='title'
-                                        defaultValue=''
-                                        required
-                                        aria-invalid={Boolean(fieldErrors.title)}
-                                        className={selectClass}
-                                        style={{ backgroundImage: chevronBg }}
-                                    >
-                                        <option value='' disabled hidden>
-                                            Select a subject
-                                        </option>
-                                        {CONSULTATION_TITLES.map((title) => (
-                                            <option key={title} value={title}>
-                                                {title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </Field>
+                                        value={title}
+                                        onChange={(next) => {
+                                            setTitle(next)
+                                            clearFieldError('title')
+                                        }}
+                                        placeholder='Select a subject'
+                                        options={CONSULTATION_TITLES.map((subject) => ({
+                                            value: subject,
+                                            label: subject,
+                                        }))}
+                                        aria-label='Subject'
+                                    />
+                                </MarketingFormField>
 
-                                <Field label='Message *' htmlFor='contact-description' error={fieldErrors.description}>
+                                <MarketingFormField
+                                    label='Message *'
+                                    className='block w-full'
+                                    error={fieldErrors.description}
+                                    errorColor={errorColor}
+                                >
                                     <textarea
                                         id='contact-description'
                                         name='description'
-                                        rows={5}
+                                        rows={3}
                                         placeholder='Tell us about your trip or question...'
                                         aria-invalid={Boolean(fieldErrors.description)}
-                                        className={`${inputClass} min-h-[120px] resize-y`}
+                                        className={marketingFormTextareaClass}
                                     />
-                                </Field>
+                                </MarketingFormField>
 
-                                <div className='flex justify-end pt-2'>
-                                    <Button
-                                        type='submit'
-                                        loading={isPending}
-                                        loadingText='Sending...'
-                                        className='min-w-[200px]'
-                                    >
-                                        Send Message
-                                    </Button>
-                                </div>
-                            </form>
+                                <Button
+                                    type='submit'
+                                    variant='default'
+                                    loading={isPending}
+                                    loadingText='Sending...'
+                                    style={HP_THEME_BTN_STYLE}
+                                    className={cn('w-full', HP_THEME_BTN_CLASS)}
+                                >
+                                    Send Message
+                                </Button>
+                                </form>
+                            </div>
                         </section>
                     </div>
                 </div>

@@ -60,7 +60,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
             ) : (
                 <div
                     id='app-scroll-container'
-                    className='w-full h-dvh overflow-y-auto scrollbar-content'
+                    className='w-full h-dvh min-h-0 overflow-x-hidden overflow-y-auto scrollbar-content'
                 >
                     {children}
                     {ShouldShowFooter && <MarketingFooter />}

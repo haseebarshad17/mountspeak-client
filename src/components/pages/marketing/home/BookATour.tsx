@@ -30,53 +30,20 @@ import {
     MAX_BOOKING_REQUEST_SEATS,
 } from './booking-request.validation'
 import { BookingFormSelect } from './BookingFormSelect'
-
-/** Shared booking form field shell — full width in the form column, no per-field max-width that breaks grids. */
-const FORM_CONTROL_CLASS =
-    'box-border h-12 w-full min-w-0 max-w-full rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40 sm:h-[58px] sm:text-base'
-
-const inputClass = FORM_CONTROL_CLASS
-
-const textareaClass = cn(
-    FORM_CONTROL_CLASS,
-    '!h-auto min-h-[7rem] resize-none py-3 align-top sm:min-h-[7.25rem] sm:py-4',
-)
+import { MARKETING_FORM_CONTROL_CLASS } from '@/components/forms/marketing-form'
 
 const dateInputClass = cn(
-    FORM_CONTROL_CLASS,
+    MARKETING_FORM_CONTROL_CLASS,
     'relative block cursor-pointer pr-11',
     '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0',
 )
 
-const formRowClass = 'grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:gap-4'
-
-function FormField({
-    label,
-    children,
-    className,
-    error,
-    errorColor,
-}: {
-    label: string
-    children: React.ReactNode
-    className?: string
-    error?: string
-    errorColor: string
-}) {
-    return (
-        <div className={cn('min-w-0 w-full', className)}>
-            <label className='block min-w-0 w-full'>
-                <span className='sr-only'>{label}</span>
-                {children}
-            </label>
-            {error ? (
-                <p className='mt-1 font-roboto text-xs' style={{ color: errorColor }} role='alert'>
-                    {error}
-                </p>
-            ) : null}
-        </div>
-    )
-}
+import {
+    marketingFormInputClass,
+    marketingFormRowClass,
+    marketingFormTextareaClass,
+    MarketingFormField,
+} from '@/components/forms/marketing-form'
 
 const BookATour = ({ page }: HomepagePageProps) => {
     const section = page.sections.bookATour
@@ -255,38 +222,38 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             onSubmit={handleSubmit}
                             noValidate
                         >
-                            <div className={formRowClass}>
-                                <FormField errorColor={colors.error} label='Full name' error={fieldErrors.full_name}>
+                            <div className={marketingFormRowClass}>
+                                <MarketingFormField errorColor={colors.error} label='Full name' error={fieldErrors.full_name}>
                                     <input
                                         type='text'
                                         name='full_name'
                                         placeholder={formCopy.placeholders.fullName}
                                         required
-                                        className={inputClass}
+                                        className={marketingFormInputClass}
                                     />
-                                </FormField>
-                                <FormField errorColor={colors.error} label='Email' error={fieldErrors.email}>
+                                </MarketingFormField>
+                                <MarketingFormField errorColor={colors.error} label='Email' error={fieldErrors.email}>
                                     <input
                                         type='email'
                                         name='email'
                                         placeholder={formCopy.placeholders.email}
                                         required
-                                        className={inputClass}
+                                        className={marketingFormInputClass}
                                     />
-                                </FormField>
+                                </MarketingFormField>
                             </div>
 
-                            <div className={formRowClass}>
-                                <FormField errorColor={colors.error} label='Phone' error={fieldErrors.phone}>
+                            <div className={marketingFormRowClass}>
+                                <MarketingFormField errorColor={colors.error} label='Phone' error={fieldErrors.phone}>
                                     <input
                                         type='tel'
                                         name='phone'
                                         placeholder={formCopy.placeholders.phone}
                                         required
-                                        className={inputClass}
+                                        className={marketingFormInputClass}
                                     />
-                                </FormField>
-                                <FormField errorColor={colors.error} label='Travel date' error={fieldErrors.travel_date}>
+                                </MarketingFormField>
+                                <MarketingFormField errorColor={colors.error} label='Travel date' error={fieldErrors.travel_date}>
                                     <div className='relative min-w-0 w-full'>
                                         <input
                                             ref={dateInputRef}
@@ -319,11 +286,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             <Calendar className='h-4 w-4 shrink-0' aria-hidden />
                                         </button>
                                     </div>
-                                </FormField>
+                                </MarketingFormField>
                             </div>
 
-                            <div className={formRowClass}>
-                                <FormField errorColor={colors.error} label='Destination' error={fieldErrors.destination}>
+                            <div className={marketingFormRowClass}>
+                                <MarketingFormField errorColor={colors.error} label='Destination' error={fieldErrors.destination}>
                                     <BookingFormSelect
                                         name='destination'
                                         value={destination}
@@ -346,8 +313,8 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         noResultsMessage='No cities found'
                                         aria-label='Destination'
                                     />
-                                </FormField>
-                                <FormField errorColor={colors.error} label='Category' error={fieldErrors.category}>
+                                </MarketingFormField>
+                                <MarketingFormField errorColor={colors.error} label='Category' error={fieldErrors.category}>
                                     <BookingFormSelect
                                         name='category'
                                         value={category}
@@ -362,11 +329,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         }))}
                                         aria-label='Category'
                                     />
-                                </FormField>
+                                </MarketingFormField>
                             </div>
 
-                            <div className={formRowClass}>
-                                <FormField errorColor={colors.error} label='Male Seats' error={fieldErrors.male_seat}>
+                            <div className={marketingFormRowClass}>
+                                <MarketingFormField errorColor={colors.error} label='Male Seats' error={fieldErrors.male_seat}>
                                     <QuantityStepper
                                         variant='field'
                                         label='Male Seats'
@@ -378,8 +345,8 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('female_seat')
                                         }}
                                     />
-                                </FormField>
-                                <FormField errorColor={colors.error} label='Female Seats' error={fieldErrors.female_seat}>
+                                </MarketingFormField>
+                                <MarketingFormField errorColor={colors.error} label='Female Seats' error={fieldErrors.female_seat}>
                                     <QuantityStepper
                                         variant='field'
                                         label='Female Seats'
@@ -391,17 +358,17 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('female_seat')
                                         }}
                                     />
-                                </FormField>
+                                </MarketingFormField>
                             </div>
 
-                            <FormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
+                            <MarketingFormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
                                 <textarea
                                     name='request_message'
                                     rows={3}
                                     placeholder={formCopy.placeholders.message}
-                                    className={textareaClass}
+                                    className={marketingFormTextareaClass}
                                 />
-                            </FormField>
+                            </MarketingFormField>
 
                             <Button
                                 type='submit'
