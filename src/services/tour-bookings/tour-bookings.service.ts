@@ -1,13 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { assertRpcSuccess, callSupabaseRpc } from '@/lib/api/rpc'
 import { toApiError } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
 
-import { BOOKINGS_RETURN_COLUMNS, toBookingsInsertRow } from './bookings.mapper'
-
-import type { CreateTourBookingDTO, TourBookingRecord } from './tour-bookings.types'
-
-const BOOKINGS_TABLE = 'bookings'
+import { SUBMIT_TOUR_BOOKING_RPC } from './tour-bookings.constants'
+import type {
+    SubmitTourBookingDTO,
+    SubmitTourBookingRpcResponse,
+    TourBookingRecord,
+} from './tour-bookings.types'
 
 /** Supabase storage bucket for payment screenshots. */
 export const BOOKING_PAYMENT_SCREENSHOTS_BUCKET = 'booking-payment-screenshots'
@@ -28,35 +30,31 @@ function paymentScreenshotExtension(file: File): string {
     return 'jpg'
 }
 
+export function buildBookingPaymentScreenshotPath(
+    agencyId: string,
+    bookingId: string,
+    file: File,
+): string {
+    const ext = paymentScreenshotExtension(file)
+    return `${agencyId}/${bookingId}/payment.${ext}`
+}
+
 export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
     return {
-        createTourBooking: async (payload: CreateTourBookingDTO): Promise<TourBookingRecord> => {
-            const { data, error } = await supabase
-                .from(BOOKINGS_TABLE)
-                .insert(toBookingsInsertRow(payload))
-                .select(BOOKINGS_RETURN_COLUMNS)
-                .maybeSingle()
+        submitTourBooking: async (payload: SubmitTourBookingDTO): Promise<TourBookingRecord> => {
+            const data = await callSupabaseRpc<SubmitTourBookingRpcResponse>(
+                supabase,
+                SUBMIT_TOUR_BOOKING_RPC,
+                payload,
+                MessageCode.API_BOOKING_SUBMIT_FAILED,
+            )
 
-            if (error) throw toApiError(error, MessageCode.API_BOOKING_SUBMIT_FAILED)
-
-            if (data) return { ...payload, ...data } as TourBookingRecord
+            const result = assertRpcSuccess(data, MessageCode.API_BOOKING_SUBMIT_FAILED)
 
             return {
-                ...payload,
-                id: '',
+                id: result.booking_id,
+                payment_id: result.payment_id,
             }
-        },
-
-        updateBookingPaymentScreenshot: async (
-            bookingId: string,
-            paymentScreenshotUrl: string,
-        ): Promise<void> => {
-            const { error } = await supabase
-                .from(BOOKINGS_TABLE)
-                .update({ booking_payment_screenshot: paymentScreenshotUrl })
-                .eq('id', bookingId)
-
-            if (error) throw toApiError(error, MessageCode.API_PAYMENT_SCREENSHOT_SAVE_FAILED)
         },
 
         uploadPaymentScreenshot: async (
@@ -64,13 +62,12 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
             bookingId: string,
             file: File,
         ): Promise<string> => {
-            const ext = paymentScreenshotExtension(file)
-            const path = `${agencyId}/${bookingId}/payment.${ext}`
+            const path = buildBookingPaymentScreenshotPath(agencyId, bookingId, file)
 
             const { error: uploadError } = await supabase.storage
                 .from(BOOKING_PAYMENT_SCREENSHOTS_BUCKET)
                 .upload(path, file, {
-                    contentType: file.type || `image/${ext}`,
+                    contentType: file.type || `image/${paymentScreenshotExtension(file)}`,
                     upsert: true,
                 })
 
@@ -78,11 +75,7 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
                 throw toApiError(uploadError, MessageCode.API_PAYMENT_SCREENSHOT_UPLOAD_FAILED)
             }
 
-            const { data } = supabase.storage
-                .from(BOOKING_PAYMENT_SCREENSHOTS_BUCKET)
-                .getPublicUrl(path)
-
-            return data.publicUrl
+            return path
         },
     }
 }

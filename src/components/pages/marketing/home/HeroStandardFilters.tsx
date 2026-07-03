@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils/clsxUtils"
 import { usePakistanCities } from "@/services/cities/cities.queries"
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
-import { Calendar, MapPin, Navigation, Search } from "lucide-react"
+import { Calendar, Loader2, MapPin, Navigation, Search } from "lucide-react"
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { DEFAULT_HERO_SEARCH_FILTERS } from '@/components/pages/marketing/home/hero-search.defaults'
@@ -392,8 +392,8 @@ export default function HeroStandardFilters({
                     <Button
                         type="submit"
                         size="max"
-                        loading={isSearching}
-                        loadingText={heroSearch.searchingButtonLabel ?? 'Searching...'}
+                        disabled={isSearching}
+                        aria-busy={isSearching}
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
@@ -401,8 +401,14 @@ export default function HeroStandardFilters({
                             'xl:!h-full xl:!rounded-[3px] xl:!px-4',
                         )}
                     >
-                        <span className="truncate">{heroSearch.searchButtonLabel}</span>
-                        {!isSearching ? <Search className="ml-2 h-4 w-4 shrink-0" /> : null}
+                        {isSearching ? (
+                            <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                        ) : (
+                            <>
+                                <span className="truncate">{heroSearch.searchButtonLabel}</span>
+                                <Search className="ml-2 h-4 w-4 shrink-0" />
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>

@@ -29,7 +29,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
             id={heroSection.id}
             className="px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:pt-[30px] xl:px-[18px]"
         >
-            <div className="relative h-[min(52vh,400px)] overflow-hidden rounded-[16px] sm:h-[460px] md:h-[540px] lg:h-[631px]">
+            <div className="relative h-[min(42vh,320px)] overflow-hidden rounded-[16px] sm:h-[380px] md:h-[440px] lg:h-[500px]">
                 <div className="absolute inset-0">
                     <TourMediaImage
                         src={backgroundMedia.desktop}
@@ -51,7 +51,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     ) : null}
                 </div>
 
-                <div className="relative z-10 flex h-full flex-col justify-end pb-8 pt-20 sm:pb-12 sm:pt-24 md:pb-14 md:pt-28 lg:pb-16 lg:pt-36">
+                <div className="relative z-10 flex h-full flex-col justify-end pb-6 pt-16 sm:pb-10 sm:pt-20 md:pb-12 md:pt-24 lg:pb-14 lg:pt-28">
                     <div className="agency-container px-4 sm:px-8 lg:px-16">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
                             <div className="max-w-3xl text-white">
@@ -88,7 +88,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                         href={primaryButton.url}
                                         variant="default"
                                         className={cn(
-                                            'h-12 min-w-[200px] rounded-full px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
+                                            'h-12 min-w-[200px] rounded-md px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
                                         )}
                                         style={{
                                             backgroundColor: theme.secondaryColor,

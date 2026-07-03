@@ -28,7 +28,7 @@ export function formatTourDiscount(percent: number | null | undefined): string {
     const value = formatTourDiscountDisplayValue(percent)
     if (!value) return ''
 
-    return `${value}% Off`
+    return `${value}% off`
 }
 
 export function formatTourPrice(amount: number): string {

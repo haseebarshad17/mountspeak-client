@@ -24,13 +24,27 @@ export const STATIC_HEADER: Header = {
     },
 }
 
+const STATIC_LEGAL_LINKS = [
+    { label: 'Privacy Policy', href: '/terms#data-protection' },
+    { label: 'Terms of Service', href: '/terms' },
+] as const
+
 /** Footer link columns are hardcoded — only Contact comes from payload. */
-export function getStaticFooterLinksColumn(): Column {
-    return {
-        title: 'Links',
-        links: STATIC_SITE_LINKS.map(({ label, href }) => ({
-            label,
-            href,
-        })),
-    }
+export function getStaticFooterLinkColumns(): Column[] {
+    return [
+        {
+            title: 'Site Map',
+            links: STATIC_SITE_LINKS.map(({ label, href }) => ({
+                label,
+                href,
+            })),
+        },
+        {
+            title: 'Legal',
+            links: STATIC_LEGAL_LINKS.map(({ label, href }) => ({
+                label,
+                href,
+            })),
+        },
+    ]
 }

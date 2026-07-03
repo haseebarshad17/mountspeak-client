@@ -38,6 +38,14 @@ export interface Footer {
     backgroundColor: string;
     logo:            DefaultClass;
     columns:         Column[];
+    socialLinks?:    FooterSocialLinks;
+}
+
+export interface FooterSocialLinks {
+    twitter?:   string | null;
+    facebook?:  string | null;
+    linkedin?:  string | null;
+    instagram?: string | null;
 }
 
 export interface Column {

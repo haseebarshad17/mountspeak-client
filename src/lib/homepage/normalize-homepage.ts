@@ -1,9 +1,10 @@
 import homepageDefaultsDocument from '@/data/homepage-defaults.json'
 import type { HomepagePage } from '@/data/homepage'
-import type { Footer, Theme } from '@/services/homepage/homepage.page.types'
+import type { Footer, FooterSocialLinks, Theme } from '@/services/homepage/homepage.page.types'
 import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 
-import { STATIC_HEADER, getStaticFooterLinksColumn } from './static-site-content'
+import { getActiveFooterSocialLinks } from './footer-social'
+import { STATIC_HEADER, getStaticFooterLinkColumns } from './static-site-content'
 
 const BASE_PAGE = homepageDefaultsDocument.page as HomepagePage
 
@@ -31,6 +32,19 @@ function getContactColumn(footer: Footer) {
     )
 }
 
+function normalizeFooterSocialLinks(incoming?: FooterSocialLinks | null): FooterSocialLinks | undefined {
+    const defaults = BASE_PAGE.footer.socialLinks
+
+    const merged: FooterSocialLinks = {
+        twitter: incoming?.twitter ?? defaults?.twitter ?? null,
+        facebook: incoming?.facebook ?? defaults?.facebook ?? null,
+        linkedin: incoming?.linkedin ?? defaults?.linkedin ?? null,
+        instagram: incoming?.instagram ?? defaults?.instagram ?? null,
+    }
+
+    return getActiveFooterSocialLinks(merged).length > 0 ? merged : undefined
+}
+
 function normalizeFooter(footer?: Partial<Footer>): Footer {
     const base = footer ?? BASE_PAGE.footer
 
@@ -41,6 +55,7 @@ function normalizeFooter(footer?: Partial<Footer>): Footer {
             ...base.logo,
         },
         columns: [getContactColumn(base as Footer)],
+        socialLinks: normalizeFooterSocialLinks(base.socialLinks),
     }
 }
 
@@ -85,7 +100,6 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
     }
 }
 
-export function getFooterDisplayColumns(footer: Footer) {
-    const contactColumn = getContactColumn(footer)
-    return [getStaticFooterLinksColumn(), contactColumn]
+export function getFooterDisplayColumns(_footer: Footer) {
+    return getStaticFooterLinkColumns()
 }

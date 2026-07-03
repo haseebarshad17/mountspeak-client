@@ -1,13 +1,14 @@
 'use client'
 
-import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_THEME_LINK_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 
-import { Button } from '@/components/ui/button'
+import { PrefixedLink } from '@/components/ui/prefixed-link'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { cn } from '@/lib/utils/clsxUtils'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import React from 'react'
 import { ServiceCard } from './ServiceCard'
+import { ArrowRightIcon } from 'lucide-react'
 
 const OurServices = ({ page }: HomepagePageProps) => {
     const section = page.sections.ourServices
@@ -40,14 +41,18 @@ const OurServices = ({ page }: HomepagePageProps) => {
                 </div>
 
                 <div className='flex justify-center pt-8 sm:pt-12 lg:pt-8'>
-                    <Button
-                        variant='default'
-                        style={HP_THEME_BTN_STYLE}
-                        className={cn('w-[219px] max-w-[219px]', HP_THEME_BTN_CLASS)}
+                    <PrefixedLink
                         href={section.cta.href ?? '/discover#services'}
+                        className={cn(
+                            'text-sm font-semibold underline underline-offset-4 sm:text-base flex items-center',
+                            HP_THEME_LINK_CLASS,
+                        )}
                     >
-                        {section.cta.label}
-                    </Button>
+                        <div className='flex items-center justify-start gap-1.5'>
+                            {section.cta.label}
+                            <ArrowRightIcon className='size-4' />
+                        </div>
+                    </PrefixedLink>
                 </div>
             </div>
         </section>
