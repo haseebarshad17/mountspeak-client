@@ -2,6 +2,7 @@ import { getTourCoverImage } from '@/services/tours/tours.utils'
 
 import type {
     UserBookingDisplay,
+    UserBookingPaymentRow,
     UserBookingRow,
     UserBookingStatusTone,
     UserBookingTourRow,
@@ -88,29 +89,55 @@ function isPastTour(endDate: string | null, startDate: string | null): boolean {
     return date < today
 }
 
+function parsePayment(row: UserBookingRow): UserBookingPaymentRow | null {
+    if (!row.payment) return null
+    return Array.isArray(row.payment) ? (row.payment[0] ?? null) : row.payment
+}
+
 function mapStatus(
-    status: string | null,
+    bookingStatus: string | null,
+    paymentStatus: string | null,
     hasPaymentScreenshot: boolean,
 ): { label: string; tone: UserBookingStatusTone; warning: string } {
-    const normalized = (status ?? 'pending').trim().toLowerCase()
+    const normalizedBooking = (bookingStatus ?? 'pending').trim().toLowerCase()
+    const normalizedPayment = (paymentStatus ?? '').trim().toUpperCase()
 
-    if (normalized === 'cancelled' || normalized === 'canceled') {
+    if (normalizedBooking === 'cancelled' || normalizedBooking === 'canceled') {
+        if (normalizedPayment === 'REFUNDED') {
+            return { label: 'Refunded', tone: 'cancelled', warning: '' }
+        }
         return { label: 'Cancelled', tone: 'cancelled', warning: '' }
     }
 
-    if (normalized === 'completed') {
+    if (normalizedBooking === 'completed') {
         return { label: 'Completed', tone: 'completed', warning: '' }
     }
 
-    if (normalized === 'confirmed') {
+    if (normalizedBooking === 'confirmed') {
         return { label: 'Confirmed', tone: 'confirmed', warning: '' }
+    }
+
+    if (normalizedPayment === 'REJECTED') {
+        return {
+            label: 'Payment Rejected',
+            tone: 'action',
+            warning: 'Your payment was not accepted. Please contact the agency or submit a new booking.',
+        }
+    }
+
+    if (normalizedPayment === 'PENDING_REVIEW' || hasPaymentScreenshot) {
+        return {
+            label: 'Payment Under Review',
+            tone: 'pending',
+            warning: 'Our team is verifying your payment. We will contact you shortly.',
+        }
     }
 
     if (!hasPaymentScreenshot) {
         return {
             label: 'Action Required',
             tone: 'action',
-            warning: 'Please upload a copy of your passport to confirm booking.',
+            warning: 'Please upload your payment screenshot to complete your booking.',
         }
     }
 
@@ -129,8 +156,13 @@ function mapActions(): {
 
 export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay {
     const tour = parseTour(row)
+    const payment = parsePayment(row)
     const members = formatMemberCount(row.male_seat, row.female_seat, row.kids_seats)
-    const status = mapStatus(row.status, Boolean(row.booking_payment_screenshot))
+    const status = mapStatus(
+        row.status,
+        payment?.status ?? null,
+        Boolean(row.booking_payment_screenshot),
+    )
     const actions = mapActions()
     const location = tour?.to_location ?? tour?.from_location ?? 'Pakistan'
     const region = tour?.from_location ?? tour?.to_location ?? location

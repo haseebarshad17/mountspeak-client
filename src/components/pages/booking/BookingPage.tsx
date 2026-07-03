@@ -14,11 +14,10 @@ import { MessageCode, isMessageCode } from '@/lib/messages/codes'
 import { getClientSiteUrl } from '@/lib/utils/site-url'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
-import { buildCreateBookingPayload } from '@/services/tour-bookings/bookings.mapper'
+import { buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
-    updateBookingPaymentScreenshot,
     uploadBookingPaymentScreenshot,
-    useCreateTourBooking,
+    useSubmitTourBooking,
 } from '@/services/tour-bookings/tour-bookings.queries'
 import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
 import { useAppSelector } from '@/store/hooks'
@@ -80,7 +79,7 @@ export default function BookingPage({
     const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const { mutateAsync: createTourBooking } = useCreateTourBooking()
+    const { mutateAsync: submitTourBooking } = useSubmitTourBooking()
     const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
     const agencyId = useAppSelector(selectHomepageAgencyId)
     const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl)
@@ -216,9 +215,17 @@ export default function BookingPage({
                 return
             }
 
-            const payload = buildCreateBookingPayload({
+            const bookingId = crypto.randomUUID()
+
+            const screenshotPath = await uploadBookingPaymentScreenshot(
+                selectedTour.agencyId,
+                bookingId,
+                paymentParsed.data.paymentScreenshot,
+            )
+
+            const rpcPayload = buildSubmitTourBookingPayload({
+                bookingId,
                 tourId: selectedTour.id,
-                agencyId: selectedTour.agencyId,
                 name: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
                 email: user.email ?? '',
                 phone: details.phone.trim(),
@@ -227,23 +234,15 @@ export default function BookingPage({
                 maleSeats: details.maleSeats,
                 femaleSeats: details.femaleSeats,
                 kidsSeats: details.kidsSeats,
-                totalAmount,
                 notes: details.note,
+                screenshotPath,
             })
 
-            const booking = await createTourBooking(payload)
+            const booking = await submitTourBooking(rpcPayload)
 
             if (!booking.id) {
                 throw new Error('Booking was created but no booking id was returned.')
             }
-
-            const screenshotUrl = await uploadBookingPaymentScreenshot(
-                selectedTour.agencyId,
-                booking.id,
-                paymentParsed.data.paymentScreenshot,
-            )
-
-            await updateBookingPaymentScreenshot(booking.id, screenshotUrl)
 
             void sendBookingConfirmationEmail({
                 toEmail: user.email ?? '',

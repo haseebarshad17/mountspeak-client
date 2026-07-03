@@ -15,6 +15,10 @@ const USER_BOOKINGS_SELECT = `
   female_seat,
   kids_seats,
   booking_payment_screenshot,
+  payment_id,
+  payment:payments (
+    status
+  ),
   tours (
     id,
     slug,
