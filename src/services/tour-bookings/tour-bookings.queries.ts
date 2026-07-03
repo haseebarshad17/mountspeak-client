@@ -3,13 +3,13 @@ import { useMutation } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase/supabase.client'
 
 import { tourBookingsService } from './tour-bookings.service'
-import type { CreateTourBookingDTO } from './tour-bookings.types'
+import type { SubmitTourBookingDTO } from './tour-bookings.types'
 
 const tourBookings = tourBookingsService({ supabase })
 
-export const useCreateTourBooking = () => {
+export const useSubmitTourBooking = () => {
     return useMutation({
-        mutationFn: (payload: CreateTourBookingDTO) => tourBookings.createTourBooking(payload),
+        mutationFn: (payload: SubmitTourBookingDTO) => tourBookings.submitTourBooking(payload),
     })
 }
 
@@ -18,6 +18,3 @@ export const uploadBookingPaymentScreenshot = (
     bookingId: string,
     file: File,
 ) => tourBookings.uploadPaymentScreenshot(agencyId, bookingId, file)
-
-export const updateBookingPaymentScreenshot = (bookingId: string, paymentScreenshotUrl: string) =>
-    tourBookings.updateBookingPaymentScreenshot(bookingId, paymentScreenshotUrl)
