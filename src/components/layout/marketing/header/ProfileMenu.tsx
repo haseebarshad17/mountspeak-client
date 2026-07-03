@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
+import { HP_CSS_VARS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
+import { getProfileInitials } from '@/lib/profile/profile-initials'
 import { resolveProfileAvatarUrl } from '@/lib/profile/avatar-url'
 import { useOptionalUserProfile } from '@/services/auth/auth.queries'
 import { BookMarked, LogOut, UserRound } from 'lucide-react'
@@ -31,6 +33,8 @@ export function ProfileMenu({
     const rootRef = useRef<HTMLDivElement>(null)
     const { data: profile } = useOptionalUserProfile()
     const avatarUrl = resolveProfileAvatarUrl(profile?.avatar_url)
+    const initials = getProfileInitials(profile?.full_name)
+    const showAvatar = Boolean(avatarUrl)
 
     useEffect(() => {
         if (!open) return
@@ -66,23 +70,37 @@ export function ProfileMenu({
                 onClick={() => setOpen((current) => !current)}
                 className={cn(
                     'relative inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                    avatarUrl ? 'p-0' : '',
-                    useLightNav
-                        ? 'border-[#C0C8C9] bg-white text-[#00292C] hover:bg-neutral-50 focus-visible:ring-[#00292C]/30'
-                        : 'border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 focus-visible:ring-white/40',
+                    showAvatar
+                        ? cn(
+                              'p-0',
+                              useLightNav
+                                  ? 'border-[#C0C8C9] bg-white hover:bg-neutral-50 focus-visible:ring-[#00292C]/30'
+                                  : 'border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 focus-visible:ring-white/40',
+                          )
+                        : 'border-transparent p-0 focus-visible:ring-[var(--hp-color-primary)]/40',
                     triggerClassName,
                 )}
+                style={
+                    showAvatar
+                        ? undefined
+                        : {
+                              backgroundColor: HP_CSS_VARS.primary,
+                              color: HP_CSS_VARS.primaryText,
+                          }
+                }
             >
-                {avatarUrl ? (
+                {showAvatar ? (
                     <Image
-                        src={avatarUrl}
+                        src={avatarUrl!}
                         alt='Profile photo'
                         width={40}
                         height={40}
                         className='h-full w-full object-cover'
                     />
                 ) : (
-                    <UserRound className='h-5 w-5' />
+                    <span className='font-roboto text-sm font-semibold uppercase leading-none tracking-wide'>
+                        {initials}
+                    </span>
                 )}
             </button>
 
