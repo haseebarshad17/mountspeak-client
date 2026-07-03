@@ -35,6 +35,7 @@ export const bookingRequestSchema = z
         destination: z.string().min(1, MessageCode.BOOKING_REQUEST_DESTINATION_REQUIRED),
         male_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
         female_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
+        child_seat: z.coerce.number().int().min(0).max(MAX_BOOKING_REQUEST_SEATS),
         category: z
             .string()
             .trim()

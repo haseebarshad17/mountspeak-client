@@ -17,6 +17,7 @@ export type CreateBookingRequestDTO = {
     destination: string
     male_seat: number
     female_seat: number
+    child_seat: number
     category: BookingRequestCategory
     request_message?: string
     agency_id?: string

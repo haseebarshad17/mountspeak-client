@@ -180,6 +180,12 @@
         overflow-x: hidden;
         text-rendering: optimizeLegibility;
     }
+
+    html:has(#app-scroll-container),
+    body:has(#app-scroll-container) {
+        height: 100%;
+        overflow: hidden;
+    }
     
     
     a,
