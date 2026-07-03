@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SectionEmptyState } from "@/components/ui/section-empty-state";
-import { HP_THEME_BG_CLASS, HP_THEME_TEXT_CLASS } from "@/data/homepage";
 
 import { useIsAgencySite } from "@/hooks/useIsAgencySite";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
@@ -25,7 +24,7 @@ import {
   accountPageIntroClassName,
 } from "./account-ui";
 
-import { CalendarDays, History, RotateCcw, ShieldCheck, Star } from "lucide-react";
+import { CalendarDays, History } from "lucide-react";
 
 type BookingsTab = "upcoming" | "past";
 
@@ -46,71 +45,6 @@ function tabButtonClassName(isActive: boolean): string {
     "pb-4 text-xs font-medium uppercase tracking-[0.6px] text-[#00292C] transition",
     isActive ? "border-b-2 border-[#00292C]" : "border-b-2 border-transparent",
   ].join(" ");
-}
-
-function BookingsPolicyPanels() {
-  return (
-    <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-stretch">
-      <section className={cn("rounded-xl px-5 py-6 text-white sm:px-6 sm:py-7 md:w-[362px] md:shrink-0", HP_THEME_BG_CLASS)}>
-        <h3
-          className="text-[20px] leading-[28px]"
-        >
-          Our Commitment
-        </h3>
-        <p className="mt-4 text-base text-white">
-          Adventure is unpredictable. We provide the most flexible cancellation terms
-          in the region to ensure your peace of mind while protecting our local
-          guides.
-        </p>
-      </section>
-
-      <section className={cn(accountCardClassName, "p-5 sm:p-8 md:w-[362px] md:shrink-0")}>
-        <h3
-          className={cn(
-            "text-xs font-medium uppercase tracking-[1.2px]",
-            HP_THEME_TEXT_CLASS,
-          )}
-        >
-          Cancellation Summary
-        </h3>
-
-        <div className="mt-6 space-y-4 max-w-[280px]">
-          <div className="flex items-start gap-3">
-            <ShieldCheck
-              className={cn("mt-1 h-6 w-4 shrink-0", HP_THEME_TEXT_CLASS)}
-              aria-hidden
-            />
-            <div>
-              <p className={cn("text-base font-medium", HP_THEME_TEXT_CLASS)}>100% Refund</p>
-              <p className="text-sm text-[#5f6870]">Cancel up to 30 days before departure.</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <RotateCcw
-              className={cn("mt-1 h-[22px] w-[18px] shrink-0", HP_THEME_TEXT_CLASS)}
-              aria-hidden
-            />
-            <div>
-              <p className={cn("text-base font-semibold", HP_THEME_TEXT_CLASS)}>50% Credit</p>
-              <p className="text-sm text-[#5f6870]">Cancel 15–29 days before departure.</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <Star
-              className={cn("mt-1 h-[22px] w-[18px] shrink-0", HP_THEME_TEXT_CLASS)}
-              aria-hidden
-            />
-            <div>
-              <p className={cn("text-base font-semibold", HP_THEME_TEXT_CLASS)}>Emergency Cases</p>
-              <p className="text-sm text-[#5f6870]">Full credit for unforeseen political or weather events.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
 }
 
 function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
@@ -355,9 +289,6 @@ const BookingsPage = () => {
           </div>
         )}
 
-        <div className="mt-6 sm:mt-8 lg:mt-10">
-          <BookingsPolicyPanels />
-        </div>
       </section>
     </main>
   );
