@@ -100,6 +100,6 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
     }
 }
 
-export function getFooterDisplayColumns(_footer: Footer) {
+export function getFooterDisplayColumns() {
     return getStaticFooterLinkColumns()
 }

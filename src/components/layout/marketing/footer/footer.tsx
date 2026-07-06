@@ -81,7 +81,7 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
 
 const Footer = ({ page }: FooterProps) => {
     const { footer, branding, sections, seo } = page
-    const columns = getFooterDisplayColumns(footer)
+    const columns = getFooterDisplayColumns()
     const socialLinks = getActiveFooterSocialLinks(footer.socialLinks)
     const description = sections.hero.paragraph
     const siteName = branding.name || seo.siteName
