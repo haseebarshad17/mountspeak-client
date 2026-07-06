@@ -10,7 +10,7 @@ export const bookingPageTopPaddingClassName =
     'pt-[100px] sm:pt-[108px] md:pt-[116px] lg:pt-[124px]'
 
 /** Extra breathing room between the header and the stepper. */
-export const bookingStepperTopSpacingClassName = 'mt-8 sm:mt-10 md:mt-12'
+export { accountPageContentTopSpacingClassName as bookingStepperTopSpacingClassName } from '@/components/pages/dashboard/account-ui'
 
 export const bookingFieldLabelClassName = accountFieldLabelClassName
 
