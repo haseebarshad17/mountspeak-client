@@ -1,12 +1,12 @@
 'use client'
 
-import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
+import { HP_THEME_LINK_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useQuery } from '@tanstack/react-query'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { PrefixedLink } from '@/components/ui/prefixed-link'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
@@ -17,7 +17,7 @@ import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
-import { Compass } from 'lucide-react'
+import { Compass, ArrowRightIcon } from 'lucide-react'
 
 const HOMEPAGE_TOUR_LIMIT = 6
 
@@ -97,6 +97,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     image={tour.image}
                                     totalBooked={tour.totalBooked}
                                     remainingSeats={tour.remainingSeats}
+                                    daysLeft={tour.daysLeft}
                                     detailHref={
                                         isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
                                     }
@@ -106,14 +107,16 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
 
                         {showViewAllButton ? (
                             <div className='mt-8 flex justify-center sm:mt-10'>
-                                <Button
-                                    variant='default'
+                                <PrefixedLink
                                     href='/search'
-                                    style={HP_THEME_BTN_STYLE}
-                                    className={cn('w-max min-w-[140px]', HP_THEME_BTN_CLASS)}
+                                    className={cn(
+                                        HP_THEME_LINK_CLASS,
+                                        'flex items-center text-sm font-semibold underline underline-offset-4 sm:text-base',
+                                    )}
                                 >
                                     View All Tours
-                                </Button>
+                                    <ArrowRightIcon className='size-4 inline-block ml-2' aria-hidden />
+                                </PrefixedLink>
                             </div>
                         ) : null}
                     </>

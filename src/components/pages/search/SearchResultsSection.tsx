@@ -92,6 +92,7 @@ export function SearchResultsSection({
                             image={tour.image}
                             totalBooked={tour.totalBooked}
                             remainingSeats={tour.remainingSeats}
+                            daysLeft={tour.daysLeft}
                         />
                     ))}
                 </div>

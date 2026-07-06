@@ -83,6 +83,7 @@ export interface MobileMenu {
 
 export interface Sections {
     hero:               Hero;
+    trust:              TrustSection;
     planPerfectTrip:    PlanPerfectTrip;
     ourServices:        OurServices;
     popularDestination: PopularDestination;
@@ -141,6 +142,20 @@ export interface Hero {
     title:           string;
     paragraph:       string;
     searchFilters:   SearchFilters;
+}
+
+export interface TrustSection {
+    id:      string;
+    eyebrow: string;
+    title:   string;
+    brands:  TrustBrand[];
+}
+
+export interface TrustBrand {
+    id:   string;
+    name: string;
+    src:  string;
+    alt?: string;
 }
 
 export interface SearchFilters {

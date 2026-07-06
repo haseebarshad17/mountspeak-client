@@ -95,6 +95,14 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
         sections: {
             ...BASE_PAGE.sections,
             ...page.sections,
+            trust: {
+                ...BASE_PAGE.sections.trust,
+                ...page.sections?.trust,
+                brands:
+                    page.sections?.trust?.brands?.length
+                        ? page.sections.trust.brands
+                        : BASE_PAGE.sections.trust.brands,
+            },
             popularTravelBlogs: normalizePopularTravelBlogs(page.sections?.popularTravelBlogs),
         },
     }

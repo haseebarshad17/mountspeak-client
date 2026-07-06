@@ -16,4 +16,5 @@ export const DEMO_TOUR_LIST_ITEM: TourListItem = {
     image: DEMO_TOUR_PAGE.heroSection.backgroundMedia.desktop,
     totalBooked: 8,
     remainingSeats: 12,
+    daysLeft: 14,
 }

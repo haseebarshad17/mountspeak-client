@@ -8,6 +8,7 @@ import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import {
+    formatTourDaysLeft,
     formatTourPrice,
     getTourDiscountedPricePerSeat,
     tourDetailPath,
@@ -24,6 +25,7 @@ type TourExploreCardProps = {
     detailHref?: string
     totalBooked?: number
     remainingSeats?: number | null
+    daysLeft?: number | null
 }
 
 function formatRemainingSeats(remainingSeats: number | null | undefined): string {
@@ -40,6 +42,7 @@ export function TourExploreCard({
     detailHref,
     totalBooked = 0,
     remainingSeats = null,
+    daysLeft = null,
 }: TourExploreCardProps) {
     const rawDetailPath = detailHref ?? tourDetailPath(slug)
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
@@ -55,8 +58,7 @@ export function TourExploreCard({
         discountedPrice != null &&
         pricePerSeat != null &&
         discountedPrice < pricePerSeat
-    const showLowSeats =
-        remainingSeats != null && remainingSeats > 0 && remainingSeats <= 5
+    const daysLeftLabel = formatTourDaysLeft(daysLeft)
 
     return (
         <Link
@@ -81,12 +83,6 @@ export function TourExploreCard({
                 />
 
                 <TourDiscountBadge discountPercent={discountPercent} />
-
-                {showLowSeats ? (
-                    <span className='absolute left-3 top-3 z-10 inline-flex items-center rounded-full border border-white/50 bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-[#012b32] shadow-sm backdrop-blur-sm sm:left-3.5 sm:top-3.5 sm:px-3 sm:text-[11px]'>
-                        Only {remainingSeats} left
-                    </span>
-                ) : null}
             </div>
 
             <div className='flex flex-1 flex-col px-3.5 py-3 sm:px-4 sm:py-3.5'>
@@ -95,6 +91,16 @@ export function TourExploreCard({
                 </h3>
 
                 <p className='mt-1 text-[11px] leading-4 text-[#707979] sm:text-xs'>
+                    {daysLeftLabel ? (
+                        <>
+                            <span className='font-semibold text-[var(--hp-color-primary)]'>
+                                {daysLeftLabel}
+                            </span>
+                            <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
+                                ·
+                            </span>
+                        </>
+                    ) : null}
                     <span className='font-medium text-[#404849]'>{totalBooked}</span> booked
                     <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
                         ·

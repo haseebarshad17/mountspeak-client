@@ -3,6 +3,7 @@
 import ExploreTheWorld from '@/components/pages/marketing/home/ExploreTheWorld'
 import TourismTravelingGallery from '@/components/pages/marketing/home/TourismTravelingGallery'
 import Hero from '@/components/pages/marketing/home/Hero'
+import TrustSection from '@/components/pages/marketing/home/TrustSection'
 import OurServices from '@/components/pages/marketing/home/OurServices'
 import PlanPerfectTrip from '@/components/pages/marketing/home/PlanPerfectTrip'
 import PopularDestinationSection from '@/components/pages/marketing/home/PopularDestinationSection'
@@ -30,6 +31,7 @@ export default function HomePageContent({ tourLocations = [] }: HomePageContentP
     return (
         <div className='homepage flex flex-col gap-12 sm:gap-16 md:gap-20 lg:gap-24 xl:gap-[100px]'>
             <Hero page={page} tourLocations={tourLocations} />
+            <TrustSection page={page} />
             <PlanPerfectTrip page={page} />
             <OurServices page={page} />
             <PopularDestinationSection page={page} />

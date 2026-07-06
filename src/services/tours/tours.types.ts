@@ -20,4 +20,5 @@ export type TourListItem = {
     image: string
     totalBooked: number
     remainingSeats: number | null
+    daysLeft: number | null
 }

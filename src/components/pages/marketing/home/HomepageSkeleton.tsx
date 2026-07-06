@@ -40,6 +40,24 @@ function HeroSkeleton() {
     )
 }
 
+function TrustSectionSkeleton() {
+    return (
+        <section className='-mt-4 overflow-hidden bg-white sm:-mt-6' aria-hidden>
+            <div className='agency-container'>
+                <div className='mx-auto flex max-w-2xl flex-col items-center gap-3'>
+                    <Skeleton className='h-4 w-32 rounded-full' />
+                    <Skeleton className='h-8 w-full max-w-sm' />
+                </div>
+            </div>
+            <div className='mt-6 flex justify-center gap-6 overflow-hidden px-4 sm:mt-8'>
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className='h-10 w-28 shrink-0 rounded-md' />
+                ))}
+            </div>
+        </section>
+    )
+}
+
 function PlanPerfectTripSkeleton() {
     return (
         <section className='pb-10 sm:pb-20 lg:pb-[112px]'>
@@ -163,6 +181,7 @@ export default function HomepageSkeleton() {
             aria-label='Loading homepage'
         >
             <HeroSkeleton />
+            <TrustSectionSkeleton />
             <PlanPerfectTripSkeleton />
             <OurServicesSkeleton />
             <PopularDestinationSkeleton />
