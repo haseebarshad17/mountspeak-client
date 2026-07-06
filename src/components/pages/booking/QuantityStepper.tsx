@@ -2,6 +2,7 @@
 
 import { Minus, Plus } from 'lucide-react'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
+import { HP_THEME_BORDER_CLASS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
 export type QuantityStepperHandle = {
@@ -61,14 +62,22 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
 
         const isFieldVariant = variant === 'field'
         const labelClassName = isFieldVariant
-            ? 'min-w-0 flex-1 truncate text-sm font-normal leading-6 tracking-normal text-neutral-400 sm:text-base'
-            : 'text-sm font-semibold text-neutral-800'
+            ? 'min-w-0 flex-1 truncate text-sm font-normal leading-6 tracking-normal text-neutral-500 sm:text-base'
+            : cn('text-sm font-semibold', 'text-[var(--hp-color-primary)]')
         const buttonClassName = isFieldVariant
-            ? 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary-700 text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40 sm:h-9 sm:w-9'
-            : 'flex h-9 w-9 items-center justify-center rounded-full border border-primary-700 text-primary-700 transition hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40'
+            ? cn(
+                'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition hover:bg-[color-mix(in_srgb,var(--hp-color-primary)_8%,white)] disabled:cursor-not-allowed disabled:opacity-40 sm:h-9 sm:w-9',
+                HP_THEME_BORDER_CLASS,
+                'text-[var(--hp-color-primary)]',
+            )
+            : cn(
+                'flex h-9 w-9 items-center justify-center rounded-full border transition hover:bg-[color-mix(in_srgb,var(--hp-color-primary)_8%,white)] disabled:cursor-not-allowed disabled:opacity-40',
+                HP_THEME_BORDER_CLASS,
+                'text-[var(--hp-color-primary)]',
+            )
         const inputClassName = isFieldVariant
-            ? 'flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 px-1 text-center text-sm font-normal leading-6 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-primary-700/30 sm:h-9 sm:w-11 sm:text-base'
-            : 'flex h-11 w-[72px] items-center justify-center rounded-sm border border-gray-300 bg-neutral-100 px-2 text-center text-sm font-medium text-neutral-800 outline-none focus:ring-2 focus:ring-primary-700/30'
+            ? 'flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-[#D5DADD] bg-white px-1 text-center text-sm font-normal leading-6 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25 sm:h-9 sm:w-11 sm:text-base'
+            : 'flex h-11 w-[72px] items-center justify-center rounded-[10px] border border-[#D5DADD] bg-white px-2 text-center text-sm font-medium text-neutral-800 outline-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25'
 
         return (
             <div

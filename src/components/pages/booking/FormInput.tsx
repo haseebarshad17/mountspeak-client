@@ -1,6 +1,12 @@
 import { cn } from '@/lib/utils/clsxUtils'
 import React from 'react'
 
+import {
+    bookingFieldInputClassName,
+    bookingFieldLabelClassName,
+    bookingFieldTextareaClassName,
+} from './booking-form-ui'
+
 type BaseProps = {
     label: string
     required?: boolean
@@ -32,9 +38,8 @@ export function FormInput({
 }: FormInputProps) {
     const invalid = !!error
     const fieldClassName = cn(
-        'w-full rounded-sm border border-gray-300 bg-neutral-50 text-sm text-neutral-800 outline-none transition placeholder:text-neutral-400 focus:border-primary-600 focus:ring-1 focus:ring-primary-600',
-        invalid && 'border-red-400 focus:border-red-500 focus:ring-0',
-        textarea ? 'h-auto min-h-[96px] resize-none p-3 sm:min-h-[120px]' : 'h-10 px-3 sm:h-11',
+        textarea ? bookingFieldTextareaClassName : bookingFieldInputClassName,
+        invalid && 'border-red-400 focus:ring-red-200',
         classNames?.input,
     )
 
@@ -42,7 +47,7 @@ export function FormInput({
         <div className={cn('flex flex-col gap-2', className)}>
             <label
                 className={cn(
-                    'block text-sm font-medium text-neutral-700',
+                    bookingFieldLabelClassName,
                     !label && 'hidden',
                     classNames?.label,
                 )}

@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react'
+import { HP_THEME_BG_CLASS, HP_THEME_BORDER_CLASS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
 type OnboardStepperProps = {
@@ -21,7 +22,7 @@ export function OnboardStepper({ activeStep, steps }: OnboardStepperProps) {
                                     className={cn(
                                         'flex h-8 w-8 items-center justify-center rounded-[9px] border text-sm transition-colors',
                                         isCompleted || isActive
-                                            ? 'border-primary-700 bg-primary-700 text-white'
+                                            ? cn('text-white', HP_THEME_BORDER_CLASS, HP_THEME_BG_CLASS)
                                             : 'border-neutral-300 bg-white text-neutral-500',
                                     )}
                                 >
@@ -41,7 +42,7 @@ export function OnboardStepper({ activeStep, steps }: OnboardStepperProps) {
                                 <div
                                     className={cn(
                                         'mt-4 h-px w-16 sm:w-24 md:w-32',
-                                        index < activeStep ? 'bg-primary-700' : 'bg-neutral-300',
+                                        index < activeStep ? HP_THEME_BG_CLASS : 'bg-neutral-300',
                                     )}
                                 />
                             )}

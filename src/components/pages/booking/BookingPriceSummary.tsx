@@ -1,7 +1,11 @@
 'use client'
 
+import { HP_THEME_TEXT_CLASS } from '@/data/homepage'
+import { cn } from '@/lib/utils/clsxUtils'
+
 import type { BookingPriceBreakdown } from './booking.types'
 import { formatBookingDiscountAmount, formatBookingTotalAmount } from './booking.types'
+import { bookingFieldLabelClassName } from './booking-form-ui'
 
 type BookingPriceSummaryProps = {
     breakdown: BookingPriceBreakdown
@@ -46,11 +50,9 @@ export function BookingPriceSummary({
 
     return (
         <div className='flex flex-col gap-2 sm:col-span-2'>
-            <span className='text-sm font-medium text-neutral-700'>Total Amount</span>
+            <span className={bookingFieldLabelClassName}>Total Amount</span>
 
-            <div
-                className='overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50'
-            >
+            <div className='overflow-hidden rounded-[10px] border border-[#D5DADD] bg-white'>
                 <div className='space-y-3 px-4 py-4'>
                     <SummaryRow
                         label='Subtotal'
@@ -87,7 +89,7 @@ export function BookingPriceSummary({
                     <span className='text-xs font-semibold uppercase tracking-wide text-neutral-700'>
                         Total payable
                     </span>
-                    <span className='text-xl font-semibold tabular-nums text-primary-700'>
+                    <span className={cn('text-xl font-semibold tabular-nums', HP_THEME_TEXT_CLASS)}>
                         {formatBookingTotalAmount(breakdown.total)}
                     </span>
                 </div>

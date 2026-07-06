@@ -2,7 +2,10 @@
 
 import { FileText, Upload, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
+import { HP_THEME_BORDER_CLASS } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
+
+import { bookingFieldLabelClassName } from './booking-form-ui'
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024
 
@@ -98,7 +101,7 @@ export function FileUploadField({
 
     return (
         <div className={cn('flex flex-col gap-2', className)}>
-            <span className='text-sm font-medium text-neutral-700'>
+            <span className={bookingFieldLabelClassName}>
                 {label}
                 {required && <span className='text-red-400'> *</span>}
             </span>
@@ -123,10 +126,10 @@ export function FileUploadField({
                 }}
                 onDrop={handleDrop}
                 className={cn(
-                    'flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed px-4 py-6 text-center transition-colors',
+                    'flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-[10px] border border-dashed px-4 py-6 text-center transition-colors',
                     isDragging
-                        ? 'border-primary-700 bg-primary-50'
-                        : 'border-gray-300 bg-neutral-50 hover:border-primary-600 hover:bg-neutral-100',
+                        ? cn('bg-[color-mix(in_srgb,var(--hp-color-primary)_8%,white)]', HP_THEME_BORDER_CLASS)
+                        : 'border-[#D5DADD] bg-white hover:border-[var(--hp-color-primary)] hover:bg-[#F8FAFB]',
                     error && 'border-red-400',
                 )}
             >
@@ -140,7 +143,7 @@ export function FileUploadField({
 
                 {value ? (
                     <>
-                        <span className='flex h-10 w-10 items-center justify-center rounded-md bg-slate-200 text-primary-700'>
+                        <span className='flex h-10 w-10 items-center justify-center rounded-md bg-[#EEF1F3] text-[var(--hp-color-primary)]'>
                             <FileText className='h-5 w-5' />
                         </span>
                         <span className='mt-3 max-w-full truncate px-2 text-sm font-medium text-neutral-800'>
@@ -164,7 +167,7 @@ export function FileUploadField({
                         e.stopPropagation()
                         processFile(null)
                     }}
-                    className='inline-flex w-max items-center gap-1 text-xs text-neutral-600 hover:text-primary-700'
+                    className='inline-flex w-max items-center gap-1 text-xs text-neutral-600 hover:text-[var(--hp-color-primary)]'
                 >
                     <X className='h-3.5 w-3.5' />
                     Remove file
