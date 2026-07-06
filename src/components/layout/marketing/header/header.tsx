@@ -27,6 +27,19 @@ type HeaderProps = {
     page: HomepagePage
 }
 
+function matchesRoute(pathname: string, route: string): boolean {
+    return pathname === route || pathname.startsWith(`${route}/`)
+}
+
+function shouldUseDarkLogo(pathname: string): boolean {
+    return (
+        matchesRoute(pathname, '/profile') ||
+        matchesRoute(pathname, '/dashboard') ||
+        matchesRoute(pathname, '/bookings') ||
+        matchesRoute(pathname, '/booking')
+    )
+}
+
 function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
     if (!href) return false
     if (href === '/') return pathname === '/'
@@ -34,6 +47,13 @@ function isNavLinkActive(pathname: string, href: string | null | undefined): boo
 }
 
 const LIGHT_NAV_LINK_COLOR = '#00292C'
+
+const FLOATING_HEADER_POSITION_CLASS =
+    'fixed rounded-xl top-7 left-4 right-4 xs:left-7 xs:right-7 xs:top-7 sm:left-8 sm:right-8 sm:top-8 lg:left-12 lg:right-12 lg:top-12 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px]'
+
+/** Tighter top inset on light pages (no hero) — dashboard, bookings, checkout. */
+const COMPACT_FLOATING_HEADER_POSITION_CLASS =
+    'fixed rounded-xl top-3 left-4 right-4 xs:left-6 xs:right-6 xs:top-4 sm:left-8 sm:right-8 sm:top-5 lg:left-12 lg:right-12 lg:top-6 2xl:left-[110px] 2xl:right-[110px] 2xl:top-8'
 
 const navLinkClassName = (isActive: boolean, useDarkChrome: boolean) =>
     cn(
@@ -106,7 +126,8 @@ const Header = ({ page }: HeaderProps) => {
     const isTermsPage = internalPathname === '/terms' || internalPathname.startsWith('/terms/')
     const isDashboardPage = internalPathname === '/dashboard' || internalPathname.startsWith('/dashboard/')
     const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
-    const isAccountPage = isDashboardPage || isBookingsPage
+    const isBookingPage = internalPathname === '/booking' || internalPathname.startsWith('/booking/')
+    const isCompactHeaderPage = isDashboardPage || isBookingsPage || isBookingPage
     const useFixedHeader = isTermsPage
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
@@ -117,9 +138,12 @@ const Header = ({ page }: HeaderProps) => {
 
     const { header, branding } = page
     const colors = STATIC_UI_COLORS
+    const headerLogo = shouldUseDarkLogo(internalPathname)
+        ? branding.logo.default
+        : branding.logo.onDark
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
     const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
-    const useDarkChrome = useFixedHeader || (isAccountPage && !isScrolled)
+    const useDarkChrome = useFixedHeader || (isCompactHeaderPage && !isScrolled)
 
     useEffect(() => {
         if (useFixedHeader) {
@@ -286,7 +310,9 @@ const Header = ({ page }: HeaderProps) => {
                     'pointer-events-auto z-[100] ease duration-300',
                     useFixedHeader
                         ? 'fixed top-0 left-0 right-0 w-full border-b'
-                        : 'fixed rounded-xl 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px] lg:left-12 lg:right-12 lg:top-12 sm:right-8 sm:left-8 sm:top-8 xs:left-7 xs:right-7 xs:top-7 top-7 left-4 right-4',
+                        : isCompactHeaderPage
+                            ? COMPACT_FLOATING_HEADER_POSITION_CLASS
+                            : FLOATING_HEADER_POSITION_CLASS,
                     useFixedHeader
                         ? [
                             'border-[#C0C8C9]/60 bg-white shadow-sm',
@@ -305,12 +331,9 @@ const Header = ({ page }: HeaderProps) => {
                         {/* Logo  */}
                         <Link href='/' className='shrink-0 inline-block'>
                             <HomepageMediaImage
-                                src={
-                                    useDarkChrome
-                                        ? branding.logo.default.src
-                                        : branding.logo.onDark.src
-                                }
-                                alt={branding.logo.default.alt}
+                                key={headerLogo.src}
+                                src={headerLogo.src}
+                                alt={headerLogo.alt}
                                 width={212}
                                 height={88}
                                 className={headerLogoClassName(isScrolled)}

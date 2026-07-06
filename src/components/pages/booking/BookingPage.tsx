@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -9,9 +9,11 @@ import {
 } from '@/lib/booking/tour-booking-rules'
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode, isMessageCode } from '@/lib/messages/codes'
 import { getClientSiteUrl } from '@/lib/utils/site-url'
+import { cn } from '@/lib/utils/clsxUtils'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
 import { buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
@@ -23,8 +25,8 @@ import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payme
 import { useAppSelector } from '@/store/hooks'
 import { selectHomepageAgencyId, selectHomepageSiteUrl, selectIsAgencySite } from '@/store/homepage/homepage.selectors'
 
-import { BookingHeaderSection } from './BookingHeaderSection'
 import { BookingPageSkeleton } from './BookingPageSkeleton'
+import { bookingFormPanelClassName, bookingPageTopPaddingClassName, bookingStepperTopSpacingClassName } from './booking-form-ui'
 import { OnboardIntro } from './OnboardIntro'
 import { OnboardStepper } from './OnboardStepper'
 import type { BookingDetailsForm, BookingTourOption } from './booking.types'
@@ -116,6 +118,11 @@ export default function BookingPage({
         },
         [details, activeStep, totalAmount, draftReady],
     )
+    const persistDraftRef = useRef(persistDraft)
+
+    useEffect(() => {
+        persistDraftRef.current = persistDraft
+    }, [persistDraft])
 
     const currentContent = bookingStepsContent[activeStep]
 
@@ -124,15 +131,12 @@ export default function BookingPage({
         return tourOptions.find((tour) => tour.id === id) ?? lockedTour ?? null
     }, [details.tourId, lockedTour, tourOptions])
 
-    const handleDetailsChange = useCallback(
-        (nextDetails: BookingDetailsForm) => {
-            if (!draftReady) return
+    const handleDetailsChange = useCallback((nextDetails: BookingDetailsForm) => {
+        if (!draftReady) return
 
-            setDetails(nextDetails)
-            persistDraft({ details: nextDetails })
-        },
-        [persistDraft, draftReady],
-    )
+        setDetails(nextDetails)
+        persistDraftRef.current({ details: nextDetails })
+    }, [draftReady])
 
     const handleBack = () => {
         const nextStep = Math.max(activeStep - 1, 0)
@@ -295,98 +299,91 @@ export default function BookingPage({
 
     if (lockedTourUnavailable) {
         return (
-            <>
-                <BookingHeaderSection />
-                <div className='agency-container py-20 text-center'>
-                    <h2
-                        className='text-3xl font-semibold text-neutral-800'
-                    >
-                        Booking unavailable
-                    </h2>
-                    <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
-                        {getMessage(
-                            lockedTour.isBookingClosed
-                                ? MessageCode.BOOKING_CLOSED
-                                : MessageCode.BOOKING_SOLD_OUT,
-                        )}
-                    </p>
-                    <Button
-                        href='/search'
-                        className='mt-8 min-w-[200px]'
-                    >
-                        Browse other tours
-                    </Button>
-                </div>
-            </>
+            <div className={cn('agency-container pb-16 text-center sm:pb-20 lg:pb-24', bookingPageTopPaddingClassName)}>
+                <h2 className='text-3xl font-semibold text-neutral-800'>
+                    Booking unavailable
+                </h2>
+                <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
+                    {getMessage(
+                        lockedTour.isBookingClosed
+                            ? MessageCode.BOOKING_CLOSED
+                            : MessageCode.BOOKING_SOLD_OUT,
+                    )}
+                </p>
+                <Button
+                    href='/search'
+                    className={cn('mt-8 min-w-[200px]', HP_THEME_BTN_CLASS)}
+                    style={HP_THEME_BTN_STYLE}
+                >
+                    Browse other tours
+                </Button>
+            </div>
         )
     }
 
     if (isSuccess) {
         return (
-            <>
-                <BookingHeaderSection />
-                <div className='agency-container py-20 text-center'>
-                    <h2
-                        className='text-3xl font-semibold text-neutral-800'
-                    >
-                        Booking Submitted
-                    </h2>
-                    <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
-                        Thank you for booking
-                        {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your
-                        payment and contact you shortly.
-                    </p>
-                    <Button
-                        type='button'
-                        onClick={resetBooking}
-                        className='mt-8 min-w-[200px]'
-                    >
-                        Book Another Expedition
-                    </Button>
-                </div>
-            </>
+            <div className={cn(
+                'agency-container pb-16 text-center sm:pb-20 lg:pb-24',
+                bookingPageTopPaddingClassName
+            )}>
+                <h2 className='text-3xl font-semibold text-neutral-800'>
+                    Booking Submitted
+                </h2>
+                <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
+                    Thank you for booking
+                    {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your
+                    payment and contact you shortly.
+                </p>
+                <Button
+                    type='button'
+                    onClick={resetBooking}
+                    className={cn('mt-8 min-w-[200px]', HP_THEME_BTN_CLASS)}
+                    style={HP_THEME_BTN_STYLE}
+                >
+                    Book Another Expedition
+                </Button>
+            </div>
         )
     }
 
     return (
-        <>
-            <BookingHeaderSection />
-
-            <div className='agency-container pb-16 pt-10 xs:pt-12 sm:pb-20 sm:pt-14 md:pt-16 lg:pb-24 xl:pt-20'>
+        <div className={cn('agency-container pb-16 sm:pb-20 lg:pb-24', bookingPageTopPaddingClassName)}>
+            <div className={bookingStepperTopSpacingClassName}>
                 <OnboardStepper activeStep={activeStep} steps={[...onboardSteps]} />
+            </div>
 
-                <div className='mt-10 grid items-start gap-10 xs:mt-12 sm:mt-14 xl:mt-16 xl:grid-cols-[minmax(0,455px)_minmax(0,555px)] xl:justify-center xl:gap-16 2xl:gap-24'>
-                    <OnboardIntro {...currentContent} />
+            <div className='mt-10 grid items-start gap-10 xs:mt-12 sm:mt-14 xl:mt-16 xl:grid-cols-[minmax(0,455px)_minmax(0,555px)] xl:justify-center xl:gap-16 2xl:gap-24'>
+                <OnboardIntro {...currentContent} />
 
-                    <div className='mx-auto w-full max-w-[555px] rounded-[10px] border border-neutral-300 bg-white px-4 py-6 xs:px-5 sm:px-9 sm:py-9 xl:mx-0'>
-                        {activeStep === 0 && (
-                            <IdentityStep
-                                key={identityFormKey}
-                                tourOptions={tourOptions}
-                                lockedTour={lockedTour}
-                                initialDetails={details}
-                                onDetailsChange={handleDetailsChange}
-                                onContinue={handleDetailsContinue}
-                                skipValidation={isDemoMode}
-                            />
-                        )}
-                        {activeStep === 1 && (
-                            <FinalizeStep
-                                tourTitle={selectedTour?.title}
-                                totalAmount={totalAmount}
-                                paymentAccounts={paymentAccounts}
-                                paymentAccountsLoading={paymentAccountsLoading}
-                                showFallbackPaymentMethods={isDemoMode}
-                                paymentScreenshot={paymentScreenshot}
-                                onPaymentScreenshotChange={setPaymentScreenshot}
-                                onBack={handleBack}
-                                onSubmit={handleSubmit}
-                                isSubmitting={isSubmitting}
-                            />
-                        )}
-                    </div>
+                <div className={bookingFormPanelClassName}>
+                    {activeStep === 0 && (
+                        <IdentityStep
+                            key={identityFormKey}
+                            tourOptions={tourOptions}
+                            lockedTour={lockedTour}
+                            initialDetails={details}
+                            onDetailsChange={handleDetailsChange}
+                            onContinue={handleDetailsContinue}
+                            skipValidation={isDemoMode}
+                        />
+                    )}
+                    {activeStep === 1 && (
+                        <FinalizeStep
+                            tourTitle={selectedTour?.title}
+                            totalAmount={totalAmount}
+                            paymentAccounts={paymentAccounts}
+                            paymentAccountsLoading={paymentAccountsLoading}
+                            showFallbackPaymentMethods={isDemoMode}
+                            paymentScreenshot={paymentScreenshot}
+                            onPaymentScreenshotChange={setPaymentScreenshot}
+                            onBack={handleBack}
+                            onSubmit={handleSubmit}
+                            isSubmitting={isSubmitting}
+                        />
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }

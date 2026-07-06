@@ -4,7 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
+import { cn } from '@/lib/utils/clsxUtils'
+import { BookingFormSelect } from '@/components/pages/marketing/home/BookingFormSelect'
 import { MessageCode } from '@/lib/messages/codes'
 import {
     validateSeatCapacity,
@@ -14,8 +17,8 @@ import { supabase } from '@/lib/supabase/supabase.client'
 
 import { BookingPriceSummary } from '../BookingPriceSummary'
 import { FormInput } from '../FormInput'
-import { FormSelect } from '../FormSelect'
 import { QuantityStepper, type QuantityStepperHandle } from '../QuantityStepper'
+import { bookingFieldLabelClassName } from '../booking-form-ui'
 import type { BookingDetailsForm, BookingTourOption } from '../booking.types'
 import { calculateBookingPriceBreakdown } from '../booking.types'
 import { bookingDetailsSchema, formatCnicInput } from '../booking.validation'
@@ -66,6 +69,11 @@ export function IdentityStep({
     const maleSeatsRef = useRef<QuantityStepperHandle>(null)
     const femaleSeatsRef = useRef<QuantityStepperHandle>(null)
     const kidsSeatsRef = useRef<QuantityStepperHandle>(null)
+    const onDetailsChangeRef = useRef(onDetailsChange)
+
+    useEffect(() => {
+        onDetailsChangeRef.current = onDetailsChange
+    }, [onDetailsChange])
 
     const clearFieldErrors = (...keys: string[]) => {
         setFieldErrors((prev) => {
@@ -78,9 +86,13 @@ export function IdentityStep({
 
     const setFieldError = (key: string, message?: string) => {
         setFieldErrors((prev) => {
+            if (message) {
+                if (prev[key] === message) return prev
+                return { ...prev, [key]: message }
+            }
+            if (!(key in prev)) return prev
             const next = { ...prev }
-            if (message) next[key] = message
-            else delete next[key]
+            delete next[key]
             return next
         })
     }
@@ -107,9 +119,7 @@ export function IdentityStep({
     }, [lockedTour])
 
     useEffect(() => {
-        if (!onDetailsChange) return
-
-        onDetailsChange(buildDetailsSnapshot())
+        onDetailsChangeRef.current?.(buildDetailsSnapshot())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         firstName,
@@ -123,7 +133,6 @@ export function IdentityStep({
         kidsSeats,
         note,
         lockedTour?.id,
-        onDetailsChange,
     ])
 
     useEffect(() => {
@@ -468,7 +477,7 @@ export function IdentityStep({
                 />
                 {planLocked ? (
                     <FormInput
-                        label='Tour ID / Destination / Plan'
+                        label='Destination'
                         required
                         readOnly
                         staticField
@@ -477,19 +486,26 @@ export function IdentityStep({
                         className='sm:col-span-2'
                     />
                 ) : (
-                    <FormSelect
-                        label='Tour ID / Destination / Plan'
-                        placeholder='Select tour or destination'
-                        required
-                        value={tourId}
-                        staticField={false}
-                        options={planOptions}
-                        onChange={(event) => {
-                            setTourId(event.target.value)
-                            clearFieldErrors('tourId')
-                        }}
-                        className='sm:col-span-2'
-                    />
+                    <div className='flex flex-col gap-2 sm:col-span-2'>
+                        <label className={bookingFieldLabelClassName}>
+                            Destination
+                            <span className='text-red-400'> *</span>
+                        </label>
+                        <BookingFormSelect
+                            name='tourId'
+                            value={tourId}
+                            onChange={(nextValue) => {
+                                setTourId(nextValue)
+                                clearFieldErrors('tourId')
+                            }}
+                            placeholder='Select destination'
+                            options={planOptions}
+                            searchable
+                            searchPlaceholder='Search destinations...'
+                            noResultsMessage='No tours found'
+                            aria-label='Destination'
+                        />
+                    </div>
                 )}
                 {fieldErrors.tourId ? (
                     <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.tourId}</p>
@@ -499,6 +515,7 @@ export function IdentityStep({
                     label='Male Seats'
                     value={maleSeats}
                     max={maxMaleSeats}
+                    variant='field'
                     onChange={(value) => {
                         setMaleSeats(value)
                         clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
@@ -513,6 +530,7 @@ export function IdentityStep({
                     label='Female Seats'
                     value={femaleSeats}
                     max={maxFemaleSeats}
+                    variant='field'
                     onChange={(value) => {
                         setFemaleSeats(value)
                         clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
@@ -527,6 +545,7 @@ export function IdentityStep({
                     label='Total Number Children (4 to 8 years):'
                     value={kidsSeats}
                     max={maxKidsSeats}
+                    variant='field'
                     onChange={(value) => {
                         setKidsSeats(value)
                         clearFieldErrors('maleSeats', 'femaleSeats', 'seatCapacity')
@@ -571,7 +590,8 @@ export function IdentityStep({
                         !!seatCapacityError ||
                         !!selectedTour?.isBookingClosed
                     }
-                    className='w-full rounded-full bg-primary-700 px-12 hover:bg-primary-800 sm:w-auto'
+                    className={cn('w-full rounded-md px-12 sm:w-auto', HP_THEME_BTN_CLASS)}
+                    style={HP_THEME_BTN_STYLE}
                 >
                     Continue
                 </Button>

@@ -1,7 +1,7 @@
 'use client'
 
 import Image, { type ImageProps } from 'next/image'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
     STORAGE_MEDIA_PLACEHOLDER,
@@ -12,10 +12,18 @@ type StorageMediaImageProps = Omit<ImageProps, 'src'> & {
 }
 
 export function StorageMediaImage({ src, alt, onError, ...props }: StorageMediaImageProps) {
-    const [imageSrc, setImageSrc] = useState(() => {
+    const resolvedSrc = useMemo(() => {
         const trimmed = src?.trim()
         return trimmed || STORAGE_MEDIA_PLACEHOLDER
-    })
+    }, [src])
+
+    const [hasError, setHasError] = useState(false)
+
+    useEffect(() => {
+        setHasError(false)
+    }, [resolvedSrc])
+
+    const imageSrc = hasError ? STORAGE_MEDIA_PLACEHOLDER : resolvedSrc
 
     return (
         <Image
@@ -25,8 +33,8 @@ export function StorageMediaImage({ src, alt, onError, ...props }: StorageMediaI
             onError={(event) => {
                 onError?.(event)
 
-                if (imageSrc !== STORAGE_MEDIA_PLACEHOLDER) {
-                    setImageSrc(STORAGE_MEDIA_PLACEHOLDER)
+                if (!hasError) {
+                    setHasError(true)
                 }
             }}
         />

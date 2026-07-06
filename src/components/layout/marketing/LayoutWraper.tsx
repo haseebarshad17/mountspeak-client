@@ -33,18 +33,15 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const HeaderExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password", "/verify-email",
-        "/booking", "/booking/*",
     ];
 
     const FooterExcludeRoutes = [
         "/admin", "/admin/*", "/onboarding", "/onboarding/*", "/client", "/client/*",
         "/login", "/register", "/forgot-password", "/reset-password", "/verify-email",
-        "/booking", "/booking/*",
     ];
 
     const ShouldShowHeader = !isExcludedRoute(pathname, HeaderExcludeRoutes);
     const ShouldShowFooter = !isExcludedRoute(pathname, FooterExcludeRoutes);
-    const isBookingRoute = isExcludedRoute(pathname, ["/booking", "/booking/*"]);
     const headerPage = page ?? DUMMY_HOMEPAGE_PAGE;
 
     const toaster = <AppToaster />;
@@ -52,22 +49,15 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     return (
         <TanstackQueryProvider>
             {ShouldShowHeader ? <Header page={headerPage} /> : null}
-            {isBookingRoute ? (
-                <div className='w-full min-h-dvh'>
-                    {children}
-                    {toaster}
-                </div>
-            ) : (
-                <div
-                    id='app-scroll-container'
-                    className='w-full h-dvh min-h-0 overflow-x-hidden overflow-y-auto scrollbar-content'
-                >
-                    {children}
-                    {ShouldShowFooter && <MarketingFooter />}
-                    {ShouldShowFooter ? <FloatingSocialIcons /> : null}
-                    {toaster}
-                </div>
-            )}
+            <div
+                id='app-scroll-container'
+                className='w-full h-dvh min-h-0 overflow-x-hidden overflow-y-auto scrollbar-content'
+            >
+                {children}
+                {ShouldShowFooter && <MarketingFooter />}
+                {ShouldShowFooter ? <FloatingSocialIcons /> : null}
+                {toaster}
+            </div>
         </TanstackQueryProvider>
     )
 }

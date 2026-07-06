@@ -2,6 +2,13 @@
 
 import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+    HP_OUTLINE_BTN_STYLE,
+    HP_THEME_BTN_CLASS,
+    HP_THEME_BTN_STYLE,
+    HP_THEME_OUTLINE_BTN_CLASS,
+    HP_THEME_TEXT_CLASS,
+} from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
 import { FileUploadField } from '../FileUploadField'
@@ -68,7 +75,7 @@ export function FinalizeStep({
                     <span className='text-right'>
                         <span className='block text-[10px] text-neutral-400'>inc. all local taxes</span>
                         <span
-                            className='text-3xl font-semibold leading-none text-primary-700'
+                            className={cn('text-3xl font-semibold leading-none', HP_THEME_TEXT_CLASS)}
                         >
                             {formatBookingTotalAmount(totalAmount)}
                         </span>
@@ -155,7 +162,8 @@ export function FinalizeStep({
                     size='lg'
                     onClick={onBack}
                     disabled={isSubmitting}
-                    className='min-w-[120px] rounded-full px-8'
+                    style={HP_OUTLINE_BTN_STYLE}
+                    className={cn('min-w-[120px] rounded-md px-8', HP_THEME_OUTLINE_BTN_CLASS)}
                 >
                     Back
                 </Button>
@@ -165,7 +173,8 @@ export function FinalizeStep({
                     type='button'
                     onClick={onSubmit}
                     disabled={!canSubmit}
-                    className='w-full rounded-full bg-primary-700 px-12 hover:bg-primary-800 sm:ml-auto sm:w-auto'
+                    className={cn('w-full rounded-md px-12 sm:ml-auto sm:w-auto', HP_THEME_BTN_CLASS)}
+                    style={HP_THEME_BTN_STYLE}
                 >
                     {isSubmitting ? 'Submitting…' : 'Submit'}
                 </Button>

@@ -73,7 +73,7 @@ export function BookingFormSelect({
     return (
         <>
             <input type='hidden' name={name} value={value} />
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover open={open} onOpenChange={setOpen} modal={false}>
                 <PopoverTrigger asChild disabled={disabled}>
                     <button
                         type='button'

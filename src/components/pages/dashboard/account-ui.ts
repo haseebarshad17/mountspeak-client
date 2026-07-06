@@ -1,5 +1,8 @@
 export const accountCardClassName = 'rounded-xl border border-[#C0C8C9] bg-white'
 
+/** Breathing room below the floating header on profile / bookings pages. */
+export const accountPageContentTopSpacingClassName = 'mt-8 sm:mt-10 md:mt-12'
+
 export const accountPageHeadingClassName =
     'text-3xl font-semibold leading-tight text-[#012b32] sm:text-4xl lg:text-5xl'
 

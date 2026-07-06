@@ -1,5 +1,8 @@
 import Image from 'next/image'
 
+import { HP_THEME_TEXT_CLASS } from '@/data/homepage'
+import { cn } from '@/lib/utils/clsxUtils'
+
 type OnboardIntroProps = {
     description: string
     image: string
@@ -18,7 +21,10 @@ export function OnboardIntro({
     return (
         <div className='mx-auto w-full max-w-[455px] xl:mx-0'>
             <h2
-                className='text-[28px] font-semibold leading-tight text-neutral-800 xs:text-[32px] sm:text-[44px] md:text-[52px] xl:text-[64px] xl:leading-[0.98]'
+                className={cn(
+                    'text-[28px] font-semibold leading-tight xs:text-[32px] sm:text-[44px] md:text-[52px] xl:text-[64px] xl:leading-[0.98]',
+                    HP_THEME_TEXT_CLASS,
+                )}
             >
                 {titleLines.map((line) => (
                     <span
