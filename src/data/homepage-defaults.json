@@ -115,6 +115,61 @@
           "doneDate": "Done"
         }
       },
+      "trust": {
+        "id": "trust",
+        "eyebrow": "Trusted Partners",
+        "title": "Brands travelers know and trust",
+        "brands": [
+          {
+            "id": "emirates",
+            "name": "Emirates",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Emirates_logo.svg",
+            "alt": "Emirates"
+          },
+          {
+            "id": "qatar-airways",
+            "name": "Qatar Airways",
+            "src": "https://upload.wikimedia.org/wikipedia/en/9/9b/Qatar_Airways_Logo.svg",
+            "alt": "Qatar Airways"
+          },
+          {
+            "id": "turkish-airlines",
+            "name": "Turkish Airlines",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/0/00/Turkish_Airlines_logo_2019_compact.svg",
+            "alt": "Turkish Airlines"
+          },
+          {
+            "id": "marriott",
+            "name": "Marriott",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Marriott_International.svg",
+            "alt": "Marriott International"
+          },
+          {
+            "id": "hilton",
+            "name": "Hilton",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/4/48/Hilton_Hotels_%26_Resorts_Logo.svg",
+            "alt": "Hilton Hotels & Resorts"
+          },
+          {
+            "id": "booking",
+            "name": "Booking.com",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/b/be/Booking.com_logo.svg",
+            "alt": "Booking.com"
+          },
+          {
+            "id": "tripadvisor",
+            "name": "Tripadvisor",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/TripAdvisor_Logo.svg",
+            "alt": "Tripadvisor"
+          },
+          {
+            "id": "expedia",
+            "name": "Expedia",
+            "src": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Expedia_2012_logo.svg",
+            "alt": "Expedia"
+          }
+        ]
+      },
       "planPerfectTrip": {
         "id": "plan-perfect-trip",
         "eyebrow": "about",

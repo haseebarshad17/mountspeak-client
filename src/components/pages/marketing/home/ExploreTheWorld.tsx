@@ -110,12 +110,12 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                 <PrefixedLink
                                     href='/search'
                                     className={cn(
-                                        'flex items-center gap-1.5 text-sm font-semibold underline underline-offset-4 sm:text-base',
                                         HP_THEME_LINK_CLASS,
+                                        'flex items-center text-sm font-semibold underline underline-offset-4 sm:text-base',
                                     )}
                                 >
                                     View All Tours
-                                    <ArrowRightIcon className='size-4' aria-hidden />
+                                    <ArrowRightIcon className='size-4 inline-block ml-2' aria-hidden />
                                 </PrefixedLink>
                             </div>
                         ) : null}

@@ -444,9 +444,58 @@
 }
 
 .hp-theme-light-btn:hover,
-.hp-theme-light-btn:focus-visible {
+    .hp-theme-light-btn:focus-visible {
     background-color: #ffffff !important;
     color: var(--hp-color-primary) !important;
+}
+
+/* Homepage — trusted brand logos marquee */
+.trust-brands-marquee {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+}
+
+.trust-brands-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: trust-brands-marquee-scroll 36s linear infinite;
+    will-change: transform;
+}
+
+.trust-brands-marquee:hover .trust-brands-marquee-track {
+    animation-play-state: paused;
+}
+
+.trust-brands-marquee-group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 2rem;
+    padding-right: 2rem;
+}
+
+@media (min-width: 640px) {
+    .trust-brands-marquee-group {
+        gap: 2.5rem;
+        padding-right: 2.5rem;
+    }
+}
+
+@keyframes trust-brands-marquee-scroll {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .trust-brands-marquee-track {
+        animation: none;
+    }
 }
 
 /* Mobile compaction — smaller buttons, inputs, and titles (< 640px) */

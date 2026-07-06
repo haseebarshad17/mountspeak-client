@@ -1,4 +1,5 @@
 import type { HomepagePage } from '@/data/homepage'
+import { mapBrandingLogosToTrustBrands } from '@/lib/homepage/map-branding-logos'
 import { resolveStorageUrlsDeep } from '@/lib/supabase/resolve-storage-urls'
 import { normalizeHomepagePage } from '@/lib/homepage/normalize-homepage'
 import { HomepageLoadError } from '@/services/homepage/homepage.errors'
@@ -61,13 +62,33 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
         )
     }
 
+    const normalizedPage = normalizeHomepagePage(page)
+    const brandingLogos =
+        row.branding_logos
+            ?.map((logo) => logo?.trim())
+            .filter((logo): logo is string => Boolean(logo)) ?? []
+
+    const pageWithTrust: HomepagePage = {
+        ...normalizedPage,
+        sections: {
+            ...normalizedPage.sections,
+            trust: {
+                ...normalizedPage.sections.trust,
+                brands:
+                    brandingLogos.length > 0
+                        ? mapBrandingLogosToTrustBrands(brandingLogos)
+                        : [],
+            },
+        },
+    }
+
     return {
         agencyId: row.agency_id,
         siteUrl: normalizeSiteUrl(row.site_url),
         specializationId: null,
         specializations: [],
         isAgencySite: true,
-        page: resolveStorageUrlsDeep(normalizeHomepagePage(page)),
+        page: resolveStorageUrlsDeep(pageWithTrust),
     }
 }
 

@@ -8,7 +8,7 @@ type HomepageServiceProps = {
 }
 
 const agencySiteThemeColumns =
-    'id, agency_id, site_url, theme, specialization_id, created_at, updated_at'
+    'id, agency_id, site_url, theme, specialization_id, branding_logos, created_at, updated_at'
 
 export const homepageService = ({ supabase }: HomepageServiceProps) => {
     return {

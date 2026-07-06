@@ -8,6 +8,8 @@ export type AgencySiteThemeRow = {
     theme: unknown
     payment?: unknown
     specialization_id?: string | null
+    branding_logos?: string[] | null
+
     created_at?: string
     updated_at?: string
 }
