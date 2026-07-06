@@ -76,6 +76,29 @@ export function sortToursByLatestPublished(tours: TourRow[]): TourRow[] {
     )
 }
 
+export function getTourDaysUntilStart(startDate: string | null | undefined): number | null {
+    if (!startDate?.trim()) return null
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const start = new Date(`${startDate.trim()}T00:00:00`)
+    if (Number.isNaN(start.getTime())) return null
+
+    const diffDays = Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+    if (diffDays < 0) return null
+
+    return diffDays
+}
+
+export function formatTourDaysLeft(daysLeft: number | null | undefined): string | null {
+    if (daysLeft == null) return null
+    if (daysLeft === 0) return 'Last day to book'
+    if (daysLeft === 1) return '1 day left'
+
+    return `${daysLeft} days left`
+}
+
 export function toTourListItem(tour: TourRow): TourListItem {
     const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
 
@@ -95,6 +118,7 @@ export function toTourListItem(tour: TourRow): TourListItem {
         image: getTourCoverImage(tour),
         totalBooked,
         remainingSeats,
+        daysLeft: getTourDaysUntilStart(tour.start_date),
     }
 }
 
