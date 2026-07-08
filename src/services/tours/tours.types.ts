@@ -21,4 +21,5 @@ export type TourListItem = {
     totalBooked: number
     remainingSeats: number | null
     daysLeft: number | null
+    departureDate: string | null
 }

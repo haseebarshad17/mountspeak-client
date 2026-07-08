@@ -14,15 +14,27 @@ import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
+import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
+    BOOKING_REQUEST_CATEGORY_LABELS,
     type BookingRequestCategory,
 } from '@/services/booking-requests/booking-requests.types'
 import { useCreateBookingRequest } from '@/services/booking-requests/booking-requests.queries'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import { ArrowRight, Calendar } from 'lucide-react'
-import React, { FormEvent, useRef, useState } from 'react'
+import React, { FormEvent, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import {
+    UMRAH_BOOKING_DESTINATIONS,
+    UMRAH_BOOKING_EXCLUDED_CATEGORIES,
+} from './booking-request-umrah.defaults'
 
 import {
     bookingRequestSchema,
@@ -52,6 +64,9 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
@@ -62,6 +77,35 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const [category, setCategory] = useState('')
     const dateInputRef = useRef<HTMLInputElement>(null)
     const minTravelDate = getTodayDateInputValue()
+
+    const categoryOptions = useMemo(() => {
+        const categories = isUmrahSite
+            ? BOOKING_REQUEST_CATEGORIES.filter(
+                  (item) => !UMRAH_BOOKING_EXCLUDED_CATEGORIES.includes(item),
+              )
+            : BOOKING_REQUEST_CATEGORIES
+
+        return categories.map((item) => ({
+            value: item,
+            label: BOOKING_REQUEST_CATEGORY_LABELS[item],
+        }))
+    }, [isUmrahSite])
+
+    const destinationOptions = useMemo(() => {
+        if (isUmrahSite) {
+            return UMRAH_BOOKING_DESTINATIONS.map((city) => ({
+                value: city,
+                label: city,
+            }))
+        }
+
+        return pakistanCities.map((city) => ({
+            value: city,
+            label: city,
+        }))
+    }, [isUmrahSite, pakistanCities])
+
+    const isDestinationLoading = !isUmrahSite && isCitiesLoading
 
     const clearFieldError = (key: string) => {
         setFieldErrors((prev) => {
@@ -302,16 +346,13 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('destination')
                                         }}
                                         placeholder={
-                                            isCitiesLoading
+                                            isDestinationLoading
                                                 ? formCopy.placeholders.destinationLoading
                                                 : formCopy.placeholders.destination
                                         }
-                                        options={pakistanCities.map((city) => ({
-                                            value: city,
-                                            label: city,
-                                        }))}
-                                        disabled={isCitiesLoading}
-                                        searchable
+                                        options={destinationOptions}
+                                        disabled={isDestinationLoading}
+                                        searchable={!isUmrahSite}
                                         searchPlaceholder='Search destination...'
                                         noResultsMessage='No cities found'
                                         aria-label='Destination'
@@ -326,10 +367,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                             clearFieldError('category')
                                         }}
                                         placeholder={formCopy.placeholders.category}
-                                        options={BOOKING_REQUEST_CATEGORIES.map((item) => ({
-                                            value: item,
-                                            label: item.charAt(0) + item.slice(1).toLowerCase(),
-                                        }))}
+                                        options={categoryOptions}
                                         aria-label='Category'
                                     />
                                 </MarketingFormField>

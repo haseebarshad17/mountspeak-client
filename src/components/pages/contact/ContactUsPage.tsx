@@ -19,9 +19,8 @@ import {
     mapConsultationRequestFieldErrors,
 } from '@/services/consultation-requests/consultation-requests.schema'
 import {
-    CONSULTATION_INQUIRY_LABELS,
-    CONSULTATION_INQUIRY_TYPES,
-    CONSULTATION_TITLES,
+    getConsultationInquiryOptions,
+    getConsultationTitleOptions,
     type ConsultationInquiryType,
     type ConsultationTitle,
 } from '@/services/consultation-requests/consultation-requests.types'
@@ -29,11 +28,17 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
+import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
-import { FormEvent, useState, type ReactNode } from 'react'
+import { FormEvent, useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 const contactCardClassName = 'rounded-xl border border-[#C0C8C9] bg-white p-6 sm:p-8'
@@ -85,6 +90,11 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
     const [inquiryType, setInquiryType] = useState('')
     const [title, setTitle] = useState('')
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const inquiryOptions = useMemo(() => getConsultationInquiryOptions(isUmrahSite), [isUmrahSite])
+    const titleOptions = useMemo(() => getConsultationTitleOptions(isUmrahSite), [isUmrahSite])
     const errorColor = STATIC_UI_COLORS.error
 
     const clearFieldError = (key: string) => {
@@ -260,10 +270,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                                 clearFieldError('inquiry_type')
                                             }}
                                             placeholder='Select inquiry type'
-                                            options={CONSULTATION_INQUIRY_TYPES.map((type) => ({
-                                                value: type,
-                                                label: CONSULTATION_INQUIRY_LABELS[type],
-                                            }))}
+                                            options={inquiryOptions}
                                             aria-label='Inquiry type'
                                         />
                                     </MarketingFormField>
@@ -278,10 +285,7 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
                                             clearFieldError('title')
                                         }}
                                         placeholder='Select a subject'
-                                        options={CONSULTATION_TITLES.map((subject) => ({
-                                            value: subject,
-                                            label: subject,
-                                        }))}
+                                        options={titleOptions}
                                         aria-label='Subject'
                                     />
                                 </MarketingFormField>

@@ -12,8 +12,9 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { DEMO_TOUR_DETAIL_PATH, DEMO_TOUR_LIST_ITEM } from '@/lib/tours/default-tour-page'
+import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { supabase } from '@/lib/supabase/supabase.client'
-import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
+import { selectHomepageAgencyId, selectHomepageSpecializationId, selectHomepageSpecializations } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
@@ -25,6 +26,10 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
     const isAgencySite = useIsAgencySite()
     const agencyId = useAppSelector(selectHomepageAgencyId)
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const listingCopy = getTourOrPackageCopy(isUmrahSite)
 
     const { data: homepageTours, isLoading } = useQuery({
         queryKey: ['homepage-latest-tours', isAgencySite, agencyId],
@@ -73,7 +78,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     <div
                         className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'
                         aria-busy='true'
-                        aria-label='Loading tours'
+                        aria-label={listingCopy.loadingLabel}
                     >
                         {Array.from({ length: HOMEPAGE_TOUR_LIMIT }).map((_, index) => (
                             <Skeleton
@@ -98,6 +103,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     totalBooked={tour.totalBooked}
                                     remainingSeats={tour.remainingSeats}
                                     daysLeft={tour.daysLeft}
+                                    departureDate={tour.departureDate}
                                     detailHref={
                                         isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
                                     }
@@ -114,7 +120,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                         'flex items-center text-sm font-semibold underline underline-offset-4 sm:text-base',
                                     )}
                                 >
-                                    View All Tours
+                                    {listingCopy.viewAllLabel}
                                     <ArrowRightIcon className='size-4 inline-block ml-2' aria-hidden />
                                 </PrefixedLink>
                             </div>
@@ -124,8 +130,8 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     <div className='pt-8 sm:pt-10 md:pt-12 lg:pt-14'>
                         <SectionEmptyState
                             icon={Compass}
-                            title='No tours yet'
-                            description={section.emptyMessage}
+                            title={listingCopy.emptyTitle}
+                            description={listingCopy.emptyHomeDescription ?? section.emptyMessage}
                         />
                     </div>
                 )}

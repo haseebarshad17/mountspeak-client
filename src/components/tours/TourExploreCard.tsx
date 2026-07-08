@@ -26,6 +26,7 @@ type TourExploreCardProps = {
     totalBooked?: number
     remainingSeats?: number | null
     daysLeft?: number | null
+    departureDate?: string | null
 }
 
 function formatRemainingSeats(remainingSeats: number | null | undefined): string {
@@ -43,6 +44,7 @@ export function TourExploreCard({
     totalBooked = 0,
     remainingSeats = null,
     daysLeft = null,
+    departureDate = null,
 }: TourExploreCardProps) {
     const rawDetailPath = detailHref ?? tourDetailPath(slug)
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
@@ -58,7 +60,7 @@ export function TourExploreCard({
         discountedPrice != null &&
         pricePerSeat != null &&
         discountedPrice < pricePerSeat
-    const daysLeftLabel = formatTourDaysLeft(daysLeft)
+    const daysLeftLabel = formatTourDaysLeft(daysLeft, departureDate)
 
     return (
         <Link

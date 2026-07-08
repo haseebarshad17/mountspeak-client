@@ -8,16 +8,32 @@ export type SeatCapacityError = {
     params?: { count: number }
 }
 
+export function parseTourCalendarDate(value: string | null | undefined): Date | null {
+    if (!value?.trim()) return null
+
+    const trimmed = value.trim()
+    const datePart = trimmed.match(/^(\d{4}-\d{2}-\d{2})/)?.[1]
+
+    if (datePart) {
+        const parsed = new Date(`${datePart}T00:00:00`)
+        return Number.isNaN(parsed.getTime()) ? null : parsed
+    }
+
+    const parsed = new Date(trimmed)
+    if (Number.isNaN(parsed.getTime())) return null
+
+    parsed.setHours(0, 0, 0, 0)
+    return parsed
+}
+
 export function isTourBookingClosed(startDate: string | null | undefined): boolean {
-    if (!startDate?.trim()) return false
+    const parsed = parseTourCalendarDate(startDate)
+    if (!parsed) return false
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const parsed = new Date(`${startDate.trim()}T00:00:00`)
-    if (Number.isNaN(parsed.getTime())) return false
-
-    return parsed <= today
+    return parsed.getTime() <= today.getTime()
 }
 
 export function getAvailableSeats(

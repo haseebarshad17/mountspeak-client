@@ -148,7 +148,8 @@ export interface TrustSection {
     id:      string;
     eyebrow: string;
     title:   string;
-    brands:  TrustBrand[];
+    /** Populated at runtime from `agency_site_theme.branding_logos`, not stored in theme JSON. */
+    brands?: TrustBrand[];
 }
 
 export interface TrustBrand {

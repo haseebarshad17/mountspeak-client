@@ -17,4 +17,5 @@ export const DEMO_TOUR_LIST_ITEM: TourListItem = {
     totalBooked: 8,
     remainingSeats: 12,
     daysLeft: 14,
+    departureDate: '2026-06-26',
 }
