@@ -9,6 +9,7 @@ export const CONSULTATION_INQUIRY_TYPES = [
 
 export const CONSULTATION_TITLES = [
     'Trip Planning Consultation',
+    'Travel Planning',
     'Package & Pricing Inquiry',
     'Custom Itinerary Request',
     'Group Travel Planning',
@@ -55,4 +56,37 @@ export const CONSULTATION_INQUIRY_LABELS: Record<ConsultationInquiryType, string
     GROUP_TRAVEL: 'Group travel',
     CORPORATE: 'Corporate travel',
     SUPPORT: 'Support',
+}
+
+const UMRAH_INQUIRY_LABEL_OVERRIDES: Partial<Record<ConsultationInquiryType, string>> = {
+    TOUR_PACKAGE: 'Travel Package',
+}
+
+export function getConsultationInquiryLabel(
+    type: ConsultationInquiryType,
+    isUmrahSite: boolean,
+): string {
+    if (isUmrahSite && UMRAH_INQUIRY_LABEL_OVERRIDES[type]) {
+        return UMRAH_INQUIRY_LABEL_OVERRIDES[type]!
+    }
+
+    return CONSULTATION_INQUIRY_LABELS[type]
+}
+
+export function getConsultationInquiryOptions(isUmrahSite: boolean) {
+    return CONSULTATION_INQUIRY_TYPES.map((type) => ({
+        value: type,
+        label: getConsultationInquiryLabel(type, isUmrahSite),
+    }))
+}
+
+export function getConsultationTitleOptions(isUmrahSite: boolean) {
+    const titles = CONSULTATION_TITLES.filter((title) =>
+        isUmrahSite ? title !== 'Trip Planning Consultation' : title !== 'Travel Planning',
+    )
+
+    return titles.map((title) => ({
+        value: title,
+        label: title,
+    }))
 }

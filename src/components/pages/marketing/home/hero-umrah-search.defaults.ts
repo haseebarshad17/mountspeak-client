@@ -1,10 +1,7 @@
 export const DEFAULT_UMRAH_HERO_SEARCH = {
-    durationLabel: 'Duration of Umrah Package *',
-    durationPlaceholder: 'Select duration of package',
-    passengersLabel: 'How Many Passengers? *',
-    passengersPlaceholder: 'Select number of passengers',
-    packageTypeLabel: 'Package Type *',
-    packageTypePlaceholder: 'Select package type',
+    durationPlaceholder: 'Select duration',
+    passengersPlaceholder: 'Select passengers',
+    packageTypePlaceholder: 'Select package',
     searchButtonLabel: 'Search',
     searchingButtonLabel: 'Searching...',
 } as const

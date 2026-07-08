@@ -44,6 +44,7 @@ Marketing homepage config per agency (see `src/services/homepage/homepage.page.t
 - agency_id: uuid (FK → agencies.id)
 - site_url: text — e.g. `http:localhost:3000` or `https://adventurehq.example.com` (PostgREST: `site_url=eq.{value}`)
 - theme: jsonb — `{ "page": { ... } }` (shape in `homepage.page.types.ts`)
+- branding_logos: text[] — storage paths in `agency-branding-logos` bucket (trust marquee logos)
 - created_at, updated_at: timestamp
 
 Public read via RLS. App calls `GET /rest/v1/agency_site_theme?site_url=eq.{url}` with URL candidates built from the request `Host` header.

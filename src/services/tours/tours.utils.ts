@@ -1,4 +1,4 @@
-import { getAvailableSeats } from '@/lib/booking/tour-booking-rules'
+import { getAvailableSeats, parseTourCalendarDate } from '@/lib/booking/tour-booking-rules'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
@@ -76,14 +76,15 @@ export function sortToursByLatestPublished(tours: TourRow[]): TourRow[] {
     )
 }
 
+/** Calendar date from a tours `start_date` / `end_date` value (`date` or ISO timestamp). */
+export { parseTourCalendarDate } from '@/lib/booking/tour-booking-rules'
+
 export function getTourDaysUntilStart(startDate: string | null | undefined): number | null {
-    if (!startDate?.trim()) return null
+    const start = parseTourCalendarDate(startDate)
+    if (!start) return null
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-
-    const start = new Date(`${startDate.trim()}T00:00:00`)
-    if (Number.isNaN(start.getTime())) return null
 
     const diffDays = Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
     if (diffDays < 0) return null
@@ -91,16 +92,44 @@ export function getTourDaysUntilStart(startDate: string | null | undefined): num
     return diffDays
 }
 
-export function formatTourDaysLeft(daysLeft: number | null | undefined): string | null {
-    if (daysLeft == null) return null
-    if (daysLeft === 0) return 'Last day to book'
-    if (daysLeft === 1) return '1 day left'
+export function getTourDepartureDate(
+    tour: Pick<TourRow, 'start_date' | 'end_date'>,
+): string | null {
+    const startDate = tour.start_date?.trim()
+    if (startDate) return startDate
 
-    return `${daysLeft} days left`
+    const endDate = tour.end_date?.trim()
+    return endDate || null
+}
+
+export function formatTourCardDateLabel(date: string | null | undefined): string | null {
+    const parsed = parseTourCalendarDate(date)
+    if (!parsed) return null
+
+    return new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+    }).format(parsed)
+}
+
+export function formatTourDaysLeft(
+    daysLeft: number | null | undefined,
+    departureDate?: string | null,
+): string | null {
+    if (daysLeft == null) return null
+
+    const dateLabel = formatTourCardDateLabel(departureDate)
+    const daysPart =
+        daysLeft === 0 ? 'Last day to book' : daysLeft === 1 ? '1 day left' : `${daysLeft} days left`
+
+    if (!dateLabel) return daysPart
+
+    return `${daysPart} from ${dateLabel}`
 }
 
 export function toTourListItem(tour: TourRow): TourListItem {
     const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
+    const departureDate = getTourDepartureDate(tour)
 
     return {
         id: tour.id,
@@ -118,7 +147,8 @@ export function toTourListItem(tour: TourRow): TourListItem {
         image: getTourCoverImage(tour),
         totalBooked,
         remainingSeats,
-        daysLeft: getTourDaysUntilStart(tour.start_date),
+        departureDate,
+        daysLeft: getTourDaysUntilStart(departureDate),
     }
 }
 

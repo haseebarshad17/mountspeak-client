@@ -3,11 +3,20 @@ export const BOOKING_REQUEST_CATEGORIES = [
     'ADVENTURE',
     'HONEYMOON',
     'CORPORATE',
-    'SOLO',
+    'SELF',
     'GROUP',
 ] as const
 
 export type BookingRequestCategory = (typeof BOOKING_REQUEST_CATEGORIES)[number]
+
+export const BOOKING_REQUEST_CATEGORY_LABELS: Record<BookingRequestCategory, string> = {
+    FAMILY: 'Family',
+    ADVENTURE: 'Adventure',
+    HONEYMOON: 'Honeymoon',
+    CORPORATE: 'Corporate',
+    SELF: 'Self',
+    GROUP: 'Group',
+}
 
 export type CreateBookingRequestDTO = {
     full_name: string

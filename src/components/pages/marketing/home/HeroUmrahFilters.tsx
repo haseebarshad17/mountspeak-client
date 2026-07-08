@@ -66,9 +66,10 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
     const labels = DEFAULT_UMRAH_HERO_SEARCH
 
     const triggerCls = cn(
-        '!justify-start flex !h-12 !w-full min-w-0 flex-col items-start gap-0 overflow-hidden px-4 py-2 !text-sm !font-medium !normal-case !tracking-normal xl:!h-full',
+        '!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal',
+        'xs:gap-2.5 xs:px-4 xs:!text-sm',
         'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator',
-        'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-5 xl:py-2 xl:hover:bg-[#F8FAFB]',
+        'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
     )
 
     const popCls = cn(
@@ -101,17 +102,16 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                             variant='ghost'
                             size='max'
                             className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
+                            aria-label={labels.durationPlaceholder}
                         >
-                            <span className='flex w-full min-w-0 items-center gap-2'>
-                                <Clock className='h-4 w-4 shrink-0 text-neutral-500' />
-                                <span className='min-w-0 flex-1 text-left'>
-                                    <span className='block truncate text-[11px] font-normal text-neutral-500'>
-                                        {labels.durationLabel}
-                                    </span>
-                                    <span className='block truncate text-sm font-medium text-[#0B1F3A]'>
-                                        {duration || labels.durationPlaceholder}
-                                    </span>
-                                </span>
+                            <Clock className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
+                            <span
+                                className={cn(
+                                    'min-w-0 flex-1 truncate text-left',
+                                    !duration && 'text-neutral-500',
+                                )}
+                            >
+                                {duration || labels.durationPlaceholder}
                             </span>
                         </Button>
                     </PopoverTrigger>
@@ -135,17 +135,16 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                             variant='ghost'
                             size='max'
                             className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
+                            aria-label={labels.passengersPlaceholder}
                         >
-                            <span className='flex w-full min-w-0 items-center gap-2'>
-                                <Users className='h-4 w-4 shrink-0 text-neutral-500' />
-                                <span className='min-w-0 flex-1 text-left'>
-                                    <span className='block truncate text-[11px] font-normal text-neutral-500'>
-                                        {labels.passengersLabel}
-                                    </span>
-                                    <span className='block truncate text-sm font-medium text-[#0B1F3A]'>
-                                        {passengers || labels.passengersPlaceholder}
-                                    </span>
-                                </span>
+                            <Users className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
+                            <span
+                                className={cn(
+                                    'min-w-0 flex-1 truncate text-left',
+                                    !passengers && 'text-neutral-500',
+                                )}
+                            >
+                                {passengers || labels.passengersPlaceholder}
                             </span>
                         </Button>
                     </PopoverTrigger>
@@ -169,17 +168,16 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                             variant='ghost'
                             size='max'
                             className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
+                            aria-label={labels.packageTypePlaceholder}
                         >
-                            <span className='flex w-full min-w-0 items-center gap-2'>
-                                <Package className='h-4 w-4 shrink-0 text-neutral-500' />
-                                <span className='min-w-0 flex-1 text-left'>
-                                    <span className='block truncate text-[11px] font-normal text-neutral-500'>
-                                        {labels.packageTypeLabel}
-                                    </span>
-                                    <span className='block truncate text-sm font-medium text-[#0B1F3A]'>
-                                        {packageType || labels.packageTypePlaceholder}
-                                    </span>
-                                </span>
+                            <Package className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
+                            <span
+                                className={cn(
+                                    'min-w-0 flex-1 truncate text-left',
+                                    !packageType && 'text-neutral-500',
+                                )}
+                            >
+                                {packageType || labels.packageTypePlaceholder}
                             </span>
                         </Button>
                     </PopoverTrigger>

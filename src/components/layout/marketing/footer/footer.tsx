@@ -112,6 +112,7 @@ const Footer = ({ page }: FooterProps) => {
                                         priority
                                         fetchPriority='high'
                                         quality={100}
+                                        className='max-w-[212px] max-h-[88px] w-auto'
                                     />
                                 </Link>
 

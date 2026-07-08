@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import {
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
@@ -35,6 +35,7 @@ export function SearchResultsSection({
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
+    const listingCopy = getTourOrPackageCopy(isUmrahSearch)
     const isFiltered = isUmrahSearch
         ? hasUmrahSearchFilters(umrahFilters)
         : hasTourSearchFilters(filters)
@@ -77,7 +78,7 @@ export function SearchResultsSection({
                         className='mx-auto mt-2 max-w-[900px] text-center text-sm text-[#707979]'
                         style={{ fontFamily: 'var(--hp-font-body)' }}
                     >
-                        {tours.length} tour{tours.length === 1 ? '' : 's'} found
+                        {listingCopy.resultsCountLabel(tours.length)}
                     </p>
                 ) : null}
 
@@ -93,6 +94,7 @@ export function SearchResultsSection({
                             totalBooked={tour.totalBooked}
                             remainingSeats={tour.remainingSeats}
                             daysLeft={tour.daysLeft}
+                            departureDate={tour.departureDate}
                         />
                     ))}
                 </div>
@@ -103,7 +105,9 @@ export function SearchResultsSection({
                         className='flex justify-center pt-6 sm:pt-8'
                         aria-hidden
                     >
-                        <span className='text-sm text-[#707979]'>Loading more trips...</span>
+                        <span className='text-sm text-[#707979]'>
+                            {isUmrahSearch ? 'Loading more packages...' : 'Loading more trips...'}
+                        </span>
                     </div>
                 ) : null}
             </>
@@ -119,14 +123,14 @@ export function SearchResultsSection({
                         ? isUmrahSearch
                             ? 'No packages found'
                             : 'No results found'
-                        : 'No tours published yet'
+                        : listingCopy.emptyPublishedTitle
                 }
                 description={
                     isFiltered
                         ? isUmrahSearch
                             ? 'No Umrah packages match your search. Try different duration or package type.'
                             : 'No trips match your search. Try different locations or dates.'
-                        : 'No published tours yet. Check back soon for new adventures.'
+                        : listingCopy.emptyPublishedDescription
                 }
             />
         </div>
