@@ -95,6 +95,7 @@ export function SearchResultsSection({
                             remainingSeats={tour.remainingSeats}
                             daysLeft={tour.daysLeft}
                             departureDate={tour.departureDate}
+                            bookLabel={listingCopy.bookLabel}
                         />
                     ))}
                 </div>

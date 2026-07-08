@@ -4,13 +4,18 @@ import {
     isTourBookable,
 } from '@/lib/booking/tour-booking-rules'
 import { DEMO_BOOKING_TOUR_OPTION } from '@/lib/booking/demo-booking'
+import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import { umrahPlanService } from '@/services/umrah-plan/umrah-plan.service'
+import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.utils'
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 
 import { applyAgencyThemeToTourPage, mapTourRecordToPage } from './tours.mapper'
 import type { TourSearchFilters } from './tours.search.types'
 import { hasTourSearchFilters } from './tours.search.utils'
+import type { UmrahSearchFilters } from './tours.umrah-search.utils'
+import { hasUmrahSearchFilters } from './tours.umrah-search.utils'
 import { toursService } from './tours.service'
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
 
@@ -44,6 +49,22 @@ async function getToursApi(scope: AgencyTourScope) {
     })
 }
 
+async function getUmrahPlansApi(scope: AgencyTourScope) {
+    const supabase = await getServerSupabase()
+    return umrahPlanService({
+        supabase,
+        agencyId: scope.agencyId ?? undefined,
+    })
+}
+
+async function isUmrahAgencySite(): Promise<boolean> {
+    const homepage = await fetchAgencyHomepage()
+    return (
+        homepage.isAgencySite &&
+        usesHajjUmrahBanner(homepage.specializationId, homepage.specializations)
+    )
+}
+
 async function mapRowsToTourListItems(rows: TourRow[]): Promise<TourListItem[]> {
     return mapTourRowsToListItems(rows)
 }
@@ -69,6 +90,25 @@ export async function searchPublishedTours(
         : await tours.getPublishedTours()
 
     return mapRowsToTourListItems(rows)
+}
+
+export async function searchPublishedListings(
+    filters: TourSearchFilters = {},
+    umrahFilters: UmrahSearchFilters = {},
+): Promise<TourListItem[]> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return []
+
+    if (await isUmrahAgencySite()) {
+        const plans = await getUmrahPlansApi(scope)
+        const rows = hasUmrahSearchFilters(umrahFilters)
+            ? await plans.searchPublishedPlans(umrahFilters)
+            : await plans.getPublishedPlans()
+
+        return mapUmrahPlanRowsToListItems(rows)
+    }
+
+    return searchPublishedTours(filters)
 }
 
 export async function fetchTourLocationOptions(): Promise<string[]> {

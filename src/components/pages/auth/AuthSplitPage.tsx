@@ -19,6 +19,7 @@ import { mapAuthErrorToMessageCode } from "@/lib/auth/map-auth-error";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { getTourOrPackageCopy, usesHajjUmrahBanner } from "@/lib/homepage/specialization";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/homepage";
 import { cn } from "@/lib/utils/clsxUtils";
@@ -29,6 +30,8 @@ import {
   selectHomepageAgencyId,
   selectHomepagePage,
   selectHomepageSiteUrl,
+  selectHomepageSpecializationId,
+  selectHomepageSpecializations,
   selectIsAgencySite,
 } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
@@ -138,6 +141,10 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useAppSelector(selectIsAgencySite);
   const homepagePage = useAppSelector(selectHomepagePage);
+  const specializationId = useAppSelector(selectHomepageSpecializationId);
+  const specializations = useAppSelector(selectHomepageSpecializations);
+  const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations);
+  const authCopy = getTourOrPackageCopy(isUmrahSite);
   const brandName = homepagePage?.branding?.name?.trim() || "Pakistan Travel Systems";
   const pathname = usePathname();
   const previewAgencyHost = useMemo(
@@ -355,9 +362,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                 {isLogin ? `Welcome to ${brandName}` : `Join ${brandName}`}
               </h1>
               <p className="text-[16px] leading-6 text-[#1A1C1E] mb-[40px]">
-                {isLogin
-                  ? "Please enter your details to explore trips and manage your bookings."
-                  : "Create your account to book tours and plan your next adventure."}
+                {isLogin ? authCopy.authLoginSubtitle : authCopy.authRegisterSubtitle}
               </p>
 
               <div className="mt-0 flex items-center gap-8 border-b border-[#C0C8C94D]">

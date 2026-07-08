@@ -12,8 +12,14 @@ import {
     STATIC_UI_COLORS,
 } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import {
     headerLogoClassName,
     mobileDrawerLogoClassName,
@@ -137,6 +143,13 @@ const Header = ({ page }: HeaderProps) => {
     const [isScrolled, setIsScrolled] = useState(useFixedHeader)
 
     const { header, branding } = page
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const listingsNavLabel = getTourOrPackageCopy(isUmrahSite).listingsNavLabel
+    const navigation = header.navigation.map((link) =>
+        link.href === '/search' ? { ...link, label: listingsNavLabel } : link,
+    )
     const colors = STATIC_UI_COLORS
     const headerLogo = shouldUseDarkLogo(internalPathname)
         ? branding.logo.default
@@ -346,7 +359,7 @@ const Header = ({ page }: HeaderProps) => {
                         {/* Navigations + Buttons  */}
                         <nav className='hidden flex-1 items-center justify-end lg:flex'>
                             <div className='flex items-center gap-[54px]'>
-                                {header.navigation.map((link) => (
+                                {navigation.map((link) => (
                                     <HeaderNavLink
                                         key={link.href}
                                         href={link.href ?? '/'}
@@ -439,7 +452,7 @@ const Header = ({ page }: HeaderProps) => {
                     </div>
 
                     <nav className='mt-10 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto'>
-                        {header.navigation.map((link) => (
+                        {navigation.map((link) => (
                             <HeaderNavLink
                                 key={link.href}
                                 href={link.href ?? '/'}

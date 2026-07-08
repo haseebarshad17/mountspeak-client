@@ -1,42 +1,145 @@
 'use client'
 
+import { useCallback, useMemo, useRef, useState, type CSSProperties } from 'react'
+
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import type { TrustBrand } from '@/services/homepage/homepage.page.types'
 
 import { StorageMediaImage } from '@/components/ui/storage-media-image'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { useMarqueeShift } from '@/hooks/useMarqueeShift'
+import { useMobileViewport } from '@/hooks/useMobileViewport'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { resolveBrandingLogoUrlOrPlaceholder } from '@/lib/supabase/homepage-media'
+import { cn } from '@/lib/utils/clsxUtils'
 
-function TrustBrandLogo({ brand }: { brand: TrustBrand }) {
+const DESKTOP_STATIC_BRAND_LIMIT = 4
+const MOBILE_STATIC_BRAND_LIMIT = 2
+
+function TrustBrandLogo({
+    brand,
+    decorative = false,
+    onMediaLoad,
+}: {
+    brand: TrustBrand
+    decorative?: boolean
+    onMediaLoad?: () => void
+}) {
     return (
-        <figure className='trust-brand-logo flex h-auto sm:w-[100px] w-[70px] shrink-0 
-        items-center justify-center'>
+        <figure
+            className='trust-brand-logo flex h-auto w-[70px] shrink-0 items-center justify-center sm:w-[100px]'
+            aria-hidden={decorative || undefined}
+        >
             <StorageMediaImage
                 src={resolveBrandingLogoUrlOrPlaceholder(brand.src)}
-                alt={brand.alt ?? brand.name}
+                alt={decorative ? '' : (brand.alt ?? brand.name)}
                 width={156}
                 height={56}
                 unoptimized
-                className='w-full h-max object-contain opacity-55 grayscale 
-                transition-[opacity,filter] duration-300 hover:opacity-100 hover:grayscale-0'
+                onLoad={onMediaLoad}
+                onError={onMediaLoad}
+                className='h-max w-full object-contain opacity-55 grayscale transition-[opacity,filter] duration-300 hover:opacity-100 hover:grayscale-0'
             />
         </figure>
     )
 }
 
-function TrustBrandsMarqueeGroup({
+function TrustBrandsCopy({
     brands,
-    ariaHidden,
+    copyIndex,
+    decorative = false,
+    onMediaLoad,
 }: {
     brands: readonly TrustBrand[]
-    ariaHidden?: boolean
+    copyIndex: number
+    decorative?: boolean
+    onMediaLoad?: () => void
 }) {
     return (
-        <div className='trust-brands-marquee-group' aria-hidden={ariaHidden}>
+        <>
             {brands.map((brand) => (
-                <TrustBrandLogo key={brand.id} brand={brand} />
+                <TrustBrandLogo
+                    key={`${brand.id}-copy-${copyIndex}`}
+                    brand={brand}
+                    decorative={decorative}
+                    onMediaLoad={onMediaLoad}
+                />
             ))}
+        </>
+    )
+}
+
+function TrustBrandsStaticRow({
+    brands,
+    onMediaLoad,
+}: {
+    brands: readonly TrustBrand[]
+    onMediaLoad?: () => void
+}) {
+    return (
+        <div className='mt-6 flex flex-wrap items-center justify-center gap-6 px-4 sm:mt-8 sm:gap-10'>
+            {brands.map((brand) => (
+                <TrustBrandLogo key={brand.id} brand={brand} onMediaLoad={onMediaLoad} />
+            ))}
+        </div>
+    )
+}
+
+function TrustBrandsInfiniteMarquee({ brands }: { brands: readonly TrustBrand[] }) {
+    const trackRef = useRef<HTMLDivElement>(null)
+    const copyRef = useRef<HTMLDivElement>(null)
+    const [remeasureToken, setRemeasureToken] = useState(0)
+    const remeasureTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    const { shift, duration, copyCount } = useMarqueeShift(copyRef, trackRef, remeasureToken)
+
+    const bumpRemeasure = useCallback(() => {
+        if (remeasureTimeoutRef.current) {
+            clearTimeout(remeasureTimeoutRef.current)
+        }
+
+        remeasureTimeoutRef.current = setTimeout(() => {
+            setRemeasureToken((current) => current + 1)
+        }, 150)
+    }, [])
+
+    const copyIndexes = useMemo(
+        () => Array.from({ length: copyCount }, (_, index) => index),
+        [copyCount],
+    )
+
+    const trackStyle = {
+        '--marquee-shift': `${shift}px`,
+        '--marquee-duration': `${duration}s`,
+    } as CSSProperties
+
+    return (
+        <div className='trust-brands-marquee mt-6 sm:mt-8'>
+            <div
+                ref={trackRef}
+                className={cn(
+                    'trust-brands-marquee-track py-1',
+                    shift > 0 && 'trust-brands-marquee-track--active',
+                )}
+                style={trackStyle}
+            >
+                {copyIndexes.map((copyIndex) => (
+                    <div
+                        key={`trust-copy-${copyIndex}`}
+                        ref={copyIndex === 0 ? copyRef : undefined}
+                        className='trust-brands-marquee-copy'
+                        aria-hidden={copyIndex > 0 || undefined}
+                    >
+                        <TrustBrandsCopy
+                            brands={brands}
+                            copyIndex={copyIndex}
+                            decorative={copyIndex > 0}
+                            onMediaLoad={copyIndex === 0 ? bumpRemeasure : undefined}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
@@ -44,6 +147,10 @@ function TrustBrandsMarqueeGroup({
 const TrustSection = ({ page }: HomepagePageProps) => {
     const section = page.sections.trust
     const brands = section.brands ?? []
+    const isMobile = useMobileViewport()
+    const prefersReducedMotion = usePrefersReducedMotion()
+    const staticBrandLimit = isMobile ? MOBILE_STATIC_BRAND_LIMIT : DESKTOP_STATIC_BRAND_LIMIT
+    const useStaticLayout = brands.length <= staticBrandLimit || prefersReducedMotion
 
     if (brands.length === 0) {
         return null
@@ -67,12 +174,11 @@ const TrustSection = ({ page }: HomepagePageProps) => {
                 </header>
             </div>
 
-            <div className='trust-brands-marquee mt-6 sm:mt-8'>
-                <div className='trust-brands-marquee-track py-1'>
-                    <TrustBrandsMarqueeGroup brands={brands} />
-                    <TrustBrandsMarqueeGroup brands={brands} ariaHidden />
-                </div>
-            </div>
+            {useStaticLayout ? (
+                <TrustBrandsStaticRow brands={brands} />
+            ) : (
+                <TrustBrandsInfiniteMarquee brands={brands} />
+            )}
         </section>
     )
 }

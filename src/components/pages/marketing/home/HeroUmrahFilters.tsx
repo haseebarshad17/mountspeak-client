@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils/clsxUtils'
 import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { buildUmrahSearchPath, type UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
-import { Clock, Package, Search, Users } from 'lucide-react'
+import { Clock, Loader2, Package, Search, Users } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
 import {
@@ -198,16 +198,22 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                     <Button
                         type='submit'
                         size='max'
-                        loading={isSearching}
-                        loadingText={labels.searchingButtonLabel}
+                        disabled={isSearching}
+                        aria-busy={isSearching}
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
                             '!h-12 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-full xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
                         )}
                     >
-                        {labels.searchButtonLabel}
-                        {!isSearching ? <Search className='ml-2 h-4 w-4 shrink-0' /> : null}
+                        {isSearching ? (
+                            <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
+                        ) : (
+                            <>
+                                <span className='truncate'>{labels.searchButtonLabel}</span>
+                                <Search className='ml-2 h-4 w-4 shrink-0' aria-hidden />
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>

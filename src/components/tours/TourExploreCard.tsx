@@ -27,6 +27,7 @@ type TourExploreCardProps = {
     remainingSeats?: number | null
     daysLeft?: number | null
     departureDate?: string | null
+    bookLabel?: string
 }
 
 function formatRemainingSeats(remainingSeats: number | null | undefined): string {
@@ -45,6 +46,7 @@ export function TourExploreCard({
     remainingSeats = null,
     daysLeft = null,
     departureDate = null,
+    bookLabel = 'Book Tour',
 }: TourExploreCardProps) {
     const rawDetailPath = detailHref ?? tourDetailPath(slug)
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
@@ -144,7 +146,7 @@ export function TourExploreCard({
                         )}
                         style={HP_THEME_BTN_STYLE}
                     >
-                        Book Tour
+                        {bookLabel}
                     </span>
                 </div>
             </div>

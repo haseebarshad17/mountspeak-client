@@ -459,27 +459,35 @@
 .trust-brands-marquee-track {
     display: flex;
     width: max-content;
-    animation: trust-brands-marquee-scroll 36s linear infinite;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 2rem;
     will-change: transform;
 }
 
-.trust-brands-marquee:hover .trust-brands-marquee-track {
-    animation-play-state: paused;
-}
-
-.trust-brands-marquee-group {
+.trust-brands-marquee-copy {
     display: flex;
     flex-shrink: 0;
     align-items: center;
     gap: 2rem;
-    padding-right: 2rem;
 }
 
 @media (min-width: 640px) {
-    .trust-brands-marquee-group {
+    .trust-brands-marquee-track {
         gap: 2.5rem;
-        padding-right: 2.5rem;
     }
+
+    .trust-brands-marquee-copy {
+        gap: 2.5rem;
+    }
+}
+
+.trust-brands-marquee-track--active {
+    animation: trust-brands-marquee-scroll var(--marquee-duration, 36s) linear infinite;
+}
+
+.trust-brands-marquee:hover .trust-brands-marquee-track--active {
+    animation-play-state: paused;
 }
 
 @keyframes trust-brands-marquee-scroll {
@@ -488,12 +496,12 @@
     }
 
     to {
-        transform: translate3d(-50%, 0, 0);
+        transform: translate3d(calc(-1 * var(--marquee-shift, 0px)), 0, 0);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .trust-brands-marquee-track {
+    .trust-brands-marquee-track--active {
         animation: none;
     }
 }
