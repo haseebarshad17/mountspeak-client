@@ -41,6 +41,47 @@ export function getTourOrPackageCopy(isUmrahSite: boolean) {
             emptyPublishedDescription: 'No published packages yet. Check back soon.',
             viewAllLabel: 'View All Packages',
             loadingLabel: 'Loading packages',
+            bookLabel: 'Book Package',
+            listingsNavLabel: 'Packages',
+            authLoginSubtitle:
+                'Please enter your details to explore packages and manage your bookings.',
+            authRegisterSubtitle:
+                'Create your account to book packages and plan your next pilgrimage.',
+            accountIntro:
+                'Update your personal details, manage your security settings, and organize your preferences for upcoming Hajj and Umrah packages.',
+            personalInfoDescription:
+                'Basic info, like your name and photo, that you use to manage your Hajj and Umrah bookings.',
+            upcomingSectionTitle: 'Upcoming Packages',
+            upcomingLoadingLabel: 'Loading your upcoming packages...',
+            upcomingBookingsSummary: (confirmedCount: number, upcomingCount: number) =>
+                `You have ${confirmedCount} confirmed booking${confirmedCount === 1 ? '' : 's'} and ${upcomingCount} upcoming package${upcomingCount === 1 ? '' : 's'}.`,
+            upcomingEmptyHint: 'Your booked packages will appear here.',
+            upcomingEmptyTitle: 'No upcoming packages',
+            upcomingEmptyDescription:
+                'Book your next package from our packages page to see it here.',
+            bookingsPageTitle: 'Your Packages',
+            bookingsPageIntro:
+                'Manage your upcoming Hajj and Umrah packages, track payments, and keep every detail ready for your pilgrimage.',
+            pastTabLabel: 'Past Packages',
+            upcomingEmptyBookingsDescription:
+                'You do not have any upcoming bookings yet. Explore our packages to plan your next pilgrimage.',
+            pastEmptyTitle: 'No past packages',
+            pastEmptyDescription:
+                'Completed and cancelled package bookings will appear here once you have booking history.',
+            viewBookingAction: 'View Package',
+            rebookAction: 'Rebook Package',
+            fallbackBookingTitle: 'Package booking',
+            pastBookingThanksNote: 'Thank you for choosing us for your pilgrimage.',
+            resolveBookingTitle: (title: string) =>
+                title === 'Expedition booking' ? 'Package booking' : title,
+            resolvePrimaryAction: (action: string) =>
+                action === 'View Itinerary' ? 'View Package' : action,
+            resolveRebookAction: (action: string) =>
+                action === 'Rebook Tour' ? 'Rebook Package' : action,
+            resolvePastNote: (note: string) =>
+                note === 'Thank you for traveling with us.'
+                    ? 'Thank you for choosing us for your pilgrimage.'
+                    : note,
             resultsCountLabel: (count: number) =>
                 `${count} package${count === 1 ? '' : 's'} found`,
         } as const
@@ -53,6 +94,41 @@ export function getTourOrPackageCopy(isUmrahSite: boolean) {
         emptyPublishedDescription: 'No published tours yet. Check back soon for new adventures.',
         viewAllLabel: 'View All Tours',
         loadingLabel: 'Loading tours',
+        bookLabel: 'Book Tour',
+        listingsNavLabel: 'Tours',
+        authLoginSubtitle:
+            'Please enter your details to explore trips and manage your bookings.',
+        authRegisterSubtitle:
+            'Create your account to book tours and plan your next adventure.',
+        accountIntro:
+            'Update your personal details, manage your security settings, and organize your travel preferences for future adventures in Pakistan.',
+        personalInfoDescription:
+            'Basic info, like your name and photo, that you use on the Pakistan Travel platform.',
+        upcomingSectionTitle: 'Upcoming Expeditions',
+        upcomingLoadingLabel: 'Loading your upcoming expeditions...',
+        upcomingBookingsSummary: (confirmedCount: number, upcomingCount: number) =>
+            `You have ${confirmedCount} confirmed booking${confirmedCount === 1 ? '' : 's'} and ${upcomingCount} upcoming expedition${upcomingCount === 1 ? '' : 's'}.`,
+        upcomingEmptyHint: 'Your booked expeditions will appear here.',
+        upcomingEmptyTitle: 'No upcoming expeditions',
+        upcomingEmptyDescription:
+            'Book your next expedition from our tours page to see it here.',
+        bookingsPageTitle: 'Your Journeys',
+        bookingsPageIntro:
+            'Manage your upcoming expeditions to the high peaks and serene valleys of Pakistan. Authority in every mile.',
+        pastTabLabel: 'Past Expeditions',
+        upcomingEmptyBookingsDescription:
+            'You do not have any upcoming bookings yet. Explore our tours to plan your next adventure.',
+        pastEmptyTitle: 'No past expeditions',
+        pastEmptyDescription:
+            'Completed and cancelled trips will appear here once you have booking history.',
+        viewBookingAction: 'View Itinerary',
+        rebookAction: 'Rebook Tour',
+        fallbackBookingTitle: 'Expedition booking',
+        pastBookingThanksNote: 'Thank you for traveling with us.',
+        resolveBookingTitle: (title: string) => title,
+        resolvePrimaryAction: (action: string) => action,
+        resolveRebookAction: (action: string) => action,
+        resolvePastNote: (note: string) => note,
         resultsCountLabel: (count: number) => `${count} tour${count === 1 ? '' : 's'} found`,
     } as const
 }

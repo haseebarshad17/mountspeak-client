@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BookMarked, Compass, UserRound } from "lucide-react";
 import { useInternalPathname, usePreviewPath } from "@/hooks/useAgencyPreviewBase";
+import { useTourOrPackageCopy } from "@/hooks/useTourOrPackageCopy";
 import { cn } from "@/lib/utils/clsxUtils";
 
 type AccountNavLinksProps = {
@@ -39,6 +40,7 @@ export function AccountNavLinks({
   drawerTone = "dark",
 }: AccountNavLinksProps) {
   const internalPathname = useInternalPathname();
+  const { copy } = useTourOrPackageCopy();
   const dashboardPath = usePreviewPath("/dashboard");
   const bookingsPath = usePreviewPath("/bookings");
   const toursPath = usePreviewPath("/search");
@@ -111,7 +113,7 @@ export function AccountNavLinks({
         <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center">
           <Compass className="h-4 w-4 text-[#4b5964]" />
         </span>
-        <span className="text-base font-normal">Tours</span>
+        <span className="text-base font-normal">{copy.listingsNavLabel}</span>
       </Link>
     </nav>
   );

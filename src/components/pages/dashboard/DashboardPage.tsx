@@ -16,6 +16,7 @@ import { SectionEmptyState } from "@/components/ui/section-empty-state"
 import { HP_THEME_BG_CLASS } from "@/data/homepage"
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase"
 import { useIsAgencySite } from "@/hooks/useIsAgencySite"
+import { useTourOrPackageCopy } from "@/hooks/useTourOrPackageCopy"
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage"
 import { cn } from "@/lib/utils/clsxUtils"
 import { useAppSelector } from "@/store/hooks"
@@ -72,6 +73,7 @@ export default function DashboardPage() {
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({})
   const { data: currentUser, isLoading: isUserLoading } = useOptionalUser()
   const agencyId = useAppSelector(selectHomepageAgencyId)
+  const { copy } = useTourOrPackageCopy()
   const isAgencySite = useIsAgencySite()
   const resolvedAgencyId = useMemo(() => {
     if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
@@ -225,8 +227,7 @@ export default function DashboardPage() {
           Manage Account
         </h1>
         <p className={accountPageIntroClassName}>
-          Update your personal details, manage your security settings, and organize your
-          travel preferences for future adventures in Pakistan.
+          {copy.accountIntro}
         </p>
 
         <div className={cn(accountCardClassName, "mt-6 max-w-[856px] p-5 sm:mt-8 sm:p-6 md:px-10 md:pt-10")}>
@@ -241,8 +242,7 @@ export default function DashboardPage() {
                 Personal Information
               </h2>
               <p className="mx-auto mt-2 max-w-[560px] text-sm leading-6 text-[#404849] sm:text-base md:mx-0">
-                Basic info, like your name and photo, that you use on the Pakistan Travel
-                platform.
+                {copy.personalInfoDescription}
               </p>
             </div>
           </div>
@@ -344,16 +344,16 @@ export default function DashboardPage() {
               <h3
                 className="text-[30px] leading-[36px] text-white"
               >
-                Upcoming Expeditions
+                {copy.upcomingSectionTitle}
               </h3>
               <p
                 className="mt-2 text-[16px] leading-[24px] text-[#FFFFFF80]"
               >
                 {bookingsLoading
-                  ? "Loading your upcoming expeditions..."
+                  ? copy.upcomingLoadingLabel
                   : upcomingCount > 0
-                    ? `You have ${confirmedCount} confirmed booking${confirmedCount === 1 ? "" : "s"} and ${upcomingCount} upcoming expedition${upcomingCount === 1 ? "" : "s"}.`
-                    : "Your booked expeditions will appear here."}
+                    ? copy.upcomingBookingsSummary(confirmedCount, upcomingCount)
+                    : copy.upcomingEmptyHint}
               </p>
             </div>
             <Button
@@ -393,7 +393,7 @@ export default function DashboardPage() {
                   <h4
                     className="mt-2 text-[20px] leading-[28px] text-white"
                   >
-                    {tour.title}
+                    {copy.resolveBookingTitle(tour.title)}
                   </h4>
                   <div
                     className="mt-4 flex flex-wrap items-center gap-5 text-base text-[#FFFFFFB2]"
@@ -423,8 +423,8 @@ export default function DashboardPage() {
               <div className="md:col-span-2">
                 <SectionEmptyState
                   variant="on-dark"
-                  title="No upcoming expeditions"
-                  description="Book your next expedition from our tours page to see it here."
+                  title={copy.upcomingEmptyTitle}
+                  description={copy.upcomingEmptyDescription}
                 />
               </div>
             )}

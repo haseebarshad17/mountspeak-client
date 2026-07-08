@@ -1,5 +1,5 @@
 import { SearchResultsSection } from '@/components/pages/search/SearchResultsSection'
-import { searchPublishedTours } from '@/services/tours/tours.server'
+import { searchPublishedListings } from '@/services/tours/tours.server'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
 import type { UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
 
@@ -9,7 +9,7 @@ type SearchResultsLoaderProps = {
 }
 
 export async function SearchResultsLoader({ filters, umrahFilters }: SearchResultsLoaderProps) {
-    const tours = await searchPublishedTours(filters)
+    const tours = await searchPublishedListings(filters, umrahFilters)
 
     return (
         <SearchResultsSection tours={tours} filters={filters} umrahFilters={umrahFilters} />

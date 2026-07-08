@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SectionEmptyState } from "@/components/ui/section-empty-state";
 
 import { useIsAgencySite } from "@/hooks/useIsAgencySite";
+import { useTourOrPackageCopy } from "@/hooks/useTourOrPackageCopy";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { cn } from "@/lib/utils/clsxUtils";
 import { useAppSelector } from "@/store/hooks";
@@ -47,7 +48,17 @@ function tabButtonClassName(isActive: boolean): string {
   ].join(" ");
 }
 
-function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
+function PastExpeditionCard({
+  tour,
+  resolveTitle,
+  resolveNote,
+  resolveAction,
+}: {
+  tour: UserPastBookingDisplay;
+  resolveTitle: (title: string) => string;
+  resolveNote: (note: string) => string;
+  resolveAction: (action: string) => string;
+}) {
   return (
     <article className={cn(accountCardClassName, "bg-[#F3F3F6] p-5 sm:p-6 md:max-w-[362px] md:flex-1")}>
       <div className="flex items-center justify-between">
@@ -69,19 +80,19 @@ function PastExpeditionCard({ tour }: { tour: UserPastBookingDisplay }) {
       <h4
         className="mt-4 text-[20px] leading-[28px] text-[#00292C]"
       >
-        {tour.title}
+        {resolveTitle(tour.title)}
       </h4>
       <p
         className="mt-2 text-base text-[#404849]"
       >
-        {tour.note}
+        {resolveNote(tour.note)}
       </p>
 
       <button
         type="button"
         className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[1.2px] text-[#00292C]"
       >
-        <span>{tour.action}</span>
+        <span>{resolveAction(tour.action)}</span>
         <Image
           src={
             tour.statusTone === "completed"
@@ -102,6 +113,7 @@ const BookingsPage = () => {
   const { data: currentUser, isLoading: isUserLoading } = useOptionalUser();
   const agencyId = useAppSelector(selectHomepageAgencyId);
   const isAgencySite = useIsAgencySite();
+  const { copy } = useTourOrPackageCopy();
   const resolvedAgencyId = useMemo(() => {
     if (!isAgencySite || !agencyId || agencyId === DEFAULT_AGENCY_ID) {
       return undefined;
@@ -126,11 +138,10 @@ const BookingsPage = () => {
     <main className="w-full md:pl-4">
       <section className="mx-auto w-full max-w-[1100px]">
         <h1 className={accountPageHeadingClassName}>
-          Your Journeys
+          {copy.bookingsPageTitle}
         </h1>
         <p className={accountPageIntroClassName}>
-          Manage your upcoming expeditions to the high peaks and serene valleys of
-          Pakistan. Authority in every mile.
+          {copy.bookingsPageIntro}
         </p>
 
         <div className="mt-6 border-b border-[#C0C8C9] sm:mt-8 md:mt-10">
@@ -151,7 +162,7 @@ const BookingsPage = () => {
               aria-selected={activeTab === "past"}
               role="tab"
             >
-              Past Expeditions ({isBookingsLoading ? "…" : pastTours.length})
+              {copy.pastTabLabel} ({isBookingsLoading ? "…" : pastTours.length})
             </button>
           </div>
         </div>
@@ -190,7 +201,7 @@ const BookingsPage = () => {
                       <h2
                         className="mt-2 text-[22px] leading-[32px] text-[#00292C]"
                       >
-                        {tour.title}
+                        {copy.resolveBookingTitle(tour.title)}
                       </h2>
 
                       <div
@@ -238,12 +249,13 @@ const BookingsPage = () => {
                         <Button
                           className="shrink-0"
                           href={
-                            tour.primaryAction === "View Itinerary" && tour.slug
+                            copy.resolvePrimaryAction(tour.primaryAction) === copy.viewBookingAction &&
+                            tour.slug
                               ? tourDetailPath(tour.slug)
                               : undefined
                           }
                         >
-                          {tour.primaryAction}
+                          {copy.resolvePrimaryAction(tour.primaryAction)}
                         </Button>
                         {tour.secondaryAction ? (
                           <Button
@@ -263,7 +275,7 @@ const BookingsPage = () => {
               <SectionEmptyState
                 icon={CalendarDays}
                 title="No upcoming bookings"
-                description="You do not have any upcoming bookings yet. Explore our tours to plan your next adventure."
+                description={copy.upcomingEmptyBookingsDescription}
                 className="max-w-none"
               />
             )}
@@ -275,14 +287,20 @@ const BookingsPage = () => {
             ) : pastTours.length > 0 ? (
               <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:flex-wrap">
                 {pastTours.map((tour, index) => (
-                  <PastExpeditionCard key={`${tour.title}-${tour.date}-${index}`} tour={tour} />
+                  <PastExpeditionCard
+                    key={`${tour.title}-${tour.date}-${index}`}
+                    tour={tour}
+                    resolveTitle={copy.resolveBookingTitle}
+                    resolveNote={copy.resolvePastNote}
+                    resolveAction={copy.resolveRebookAction}
+                  />
                 ))}
               </div>
             ) : (
               <SectionEmptyState
                 icon={History}
-                title="No past expeditions"
-                description="Completed and cancelled trips will appear here once you have booking history."
+                title={copy.pastEmptyTitle}
+                description={copy.pastEmptyDescription}
                 className="max-w-none"
               />
             )}

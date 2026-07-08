@@ -18,6 +18,8 @@ import { selectHomepageAgencyId, selectHomepageSpecializationId, selectHomepageS
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
+import { umrahPlanService } from '@/services/umrah-plan/umrah-plan.service'
+import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.utils'
 import { Compass, ArrowRightIcon } from 'lucide-react'
 
 const HOMEPAGE_TOUR_LIMIT = 6
@@ -32,9 +34,20 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const listingCopy = getTourOrPackageCopy(isUmrahSite)
 
     const { data: homepageTours, isLoading } = useQuery({
-        queryKey: ['homepage-latest-tours', isAgencySite, agencyId],
+        queryKey: ['homepage-latest-tours', isAgencySite, agencyId, isUmrahSite],
         enabled: isAgencySite === true && !!agencyId,
         queryFn: async () => {
+            if (isUmrahSite) {
+                const api = umrahPlanService({ supabase, agencyId: agencyId ?? undefined })
+                const rows = await api.getLatestPublishedPlans(HOMEPAGE_TOUR_LIMIT + 1)
+                const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
+
+                return {
+                    tours: mapUmrahPlanRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+                    hasMore,
+                }
+            }
+
             const api = toursService({ supabase, agencyId: agencyId ?? undefined })
             const rows = await api.getLatestPublishedTours(HOMEPAGE_TOUR_LIMIT + 1)
             const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
@@ -104,6 +117,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     remainingSeats={tour.remainingSeats}
                                     daysLeft={tour.daysLeft}
                                     departureDate={tour.departureDate}
+                                    bookLabel={listingCopy.bookLabel}
                                     detailHref={
                                         isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
                                     }
