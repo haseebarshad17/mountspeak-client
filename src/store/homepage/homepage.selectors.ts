@@ -20,6 +20,9 @@ export const selectHomepageSpecializations = (state: RootState) =>
 export const selectHomepagePage = (state: RootState): HomepagePage | null =>
     state.homepage.data?.page ?? null
 
+export const selectHomepageThemeUpdatedAt = (state: RootState): string | null =>
+    state.homepage.data?.themeUpdatedAt ?? null
+
 export const selectHomepageStatus = (state: RootState) => state.homepage.status
 
 export const selectHomepageError = (state: RootState) => state.homepage.error

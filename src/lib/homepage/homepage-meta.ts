@@ -1,3 +1,4 @@
+import { getBrandingLogo } from '@/lib/homepage/branding-logo'
 import type { AgencyHomepage } from '@/services/homepage/homepage.types'
 import type { Metadata } from 'next'
 
@@ -17,7 +18,11 @@ export function getAgencyFaviconIcons(homepage: AgencyHomepage): Metadata['icons
     const siteUrl = homepage.siteUrl
     if (!siteUrl) return undefined
 
-    const logoSrc = homepage.page.branding.logo.default.src
+    const logoSrc = getBrandingLogo(
+        homepage.page.branding,
+        'default',
+        homepage.themeUpdatedAt,
+    ).src
     if (!logoSrc) return undefined
 
     const iconUrl = resolveAbsoluteAssetUrl(logoSrc, siteUrl)

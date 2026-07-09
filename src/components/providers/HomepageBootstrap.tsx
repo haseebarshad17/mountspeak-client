@@ -5,32 +5,27 @@ import { usePathname } from 'next/navigation'
 
 import { getAgencyPreviewHostFromPathname } from '@/lib/homepage/agency-preview'
 import { fetchHomepage, resetHomepage } from '@/store/homepage/homepage.slice'
-import { selectHomepageStatus } from '@/store/homepage/homepage.selectors'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useAppDispatch } from '@/store/hooks'
 
 export default function HomepageBootstrap() {
     const dispatch = useAppDispatch()
     const pathname = usePathname()
-    const homepageStatus = useAppSelector(selectHomepageStatus)
     const previewHost = getAgencyPreviewHostFromPathname(pathname)
     const previewHostKey = previewHost ?? ''
     const lastPreviewHostKey = useRef<string | null>(null)
 
     useEffect(() => {
-        if (lastPreviewHostKey.current === null) {
-            lastPreviewHostKey.current = previewHostKey
-            if (homepageStatus !== 'succeeded') {
-                void dispatch(fetchHomepage())
-            }
-            return
+        const previewChanged =
+            lastPreviewHostKey.current !== null && lastPreviewHostKey.current !== previewHostKey
+
+        lastPreviewHostKey.current = previewHostKey
+
+        if (previewChanged) {
+            dispatch(resetHomepage())
         }
 
-        if (lastPreviewHostKey.current !== previewHostKey) {
-            lastPreviewHostKey.current = previewHostKey
-            dispatch(resetHomepage())
-            void dispatch(fetchHomepage())
-        }
-    }, [dispatch, homepageStatus, previewHostKey])
+        void dispatch(fetchHomepage())
+    }, [dispatch, previewHostKey])
 
     useEffect(() => {
         const refetchHomepage = () => {
@@ -38,7 +33,15 @@ export default function HomepageBootstrap() {
         }
 
         window.addEventListener('focus', refetchHomepage)
-        return () => window.removeEventListener('focus', refetchHomepage)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                refetchHomepage()
+            }
+        })
+
+        return () => {
+            window.removeEventListener('focus', refetchHomepage)
+        }
     }, [dispatch])
 
     return null

@@ -26,5 +26,7 @@ export type AgencyHomepage = {
     specializations: Specialization[]
     /** True when request host matches a configured agency_site_theme.site_url */
     isAgencySite: boolean
+    /** Busts cached logos when theme branding changes. */
+    themeUpdatedAt: string | null
     page: HomepagePage
 }
