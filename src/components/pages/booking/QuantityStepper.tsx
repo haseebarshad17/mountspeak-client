@@ -62,11 +62,11 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
 
         const isFieldVariant = variant === 'field'
         const labelClassName = isFieldVariant
-            ? 'min-w-0 flex-1 truncate text-sm font-normal leading-6 tracking-normal text-neutral-500 sm:text-base'
+            ? 'min-w-0 flex-1 truncate text-sm font-normal leading-5 tracking-normal text-neutral-500'
             : cn('text-sm font-semibold', 'text-[var(--hp-color-primary)]')
         const buttonClassName = isFieldVariant
             ? cn(
-                'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition hover:bg-[color-mix(in_srgb,var(--hp-color-primary)_8%,white)] disabled:cursor-not-allowed disabled:opacity-40 sm:h-9 sm:w-9',
+                'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition hover:bg-[color-mix(in_srgb,var(--hp-color-primary)_8%,white)] disabled:cursor-not-allowed disabled:opacity-40',
                 HP_THEME_BORDER_CLASS,
                 'text-[var(--hp-color-primary)]',
             )
@@ -76,7 +76,7 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
                 'text-[var(--hp-color-primary)]',
             )
         const inputClassName = isFieldVariant
-            ? 'flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-[#D5DADD] bg-white px-1 text-center text-sm font-normal leading-6 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25 sm:h-9 sm:w-11 sm:text-base'
+            ? 'flex h-7 w-9 shrink-0 items-center justify-center rounded-md border border-[#D5DADD] bg-white px-1 text-center text-sm font-normal leading-5 tracking-normal text-neutral-900 outline-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25'
             : 'flex h-11 w-[72px] items-center justify-center rounded-[10px] border border-[#D5DADD] bg-white px-2 text-center text-sm font-medium text-neutral-800 outline-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25'
 
         return (
@@ -84,13 +84,13 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
                 className={cn(
                     'flex items-center justify-between gap-2',
                     isFieldVariant &&
-                        'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] bg-white px-3 font-roboto shadow-sm sm:gap-3 sm:px-4',
+                        'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] border border-[#D5DADD] bg-white px-3 font-roboto shadow-none sm:px-4',
                     className,
                 )}
             >
                 <span className={labelClassName}>{label}</span>
 
-                <div className='flex shrink-0 items-center gap-1.5 sm:gap-2'>
+                <div className='flex shrink-0 items-center gap-1'>
                     <button
                         type='button'
                         onClick={decrement}
@@ -98,7 +98,7 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
                         aria-label={`Decrease ${label}`}
                         className={buttonClassName}
                     >
-                        <Minus className='h-4 w-4' strokeWidth={2.5} />
+                        <Minus className='h-3 w-3' strokeWidth={2.5} />
                     </button>
 
                     <input
@@ -130,7 +130,7 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
                         aria-label={`Increase ${label}`}
                         className={buttonClassName}
                     >
-                        <Plus className='h-4 w-4' strokeWidth={2.5} />
+                        <Plus className='h-3 w-3' strokeWidth={2.5} />
                     </button>
                 </div>
             </div>

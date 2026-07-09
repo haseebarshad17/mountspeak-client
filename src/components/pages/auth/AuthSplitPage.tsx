@@ -85,7 +85,7 @@ function PasswordField({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className={cn(
-          "min-h-[36px] w-full border-b bg-transparent px-3 py-2 pr-10 text-sm text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8] sm:min-h-[40px] sm:text-base",
+          "min-h-[36px] w-full border-b bg-transparent px-3 py-2 pr-10 text-sm leading-5 text-[#161b1d] outline-none transition placeholder:text-sm placeholder:text-[#a0a4a8] sm:min-h-[38px]",
           borderClassName,
           HP_THEME_INPUT_FOCUS_CLASS,
         )}

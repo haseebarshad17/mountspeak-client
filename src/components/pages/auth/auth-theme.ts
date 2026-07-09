@@ -8,7 +8,7 @@ import {
 import { cn } from '@/lib/utils/clsxUtils'
 
 export const authInputClassName = cn(
-    'w-full border-b bg-transparent px-3 py-2 min-h-[40px] text-base text-[#161b1d] outline-none transition placeholder:text-[#a0a4a8]',
+    'w-full border-b bg-transparent px-3 py-2 min-h-[36px] text-sm leading-5 text-[#161b1d] outline-none transition placeholder:text-sm placeholder:text-[#a0a4a8] sm:min-h-[38px]',
     HP_THEME_INPUT_FOCUS_CLASS,
 )
 
