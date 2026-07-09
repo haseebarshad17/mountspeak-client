@@ -16,6 +16,7 @@ import { useState } from 'react'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 
+
 function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
     if (!href) return false
     if (href === '/') return pathname === '/'
