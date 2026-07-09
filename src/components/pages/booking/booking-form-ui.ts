@@ -16,7 +16,7 @@ export const bookingFieldLabelClassName = accountFieldLabelClassName
 
 export const bookingFieldInputClassName = cn(
     MARKETING_FORM_CONTROL_CLASS,
-    '!h-11 border border-[#D5DADD] bg-white shadow-none sm:!h-12',
+    '!h-11 border border-[#D5DADD] bg-white shadow-none',
     'focus:ring-2 focus:ring-[var(--hp-color-primary)]/25',
 )
 

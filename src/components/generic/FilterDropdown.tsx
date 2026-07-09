@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
     DropdownMenu,
@@ -15,6 +16,7 @@ export type FilterOption = {
     value: string | number
     label: string
     icon?: LucideIcon
+    iconNode?: ReactNode
     metaLabel?: string
 }
 
@@ -22,8 +24,11 @@ interface FilterDropdownProps {
     options: FilterOption[]
     value: string | number
     onChange: (value: string | number) => void
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
     placeholder?: string
     triggerIcon?: LucideIcon
+    triggerIconNode?: ReactNode
     theme?: "primary" | "emerald" | "amber" | "blue" | "purple" | "slate"
     contentClassName?: string
     classNames?: {
@@ -80,15 +85,27 @@ const FilterDropdown = ({
     options,
     value,
     onChange,
+    open: controlledOpen,
+    onOpenChange,
     placeholder = "Filter",
     triggerIcon: TriggerIconFallback,
-    theme = "emerald",
+    triggerIconNode,
+    theme = "primary",
     classNames,
 }: FilterDropdownProps) => {
-    const [open, setOpen] = useState(false)
+    const [internalOpen, setInternalOpen] = useState(false)
+    const open = controlledOpen ?? internalOpen
+
+    const setOpen = (nextOpen: boolean) => {
+        if (controlledOpen === undefined) {
+            setInternalOpen(nextOpen)
+        }
+        onOpenChange?.(nextOpen)
+    }
     const selected = options.find((o) => o.value === value)
     const label = selected?.label ?? placeholder
     const TriggerIcon = selected?.icon ?? TriggerIconFallback
+    const selectedIconNode = selected?.iconNode ?? triggerIconNode
 
     const t = THEME_CLASS[theme]
 
@@ -97,11 +114,12 @@ const FilterDropdown = ({
             <DropdownMenuTrigger
                 asChild
                 className="w-full min-w-0 outline-none focus:outline-none 
-                focus-visible:outline-none select-none"
+                focus-visible:outline-none select-none cursor-pointer"
             >
-                <span
+                <button
+                    type="button"
                     className={cn(
-                        "flex w-full min-w-0 items-center justify-between gap-2",
+                        "flex w-full min-w-0 cursor-pointer items-center justify-between gap-2",
                         "rounded-md border border-gray-200 bg-white px-3",
                         "text-sm font-medium text-gray-700 transition-[color,box-shadow,border-color]",
                         "outline-none hover:bg-gray-50",
@@ -112,7 +130,11 @@ const FilterDropdown = ({
                     aria-expanded={open}
                 >
                     <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
-                        {TriggerIcon ? (
+                        {selectedIconNode ? (
+                            <span className="flex h-4 w-4 shrink-0 items-center justify-center" aria-hidden>
+                                {selectedIconNode}
+                            </span>
+                        ) : TriggerIcon ? (
                             <TriggerIcon
                                 className={cn("h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4", t.triggerIcon)}
                                 aria-hidden
@@ -126,7 +148,7 @@ const FilterDropdown = ({
                             open ? "rotate-180" : ""
                         )}
                     />
-                </span>
+                </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
@@ -155,7 +177,11 @@ const FilterDropdown = ({
                             )}
                         >
                             <p className="flex min-w-0 flex-1 items-center gap-2 truncate">
-                                {RowIcon ? (
+                                {opt.iconNode ? (
+                                    <span className="flex h-4 w-4 shrink-0 items-center justify-center" aria-hidden>
+                                        {opt.iconNode}
+                                    </span>
+                                ) : RowIcon ? (
                                     <RowIcon
                                         className={cn(
                                             "h-4 w-4 shrink-0",

@@ -102,7 +102,7 @@ function OurServicesSkeleton() {
                     ))}
                 </div>
                 <div className='flex justify-center pt-10 sm:pt-12 lg:pt-8'>
-                    <Skeleton className='h-[58px] w-[219px] rounded-full' />
+                    <Skeleton className='h-11 w-[219px] rounded-full' />
                 </div>
             </div>
         </section>
