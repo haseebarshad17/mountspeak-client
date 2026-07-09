@@ -147,6 +147,7 @@ export function BookingHeader() {
                                 width={150}
                                 height={100}
                                 className='h-auto w-[80px] object-contain'
+                                unoptimized
                             />
                             <button
                                 type='button'
