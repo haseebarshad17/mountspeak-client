@@ -3,12 +3,18 @@ import type { ReactNode } from 'react'
 
 /** Shared booking / consultation form field shell. */
 export const MARKETING_FORM_CONTROL_CLASS =
-    'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40 sm:text-base'
+    'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-5 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow placeholder:text-sm placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40'
 
-export const marketingFormInputClass = MARKETING_FORM_CONTROL_CLASS
+/** Bordered fields used inside marketing / booking / contact panels. */
+export const marketingFormFieldClass = cn(
+    MARKETING_FORM_CONTROL_CLASS,
+    'border border-[#D5DADD] shadow-none focus:ring-2 focus:ring-[var(--hp-color-primary)]/25',
+)
+
+export const marketingFormInputClass = marketingFormFieldClass
 
 export const marketingFormTextareaClass = cn(
-    MARKETING_FORM_CONTROL_CLASS,
+    marketingFormFieldClass,
     '!h-auto min-h-[7rem] resize-none py-3 align-top sm:min-h-[7.25rem] sm:py-4',
 )
 

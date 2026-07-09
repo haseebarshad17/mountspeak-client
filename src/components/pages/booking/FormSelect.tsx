@@ -62,7 +62,6 @@ export function FormSelect({
                         triggerButton: cn(
                             bookingFieldInputClassName,
                             'h-auto min-h-10',
-                            selectedValue ? 'text-neutral-800' : 'text-neutral-400',
                             invalid && 'border-red-400 focus:ring-red-200',
                             staticField && 'cursor-default',
                         ),

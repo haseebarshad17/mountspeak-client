@@ -38,9 +38,7 @@ export function getAgencyLayoutMetadata(homepage: AgencyHomepage): Metadata {
     const siteUrl = homepage.siteUrl
 
     if (!siteUrl) {
-        throw new Error(
-            `agency_site_theme.site_url is required for SEO metadata (agency ${homepage.agencyId}).`,
-        )
+        throw new Error(`agency_site_theme.site_url is required for SEO metadata (agency ${homepage.agencyId}).`)
     }
 
     const agencyName = branding.name

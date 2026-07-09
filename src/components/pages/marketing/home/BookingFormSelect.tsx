@@ -1,10 +1,13 @@
 'use client'
 
 import FilterDropdown from '@/components/generic/FilterDropdown'
+import { marketingFormFieldClass } from '@/components/forms/marketing-form'
 import { cn } from '@/lib/utils/clsxUtils'
 
-export const BOOKING_FORM_TRIGGER_CLASS =
-    'box-border flex h-11 w-full min-w-0 max-w-full items-center justify-between gap-2 rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base'
+export const BOOKING_FORM_TRIGGER_CLASS = cn(
+    marketingFormFieldClass,
+    'flex items-center justify-between gap-2 disabled:cursor-not-allowed disabled:opacity-60',
+)
 
 export type BookingFormSelectOption = {
     value: string

@@ -1,4 +1,4 @@
-import { MARKETING_FORM_CONTROL_CLASS } from '@/components/forms/marketing-form'
+import { marketingFormFieldClass } from '@/components/forms/marketing-form'
 import { accountFieldLabelClassName } from '@/components/pages/dashboard/account-ui'
 import { cn } from '@/lib/utils/clsxUtils'
 
@@ -14,13 +14,9 @@ export { accountPageContentTopSpacingClassName as bookingStepperTopSpacingClassN
 
 export const bookingFieldLabelClassName = accountFieldLabelClassName
 
-export const bookingFieldInputClassName = cn(
-    MARKETING_FORM_CONTROL_CLASS,
-    '!h-11 border border-[#D5DADD] bg-white shadow-none',
-    'focus:ring-2 focus:ring-[var(--hp-color-primary)]/25',
-)
+export const bookingFieldInputClassName = marketingFormFieldClass
 
 export const bookingFieldTextareaClassName = cn(
-    bookingFieldInputClassName,
+    marketingFormFieldClass,
     '!h-auto min-h-[96px] resize-none py-3 sm:min-h-[120px]',
 )

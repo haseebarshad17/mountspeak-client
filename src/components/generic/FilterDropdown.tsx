@@ -103,6 +103,7 @@ const FilterDropdown = ({
         onOpenChange?.(nextOpen)
     }
     const selected = options.find((o) => o.value === value)
+    const hasSelection = Boolean(selected)
     const label = selected?.label ?? placeholder
     const TriggerIcon = selected?.icon ?? TriggerIconFallback
     const selectedIconNode = selected?.iconNode ?? triggerIconNode
@@ -121,7 +122,7 @@ const FilterDropdown = ({
                     className={cn(
                         "flex w-full min-w-0 cursor-pointer items-center justify-between gap-2",
                         "rounded-md border border-gray-200 bg-white px-3",
-                        "text-sm font-medium text-gray-700 transition-[color,box-shadow,border-color]",
+                        "text-sm font-medium text-neutral-900 transition-[color,box-shadow,border-color]",
                         "outline-none hover:bg-gray-50",
                         t.triggerFocus,
                         "h-10",
@@ -140,7 +141,14 @@ const FilterDropdown = ({
                                 aria-hidden
                             />
                         ) : null}
-                        <span className="truncate text-left">{label}</span>
+                        <span
+                            className={cn(
+                                'truncate text-left',
+                                hasSelection ? 'text-inherit' : 'font-normal text-neutral-400',
+                            )}
+                        >
+                            {label}
+                        </span>
                     </span>
                     <ChevronDown
                         className={cn(

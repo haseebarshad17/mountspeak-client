@@ -7,7 +7,6 @@ import {
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
 import { Button } from '@/components/ui/button'
-import { PAGE_HERO_OVERLAY_CLASS } from '@/components/ui/page-hero-banner'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -42,20 +41,20 @@ import {
     MAX_BOOKING_REQUEST_SEATS,
 } from './booking-request.validation'
 import { BookingFormSelect } from './BookingFormSelect'
-import { MARKETING_FORM_CONTROL_CLASS } from '@/components/forms/marketing-form'
-
-const dateInputClass = cn(
-    MARKETING_FORM_CONTROL_CLASS,
-    'relative block cursor-pointer pr-11',
-    '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0',
-)
 
 import {
     marketingFormInputClass,
+    marketingFormPanelClassName,
     marketingFormRowClass,
     marketingFormTextareaClass,
     MarketingFormField,
 } from '@/components/forms/marketing-form'
+
+const dateInputClass = cn(
+    marketingFormInputClass,
+    'relative block cursor-pointer pr-11',
+    '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0',
+)
 
 const BookATour = ({ page }: HomepagePageProps) => {
     const section = page.sections.bookATour
@@ -194,7 +193,10 @@ const BookATour = ({ page }: HomepagePageProps) => {
             style={{ backgroundImage: `url("${section.backgroundImage}")` }}
             aria-labelledby='book-a-tour-heading'
         >
-            <div className={PAGE_HERO_OVERLAY_CLASS} aria-hidden />
+            <div
+                className='absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/75'
+                aria-hidden
+            />
             <div className='agency-container relative z-10 py-10 sm:py-16 lg:py-20 xl:py-24'>
                 <div className='grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16'>
                     <div className='text-white'>
@@ -264,8 +266,9 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             {formCopy.subtitle}
                         </p>
 
+                        <div className={cn('mt-5 sm:mt-8', marketingFormPanelClassName)}>
                         <form
-                            className='mt-5 flex w-full min-w-0 flex-col gap-3 sm:mt-8 sm:gap-4'
+                            className='flex w-full min-w-0 flex-col gap-3 sm:gap-4'
                             onSubmit={handleSubmit}
                             noValidate
                         >
@@ -318,7 +321,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         />
                                         {!travelDate ? (
                                             <span
-                                                className='pointer-events-none absolute left-4 top-1/2 max-w-[calc(100%-3.25rem)] -translate-y-1/2 truncate font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-400 sm:text-base'
+                                                className='pointer-events-none absolute left-4 top-1/2 max-w-[calc(100%-3.25rem)] -translate-y-1/2 truncate font-roboto text-sm font-normal leading-5 tracking-normal text-neutral-400'
                                                 aria-hidden
                                             >
                                                 {formCopy.placeholders.travelDate ?? 'Select Travel Date'}
@@ -440,6 +443,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 {formCopy.submitLabel}
                             </Button>
                         </form>
+                        </div>
                     </div>
                 </div>
             </div>
