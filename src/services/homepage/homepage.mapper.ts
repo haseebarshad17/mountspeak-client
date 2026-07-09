@@ -88,6 +88,7 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
         specializationId: null,
         specializations: [],
         isAgencySite: true,
+        themeUpdatedAt: row.updated_at ?? null,
         page: resolveStorageUrlsDeep(pageWithTrust),
     }
 }

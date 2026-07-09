@@ -12,12 +12,17 @@ import {
     STATIC_UI_COLORS,
 } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import {
+    getBrandingLogo,
+    getHeaderBrandingLogo,
+} from '@/lib/homepage/branding-logo'
 import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
+    selectHomepageThemeUpdatedAt,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import {
@@ -31,19 +36,6 @@ import React, { useEffect, useState } from 'react'
 
 type HeaderProps = {
     page: HomepagePage
-}
-
-function matchesRoute(pathname: string, route: string): boolean {
-    return pathname === route || pathname.startsWith(`${route}/`)
-}
-
-function shouldUseDarkLogo(pathname: string): boolean {
-    return (
-        matchesRoute(pathname, '/profile') ||
-        matchesRoute(pathname, '/dashboard') ||
-        matchesRoute(pathname, '/bookings') ||
-        matchesRoute(pathname, '/booking')
-    )
 }
 
 function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
@@ -145,15 +137,15 @@ const Header = ({ page }: HeaderProps) => {
     const { header, branding } = page
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const specializations = useAppSelector(selectHomepageSpecializations)
+    const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const listingsNavLabel = getTourOrPackageCopy(isUmrahSite).listingsNavLabel
     const navigation = header.navigation.map((link) =>
         link.href === '/search' ? { ...link, label: listingsNavLabel } : link,
     )
     const colors = STATIC_UI_COLORS
-    const headerLogo = shouldUseDarkLogo(internalPathname)
-        ? branding.logo.default
-        : branding.logo.onDark
+    const headerLogo = getHeaderBrandingLogo(branding, internalPathname, themeUpdatedAt)
+    const mobileDrawerLogo = getBrandingLogo(branding, 'onDark', themeUpdatedAt)
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
     const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const useDarkChrome = useFixedHeader || (isCompactHeaderPage && !isScrolled)
@@ -353,6 +345,7 @@ const Header = ({ page }: HeaderProps) => {
                                 priority
                                 fetchPriority='high'
                                 quality={100}
+                                unoptimized
                             />
                         </Link>
 
@@ -434,12 +427,14 @@ const Header = ({ page }: HeaderProps) => {
                 >
                     <div className='flex items-center justify-between'>
                         <HomepageMediaImage
-                            src={branding.logo.onDark.src}
-                            alt={branding.logo.onDark.alt}
+                            key={mobileDrawerLogo.src}
+                            src={mobileDrawerLogo.src}
+                            alt={mobileDrawerLogo.alt}
                             width={128}
                             height={48}
                             className={mobileDrawerLogoClassName()}
                             quality={100}
+                            unoptimized
                         />
                         <button
                             type='button'
