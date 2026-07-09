@@ -88,13 +88,20 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
 
     return (
         <form
-            className='overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md sm:p-3 xl:mx-auto xl:max-w-[867px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0'
+            className='w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:mx-auto xl:max-w-[867px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0'
             onSubmit={(event) => {
                 event.preventDefault()
                 handleSearch()
             }}
         >
-            <div className='grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_170px] xl:h-12 xl:items-stretch xl:gap-0'>
+            <div
+                className={cn(
+                    'grid min-w-0 grid-cols-1 gap-2',
+                    'xs:grid-cols-2',
+                    'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)] xl:h-12 xl:items-stretch xl:gap-0',
+                )}
+            >
+                <div className='min-w-0 w-full'>
                 <Popover open={open === 'duration'} onOpenChange={(v) => setOpen(v ? 'duration' : null)}>
                     <PopoverTrigger asChild>
                         <Button
@@ -127,7 +134,9 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                         />
                     </PopoverContent>
                 </Popover>
+                </div>
 
+                <div className='min-w-0 w-full'>
                 <Popover open={open === 'passengers'} onOpenChange={(v) => setOpen(v ? 'passengers' : null)}>
                     <PopoverTrigger asChild>
                         <Button
@@ -160,7 +169,9 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                         />
                     </PopoverContent>
                 </Popover>
+                </div>
 
+                <div className='min-w-0 w-full xs:col-span-2 xl:col-span-1'>
                 <Popover open={open === 'packageType'} onOpenChange={(v) => setOpen(v ? 'packageType' : null)}>
                     <PopoverTrigger asChild>
                         <Button
@@ -193,8 +204,9 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                         />
                     </PopoverContent>
                 </Popover>
+                </div>
 
-                <div className='xl:col-span-1 xl:flex xl:h-full xl:px-[6px]'>
+                <div className='min-w-0 w-full xs:col-span-2 xl:col-span-1'>
                     <Button
                         type='submit'
                         size='max'
@@ -203,7 +215,7 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-12 w-full !rounded-xl !font-medium !normal-case !tracking-normal xl:!h-full xl:!w-full xl:!rounded-[3px] xl:!px-4 xl:!text-sm',
+                            '!h-12 w-full min-w-0 !rounded-xl !font-medium !normal-case !tracking-normal !text-sm xl:!h-full xl:!rounded-[3px] xl:!px-4',
                         )}
                     >
                         {isSearching ? (
