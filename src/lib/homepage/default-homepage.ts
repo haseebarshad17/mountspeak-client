@@ -32,6 +32,7 @@ export function createDefaultAgencyHomepage(requestHost: string): AgencyHomepage
         specializationId: null,
         specializations: [],
         isAgencySite: false,
+        themeUpdatedAt: null,
         page: resolveStorageUrlsDeep(page),
     }
 }

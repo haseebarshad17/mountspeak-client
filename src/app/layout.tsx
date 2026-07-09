@@ -15,6 +15,8 @@ import { getAgencyLayoutMetadata } from "@/lib/homepage/homepage-meta";
 import { getRequestSiteUrl } from "@/lib/homepage/resolve-request-host";
 import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata(): Promise<Metadata> {
     const agencyHomepage = await fetchAgencyHomepage()
 

@@ -8,9 +8,12 @@ import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import type { HomepagePage } from '@/data/homepage'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { getBrandingLogo } from '@/lib/homepage/branding-logo'
 import { getActiveFooterSocialLinks } from '@/lib/homepage/footer-social'
 import { getFooterDisplayColumns } from '@/lib/homepage/normalize-homepage'
 import { cn } from '@/lib/utils/clsxUtils'
+import { selectHomepageThemeUpdatedAt } from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 
 type FooterProps = {
     page: HomepagePage
@@ -81,10 +84,12 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
 
 const Footer = ({ page }: FooterProps) => {
     const { footer, branding, sections, seo } = page
+    const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const columns = getFooterDisplayColumns()
     const socialLinks = getActiveFooterSocialLinks(footer.socialLinks)
     const description = sections.hero.paragraph
     const siteName = branding.name || seo.siteName
+    const footerLogo = getBrandingLogo(branding, 'onDark', themeUpdatedAt)
     const year = new Date().getFullYear()
 
     return (
@@ -105,13 +110,15 @@ const Footer = ({ page }: FooterProps) => {
                             <div className='flex flex-col items-start gap-5 sm:gap-6'>
                                 <Link href='/' className='shrink-0 inline-block'>
                                     <HomepageMediaImage
-                                        src={footer.logo.src}
-                                        alt={branding.logo.default.alt}
+                                        key={footerLogo.src}
+                                        src={footerLogo.src}
+                                        alt={footerLogo.alt}
                                         width={212}
                                         height={88}
                                         priority
                                         fetchPriority='high'
                                         quality={100}
+                                        unoptimized
                                         className='max-w-[212px] max-h-[88px] w-auto'
                                     />
                                 </Link>

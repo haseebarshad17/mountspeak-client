@@ -3,14 +3,17 @@
 import { Button } from '@/components/ui/button'
 import { ProfileMenu } from '@/components/layout/marketing/header/ProfileMenu'
 import { AccountNavLinks } from '@/components/pages/dashboard/AccountNavLinks'
+import { getBrandingLogo } from '@/lib/homepage/branding-logo'
 import { resolveNavLinkDisplayLabel } from '@/lib/homepage/nav-labels'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { useInternalPathname, usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
-import Image from 'next/image'
+import { selectHomepageThemeUpdatedAt } from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
 import { useState } from 'react'
 
+import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 
 function isNavLinkActive(pathname: string, href: string | null | undefined): boolean {
@@ -29,6 +32,7 @@ export function BookingHeader() {
     const internalPathname = useInternalPathname()
     const router = usePreviewRouter()
     const page = useHomepagePageWithFallback()
+    const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
@@ -44,6 +48,7 @@ export function BookingHeader() {
     if (!page) return null
 
     const { header, branding } = page
+    const headerLogo = getBrandingLogo(branding, 'default', themeUpdatedAt)
     const logoutLabel = header.auth?.logout?.label ?? 'Logout'
 
     return (
@@ -54,13 +59,15 @@ export function BookingHeader() {
                         href='/'
                         className='flex shrink-0 items-center gap-3'
                     >
-                        <Image
-                            src={branding.logo.default.src}
-                            alt={branding.logo.default.alt}
+                        <HomepageMediaImage
+                            key={headerLogo.src}
+                            src={headerLogo.src}
+                            alt={headerLogo.alt}
                             width={150}
                             height={100}
                             className='h-11 w-auto max-w-[150px] object-contain sm:h-11'
                             priority
+                            unoptimized
                         />
                     </PrefixedLink>
 
@@ -133,12 +140,14 @@ export function BookingHeader() {
                     />
                     <aside className='absolute right-0 top-0 flex h-full w-[min(88vw,360px)] flex-col bg-white px-5 pb-6 pt-5 shadow-2xl'>
                         <div className='flex items-center justify-between'>
-                            <Image
-                                src={branding.logo.default.src}
-                                alt={branding.logo.default.alt}
+                            <HomepageMediaImage
+                                key={headerLogo.src}
+                                src={headerLogo.src}
+                                alt={headerLogo.alt}
                                 width={150}
                                 height={100}
                                 className='h-auto w-[80px] object-contain'
+                                unoptimized
                             />
                             <button
                                 type='button'
