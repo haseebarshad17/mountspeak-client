@@ -1,12 +1,12 @@
 'use client'
 
+import FilterDropdown from '@/components/generic/FilterDropdown'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils/clsxUtils'
 import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { buildUmrahSearchPath, type UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
 import { Clock, Loader2, Package, Search, Users } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import {
     DEFAULT_UMRAH_HERO_SEARCH,
@@ -20,34 +20,12 @@ type HeroUmrahFiltersProps = {
     initialValues?: UmrahSearchFilters
 }
 
-function OptionList({
-    options,
-    selected,
-    onSelect,
-    itemClassName,
-}: {
-    options: readonly string[]
-    selected: string
-    onSelect: (value: string) => void
-    itemClassName: string
-}) {
-    return (
-        <div className='flex max-h-60 flex-col gap-0.5 overflow-y-auto'>
-            {options.map((option) => (
-                <Button
-                    key={option}
-                    type='button'
-                    variant='ghost'
-                    size='max'
-                    className={cn(itemClassName, selected === option && 'bg-neutral-100')}
-                    onClick={() => onSelect(option)}
-                >
-                    {option}
-                </Button>
-            ))}
-        </div>
-    )
-}
+const heroTriggerButtonClass = cn(
+    '!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal',
+    'xs:gap-2.5 xs:px-4 xs:!text-sm',
+    'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator',
+    'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
+)
 
 export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProps) {
     const router = usePreviewRouter()
@@ -65,20 +43,18 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
 
     const labels = DEFAULT_UMRAH_HERO_SEARCH
 
-    const triggerCls = cn(
-        '!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal',
-        'xs:gap-2.5 xs:px-4 xs:!text-sm',
-        'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator',
-        'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
+    const durationOptions = useMemo(
+        () => UMRAH_PACKAGE_DURATIONS.map((option) => ({ value: option, label: option })),
+        [],
     )
-
-    const popCls = cn(
-        'w-[min(92vw,22rem)] rounded-xl border bg-white p-2 shadow-xl',
-        'border-neutral-200 flex flex-col',
+    const passengerOptions = useMemo(
+        () => UMRAH_PASSENGER_OPTIONS.map((option) => ({ value: option, label: option })),
+        [],
     )
-
-    const dropdownItemCls =
-        '!flex !h-auto !w-full min-w-0 justify-start rounded-md !px-3 py-2.5 text-left sm:!flex sm:!w-full'
+    const packageTypeOptions = useMemo(
+        () => UMRAH_PACKAGE_TYPES.map((option) => ({ value: option, label: option })),
+        [],
+    )
 
     const handleSearch = () => {
         startSearchTransition(() => {
@@ -102,108 +78,51 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
                 )}
             >
                 <div className='min-w-0 w-full'>
-                <Popover open={open === 'duration'} onOpenChange={(v) => setOpen(v ? 'duration' : null)}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            type='button'
-                            variant='ghost'
-                            size='max'
-                            className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
-                            aria-label={labels.durationPlaceholder}
-                        >
-                            <Clock className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
-                            <span
-                                className={cn(
-                                    'min-w-0 flex-1 truncate text-left',
-                                    !duration && 'text-neutral-500',
-                                )}
-                            >
-                                {duration || labels.durationPlaceholder}
-                            </span>
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className={popCls} align='start'>
-                        <OptionList
-                            options={UMRAH_PACKAGE_DURATIONS}
-                            selected={duration}
-                            itemClassName={dropdownItemCls}
-                            onSelect={(value) => {
-                                setDuration(value)
-                                setOpen(null)
-                            }}
-                        />
-                    </PopoverContent>
-                </Popover>
+                    <FilterDropdown
+                        options={durationOptions}
+                        value={duration}
+                        onChange={(value) => setDuration(String(value))}
+                        placeholder={labels.durationPlaceholder}
+                        triggerIcon={Clock}
+                        theme='slate'
+                        open={open === 'duration'}
+                        onOpenChange={(isOpen) => setOpen(isOpen ? 'duration' : null)}
+                        classNames={{
+                            triggerButton: cn(heroTriggerButtonClass, 'xl:border-r xl:border-[#D6D9DC]'),
+                        }}
+                    />
                 </div>
 
                 <div className='min-w-0 w-full'>
-                <Popover open={open === 'passengers'} onOpenChange={(v) => setOpen(v ? 'passengers' : null)}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            type='button'
-                            variant='ghost'
-                            size='max'
-                            className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
-                            aria-label={labels.passengersPlaceholder}
-                        >
-                            <Users className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
-                            <span
-                                className={cn(
-                                    'min-w-0 flex-1 truncate text-left',
-                                    !passengers && 'text-neutral-500',
-                                )}
-                            >
-                                {passengers || labels.passengersPlaceholder}
-                            </span>
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className={popCls} align='start'>
-                        <OptionList
-                            options={UMRAH_PASSENGER_OPTIONS}
-                            selected={passengers}
-                            itemClassName={dropdownItemCls}
-                            onSelect={(value) => {
-                                setPassengers(value)
-                                setOpen(null)
-                            }}
-                        />
-                    </PopoverContent>
-                </Popover>
+                    <FilterDropdown
+                        options={passengerOptions}
+                        value={passengers}
+                        onChange={(value) => setPassengers(String(value))}
+                        placeholder={labels.passengersPlaceholder}
+                        triggerIcon={Users}
+                        theme='slate'
+                        open={open === 'passengers'}
+                        onOpenChange={(isOpen) => setOpen(isOpen ? 'passengers' : null)}
+                        classNames={{
+                            triggerButton: cn(heroTriggerButtonClass, 'xl:border-r xl:border-[#D6D9DC]'),
+                        }}
+                    />
                 </div>
 
                 <div className='min-w-0 w-full xs:col-span-2 xl:col-span-1'>
-                <Popover open={open === 'packageType'} onOpenChange={(v) => setOpen(v ? 'packageType' : null)}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            type='button'
-                            variant='ghost'
-                            size='max'
-                            className={cn(triggerCls, 'xl:border-r xl:border-[#D6D9DC]')}
-                            aria-label={labels.packageTypePlaceholder}
-                        >
-                            <Package className='h-4 w-4 shrink-0 text-neutral-500' aria-hidden />
-                            <span
-                                className={cn(
-                                    'min-w-0 flex-1 truncate text-left',
-                                    !packageType && 'text-neutral-500',
-                                )}
-                            >
-                                {packageType || labels.packageTypePlaceholder}
-                            </span>
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className={popCls} align='start'>
-                        <OptionList
-                            options={UMRAH_PACKAGE_TYPES}
-                            selected={packageType}
-                            itemClassName={dropdownItemCls}
-                            onSelect={(value) => {
-                                setPackageType(value)
-                                setOpen(null)
-                            }}
-                        />
-                    </PopoverContent>
-                </Popover>
+                    <FilterDropdown
+                        options={packageTypeOptions}
+                        value={packageType}
+                        onChange={(value) => setPackageType(String(value))}
+                        placeholder={labels.packageTypePlaceholder}
+                        triggerIcon={Package}
+                        theme='slate'
+                        open={open === 'packageType'}
+                        onOpenChange={(isOpen) => setOpen(isOpen ? 'packageType' : null)}
+                        classNames={{
+                            triggerButton: cn(heroTriggerButtonClass, 'xl:border-r xl:border-[#D6D9DC]'),
+                        }}
+                    />
                 </div>
 
                 <div className='min-w-0 w-full xs:col-span-2 xl:col-span-1'>

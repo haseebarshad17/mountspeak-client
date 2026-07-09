@@ -1,7 +1,7 @@
 "use client"
 
+import FilterDropdown from "@/components/generic/FilterDropdown"
 import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils/clsxUtils"
 import { usePakistanCities } from "@/services/cities/cities.queries"
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
@@ -11,83 +11,6 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { DEFAULT_HERO_SEARCH_FILTERS } from '@/components/pages/marketing/home/hero-search.defaults'
 import { useEffect, useMemo, useRef, useState, useTransition, type ChangeEvent } from "react"
-
-type LocationDropdownListProps = {
-    options: string[]
-    selected: string
-    isOpen: boolean
-    searchPlaceholder: string
-    noResultsMessage: string
-    onSelect: (city: string) => void
-    itemClassName: string
-}
-
-function LocationDropdownList({
-    options,
-    selected,
-    isOpen,
-    searchPlaceholder,
-    noResultsMessage,
-    onSelect,
-    itemClassName,
-}: LocationDropdownListProps) {
-    const [query, setQuery] = useState("")
-    const inputRef = useRef<HTMLInputElement>(null)
-
-    useEffect(() => {
-        if (!isOpen) {
-            setQuery("")
-            return
-        }
-        const frame = requestAnimationFrame(() => inputRef.current?.focus())
-        return () => cancelAnimationFrame(frame)
-    }, [isOpen])
-
-    const filteredOptions = useMemo(() => {
-        const normalizedQuery = query.trim().toLowerCase()
-        if (!normalizedQuery) return options
-        return options.filter((city) => city.toLowerCase().includes(normalizedQuery))
-    }, [options, query])
-
-    return (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <div className="sticky top-0 z-10 min-w-0 shrink-0 bg-white pb-2">
-                <div className="relative min-w-0">
-                    <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
-                        onKeyDown={(event) => {
-                            if (event.key === "Enter") event.preventDefault()
-                        }}
-                        placeholder={searchPlaceholder}
-                        className="h-9 w-full min-w-0 rounded-md border border-neutral-200 bg-neutral-50 pl-8 pr-3 text-sm outline-none focus:border-neutral-300 focus:bg-white"
-                    />
-                </div>
-            </div>
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto">
-                {filteredOptions.length === 0 ? (
-                    <p className="truncate px-3 py-2 text-sm text-neutral-500">{noResultsMessage}</p>
-                ) : (
-                    filteredOptions.map((city) => (
-                        <Button
-                            key={city}
-                            type="button"
-                            variant="ghost"
-                            size="max"
-                            className={cn(itemClassName, selected === city && "bg-neutral-100")}
-                            onClick={() => onSelect(city)}
-                        >
-                            <span className="block min-w-0 flex-1 truncate text-left">{city}</span>
-                        </Button>
-                    ))
-                )}
-            </div>
-        </div>
-    )
-}
 
 type DateFieldProps = {
     id: string
@@ -190,6 +113,13 @@ type HeroStandardFiltersProps = {
     tourLocations?: string[]
 }
 
+const heroTriggerButtonClass = cn(
+    "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal",
+    "xs:gap-2.5 xs:px-4 xs:!text-sm",
+    "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
+    "xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full",
+)
+
 export default function HeroStandardFilters({
     page,
     initialValues,
@@ -216,8 +146,13 @@ export default function HeroStandardFilters({
         return [...merged].sort((a, b) => a.localeCompare(b))
     }, [pakistanCities, tourLocations])
 
-    const toOptions = useMemo(
-        () => cityOptions.filter((city) => city !== from),
+    const cityFilterOptions = useMemo(
+        () => cityOptions.map((city) => ({ value: city, label: city })),
+        [cityOptions],
+    )
+
+    const toFilterOptions = useMemo(
+        () => cityOptions.filter((city) => city !== from).map((city) => ({ value: city, label: city })),
         [cityOptions, from],
     )
 
@@ -235,22 +170,6 @@ export default function HeroStandardFilters({
             )
         })
     }
-
-    const triggerCls = cn(
-        "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal",
-        "xs:gap-2.5 xs:px-4 xs:!text-sm",
-        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
-        "xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full",
-    )
-
-    const popCls = cn(
-        "w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] min-w-0",
-        "rounded-xl border border-neutral-200 bg-white p-2 shadow-xl",
-        "flex flex-col overflow-hidden",
-    )
-
-    const dropdownItemCls =
-        "!flex !h-auto !w-full !max-w-full min-w-0 justify-start overflow-hidden rounded-md !px-3 py-2.5 text-left"
 
     const heroSearch = page?.sections.hero.searchFilters ?? DEFAULT_HERO_SEARCH_FILTERS
     const startDateLabel = heroSearch.startDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.startDateLabel
@@ -274,94 +193,59 @@ export default function HeroStandardFilters({
                 )}
             >
                 <div className="min-w-0 w-full">
-                    <Popover open={open === "from"} onOpenChange={(isOpen) => setOpen(isOpen ? "from" : null)}>
-                        <PopoverTrigger asChild>
-                            <Button type="button" variant="ghost" size="max" className={triggerCls}>
-                                <MapPin className="h-4 w-4 shrink-0 text-neutral-500" />
-                                <span
-                                    className={cn(
-                                        'min-w-0 flex-1 truncate text-left',
-                                        !from && 'text-neutral-500',
-                                    )}
-                                >
-                                    {from || heroSearch.fromPlaceholder}
-                                </span>
-                            </Button>
-                        </PopoverTrigger>
-
-                        <PopoverContent className={cn(popCls, "max-h-60")} align="start" collisionPadding={8}>
-                            {isCitiesLoading ? (
-                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
-                            ) : cityOptions.length === 0 ? (
-                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
-                            ) : (
-                                <LocationDropdownList
-                                    options={cityOptions}
-                                    selected={from}
-                                    isOpen={open === "from"}
-                                    searchPlaceholder={
-                                        heroSearch.searchCitiesPlaceholder
-                                        ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
-                                    }
-                                    noResultsMessage={
-                                        heroSearch.noMatchingCities
-                                        ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
-                                    }
-                                    itemClassName={dropdownItemCls}
-                                    onSelect={(city) => {
-                                        setFrom(city)
-                                        if (to === city) setTo("")
-                                        setOpen(null)
-                                    }}
-                                />
-                            )}
-                        </PopoverContent>
-                    </Popover>
+                    {isCitiesLoading ? (
+                        <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
+                            <MapPin className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
+                            <span className="truncate text-neutral-500">{heroSearch.loadingCities}</span>
+                        </div>
+                    ) : cityOptions.length === 0 ? (
+                        <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
+                            <MapPin className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
+                            <span className="truncate text-neutral-500">{heroSearch.noCities}</span>
+                        </div>
+                    ) : (
+                        <FilterDropdown
+                            options={cityFilterOptions}
+                            value={from}
+                            onChange={(value) => {
+                                const nextFrom = String(value)
+                                setFrom(nextFrom)
+                                if (to === nextFrom) setTo("")
+                            }}
+                            placeholder={heroSearch.fromPlaceholder}
+                            triggerIcon={MapPin}
+                            theme="slate"
+                            open={open === "from"}
+                            onOpenChange={(isOpen) => setOpen(isOpen ? "from" : null)}
+                            classNames={{ triggerButton: heroTriggerButtonClass }}
+                        />
+                    )}
                 </div>
 
                 <div className="min-w-0 w-full">
-                    <Popover open={open === "to"} onOpenChange={(isOpen) => setOpen(isOpen ? "to" : null)}>
-                        <PopoverTrigger asChild>
-                            <Button type="button" variant="ghost" size="max" className={triggerCls}>
-                                <Navigation className="h-4 w-4 shrink-0 text-neutral-500" />
-                                <span
-                                    className={cn(
-                                        'min-w-0 flex-1 truncate text-left',
-                                        !to && 'text-neutral-500',
-                                    )}
-                                >
-                                    {to || heroSearch.toPlaceholder}
-                                </span>
-                            </Button>
-                        </PopoverTrigger>
-
-                        <PopoverContent className={cn(popCls, "max-h-60")} align="start" collisionPadding={8}>
-                            {isCitiesLoading ? (
-                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.loadingCities}</p>
-                            ) : toOptions.length === 0 ? (
-                                <p className="truncate px-3 py-2 text-sm text-neutral-500">{heroSearch.noCities}</p>
-                            ) : (
-                                <LocationDropdownList
-                                    options={toOptions}
-                                    selected={to}
-                                    isOpen={open === "to"}
-                                    searchPlaceholder={
-                                        heroSearch.searchCitiesPlaceholder
-                                        ?? DEFAULT_HERO_SEARCH_FILTERS.searchCitiesPlaceholder
-                                    }
-                                    noResultsMessage={
-                                        heroSearch.noMatchingCities
-                                        ?? DEFAULT_HERO_SEARCH_FILTERS.noMatchingCities
-                                    }
-                                    itemClassName={dropdownItemCls}
-                                    onSelect={(city) => {
-                                        setTo(city)
-                                        setOpen(null)
-                                    }}
-                                />
-                            )}
-                        </PopoverContent>
-                    </Popover>
+                    {isCitiesLoading ? (
+                        <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
+                            <Navigation className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
+                            <span className="truncate text-neutral-500">{heroSearch.loadingCities}</span>
+                        </div>
+                    ) : toFilterOptions.length === 0 ? (
+                        <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
+                            <Navigation className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
+                            <span className="truncate text-neutral-500">{heroSearch.noCities}</span>
+                        </div>
+                    ) : (
+                        <FilterDropdown
+                            options={toFilterOptions}
+                            value={to}
+                            onChange={(value) => setTo(String(value))}
+                            placeholder={heroSearch.toPlaceholder}
+                            triggerIcon={Navigation}
+                            theme="slate"
+                            open={open === "to"}
+                            onOpenChange={(isOpen) => setOpen(isOpen ? "to" : null)}
+                            classNames={{ triggerButton: heroTriggerButtonClass }}
+                        />
+                    )}
                 </div>
 
                 <DateField
