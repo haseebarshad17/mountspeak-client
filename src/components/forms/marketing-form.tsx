@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 /** Shared booking / consultation form field shell. */
 export const MARKETING_FORM_CONTROL_CLASS =
-    'box-border h-12 w-full min-w-0 max-w-full rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40 sm:h-[58px] sm:text-base'
+    'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] border-0 bg-white px-4 font-roboto text-sm font-normal leading-6 tracking-normal text-neutral-900 shadow-sm outline-none transition-shadow placeholder:text-neutral-400 focus:ring-2 focus:ring-white/40 sm:text-base'
 
 export const marketingFormInputClass = MARKETING_FORM_CONTROL_CLASS
 

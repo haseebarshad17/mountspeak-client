@@ -84,7 +84,7 @@ export const QuantityStepper = forwardRef<QuantityStepperHandle, QuantityStepper
                 className={cn(
                     'flex items-center justify-between gap-2',
                     isFieldVariant &&
-                        'box-border h-12 w-full min-w-0 max-w-full rounded-[10px] bg-white px-3 font-roboto shadow-sm sm:h-[58px] sm:gap-3 sm:px-4',
+                        'box-border h-11 w-full min-w-0 max-w-full rounded-[10px] bg-white px-3 font-roboto shadow-sm sm:gap-3 sm:px-4',
                     className,
                 )}
             >
