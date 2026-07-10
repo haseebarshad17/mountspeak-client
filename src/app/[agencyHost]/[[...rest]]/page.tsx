@@ -15,6 +15,7 @@ import RegisterPage from '@/app/(auth)/register/page'
 import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 import SearchPage from '@/app/search/page'
 import TermsPage from '@/app/terms/page'
+import PrivacyPage from '@/app/privacy/page'
 import TourDetailPage from '@/app/tours/[slug]/page'
 import BlogDetailRoutePage from '@/app/blogs/[slug]/page'
 import DetailsPage from '@/app/details/page'
@@ -88,6 +89,10 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
 
     if (path === 'terms') {
         return <TermsPage />
+    }
+
+    if (path === 'privacy') {
+        return <PrivacyPage />
     }
 
     if (path === 'dashboard') {

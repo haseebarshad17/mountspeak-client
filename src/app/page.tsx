@@ -17,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export async function generateViewport(): Promise<Viewport> {
+
     const agencyHomepage = await fetchAgencyHomepage()
 
     return {
