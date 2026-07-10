@@ -7,9 +7,9 @@ export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
     return await buildPageMetadata({
-        pageTitle: 'Terms & Privacy Policy',
+        pageTitle: 'Terms & Conditions',
         description:
-            'Read our Terms and Conditions and Privacy Policy before booking your adventure across Pakistan.',
+            'Read our Terms and Conditions before booking your adventure across Pakistan.',
         homepage,
     })
 }

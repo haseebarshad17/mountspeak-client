@@ -122,17 +122,19 @@ const Header = ({ page }: HeaderProps) => {
     const internalPathname = useInternalPathname()
     const router = useRouter()
     const isTermsPage = internalPathname === '/terms' || internalPathname.startsWith('/terms/')
+    const isPrivacyPage = internalPathname === '/privacy' || internalPathname.startsWith('/privacy/')
+    const isLegalPage = isTermsPage || isPrivacyPage
     const isDashboardPage = internalPathname === '/dashboard' || internalPathname.startsWith('/dashboard/')
     const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
     const isBookingPage = internalPathname === '/booking' || internalPathname.startsWith('/booking/')
-    const isCompactHeaderPage = isDashboardPage || isBookingsPage || isBookingPage
-    const useFixedHeader = isTermsPage
+    const isCompactHeaderPage =
+        isDashboardPage || isBookingsPage || isBookingPage || isLegalPage
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(useFixedHeader)
+    const [isScrolled, setIsScrolled] = useState(isLegalPage)
 
     const { header, branding } = page
     const specializationId = useAppSelector(selectHomepageSpecializationId)
@@ -148,10 +150,10 @@ const Header = ({ page }: HeaderProps) => {
     const mobileDrawerLogo = getBrandingLogo(branding, 'onDark', themeUpdatedAt)
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
     const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
-    const useDarkChrome = useFixedHeader || (isCompactHeaderPage && !isScrolled)
+    const useDarkChrome = isCompactHeaderPage && !isScrolled && !isLegalPage
 
     useEffect(() => {
-        if (useFixedHeader) {
+        if (isLegalPage) {
             setIsScrolled(true)
             return
         }
@@ -181,7 +183,7 @@ const Header = ({ page }: HeaderProps) => {
 
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [useFixedHeader])
+    }, [isLegalPage])
 
     useEffect(() => {
         document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -313,25 +315,18 @@ const Header = ({ page }: HeaderProps) => {
             <header
                 className={cn(
                     'pointer-events-auto z-[100] ease duration-300',
-                    useFixedHeader
-                        ? 'fixed top-0 left-0 right-0 w-full border-b'
-                        : isCompactHeaderPage
-                            ? COMPACT_FLOATING_HEADER_POSITION_CLASS
-                            : FLOATING_HEADER_POSITION_CLASS,
-                    useFixedHeader
+                    isCompactHeaderPage
+                        ? COMPACT_FLOATING_HEADER_POSITION_CLASS
+                        : FLOATING_HEADER_POSITION_CLASS,
+                    isScrolled
                         ? [
-                            'border-[#C0C8C9]/60 bg-white shadow-sm',
-                            'py-4',
+                            'border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg',
+                            'xl:py-4 xl:px-10 lg:py-4 lg:px-6 sm:py-3 sm:px-5 py-4 px-4',
                         ]
-                        : isScrolled
-                            ? [
-                                "border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg",
-                                "xl:py-4 xl:px-10 lg:py-4 lg:px-6 sm:py-3 sm:px-5 py-4 px-4"
-                            ]
-                            : 'border border-transparent bg-transparent',
+                        : 'border border-transparent bg-transparent',
                 )}
             >
-                <div className={cn(useFixedHeader ? 'mx-auto w-full max-w-[1182px] px-0 sm:px-[15px]' : '')}>
+                <div>
                     <div className='flex w-full items-center justify-between gap-4'>
                         {/* Logo  */}
                         <Link href='/' className='shrink-0 inline-block'>
