@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { unstable_noStore as noStore } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 
 import { createDefaultAgencyHomepage } from '@/lib/homepage/default-homepage'
 import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
@@ -10,6 +10,8 @@ import { homepageService } from './homepage.service'
 import type { AgencyHomepage } from './homepage.types'
 import { fetchSpecializations } from '@/services/specializations/specializations.server'
 
+const HOMEPAGE_REVALIDATE_SECONDS = 120
+
 async function resolveRequestHost(): Promise<string> {
     try {
         return await getRequestSiteHost()
@@ -19,8 +21,6 @@ async function resolveRequestHost(): Promise<string> {
 }
 
 async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
-    noStore()
-
     try {
         const supabase = createPublicSupabase()
         const api = homepageService({ supabase })
@@ -56,14 +56,25 @@ async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHom
     }
 }
 
+function getCachedAgencyHomepageForHost(requestHost: string): Promise<AgencyHomepage> {
+    return unstable_cache(
+        () => loadAgencyHomepageForHost(requestHost),
+        ['agency-homepage', requestHost],
+        {
+            revalidate: HOMEPAGE_REVALIDATE_SECONDS,
+            tags: [`agency-homepage:${requestHost}`],
+        },
+    )()
+}
+
 export const fetchAgencyHomepage = cache(async (): Promise<AgencyHomepage> => {
     const requestHost = await resolveRequestHost()
-    return loadAgencyHomepageForHost(requestHost)
+    return getCachedAgencyHomepageForHost(requestHost)
 })
 
 /** Explicit host lookup for localhost preview (`?host=` API) and tests. */
 export const fetchAgencyHomepageForHost = cache(
     async (requestHost: string): Promise<AgencyHomepage> => {
-        return loadAgencyHomepageForHost(requestHost.toLowerCase().trim())
+        return getCachedAgencyHomepageForHost(requestHost.toLowerCase().trim())
     },
 )

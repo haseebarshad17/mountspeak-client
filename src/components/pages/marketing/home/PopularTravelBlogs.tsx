@@ -17,6 +17,7 @@ import React from 'react'
 import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 function BlogCard({
     title,

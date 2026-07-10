@@ -160,10 +160,10 @@ const FilterDropdown = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
-                sideOffset={6}
+                sideOffset={4}
                 className={cn(
                     "w-[var(--radix-dropdown-menu-trigger-width)] min-w-[var(--radix-dropdown-menu-trigger-width)] scrollbar-thin",
-                    "max-h-80 overflow-y-auto border border-gray-200 bg-white p-1 text-sm shadow-md select-none",
+                    "max-h-60 overflow-y-auto border border-gray-200 bg-white p-0.5 text-sm shadow-md select-none",
                     classNames?.content
                 )}
             >
@@ -177,39 +177,38 @@ const FilterDropdown = ({
                                 setOpen(false)
                             }}
                             className={cn(
-                                "relative flex cursor-pointer items-center justify-between gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-none select-none",
-                                "mb-0.5 last:mb-0 transition-colors",
+                                "relative flex min-h-8 cursor-pointer items-center justify-between gap-1.5 rounded-sm py-1 pr-7 pl-2 text-sm leading-5 outline-none select-none",
+                                "last:mb-0 transition-colors",
                                 value === opt.value
                                     ? t.selectedItem
                                     : "text-gray-700 hover:bg-gray-50 data-[highlighted]:bg-gray-50"
                             )}
                         >
-                            <p className="flex min-w-0 flex-1 items-center gap-2 truncate">
+                            <p className="flex min-w-0 flex-1 items-center gap-1.5 truncate">
                                 {opt.iconNode ? (
-                                    <span className="flex h-4 w-4 shrink-0 items-center justify-center" aria-hidden>
+                                    <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center" aria-hidden>
                                         {opt.iconNode}
                                     </span>
                                 ) : RowIcon ? (
                                     <RowIcon
                                         className={cn(
-                                            "h-4 w-4 shrink-0",
+                                            "h-3.5 w-3.5 shrink-0",
                                             value === opt.value ? t.selectedIcon : "text-gray-500"
                                         )}
                                         aria-hidden
                                     />
                                 ) : null}
-                                <span className="truncate text-sm font-medium">{opt.label}</span>
+                                <span className="truncate text-sm font-normal leading-5">{opt.label}</span>
                                 {opt.metaLabel ? (
-                                    <span className="ml-1 rounded-full border border-gray-200 bg-gray-50 text-[10px] leading-none py-1
-                                    font-medium tabular-nums text-gray-600 flex items-center justify-center w-max h-max px-1.5 truncate">
+                                    <span className="ml-1 flex h-max w-max items-center justify-center truncate rounded-full border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium leading-none tabular-nums text-gray-600">
                                         {opt.metaLabel}
                                     </span>
                                 ) : null}
                             </p>
 
                             {value === opt.value && (
-                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                                    <Check className="h-4 w-4 shrink-0" strokeWidth={2} />
+                                <span className="absolute right-1.5 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                                 </span>
                             )}
                         </DropdownMenuItem>

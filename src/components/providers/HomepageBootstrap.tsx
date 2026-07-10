@@ -5,14 +5,18 @@ import { usePathname } from 'next/navigation'
 
 import { getAgencyPreviewHostFromPathname } from '@/lib/homepage/agency-preview'
 import { fetchHomepage, resetHomepage } from '@/store/homepage/homepage.slice'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+
+const FOCUS_REFETCH_MS = 120_000
 
 export default function HomepageBootstrap() {
     const dispatch = useAppDispatch()
     const pathname = usePathname()
+    const homepageStatus = useAppSelector((state) => state.homepage.status)
     const previewHost = getAgencyPreviewHostFromPathname(pathname)
     const previewHostKey = previewHost ?? ''
     const lastPreviewHostKey = useRef<string | null>(null)
+    const lastFetchedAt = useRef(0)
 
     useEffect(() => {
         const previewChanged =
@@ -22,13 +26,21 @@ export default function HomepageBootstrap() {
 
         if (previewChanged) {
             dispatch(resetHomepage())
+            lastFetchedAt.current = Date.now()
+            void dispatch(fetchHomepage())
+            return
         }
 
-        void dispatch(fetchHomepage())
-    }, [dispatch, previewHostKey])
+        if (homepageStatus === 'idle') {
+            lastFetchedAt.current = Date.now()
+            void dispatch(fetchHomepage())
+        }
+    }, [dispatch, homepageStatus, previewHostKey])
 
     useEffect(() => {
         const refetchHomepage = () => {
+            if (Date.now() - lastFetchedAt.current < FOCUS_REFETCH_MS) return
+            lastFetchedAt.current = Date.now()
             void dispatch(fetchHomepage())
         }
 

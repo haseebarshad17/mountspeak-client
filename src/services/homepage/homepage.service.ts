@@ -20,19 +20,6 @@ export const homepageService = ({ supabase }: HomepageServiceProps) => {
         ): Promise<AgencySiteThemeRow | null> => {
             const candidates = buildSiteUrlLookupCandidates(requestHost)
 
-            for (const siteUrl of candidates) {
-                const { data, error } = await supabase
-                    .from('agency_site_theme')
-                    .select(agencySiteThemeColumns)
-                    .eq('site_url', siteUrl)
-                    .maybeSingle()
-
-                if (error) throw error
-                if (data) {
-                    return data as AgencySiteThemeRow
-                }
-            }
-
             const { data, error } = await supabase
                 .from('agency_site_theme')
                 .select(agencySiteThemeColumns)

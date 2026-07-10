@@ -1,6 +1,5 @@
 import "@/assests/globals.css";
 import "@/env/client";
-import 'swiper/css'
 
 import type { Metadata, Viewport } from "next";
 import { buildPlatformMetadata } from "@/assests/meta";
@@ -14,8 +13,6 @@ import { getHomepageThemeCssVars } from "@/data/homepage";
 import { getAgencyLayoutMetadata } from "@/lib/homepage/homepage-meta";
 import { getRequestSiteUrl } from "@/lib/homepage/resolve-request-host";
 import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
-
-export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
     const agencyHomepage = await fetchAgencyHomepage()

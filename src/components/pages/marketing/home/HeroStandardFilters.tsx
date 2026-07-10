@@ -289,7 +289,7 @@ export default function HeroStandardFilters({
                             <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
                         ) : (
                             <>
-                                <span className="truncate">{heroSearch.searchButtonLabel}</span>
+                                <span className="truncate">{DEFAULT_HERO_SEARCH_FILTERS.searchButtonLabel}</span>
                                 <Search className="ml-2 h-4 w-4 shrink-0" />
                             </>
                         )}

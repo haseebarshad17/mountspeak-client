@@ -7,10 +7,8 @@ import {
 } from '@/lib/homepage/agency-preview'
 import { fetchAgencyHomepage, fetchAgencyHomepageForHost } from '@/services/homepage/homepage.server'
 
-export const dynamic = 'force-dynamic'
-
-const noStoreHeaders = {
-    'Cache-Control': 'no-store, max-age=0',
+const cacheHeaders = {
+    'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
 }
 
 export async function GET(request: NextRequest) {
@@ -23,9 +21,9 @@ export async function GET(request: NextRequest) {
         isAgencyHostPathSegment(previewHost)
     ) {
         const homepage = await fetchAgencyHomepageForHost(previewHost)
-        return NextResponse.json(homepage, { headers: noStoreHeaders })
+        return NextResponse.json(homepage, { headers: cacheHeaders })
     }
 
     const homepage = await fetchAgencyHomepage()
-    return NextResponse.json(homepage, { headers: noStoreHeaders })
+    return NextResponse.json(homepage, { headers: cacheHeaders })
 }

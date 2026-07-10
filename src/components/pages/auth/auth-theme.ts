@@ -1,5 +1,5 @@
+import { marketingFormFieldClass } from '@/components/forms/marketing-form'
 import {
-    HP_THEME_INPUT_FOCUS_CLASS,
     HP_THEME_LINK_CLASS,
     HP_THEME_TAB_ACTIVE_CLASS,
     HP_THEME_TAB_INACTIVE_CLASS,
@@ -7,15 +7,12 @@ import {
 } from '@/data/homepage'
 import { cn } from '@/lib/utils/clsxUtils'
 
-export const authInputClassName = cn(
-    'w-full border-b bg-transparent px-3 py-2 min-h-[36px] text-sm leading-5 text-[#161b1d] outline-none transition placeholder:text-sm placeholder:text-[#a0a4a8] sm:min-h-[38px]',
-    HP_THEME_INPUT_FOCUS_CLASS,
-)
+export const authInputClassName = cn(marketingFormFieldClass, 'mt-1')
 
-export const authInputBorderClassName = 'border-[#6B7280]'
+export const authPasswordInputClassName = cn(authInputClassName, 'pr-10')
 
 export const authPasswordToggleClassName = cn(
-    'absolute right-1 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] transition',
+    'absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] transition',
     HP_THEME_LINK_CLASS,
 )
 

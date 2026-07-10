@@ -17,7 +17,7 @@ import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { selectHomepageSiteUrl, selectIsAgencySite } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
 import AuthSidePanel from "./AuthSidePanel";
-import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import { authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
@@ -160,7 +160,7 @@ export default function VerifyEmailPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="example@gmail.com"
                     autoComplete="email"
-                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                    className={authInputClassName}
                   />
                 </div>
               ) : null}
