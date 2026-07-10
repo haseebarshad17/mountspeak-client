@@ -7,7 +7,12 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BG_CLASS, HP_THEME_BORDER_CLASS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
-import { selectHomepageIsLoading } from '@/store/homepage/homepage.selectors'
+import { adaptTourCopyForUmrah, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    selectHomepageIsLoading,
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { cn } from '@/lib/utils/clsxUtils'
 
@@ -18,8 +23,11 @@ type DiscoverPageProps = {
 export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps) {
     const pageFromStore = useHomepagePageWithFallback()
     const isLoading = useAppSelector(selectHomepageIsLoading)
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
     const page = pageFromServer ?? pageFromStore
     const backgroundImage = useHeroBackgroundImage()
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
 
     if (isLoading || !page) {
         return (
@@ -39,6 +47,12 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
         )
     }
 
+    const preFooterDescription = adaptTourCopyForUmrah(
+        'Browse published tours or speak with our team for a tailored consultation.',
+        isUmrahSite,
+    )
+    const browseLabel = isUmrahSite ? 'Browse Packages' : 'Browse Tours'
+
     return (
         <>
             <PageHeroBanner
@@ -47,24 +61,17 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                 className='px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:px-5 lg:pt-5 pb-0'
             >
                 <div id='services' className={PAGE_HERO_CONTENT_CLASS}>
-                    <h1
-                        className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'
-                    >
+                    <h1 className='text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl xl:text-[45px]'>
                         {ourServices.title}
                     </h1>
-                    <p
-                        className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'
-                    >
+                    <p className='mx-auto mt-4 max-w-[640px] text-sm leading-6 text-white/90 sm:text-base xl:text-lg'>
                         Explore the full range of travel services we offer — from curated expeditions and
                         custom itineraries to on-ground support across Pakistan.
                     </p>
                 </div>
             </PageHeroBanner>
 
-            <main
-                className='pb-12 pt-8 sm:pb-20 sm:pt-12 lg:pt-16'
-            // style={{ backgroundColor: ourServices.backgroundColor }}
-            >
+            <main className='pb-12 pt-8 sm:pb-20 sm:pt-12 lg:pt-16'>
                 <div className='agency-container'>
                     <header className='mx-auto max-w-2xl text-center'>
                         <h2
@@ -92,10 +99,8 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                             <h2 className='text-2xl font-semibold sm:text-3xl'>
                                 Ready to plan your journey?
                             </h2>
-                            <p
-                                className='mx-auto mt-3 max-w-[560px] text-sm leading-6 text-white/85 sm:text-base'
-                            >
-                                Browse published tours or speak with our team for a tailored consultation.
+                            <p className='mx-auto mt-3 max-w-[560px] text-sm leading-6 text-white/85 sm:text-base'>
+                                {preFooterDescription}
                             </p>
                             <div className='mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row'>
                                 <Button
@@ -106,7 +111,7 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
                                         HP_THEME_TEXT_CLASS,
                                     )}
                                 >
-                                    Browse Tours
+                                    {browseLabel}
                                 </Button>
                                 <Button
                                     href='/contact-us'
