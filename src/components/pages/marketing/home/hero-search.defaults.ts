@@ -9,7 +9,7 @@ export const DEFAULT_HERO_SEARCH_FILTERS: HomepagePage['sections']['hero']['sear
     datePlaceholder: 'Travel dates',
     startDateLabel: 'Start date',
     endDateLabel: 'End date',
-    searchButtonLabel: 'Find trip now',
+    searchButtonLabel: 'Search',
     searchingButtonLabel: 'Searching...',
     loadingCities: 'Loading cities...',
     searchCitiesPlaceholder: 'Search location...',

@@ -107,7 +107,7 @@
           "datePlaceholder": "Travel dates",
           "startDateLabel": "Start date",
           "endDateLabel": "End date",
-          "searchButtonLabel": "Find trip now",
+          "searchButtonLabel": "Search",
           "loadingCities": "Loading cities...",
           "noCities": "No cities available",
           "pickDepartureFirst": "Pick a departure first",

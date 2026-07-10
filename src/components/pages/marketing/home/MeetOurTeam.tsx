@@ -13,6 +13,7 @@ import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 function TeamCard({ name, role, image }: Member) {
     return (

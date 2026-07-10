@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import AuthSidePanel from "./AuthSidePanel";
-import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import { authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="example@gmail.com"
                     autoComplete="email"
-                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                    className={authInputClassName}
                   />
                 </div>
 

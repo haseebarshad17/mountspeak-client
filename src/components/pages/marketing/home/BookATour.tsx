@@ -194,7 +194,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
             aria-labelledby='book-a-tour-heading'
         >
             <div
-                className='absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/75'
+                className='absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/40'
                 aria-hidden
             />
             <div className='agency-container relative z-10 py-10 sm:py-16 lg:py-20 xl:py-24'>

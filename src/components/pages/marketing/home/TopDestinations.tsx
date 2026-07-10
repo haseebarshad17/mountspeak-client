@@ -17,6 +17,7 @@ import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useMemo } from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 type TopDestinationsProps = HomepagePageProps & {
     activeFilter: string

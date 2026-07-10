@@ -3,6 +3,7 @@
 import React from 'react'
 import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 

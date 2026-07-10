@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
-import { authInputBorderClassName, authInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import { authInputClassName, authPasswordInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="••••••••"
                   autoComplete="new-password"
-                  className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                  className={authPasswordInputClassName}
                 />
               </div>
 
@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="••••••••"
                   autoComplete="new-password"
-                  className={cn("mt-1", authInputClassName, "border-[#9aa0a6]")}
+                  className={authPasswordInputClassName}
                 />
               </div>
 

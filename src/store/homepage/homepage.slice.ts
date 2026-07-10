@@ -32,7 +32,6 @@ export const fetchHomepage = createAsyncThunk<AgencyHomepage, void, { rejectValu
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: { Accept: 'application/json' },
-                cache: 'no-store',
             })
 
             if (!response.ok) {

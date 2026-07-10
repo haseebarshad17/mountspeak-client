@@ -27,6 +27,7 @@ import {
   accountCardClassName,
   accountFieldInputClassName,
   accountFieldLabelClassName,
+  accountFormFieldsGridClassName,
   accountPageHeadingClassName,
   accountPageIntroClassName,
 } from "./account-ui"
@@ -247,7 +248,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:mt-8 md:grid-cols-2 md:gap-x-10 md:gap-y-8">
+          <div className={cn('mt-5 sm:mt-6', accountFormFieldsGridClassName)}>
             <div>
               <p className={accountFieldLabelClassName}>
                 Full Name
@@ -313,7 +314,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-center sm:mt-10 md:justify-end">
+          <div className="mt-6 flex justify-center md:justify-end">
             <Button
               type="button"
               onClick={handleSave}

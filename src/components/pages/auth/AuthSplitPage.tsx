@@ -21,7 +21,7 @@ import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { getTourOrPackageCopy, usesHajjUmrahBanner } from "@/lib/homepage/specialization";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
-import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/homepage";
+import { HP_THEME_OUTLINE_BTN_CLASS } from "@/data/homepage";
 import { cn } from "@/lib/utils/clsxUtils";
 import { supabase } from "@/lib/supabase/supabase.client";
 import { buildAuthCallbackUrl, getAuthSiteUrl, normalizeAuthRedirectPath } from "@/lib/utils/site-url";
@@ -39,13 +39,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import AuthSidePanel from "./AuthSidePanel";
 import {
-  authInputBorderClassName,
   authInputClassName,
   authFormContentClassName,
   authFormPanelClassName,
   authFormPanelInnerClassName,
   authPageSectionClassName,
   authPageShellClassName,
+  authPasswordInputClassName,
   authPasswordToggleClassName,
   HP_THEME_LINK_CLASS,
   HP_THEME_TAB_ACTIVE_CLASS,
@@ -64,7 +64,6 @@ type PasswordFieldProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  borderClassName?: string;
 };
 
 function PasswordField({
@@ -72,7 +71,6 @@ function PasswordField({
   value,
   onChange,
   placeholder = "••••••••",
-  borderClassName = "border-[#6B7280]",
 }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
 
@@ -84,11 +82,7 @@ function PasswordField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className={cn(
-          "min-h-[36px] w-full border-b bg-transparent px-3 py-2 pr-10 text-sm leading-5 text-[#161b1d] outline-none transition placeholder:text-sm placeholder:text-[#a0a4a8] sm:min-h-[38px]",
-          borderClassName,
-          HP_THEME_INPUT_FOCUS_CLASS,
-        )}
+        className={authPasswordInputClassName}
       />
       <button
         type="button"
@@ -407,7 +401,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                       value={fullName}
                       onChange={(event) => setFullName(event.target.value)}
                       placeholder="Full Name"
-                      className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                      className={authInputClassName}
                     />
                   </div>
                 ) : null}
@@ -425,7 +419,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="example@gmail.com"
-                    className={cn("mt-1", authInputClassName, authInputBorderClassName)}
+                    className={authInputClassName}
                   />
                 </div>
 
@@ -455,7 +449,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
                       id="auth-confirm-password"
                       value={confirmPassword}
                       onChange={setConfirmPassword}
-                      borderClassName="border-[#9aa0a6]"
                     />
                   </div>
                 ) : null}
