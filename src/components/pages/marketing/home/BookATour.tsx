@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -66,6 +66,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const listingCopy = getTourOrPackageCopy(isUmrahSite)
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
@@ -247,7 +248,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             className={cn('mt-8 sm:mt-10 text-white')}
                             href={section.cta.href ?? '/search'}
                         >
-                            {section.cta.label} <ArrowRight className='h-4 w-4 shrink-0 mt-0.5' aria-hidden />
+                            {listingCopy.viewAllLabel} <ArrowRight className='h-4 w-4 shrink-0 mt-0.5' aria-hidden />
                         </Button>
                     </div>
 

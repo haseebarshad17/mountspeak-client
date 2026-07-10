@@ -186,9 +186,9 @@ export const clientFooterContent = {
         address: 'Islamabad, Pakistan',
     },
     legalLinks: [
-        { label: 'Privacy Policy', href: '#' },
-        { label: 'Terms of Service', href: '#' },
-        { label: 'Cookie Policy', href: '#' },
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms of Service', href: '/terms' },
+        { label: 'Cookie Policy', href: '/privacy' },
     ] as ClientFooterLinkItem[],
     copyright: '© 2026 Tenta. All rights reserved.',
 }

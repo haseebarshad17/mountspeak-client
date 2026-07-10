@@ -25,7 +25,7 @@ export const STATIC_HEADER: Header = {
 }
 
 const STATIC_LEGAL_LINKS = [
-    { label: 'Privacy Policy', href: '/terms#data-protection' },
+    { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
 ] as const
 

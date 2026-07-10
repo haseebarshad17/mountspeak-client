@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button'
 import { PageHeroBanner, PAGE_HERO_CONTENT_CLASS } from '@/components/ui/page-hero-banner'
 import {
     HP_THEME_BG_CLASS,
-    HP_THEME_BORDER_CLASS,
     HP_THEME_TEXT_CLASS,
 } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Compass, MapPin, ShieldCheck, Users } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import {
     aboutHero,
     aboutMission,
@@ -20,8 +20,11 @@ import {
 
 const valueIcons = [Compass, ShieldCheck, MapPin, Users] as const
 
-const aboutCardClassName =
-    'rounded-xl border border-[#C0C8C9] bg-white'
+const aboutCardClassName = 'rounded-xl border bg-white'
+
+const aboutThemeBorderStyle: CSSProperties = {
+    borderColor: 'color-mix(in srgb, var(--hp-color-primary) 35%, white)',
+}
 
 export default function AboutUsPage() {
     const backgroundImage = useHeroBackgroundImage()
@@ -69,6 +72,7 @@ export default function AboutUsPage() {
                                 <div
                                     key={stat.label}
                                     className={cn(aboutCardClassName, 'px-6 py-8 text-center')}
+                                    style={aboutThemeBorderStyle}
                                 >
                                     <p
                                         className={cn('text-3xl font-semibold sm:text-4xl', HP_THEME_TEXT_CLASS)}
@@ -100,6 +104,7 @@ export default function AboutUsPage() {
                                     <article
                                         key={value.title}
                                         className={cn(aboutCardClassName, 'p-6 sm:p-8')}
+                                        style={aboutThemeBorderStyle}
                                     >
                                         <div className='flex items-center gap-3'>
                                             <Icon
@@ -124,7 +129,10 @@ export default function AboutUsPage() {
                     </section>
 
                     <section className='mx-auto max-w-[820px] px-0'>
-                        <div className={cn(aboutCardClassName, 'px-6 py-10 sm:px-10 sm:py-12')}>
+                        <div
+                            className={cn(aboutCardClassName, 'px-6 py-10 sm:px-10 sm:py-12')}
+                            style={aboutThemeBorderStyle}
+                        >
                         <h2
                             className='text-center text-[32px] font-medium leading-tight text-[#14141F] sm:text-[40px]'
                         >
@@ -144,7 +152,10 @@ export default function AboutUsPage() {
                     </section>
 
                     <section className='mx-auto max-w-[820px] px-0'>
-                        <div className={cn('rounded-xl border px-6 py-12 text-center text-white sm:px-10 sm:py-14', HP_THEME_BORDER_CLASS, HP_THEME_BG_CLASS)}>
+                        <div
+                            className={cn('rounded-xl border px-6 py-12 text-center text-white sm:px-10 sm:py-14', HP_THEME_BG_CLASS)}
+                            style={aboutThemeBorderStyle}
+                        >
                             <h2
                                 className='text-2xl font-semibold sm:text-3xl'
                             >
