@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
-import { authInputClassName, authPasswordInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import { authPasswordInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -50,78 +50,78 @@ export default function ResetPasswordPage() {
 
         <div className={authFormPanelClassName}>
           <div className={authFormPanelInnerClassName}>
-          <div className={authFormContentClassName}>
-            <h1
-              className="mb-3 text-5xl font-semibold leading-[56px] tracking-[-0.02em] text-[#1A1C1E]"
-            >
-              Set new password.
-            </h1>
-            <p
-              className="mb-[40px] text-[16px] leading-6 text-[#1A1C1E]"
-            >
-              Choose a strong password for your Pakistan Travel account.
-            </p>
-
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="reset-password"
-                  className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                >
-                  New Password
-                </label>
-                <input
-                  id="reset-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  className={authPasswordInputClassName}
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="reset-confirm-password"
-                  className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  id="reset-confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  className={authPasswordInputClassName}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                loading={isPending}
-                loadingText="Updating..."
-                className="mt-10 w-full"
+            <div className={authFormContentClassName}>
+              <h1
+                className="mb-3 text-5xl font-semibold leading-[56px] tracking-[-0.02em] text-[#1A1C1E]"
               >
-                Update Password
-              </Button>
-            </form>
+                Set new password.
+              </h1>
+              <p
+                className="mb-[40px] text-[16px] leading-6 text-[#1A1C1E]"
+              >
+                Choose a strong password for your Pakistan Travel account.
+              </p>
 
-            <Link
-              href={loginPath}
-              className={cn("mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px]", HP_THEME_LINK_CLASS)}
-            >
-              ← Back to Sign In
-            </Link>
+              <form onSubmit={onSubmit} className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="reset-password"
+                    className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    id="reset-password"
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    className={authPasswordInputClassName}
+                  />
+                </div>
 
-            <p
-              className="mt-10 pb-4 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
-            >
-              © {new Date().getFullYear()} Pakistan Travel Systems
-            </p>
-          </div>
+                <div>
+                  <label
+                    htmlFor="reset-confirm-password"
+                    className="block text-xs font-bold uppercase tracking-[1.2px] text-[#2f3640]"
+                  >
+                    Confirm Password
+                  </label>
+                  <input
+                    id="reset-confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    className={authPasswordInputClassName}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  loading={isPending}
+                  loadingText="Updating..."
+                  className="mt-10 w-full"
+                >
+                  Update Password
+                </Button>
+              </form>
+
+              <Link
+                href={loginPath}
+                className={cn("mt-10 inline-block text-xs font-semibold uppercase tracking-[0.6px]", HP_THEME_LINK_CLASS)}
+              >
+                ← Back to Sign In
+              </Link>
+
+              <p
+                className="mt-10 pb-4 text-center text-xs font-semibold uppercase leading-[19.5px] tracking-[1.2px] text-[#1A1C1E]"
+              >
+                © {new Date().getFullYear()} Pakistan Travel Systems
+              </p>
+            </div>
           </div>
         </div>
       </div>
