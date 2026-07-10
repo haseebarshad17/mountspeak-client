@@ -48,7 +48,7 @@ export default function SearchPage({
         ? {
               title: 'Find your Umrah package',
               description:
-                  'Select package duration, number of passengers, and package type to browse available Umrah tours.',
+                  'Select package duration, number of passengers, and package type to browse available Umrah packages.',
           }
         : {
               title: 'Find your trip',

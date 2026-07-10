@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import React from 'react'
+import React, { FormEvent, useState } from 'react'
+import { toast } from 'sonner'
 
 import { SocialIconLinks } from '@/components/layout/marketing/SocialIconLink'
+import { Button } from '@/components/ui/button'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import type { HomepagePage } from '@/data/homepage'
 import { STATIC_UI_COLORS } from '@/data/homepage'
@@ -82,6 +84,78 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
     )
 }
 
+function FooterNewsletter() {
+    const [email, setEmail] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        const trimmed = email.trim()
+        if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+            toast.error('Please enter a valid email address.')
+            return
+        }
+
+        setIsSubmitting(true)
+        window.setTimeout(() => {
+            toast.success('Thanks for subscribing to our newsletter.')
+            setEmail('')
+            setIsSubmitting(false)
+        }, 400)
+    }
+
+    return (
+        <div className='w-full max-w-md'>
+            <h3 className='text-base font-semibold text-white sm:text-lg'>Newsletter</h3>
+            <p className='mt-2 text-sm leading-relaxed text-white/80 sm:text-[15px]'>
+                Get travel tips, new packages, and exclusive offers in your inbox.
+            </p>
+
+            <form
+                onSubmit={handleSubmit}
+                className='mt-4 flex w-full items-center gap-2 sm:mt-5 sm:gap-2.5'
+                noValidate
+            >
+                <label className='sr-only' htmlFor='footer-newsletter-email'>
+                    Email address
+                </label>
+                <input
+                    id='footer-newsletter-email'
+                    type='email'
+                    name='email'
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder='Enter your email'
+                    autoComplete='email'
+                    required
+                    className={cn(
+                        'h-11 w-full min-w-0 flex-1 rounded-full border border-white/25 bg-transparent px-4',
+                        'text-sm text-white placeholder:text-white/55 outline-none',
+                        'transition-[border-color,background-color,box-shadow] duration-200',
+                        'hover:border-white/40',
+                        'focus:border-white/50 focus:bg-white/5 focus:ring-2 focus:ring-white/15',
+                    )}
+                />
+                <Button
+                    type='submit'
+                    variant='default'
+                    size='sm'
+                    loading={isSubmitting}
+                    loadingText='...'
+                    className={cn(
+                        'h-11 shrink-0 rounded-full border-0 px-5 !normal-case !tracking-normal',
+                        'bg-white text-[var(--hp-color-primary)] hover:bg-white/90',
+                        'focus-visible:bg-white/90',
+                    )}
+                >
+                    Subscribe
+                </Button>
+            </form>
+        </div>
+    )
+}
+
 const Footer = ({ page }: FooterProps) => {
     const { footer, branding, sections, seo } = page
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
@@ -119,7 +193,7 @@ const Footer = ({ page }: FooterProps) => {
                                         fetchPriority='high'
                                         quality={100}
                                         unoptimized
-                                        className='max-w-[212px] max-h-[88px] w-auto'
+                                        className='max-h-[88px] w-auto max-w-[212px]'
                                     />
                                 </Link>
 
@@ -129,7 +203,7 @@ const Footer = ({ page }: FooterProps) => {
                                     </p>
                                 ) : null}
 
-                                <SocialIconLinks links={socialLinks} className="gap-3" />
+                                <SocialIconLinks links={socialLinks} className='gap-3' />
                             </div>
 
                             <div className='grid grid-cols-2 gap-8 sm:gap-10 lg:justify-items-end lg:gap-12 xl:gap-16'>
@@ -137,6 +211,10 @@ const Footer = ({ page }: FooterProps) => {
                                     <FooterNavColumn key={column.title} column={column} />
                                 ))}
                             </div>
+                        </div>
+
+                        <div className='mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10 lg:mt-14'>
+                            <FooterNewsletter />
                         </div>
                     </div>
 

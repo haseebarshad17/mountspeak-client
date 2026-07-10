@@ -32,6 +32,25 @@ export function usesHajjUmrahBanner(
     return isHajjUmrahSpecializationName(match.name)
 }
 
+/** On Hajj/Umrah sites, replace tour wording with package wording. */
+export function adaptTourCopyForUmrah(text: string, isUmrahSite: boolean): string {
+    if (!isUmrahSite || !text) return text
+
+    return text
+        // Avoid "tour packages" → "package packages"
+        .replace(/\bTour packages\b/g, 'Packages')
+        .replace(/\btour packages\b/g, 'packages')
+        .replace(/\bTour Packages\b/g, 'Packages')
+        .replace(/\bTOUR PACKAGES\b/g, 'PACKAGES')
+        .replace(/\bTour package\b/g, 'Package')
+        .replace(/\btour package\b/g, 'package')
+        .replace(/\bTour Package\b/g, 'Package')
+        .replace(/\bTours\b/g, 'Packages')
+        .replace(/\btours\b/g, 'packages')
+        .replace(/\bTour\b/g, 'Package')
+        .replace(/\btour\b/g, 'package')
+}
+
 export function getTourOrPackageCopy(isUmrahSite: boolean) {
     if (isUmrahSite) {
         return {

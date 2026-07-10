@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
-import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { adaptTourCopyForUmrah, getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -67,6 +67,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const listingCopy = getTourOrPackageCopy(isUmrahSite)
+    const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
+    const bookTitle = adaptTourCopyForUmrah(section.title, isUmrahSite)
+    const bookParagraphs = section.paragraphs.map((paragraph) =>
+        adaptTourCopyForUmrah(paragraph, isUmrahSite),
+    )
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
@@ -206,7 +211,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 className='text-[20px] leading-6 font-semibold uppercase tracking-[0.2em]'
                                 style={{ color: colors.textOnDark, fontFamily: 'var(--hp-font-body)' }}
                             >
-                                {section.eyebrow}
+                                {bookEyebrow}
                             </span>
                             <span className='h-px w-10 bg-white/80 sm:w-12' aria-hidden />
                         </div>
@@ -215,30 +220,30 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             className='agency-section-heading pt-4 text-[32px] font-medium leading-tight sm:text-[36px] sm:leading-[42px] lg:text-[40px] lg:leading-[48px]'
                             style={{ color: colors.titleOnDark, fontFamily: 'var(--hp-font-heading)' }}
                         >
-                            {section.title}
+                            {bookTitle}
                         </h2>
 
                         <p
                             className='pt-5 text-base font-normal leading-6 sm:text-base sm:leading-6'
                             style={{ color: colors.textOnDarkMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
-                            {section.paragraphs[0]}
+                            {bookParagraphs[0]}
                         </p>
 
                         <p
                             className='pt-7 text-base font-normal leading-6 sm:text-base sm:leading-6'
                             style={{ color: colors.textOnDarkMuted, fontFamily: 'var(--hp-font-body)' }}
                         >
-                            {section.paragraphs[1].includes(section.promoHighlight) ? (
+                            {bookParagraphs[1].includes(section.promoHighlight) ? (
                                 <>
-                                    {section.paragraphs[1].split(section.promoHighlight)[0]}
+                                    {bookParagraphs[1].split(section.promoHighlight)[0]}
                                     <span className='font-semibold' style={{ color: colors.accent }}>
                                         {section.promoHighlight}
                                     </span>
-                                    {section.paragraphs[1].split(section.promoHighlight)[1]}
+                                    {bookParagraphs[1].split(section.promoHighlight)[1]}
                                 </>
                             ) : (
-                                section.paragraphs[1]
+                                bookParagraphs[1]
                             )}
                         </p>
 
@@ -438,6 +443,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 variant='default'
                                 loading={isPending}
                                 loadingText={formCopy.submittingLabel}
+                                shouldScale
                                 style={HP_THEME_BTN_STYLE}
                                 className={cn('w-full', HP_THEME_BTN_CLASS)}
                             >

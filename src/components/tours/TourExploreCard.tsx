@@ -67,7 +67,7 @@ export function TourExploreCard({
     return (
         <Link
             href={detailPath}
-            aria-label={`View tour: ${title}`}
+            aria-label={`View ${bookLabel.toLowerCase().includes('package') ? 'package' : 'tour'}: ${title}`}
             className={cn(
                 'group relative mx-auto flex h-full w-full max-w-[416px] flex-col overflow-hidden',
                 'rounded-xl border border-[#E3E8EA] bg-white',
