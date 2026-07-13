@@ -26,7 +26,7 @@ export async function updateSession(request: NextRequest, options: UpdateSession
     const browserPathname = browserRequest?.nextUrl.pathname ?? request.nextUrl.pathname
     const browserSearch = browserRequest?.nextUrl.search ?? request.nextUrl.search
     const pathname = stripAgencyPreviewBase(request.nextUrl.pathname)
-    const protectedPaths = ['/dashboard', '/bookings', '/booking']
+    const protectedPaths = ['/dashboard', '/bookings', '/saved-tours']
     const guestOnlyPaths = ['/login', '/register']
     const isProtectedPath = protectedPaths.some(
         (path) => pathname === path || pathname.startsWith(`${path}/`),

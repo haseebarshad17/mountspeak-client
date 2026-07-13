@@ -12,4 +12,6 @@ export type TourPage = Omit<BaseTourPage, 'heroSection'> & {
     heroSection: Omit<BaseTourPage['heroSection'], 'ctaGroup'> & {
         ctaGroup: TourHeroCta[]
     }
+    /** True when tour start date is today or earlier — book CTAs should be disabled. */
+    isBookingClosed?: boolean
 }

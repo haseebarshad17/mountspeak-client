@@ -12,7 +12,7 @@ type TourFloatingBookBarProps = {
 }
 
 export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
-    const { finalCtaSection, theme } = page
+    const { finalCtaSection, theme, isBookingClosed } = page
     const primaryButton = finalCtaSection.buttons.find((btn) => btn.style === 'primary')
     const [isFooterVisible, setIsFooterVisible] = useState(false)
 
@@ -49,22 +49,24 @@ export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
                     ? 'translate-y-[calc(100%+1rem)] opacity-0'
                     : 'translate-y-0 opacity-100',
             )}
-            aria-label="Book this tour"
+            aria-label={isBookingClosed ? 'Booking closed for this tour' : 'Book this tour'}
             aria-hidden={isFooterVisible}
         >
             <Button
-                href={primaryButton.url}
+                href={isBookingClosed ? undefined : primaryButton.url}
+                disabled={isBookingClosed === true}
                 variant="default"
                 className={cn(
                     'pointer-events-auto h-11 rounded-full px-12 text-xs shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
                     isFooterVisible && 'pointer-events-none',
+                    isBookingClosed && 'opacity-60 shadow-none',
                 )}
                 style={{
                     backgroundColor: theme.secondaryColor,
                     borderColor: theme.secondaryColor,
                 }}
             >
-                {primaryButton.label}
+                {isBookingClosed ? 'Booking Closed' : primaryButton.label}
             </Button>
         </div>
     )

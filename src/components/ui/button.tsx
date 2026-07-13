@@ -128,9 +128,10 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     const internalPathname = useInternalPathname()
     const resolvedHref = usePrefixedHref(href)
     const isDisabled = Boolean(disabled || loading)
+    const effectiveHref = isDisabled ? undefined : resolvedHref
 
     const Component: React.ElementType =
-        resolvedHref ? Link : component ?? (asChild ? "div" : "button");
+        effectiveHref ? Link : component ?? (asChild ? "div" : "button");
     const onMouseDown = props.onMouseDown as React.MouseEventHandler<Element> | undefined;
     const onMouseUp = props.onMouseUp as React.MouseEventHandler<Element> | undefined;
 
@@ -176,8 +177,12 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
     };
 
     const handleClick = (e: React.MouseEvent<Element>) => {
+        if (isDisabled) {
+            e.preventDefault()
+            return
+        }
         ;(userOnClick as React.MouseEventHandler<Element> | undefined)?.(e)
-        if (!resolvedHref || e.defaultPrevented) return
+        if (!effectiveHref || e.defaultPrevented) return
         if (
             e.metaKey ||
             e.ctrlKey ||
@@ -190,7 +195,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
 
         if (isBookingRoute(internalPathname)) {
             e.preventDefault()
-            window.location.assign(resolvedHref)
+            window.location.assign(effectiveHref)
         }
     }
 
@@ -209,8 +214,9 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
             )}
 
             {...props}
-            href={resolvedHref}
+            href={effectiveHref}
             disabled={isDisabled}
+            aria-disabled={isDisabled || undefined}
             aria-busy={loading || undefined}
             onClick={handleClick}
 

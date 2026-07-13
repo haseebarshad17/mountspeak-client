@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookMarked, Compass, UserRound } from "lucide-react";
+import { BookMarked, Compass, Heart, UserRound } from "lucide-react";
 import { useInternalPathname, usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { useTourOrPackageCopy } from "@/hooks/useTourOrPackageCopy";
 import { cn } from "@/lib/utils/clsxUtils";
@@ -40,13 +40,16 @@ export function AccountNavLinks({
   drawerTone = "dark",
 }: AccountNavLinksProps) {
   const internalPathname = useInternalPathname();
-  const { copy } = useTourOrPackageCopy();
+  const { copy, isUmrahSite } = useTourOrPackageCopy();
   const dashboardPath = usePreviewPath("/dashboard");
   const bookingsPath = usePreviewPath("/bookings");
+  const savedToursPath = usePreviewPath("/saved-tours");
   const toursPath = usePreviewPath("/search");
   const isProfileActive = internalPathname.startsWith("/dashboard");
   const isBookingsActive = internalPathname.startsWith("/bookings");
+  const isSavedToursActive = internalPathname.startsWith("/saved-tours");
   const isToursActive = internalPathname === "/search" || internalPathname.startsWith("/search/");
+  const savedToursLabel = isUmrahSite ? "Saved Packages" : "Saved Tours";
   const linkClassName =
     variant === "drawer"
       ? (isActive: boolean) => drawerLinkClassName(isActive, drawerTone)
@@ -91,6 +94,20 @@ export function AccountNavLinks({
           />
           <span>Bookings</span>
         </Link>
+        <Link
+          href={savedToursPath}
+          onClick={onNavigate}
+          className={linkClassName(isSavedToursActive)}
+        >
+          <Heart
+            className={cn(
+              "h-4 w-4 shrink-0",
+              drawerTone === "light" ? "text-neutral-600" : "text-white/90",
+            )}
+            aria-hidden
+          />
+          <span>{savedToursLabel}</span>
+        </Link>
       </div>
     );
   }
@@ -108,6 +125,12 @@ export function AccountNavLinks({
           <BookMarked className="h-4 w-4 text-[#4b5964]" />
         </span>
         <span className="text-base font-normal">Bookings</span>
+      </Link>
+      <Link href={savedToursPath} onClick={onNavigate} className={linkClassName(isSavedToursActive)}>
+        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center">
+          <Heart className="h-4 w-4 text-[#4b5964]" />
+        </span>
+        <span className="text-base font-normal">{savedToursLabel}</span>
       </Link>
       <Link href={toursPath} onClick={onNavigate} className={linkClassName(isToursActive)}>
         <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center">

@@ -1,9 +1,6 @@
 import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
 
-import AuthSplitPage from '@/components/pages/auth/AuthSplitPage'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
-import { redirectIfAuthenticated } from '@/lib/auth/redirect-if-authenticated'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import type { Metadata } from 'next'
 
@@ -34,18 +31,7 @@ function buildLoginRedirectPath(
 }
 
 export default async function Page({ searchParams }: RegisterPageProps) {
-    const homepage = await fetchAgencyHomepage()
     const resolvedSearchParams = await searchParams
 
-    if (homepage.isAgencySite) {
-        redirect(buildLoginRedirectPath(resolvedSearchParams))
-    }
-
-    await redirectIfAuthenticated()
-
-    return (
-        <Suspense fallback={<div className='min-h-dvh bg-white' aria-hidden />}>
-            <AuthSplitPage mode='register' />
-        </Suspense>
-    )
+    redirect(buildLoginRedirectPath(resolvedSearchParams))
 }

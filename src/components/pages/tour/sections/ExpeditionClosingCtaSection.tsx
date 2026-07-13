@@ -26,6 +26,7 @@ export function ExpeditionClosingCtaSection({ page }: ExpeditionClosingCtaSectio
                     buttons={finalCtaSection.buttons}
                     theme={theme}
                     className="mt-10 items-center justify-center"
+                    bookingClosed={page.isBookingClosed === true}
                 />
             </div>
         </section>

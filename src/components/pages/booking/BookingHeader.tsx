@@ -12,7 +12,6 @@ import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
     selectHomepageAgencyId,
     selectHomepageThemeUpdatedAt,
-    selectIsAgencySite,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { trackLogoutEvent } from '@/services/events/events.service'
@@ -41,7 +40,6 @@ export function BookingHeader() {
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
-    const isAgencySite = useAppSelector(selectIsAgencySite)
     const agencyId = useAppSelector(selectHomepageAgencyId)
     const isLoggedIn = !!currentUser
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -214,16 +212,6 @@ export function BookingHeader() {
                                     >
                                         {header.auth?.login?.label ?? 'Login'}
                                     </Button>
-                                    {!isAgencySite ? (
-                                        <Button
-                                            variant='secondary'
-                                            className='!w-full rounded-md'
-                                            href={header.auth?.signUp?.href ?? '/register'}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            {header.auth?.signUp?.label ?? 'Sign Up'}
-                                        </Button>
-                                    ) : null}
                                 </div>
                             )}
                         </div>

@@ -10,6 +10,8 @@ type ExpeditionCtaButtonsProps = {
     theme: TourPage['theme']
     className?: string
     buttonClassName?: string
+    /** Disables primary booking CTAs (past start date). */
+    bookingClosed?: boolean
 }
 
 export function ExpeditionCtaButtons({
@@ -17,6 +19,7 @@ export function ExpeditionCtaButtons({
     theme,
     className,
     buttonClassName,
+    bookingClosed = false,
 }: ExpeditionCtaButtonsProps) {
     if (buttons.length === 0) return null
 
@@ -24,15 +27,18 @@ export function ExpeditionCtaButtons({
         <div className={cn('flex flex-wrap gap-4', className)}>
             {buttons.map((btn) => {
                 const isPrimary = btn.style === 'primary'
+                const isDisabledBooking = isPrimary && bookingClosed
 
                 return (
                     <Button
                         key={btn.label}
-                        href={btn.url}
+                        href={isDisabledBooking ? undefined : btn.url}
+                        disabled={isDisabledBooking}
                         variant={isPrimary ? 'default' : 'outline'}
                         className={cn(
                             'w-full sm:max-w-[257px]',
                             !isPrimary && 'border-[#737879] text-neutral-900 hover:bg-neutral-50',
+                            isDisabledBooking && 'opacity-60',
                             buttonClassName,
                         )}
                         style={
@@ -44,7 +50,7 @@ export function ExpeditionCtaButtons({
                                 : undefined
                         }
                     >
-                        {btn.label}
+                        {isDisabledBooking ? 'Booking Closed' : btn.label}
                     </Button>
                 )
             })}
