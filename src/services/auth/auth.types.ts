@@ -21,12 +21,6 @@ export type ForgotPasswordDTO = {
     redirectTo: string
 }
 
-// Resend verification email DTO
-export type ResendVerificationDTO = {
-    email: string
-    emailRedirectTo: string
-}
-
 // Reset password DTO
 export type ResetPasswordDTO = {
     password: string
@@ -37,6 +31,14 @@ export type ResetPasswordDTO = {
 export type GoogleLoginDTO = {
     redirectTo: string
     agency_id?: string
+}
+
+// Magic link DTO (agency customer sites)
+export type MagicLinkDTO = {
+    email: string
+    emailRedirectTo: string
+    agency_id?: string
+    agency_site_url?: string
 }
 
 // Signup DTO

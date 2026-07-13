@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata, Viewport } from 'next'
 
 import AboutUsPage from '@/app/about-us/page'
@@ -8,18 +8,14 @@ import ContactUsPage from '@/app/contact-us/page'
 import DashboardPage from '@/app/dashboard/page'
 import DiscoverPage from '@/app/discover/page'
 import FaqPage from '@/app/faq/page'
-import ForgotPasswordPage from '@/app/(auth)/forgot-password/page'
 import HomePage from '@/app/page'
 import LoginPage from '@/app/(auth)/login/page'
-import RegisterPage from '@/app/(auth)/register/page'
-import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 import SearchPage from '@/app/search/page'
 import TermsPage from '@/app/terms/page'
 import PrivacyPage from '@/app/privacy/page'
 import TourDetailPage from '@/app/tours/[slug]/page'
 import BlogDetailRoutePage from '@/app/blogs/[slug]/page'
 import DetailsPage from '@/app/details/page'
-import VerifyEmailPage from '@/app/(auth)/verify-email/page'
 import DashboardShell from '@/components/pages/dashboard/DashboardShell'
 import { buildPlatformMetadata } from '@/assests/meta'
 import { isAgencyHostPathSegment } from '@/lib/homepage/agency-preview'
@@ -55,6 +51,7 @@ export async function generateViewport(): Promise<Viewport> {
 
 export default async function AgencyPreviewPage({ params, searchParams }: AgencyPreviewPageProps) {
     const agencyHost = params.agencyHost.toLowerCase()
+    const resolvedSearchParams = await searchParams
 
     if (!isAgencyHostPathSegment(agencyHost)) {
         notFound()
@@ -62,6 +59,15 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
 
     const rest = params.rest ?? []
     const path = rest.join('/')
+
+    const redirectAgencyAuthToLogin = () => {
+        const next = resolvedSearchParams.next
+        const query =
+            typeof next === 'string' && next.startsWith('/')
+                ? `?next=${encodeURIComponent(next)}`
+                : ''
+        redirect(`/${agencyHost}/login${query}`)
+    }
 
     if (rest.length === 0) {
         return <HomePage />
@@ -120,19 +126,11 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
     }
 
     if (path === 'register') {
-        return <RegisterPage />
+        redirectAgencyAuthToLogin()
     }
 
-    if (path === 'forgot-password') {
-        return <ForgotPasswordPage />
-    }
-
-    if (path === 'reset-password') {
-        return <ResetPasswordPage />
-    }
-
-    if (path === 'verify-email') {
-        return <VerifyEmailPage />
+    if (path === 'forgot-password' || path === 'reset-password' || path === 'verify-email') {
+        redirectAgencyAuthToLogin()
     }
 
     if (rest[0] === 'tours' && rest[1]) {

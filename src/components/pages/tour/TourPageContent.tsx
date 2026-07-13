@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect } from 'react'
 
 import type { TourPage } from './sections/tour-page.types'
 import { DayByDayItinerarySection } from './sections/DayByDayItinerarySection'
@@ -11,6 +13,8 @@ import { TechnicalRouteBreakdownSection } from './sections/TechnicalRouteBreakdo
 import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
 import { TourFloatingBookBar } from './sections/TourFloatingBookBar'
+import { getOrCreateEventSessionId } from '@/services/events/events.session'
+import { useTrackEvent } from '@/services/events/useTrackEvent'
 
 type TourPageContentProps = {
     page: TourPage
@@ -18,6 +22,34 @@ type TourPageContentProps = {
 
 const TourPageContent = ({ page }: TourPageContentProps) => {
     const { theme } = page
+    const trackEvent = useTrackEvent()
+
+    useEffect(() => {
+        if (!page.id) return
+
+        const sessionId = getOrCreateEventSessionId()
+        const dedupeKey = `tour_view:${page.id}:${sessionId}`
+
+        try {
+            if (typeof window !== 'undefined' && sessionStorage.getItem(dedupeKey)) {
+                return
+            }
+            sessionStorage.setItem(dedupeKey, '1')
+        } catch {
+            // private mode / blocked storage — still track
+        }
+
+        trackEvent({
+            event_type: 'TOUR_VIEW',
+            path: `/tours/${page.slug}`,
+            entity_type: 'tour',
+            entity_id: page.id,
+            metadata: {
+                tour_slug: page.slug,
+                tour_title: page.heroSection?.title ?? page.seo?.metaTitle ?? null,
+            },
+        })
+    }, [page.id, page.slug, page.heroSection?.title, page.seo?.metaTitle, trackEvent])
 
     return (
         <div

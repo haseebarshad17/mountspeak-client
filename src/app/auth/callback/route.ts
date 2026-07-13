@@ -1,8 +1,36 @@
+import { AGENCY_PREVIEW_HOST_COOKIE, prefixHref } from "@/lib/homepage/agency-preview";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { createServerSupabase } from "@/lib/supabase/supabase.server";
-import { getServerSiteUrl } from "@/lib/utils/site-url";
+import {
+  getServerSiteUrl,
+  normalizeAuthRedirectPath,
+} from "@/lib/utils/site-url";
+import { recordServerEvent } from "@/services/events/events.server";
 import { fetchAgencyHomepage } from "@/services/homepage/homepage.server";
 import { NextRequest, NextResponse } from "next/server";
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function parseAgencyIdParam(value: string | null): string | null {
+  const trimmed = value?.trim();
+  if (!trimmed || !UUID_RE.test(trimmed) || trimmed === DEFAULT_AGENCY_ID) {
+    return null;
+  }
+  return trimmed;
+}
+
+function buildAuthRedirectUrl(
+  request: NextRequest,
+  siteUrl: string,
+  path: string,
+): URL {
+  const previewHost = request.cookies.get(AGENCY_PREVIEW_HOST_COOKIE)?.value?.trim();
+  const previewBase = previewHost ? `/${previewHost}` : null;
+  const safePath = normalizeAuthRedirectPath(path.startsWith("/") ? path : "/dashboard");
+  const prefixedPath = prefixHref(safePath, previewBase);
+  return new URL(prefixedPath, siteUrl);
+}
 
 export async function GET(request: NextRequest) {
   const siteUrl = getServerSiteUrl(request);
@@ -13,7 +41,8 @@ export async function GET(request: NextRequest) {
     requestUrl.searchParams.get("error_description");
   const nextPath = requestUrl.searchParams.get("next") ?? "/dashboard";
   const safeNextPath = nextPath.startsWith("/") ? nextPath : "/dashboard";
-  const loginUrl = new URL("/login", siteUrl);
+  const queryAgencyId = parseAgencyIdParam(requestUrl.searchParams.get("agency_id"));
+  const loginUrl = buildAuthRedirectUrl(request, siteUrl, "/login");
 
   if (providerError) {
     loginUrl.searchParams.set("error", "oauth_failed");
@@ -45,58 +74,57 @@ export async function GET(request: NextRequest) {
   }
 
   const homepage = await fetchAgencyHomepage();
-  const agencyId =
+  const homepageAgencyId =
     homepage.isAgencySite &&
     homepage.agencyId &&
     homepage.agencyId !== DEFAULT_AGENCY_ID
       ? homepage.agencyId
       : null;
 
-  if (agencyId) {
-    const { data: profile, error: agencyProfileError } = await supabase
-      .from("users")
-      .select("agency_id")
-      .eq("id", user.id)
-      .single();
+  const agencyId = homepageAgencyId ?? queryAgencyId;
 
-    if (!agencyProfileError && profile?.agency_id && profile.agency_id !== agencyId) {
+  if (agencyId) {
+    const { error: ensureError } = await supabase.rpc("ensure_agency_client_membership", {
+      p_agency_id: agencyId,
+    });
+
+    if (ensureError) {
       await supabase.auth.signOut();
-      loginUrl.searchParams.set("error", "agency_mismatch");
+      loginUrl.searchParams.set("error", "oauth_failed");
       return NextResponse.redirect(loginUrl);
     }
 
-    if (!user.user_metadata?.agency_id) {
-      await supabase.auth.updateUser({
-        data: { agency_id: agencyId },
-      });
+    const { data: canAccess, error: accessError } = await supabase.rpc(
+      "can_access_agency_customer_site",
+      { p_agency_id: agencyId },
+    );
+
+    if (accessError || !canAccess) {
+      await supabase.auth.signOut();
+      loginUrl.searchParams.set("error", "customer_site_access_denied");
+      return NextResponse.redirect(loginUrl);
     }
 
-    await supabase
-      .from("users")
-      .update({ agency_id: agencyId })
-      .eq("id", user.id)
-      .is("agency_id", null);
+    const createdAtMs = user.created_at ? Date.parse(user.created_at) : NaN;
+    const isNewUser =
+      Number.isFinite(createdAtMs) && Date.now() - createdAtMs < 10 * 60 * 1000;
+
+    await recordServerEvent({
+      supabase,
+      agencyId,
+      eventType: isNewUser ? "SIGNUP" : "LOGIN",
+      path: "/auth/callback",
+      ipAddress:
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        request.headers.get("x-real-ip")?.trim() ||
+        null,
+      userAgent: request.headers.get("user-agent"),
+      metadata: {
+        provider: user.app_metadata?.provider ?? "email",
+        email: user.email ?? null,
+      },
+    });
   }
 
-  if (!user.email_confirmed_at) {
-    const verifyUrl = new URL("/verify-email", siteUrl);
-    if (user.email) {
-      verifyUrl.searchParams.set("email", user.email);
-    }
-    return NextResponse.redirect(verifyUrl);
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError || profile?.role !== "CLIENT") {
-    await supabase.auth.signOut();
-    loginUrl.searchParams.set("error", "role_not_allowed");
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.redirect(new URL(safeNextPath, siteUrl));
+  return NextResponse.redirect(buildAuthRedirectUrl(request, siteUrl, safeNextPath));
 }
