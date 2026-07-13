@@ -46,7 +46,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
             id={heroSection.id}
             className="px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:pt-[30px] xl:px-[18px]"
         >
-            <div className="relative h-[min(42vh,320px)] overflow-hidden rounded-[16px] sm:h-[380px] md:h-[440px] lg:h-[500px]">
+            <div className="relative h-[70dvh] min-h-[480px] max-h-[720px] overflow-hidden rounded-[16px] sm:h-[75dvh] sm:min-h-[560px] sm:max-h-[780px] md:h-[80dvh] md:min-h-[620px] lg:min-h-[680px] xl:min-h-[720px]">
                 <div className="absolute inset-0">
                     <TourMediaImage
                         src={backgroundMedia.desktop}
