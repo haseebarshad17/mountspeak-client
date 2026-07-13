@@ -57,8 +57,8 @@ function FooterLink({
         <Link
             href={resolvedHref}
             className={cn(
-                'text-sm leading-relaxed text-white/90 transition-colors hover:text-white sm:text-[15px]',
-                isActive && 'font-medium underline underline-offset-4',
+                'text-sm leading-6 text-white/85 transition-colors hover:text-white',
+                isActive && 'font-medium text-white underline underline-offset-4',
                 className,
             )}
         >
@@ -71,9 +71,9 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
     const entries = 'links' in column && column.links ? column.links : (column.items ?? [])
 
     return (
-        <div className='min-w-[120px]'>
-            <h3 className='mb-4 text-base font-semibold text-white sm:mb-5 sm:text-lg'>{column.title}</h3>
-            <ul className='space-y-2.5 sm:space-y-3'>
+        <div className='min-w-0'>
+            <h3 className='mb-3 text-sm font-semibold text-white xs:mb-3.5 xs:text-base'>{column.title}</h3>
+            <ul className='space-y-2'>
                 {entries.map((entry, index) => (
                     <li key={`${entry.label}-${index}`}>
                         <FooterLink href={entry.href ?? '/'} label={entry.label} />
@@ -106,15 +106,15 @@ function FooterNewsletter() {
     }
 
     return (
-        <div className='w-full max-w-md'>
-            <h3 className='text-base font-semibold text-white sm:text-lg'>Newsletter</h3>
-            <p className='mt-2 text-sm leading-relaxed text-white/80 sm:text-[15px]'>
+        <div className='w-full max-w-lg'>
+            <h3 className='text-sm font-semibold text-white xs:text-base'>Newsletter</h3>
+            <p className='mt-1.5 max-w-sm text-sm leading-6 text-white/75'>
                 Get travel tips, new packages, and exclusive offers in your inbox.
             </p>
 
             <form
                 onSubmit={handleSubmit}
-                className='mt-4 flex w-full items-center gap-2 sm:mt-5 sm:gap-2.5'
+                className='mt-3.5 flex w-full max-w-sm items-center gap-2 xs:mt-4'
                 noValidate
             >
                 <label className='sr-only' htmlFor='footer-newsletter-email'>
@@ -130,23 +130,24 @@ function FooterNewsletter() {
                     autoComplete='email'
                     required
                     className={cn(
-                        'h-11 w-full min-w-0 flex-1 rounded-full border border-white/25 bg-transparent px-4',
-                        'text-sm text-white placeholder:text-white/55 outline-none',
+                        'h-10 w-full min-w-0 flex-1 rounded-full border border-white/25 bg-transparent px-3.5',
+                        'text-sm text-white placeholder:text-white/50 outline-none',
                         'transition-[border-color,background-color,box-shadow] duration-200',
                         'hover:border-white/40',
                         'focus:border-white/50 focus:bg-white/5 focus:ring-2 focus:ring-white/15',
+                        'xs:h-11 xs:px-4',
                     )}
                 />
                 <Button
                     type='submit'
-                    variant='default'
+                    variant='secondary'
                     size='sm'
                     loading={isSubmitting}
                     loadingText='...'
                     className={cn(
-                        'h-11 shrink-0 rounded-full border-0 px-5 !normal-case !tracking-normal',
-                        'bg-white text-[var(--hp-color-primary)] hover:bg-white/90',
-                        'focus-visible:bg-white/90',
+                        'h-10 shrink-0 rounded-full border-0 bg-white px-4 text-black',
+                        '!normal-case !tracking-normal hover:bg-white/90 focus-visible:bg-white/90',
+                        'xs:h-11 xs:px-5 font-medium',
                     )}
                 >
                     Subscribe
@@ -167,10 +168,10 @@ const Footer = ({ page }: FooterProps) => {
     const year = new Date().getFullYear()
 
     return (
-        <footer id='marketing-footer' className='bg-[#E8F3F2] px-3 py-10 sm:px-4 sm:py-12 md:py-14'>
+        <footer id='marketing-footer' className='bg-[#E8F3F2] px-3 py-8 xs:px-4 xs:py-10 sm:py-12 md:py-14'>
             <div className='agency-container'>
                 <div
-                    className='relative overflow-hidden rounded-[24px] sm:rounded-[28px] md:rounded-[32px]'
+                    className='relative overflow-hidden rounded-2xl xs:rounded-[24px] sm:rounded-[28px] md:rounded-[32px]'
                     style={{ backgroundColor: footer.backgroundColor }}
                 >
                     <div
@@ -179,10 +180,18 @@ const Footer = ({ page }: FooterProps) => {
                         style={FOOTER_PATTERN_STYLE}
                     />
 
-                    <div className='relative px-6 py-10 sm:px-8 sm:py-12 lg:px-12 lg:py-14'>
-                        <div className='grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:gap-16'>
-                            <div className='flex flex-col items-start gap-5 sm:gap-6'>
-                                <Link href='/' className='shrink-0 inline-block'>
+                    <div className='relative px-5 py-8 xs:px-6 xs:py-9 sm:px-8 sm:py-10 md:px-10 lg:px-12 lg:py-12'>
+                        <div
+                            className={cn(
+                                'grid gap-8',
+                                'xs:gap-9',
+                                'sm:gap-10',
+                                'lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-10',
+                                'xl:gap-14',
+                            )}
+                        >
+                            <div className='flex min-w-0 flex-col items-start gap-4 xs:gap-5 sm:gap-5'>
+                                <Link href='/' className='inline-block shrink-0'>
                                     <HomepageMediaImage
                                         key={footerLogo.src}
                                         src={footerLogo.src}
@@ -193,33 +202,38 @@ const Footer = ({ page }: FooterProps) => {
                                         fetchPriority='high'
                                         quality={100}
                                         unoptimized
-                                        className='max-h-[88px] w-auto max-w-[212px]'
+                                        className='max-h-16 w-auto max-w-[180px] xs:max-h-[72px] xs:max-w-[196px] sm:max-h-[88px] sm:max-w-[212px]'
                                     />
                                 </Link>
 
                                 {description ? (
-                                    <p className='max-w-md text-sm leading-relaxed text-white sm:text-[15px] sm:leading-7'>
+                                    <p className='max-w-md text-sm leading-6 text-white/90 sm:leading-7'>
                                         {description}
                                     </p>
                                 ) : null}
 
-                                <SocialIconLinks links={socialLinks} className='gap-3' />
+                                <SocialIconLinks links={socialLinks} className='gap-2.5 xs:gap-3' />
                             </div>
 
-                            <div className='grid grid-cols-2 gap-8 sm:gap-10 lg:justify-items-end lg:gap-12 xl:gap-16'>
+                            <div
+                                className={cn(
+                                    'grid min-w-0 grid-cols-2 gap-x-6 gap-y-6 md:max-w-md',
+                                    'lg:ml-0 lg:max-w-none lg:justify-self-start lg:gap-x-20',
+                                )}
+                            >
                                 {columns.map((column) => (
                                     <FooterNavColumn key={column.title} column={column} />
                                 ))}
                             </div>
                         </div>
 
-                        <div className='mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10 lg:mt-14'>
+                        <div className='mt-8 border-t border-white/10 pt-6 xs:mt-9 xs:pt-7 sm:mt-10 sm:pt-8 lg:mt-11 lg:pt-9'>
                             <FooterNewsletter />
                         </div>
                     </div>
 
-                    <div className='relative border-t border-white/10 px-6 py-4 text-center sm:px-8'>
-                        <p className='text-xs text-white/80 sm:text-sm'>
+                    <div className='relative border-t border-white/10 px-5 py-3.5 text-center xs:px-6 xs:py-4 sm:px-8'>
+                        <p className='text-xs leading-5 text-white/75 sm:text-sm'>
                             Copyright &copy; {year}, {siteName}, All Rights Reserved.
                         </p>
                     </div>
