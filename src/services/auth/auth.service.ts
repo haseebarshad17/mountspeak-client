@@ -1,4 +1,4 @@
-import type { Session, SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { MessageCode } from '@/lib/messages/codes'
 import { mapAuthErrorToMessageCode } from '@/lib/auth/map-auth-error'
 import type {
@@ -34,16 +34,6 @@ async function assertSiteCustomerAccess(supabase: SupabaseClient, agencyId: stri
 async function completeAgencySiteAuth(supabase: SupabaseClient, agencyId: string) {
     await ensureSiteMembership(supabase, agencyId)
     await assertSiteCustomerAccess(supabase, agencyId)
-}
-
-async function runAgencySiteAuthWhenSession(
-    supabase: SupabaseClient,
-    agencyId: string,
-    session: Session | null | undefined,
-) {
-    if (!session) return
-
-    await completeAgencySiteAuth(supabase, agencyId)
 }
 
 export const authService = ({ supabase }: AuthServiceProps) => ({
