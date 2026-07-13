@@ -42,12 +42,32 @@ function createPreviewRequestHeaders(
     return headers
 }
 
+function redirectPrefixedAuthCallback(
+    request: NextRequest,
+    preview: AgencyPreviewContext,
+): NextResponse | null {
+    if (preview.internalPathname !== '/auth/callback') {
+        return null
+    }
+
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/callback'
+    const response = NextResponse.redirect(url)
+    applyPreviewHostCookie(response, preview)
+    return response
+}
+
 async function handleAgencyPathPreview(request: NextRequest): Promise<NextResponse> {
     const pathname = request.nextUrl.pathname
     const requestHostname = getHostnameFromHostHeader(request.headers.get('host'))
     const preview = resolveAgencyPreviewForRequest(pathname, requestHostname)
 
     if (preview) {
+        const authCallbackRedirect = redirectPrefixedAuthCallback(request, preview)
+        if (authCallbackRedirect) {
+            return authCallbackRedirect
+        }
+
         const requestHeaders = createPreviewRequestHeaders(request, preview)
         const internalRequest = new NextRequest(request.url, { headers: requestHeaders })
 

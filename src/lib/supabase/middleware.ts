@@ -78,23 +78,11 @@ export async function updateSession(request: NextRequest, options: UpdateSession
 
     if (isProtectedPath && user) {
         if (!user.email_confirmed_at) {
-            const verifyUrl = buildRedirectUrl(request, browserRequest, previewBase, '/verify-email')
-            if (user.email) {
-                verifyUrl.searchParams.set('email', user.email)
-            }
-            return NextResponse.redirect(verifyUrl)
-        }
-
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-        if (profile?.role !== 'CLIENT') {
-            await supabase.auth.signOut()
             const loginUrl = buildRedirectUrl(request, browserRequest, previewBase, '/login')
-            loginUrl.searchParams.set('error', 'role_not_allowed')
+            loginUrl.searchParams.set('next', `${browserPathname}${browserSearch}`)
+            if (user.email) {
+                loginUrl.searchParams.set('email', user.email)
+            }
             return NextResponse.redirect(loginUrl)
         }
     }

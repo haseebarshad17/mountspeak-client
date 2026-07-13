@@ -6,11 +6,8 @@ import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
-  getUserRole,
-  persistUserAgencyId,
   useGoogleLogin,
   useLogin,
-  useLogout,
   useSignup,
 } from "@/services/auth/auth.queries";
 import { isEmailVerified } from "@/lib/auth/email-verification";
@@ -24,7 +21,7 @@ import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { HP_THEME_OUTLINE_BTN_CLASS } from "@/data/homepage";
 import { cn } from "@/lib/utils/clsxUtils";
 import { supabase } from "@/lib/supabase/supabase.client";
-import { buildAuthCallbackUrl, getAuthSiteUrl, normalizeAuthRedirectPath } from "@/lib/utils/site-url";
+import { buildAuthCallbackUrl, getAuthCallbackOrigin, getAuthEmailSiteUrl, normalizeAuthRedirectPath } from "@/lib/utils/site-url";
 import { getAgencyPreviewHostFromPathname } from "@/lib/homepage/agency-preview";
 import {
   selectHomepageAgencyId,
@@ -103,9 +100,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const loginPath = usePreviewPath("/login");
   const registerPath = usePreviewPath("/register");
   const forgotPasswordPath = usePreviewPath("/forgot-password");
-  const verifyEmailPath = usePreviewPath("/verify-email");
   const dashboardPath = usePreviewPath("/dashboard");
-  const homePath = usePreviewPath("/");
   const redirectAfterAuth = useMemo(() => {
     const next = searchParams.get("next");
     if (next?.startsWith("/")) return next;
@@ -130,7 +125,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
   const { mutateAsync: login, isPending: isLoginPending } = useLogin();
   const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
   const { mutateAsync: loginWithGoogle, isPending: isGooglePending } = useGoogleLogin();
-  const { mutateAsync: logout } = useLogout();
   const agencyId = useAppSelector(selectHomepageAgencyId);
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useAppSelector(selectIsAgencySite);
@@ -145,8 +139,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     () => getAgencyPreviewHostFromPathname(pathname),
     [pathname],
   );
-  const authSiteUrl = useMemo(
-    () => getAuthSiteUrl(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
+  const authEmailSiteUrl = useMemo(
+    () => getAuthEmailSiteUrl(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
+    [homepageSiteUrl, previewAgencyHost, isAgencySite],
+  );
+  const authCallbackOrigin = useMemo(
+    () => getAuthCallbackOrigin(homepageSiteUrl, { previewAgencyHost, isAgencySite }),
     [homepageSiteUrl, previewAgencyHost, isAgencySite],
   );
 
@@ -164,14 +162,11 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const queryError = useMemo(() => {
     const error = searchParams.get("error");
-    if (error === "role_not_allowed") {
-      return getMessage(MessageCode.API_AUTH_ROLE_NOT_ALLOWED);
-    }
     if (error === "oauth_failed") {
       return getMessage(MessageCode.API_AUTH_OAUTH_FAILED);
     }
-    if (error === "agency_mismatch") {
-      return getMessage(MessageCode.AUTH_AGENCY_MISMATCH);
+    if (error === "customer_site_access_denied") {
+      return getMessage(MessageCode.AUTH_CUSTOMER_SITE_ACCESS_DENIED);
     }
 
     return null;
@@ -191,7 +186,7 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
       } = await supabase.auth.getUser();
 
       if (active && user) {
-        router.replace(homePath);
+        router.replace(dashboardPath);
         router.refresh();
       }
     };
@@ -201,19 +196,15 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
     return () => {
       active = false;
     };
-  }, [router, homePath]);
+  }, [router, dashboardPath]);
 
-  const enforceClientRole = async (userId: string) => {
-    const role = await getUserRole(userId);
-    if (role !== "CLIENT") {
-      await logout();
-      throw new Error(MessageCode.API_AUTH_ROLE_NOT_ALLOWED);
-    }
-  };
-
-  const redirectToVerifyEmail = (userEmail: string) => {
+  const redirectToLoginForSignInLink = (userEmail: string) => {
     const params = new URLSearchParams({ email: userEmail });
-    router.push(`${verifyEmailPath}?${params.toString()}`);
+    const next = searchParams.get("next");
+    if (next?.startsWith("/")) {
+      params.set("next", next);
+    }
+    router.push(`${loginPath}?${params.toString()}`);
     router.refresh();
   };
 
@@ -225,17 +216,22 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         throw new Error(MessageCode.AUTH_EMAIL_PASSWORD_REQUIRED);
       }
 
-      if (isAgencySite === true && !authSiteUrl) {
+      if (isAgencySite === true && !authEmailSiteUrl) {
         throw new Error(MessageCode.AUTH_SITE_URL_NOT_READY);
       }
 
-      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
-      const emailRedirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
+      const emailSiteUrl = authEmailSiteUrl || getAuthEmailSiteUrl(null);
       const resolvedAgencyId = await resolveAuthAgencyId();
 
       if (isAgencySite === true && !resolvedAgencyId) {
         throw new Error(MessageCode.AUTH_MISSING_AGENCY);
       }
+
+      const emailRedirectTo = buildAuthCallbackUrl(
+        emailSiteUrl,
+        authRedirectAfterAuth,
+        resolvedAgencyId,
+      );
 
       let authenticatedUser = null;
 
@@ -264,15 +260,6 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
         });
 
         if (signupResult.user) {
-          if (resolvedAgencyId) {
-            try {
-              await persistUserAgencyId(signupResult.user.id, resolvedAgencyId);
-            } catch {
-              // DB trigger may persist agency_id from auth metadata
-            }
-          }
-
-          await enforceClientRole(signupResult.user.id);
           authenticatedUser = signupResult.user;
         }
       } else {
@@ -285,19 +272,12 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
           throw new Error(MessageCode.AUTH_SIGN_IN_FAILED);
         }
 
-        await enforceClientRole(loginResult.user.id);
         authenticatedUser = loginResult.user;
       }
 
       if (authenticatedUser && !isEmailVerified(authenticatedUser)) {
-        toast.success(
-          getMessage(
-            isLogin
-              ? MessageCode.AUTH_VERIFY_BEFORE_ACCESS
-              : MessageCode.AUTH_VERIFY_CHECK_INBOX,
-          ),
-        );
-        redirectToVerifyEmail(authenticatedUser.email ?? email);
+        toast.success(getMessage(MessageCode.AUTH_SIGN_IN_LINK_CHECK_INBOX));
+        redirectToLoginForSignInLink(authenticatedUser.email ?? email);
         return;
       }
 
@@ -319,17 +299,22 @@ const AuthSplitPage = ({ mode }: AuthSplitPageProps) => {
 
   const onGoogleSignIn = async () => {
     try {
-      if (isAgencySite === true && !authSiteUrl) {
+      if (isAgencySite === true && !authCallbackOrigin) {
         throw new Error(MessageCode.AUTH_SITE_URL_NOT_READY);
       }
 
-      const siteUrl = authSiteUrl || getAuthSiteUrl(null);
-      const redirectTo = buildAuthCallbackUrl(siteUrl, authRedirectAfterAuth);
+      const callbackOrigin = authCallbackOrigin || getAuthCallbackOrigin(null);
       const resolvedAgencyId = await resolveAuthAgencyId();
 
       if (isAgencySite === true && !resolvedAgencyId) {
         throw new Error(MessageCode.AUTH_MISSING_AGENCY);
       }
+
+      const redirectTo = buildAuthCallbackUrl(
+        callbackOrigin,
+        authRedirectAfterAuth,
+        resolvedAgencyId,
+      );
 
       await loginWithGoogle({
         redirectTo,

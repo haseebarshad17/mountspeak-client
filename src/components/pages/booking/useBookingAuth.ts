@@ -20,11 +20,6 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
         router.push(buildClientLoginUrlForBooking())
     }, [router])
 
-    const redirectToVerifyEmail = useCallback((userEmail: string) => {
-        const params = new URLSearchParams({ email: userEmail })
-        router.push(`/verify-email?${params.toString()}`)
-    }, [router])
-
     const resolveUser = useCallback(async () => {
         const {
             data: { session },
@@ -65,7 +60,7 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
             }
 
             if (!isEmailVerified(user)) {
-                redirectToVerifyEmail(user.email ?? '')
+                redirectToLogin()
                 return
             }
 
@@ -88,7 +83,7 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
             if (!isEmailVerified(session.user)) {
                 setUserId(null)
                 setAuthReady(false)
-                redirectToVerifyEmail(session.user.email ?? '')
+                redirectToLogin()
                 return
             }
 
@@ -100,7 +95,7 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
             mounted = false
             subscription.unsubscribe()
         }
-    }, [redirectToLogin, redirectToVerifyEmail, resolveUser, skipAuth])
+    }, [redirectToLogin, resolveUser, skipAuth])
 
     const requireUser = useCallback(async () => {
         if (skipAuth) {
@@ -115,12 +110,12 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
         }
 
         if (!isEmailVerified(user)) {
-            redirectToVerifyEmail(user.email ?? '')
+            redirectToLogin()
             return null
         }
 
         return user
-    }, [redirectToLogin, redirectToVerifyEmail, resolveUser, skipAuth])
+    }, [redirectToLogin, resolveUser, skipAuth])
 
     return { userId, authReady, requireUser, redirectToLogin }
 }

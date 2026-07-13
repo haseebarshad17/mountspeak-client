@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 
 import AuthSplitPage from '@/components/pages/auth/AuthSplitPage'
@@ -8,6 +9,10 @@ import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
+type RegisterPageProps = {
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
 
@@ -17,7 +22,25 @@ export async function generateMetadata(): Promise<Metadata> {
     })
 }
 
-export default async function Page() {
+function buildLoginRedirectPath(
+    searchParams: Record<string, string | string[] | undefined>,
+): string {
+    const next = searchParams.next
+    if (typeof next === 'string' && next.startsWith('/')) {
+        return `/login?next=${encodeURIComponent(next)}`
+    }
+
+    return '/login'
+}
+
+export default async function Page({ searchParams }: RegisterPageProps) {
+    const homepage = await fetchAgencyHomepage()
+    const resolvedSearchParams = await searchParams
+
+    if (homepage.isAgencySite) {
+        redirect(buildLoginRedirectPath(resolvedSearchParams))
+    }
+
     await redirectIfAuthenticated()
 
     return (

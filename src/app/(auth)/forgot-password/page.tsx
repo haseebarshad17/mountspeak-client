@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+
 import ForgotPasswordPage from '@/components/pages/auth/ForgotPasswordPage'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
@@ -12,8 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
     })
 }
 
-const Page = () => {
+export default async function Page() {
+    const homepage = await fetchAgencyHomepage()
+
+    if (homepage.isAgencySite) {
+        redirect('/login')
+    }
+
     return <ForgotPasswordPage />
 }
-
-export default Page
