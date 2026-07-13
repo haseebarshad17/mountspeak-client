@@ -56,12 +56,74 @@ export type LegalDocument = {
     sections: LegalSection[]
 }
 
+export type AboutUsHero = {
+    title: string
+    subtitle?: string
+    overlay?: boolean
+    backgroundImage?: string
+}
+
+export type AboutUsMission = {
+    title: string
+    description: string[]
+}
+
+export type AboutUsValueItem = {
+    id: number | string
+    icon?: string
+    title: string
+    description: string
+}
+
+export type AboutUsValues = {
+    title: string
+    items: AboutUsValueItem[]
+}
+
+export type AboutUsStatistic = {
+    id: number | string
+    label: string
+    value: string
+}
+
+export type AboutUsCompany = {
+    title: string
+    description: string[]
+}
+
+export type AboutUsCtaButton = {
+    id: number | string
+    url: string
+    text: string
+    variant?: string
+}
+
+export type AboutUsCta = {
+    title: string
+    subtitle?: string
+    buttons?: AboutUsCtaButton[]
+}
+
+export type AboutUsDocument = {
+    meta?: {
+        page?: string
+        slug?: string
+        title?: string
+    }
+    hero?: AboutUsHero
+    mission?: AboutUsMission
+    values?: AboutUsValues
+    statistics?: AboutUsStatistic[]
+    aboutCompany?: AboutUsCompany
+    cta?: AboutUsCta
+}
+
 export type ContentPagesRow = {
     id: string
     agency_id: string | null
     terms_and_conditions: LegalDocument | null
     privacy_policy: LegalDocument | null
-    about_us: unknown | null
+    about_us: AboutUsDocument | null
     created_at: string
     updated_at: string
 }

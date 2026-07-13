@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { ContentPagesRow, LegalDocument } from './content.type'
+import type { AboutUsDocument, ContentPagesRow, LegalDocument } from './content.type'
 
 const contentPagesColumns =
     'id, agency_id, terms_and_conditions, privacy_policy, about_us, created_at, updated_at'
@@ -8,6 +8,10 @@ const contentPagesColumns =
 type ContentPagesServiceProps = {
     supabase: SupabaseClient
     agencyId: string
+}
+
+function hasAboutContent(about: AboutUsDocument | null | undefined): about is AboutUsDocument {
+    return Boolean(about && (about.hero || about.mission || about.values || about.aboutCompany))
 }
 
 export const contentPagesService = ({ supabase, agencyId }: ContentPagesServiceProps) => {
@@ -32,6 +36,11 @@ export const contentPagesService = ({ supabase, agencyId }: ContentPagesServiceP
         getPrivacyPolicy: async (): Promise<LegalDocument | null> => {
             const row = await getByAgencyId()
             return row?.privacy_policy ?? null
+        },
+        getAboutUs: async (): Promise<AboutUsDocument | null> => {
+            const row = await getByAgencyId()
+            const about = row?.about_us ?? null
+            return hasAboutContent(about) ? about : null
         },
     }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { PageHeroBanner } from '@/components/ui/page-hero-banner'
@@ -9,15 +9,21 @@ import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
+import { getOrCreateEventSessionId } from '@/services/events/events.session'
+import { useTrackEvent } from '@/services/events/useTrackEvent'
 import {
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
-import { formatTourSearchSummary } from '@/services/tours/tours.search.utils'
+import {
+    formatTourSearchSummary,
+    hasTourSearchFilters,
+} from '@/services/tours/tours.search.utils'
 import {
     formatUmrahSearchSummary,
+    hasUmrahSearchFilters,
     type UmrahSearchFilters,
 } from '@/services/tours/tours.umrah-search.utils'
 
@@ -39,16 +45,70 @@ export default function SearchPage({
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
     const backgroundImage = useHeroBackgroundImage()
+    const trackEvent = useTrackEvent()
 
     const summary = isUmrahSearch
         ? formatUmrahSearchSummary(umrahFilters)
         : formatTourSearchSummary(filters)
 
+    useEffect(() => {
+        const hasFilters = isUmrahSearch
+            ? hasUmrahSearchFilters(umrahFilters)
+            : hasTourSearchFilters(filters)
+        if (!hasFilters) return
+
+        const fingerprint = isUmrahSearch
+            ? JSON.stringify({
+                  duration: umrahFilters.duration ?? '',
+                  passengers: umrahFilters.passengers ?? '',
+                  packageType: umrahFilters.packageType ?? '',
+              })
+            : JSON.stringify({
+                  from: filters.from ?? '',
+                  to: filters.to ?? '',
+                  start_date: filters.start_date ?? '',
+                  end_date: filters.end_date ?? '',
+              })
+
+        const sessionId = getOrCreateEventSessionId()
+        const dedupeKey = `tour_search:${sessionId}:${fingerprint}`
+
+        try {
+            if (typeof window !== 'undefined' && sessionStorage.getItem(dedupeKey)) {
+                return
+            }
+            sessionStorage.setItem(dedupeKey, '1')
+        } catch {
+            // private mode / blocked storage — still track
+        }
+
+        trackEvent({
+            event_type: 'TOUR_SEARCH',
+            path: typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/search',
+            metadata: isUmrahSearch
+                ? {
+                      summary,
+                      is_umrah: true,
+                      duration: umrahFilters.duration ?? null,
+                      passengers: umrahFilters.passengers ?? null,
+                      package_type: umrahFilters.packageType ?? null,
+                  }
+                : {
+                      summary,
+                      is_umrah: false,
+                      from: filters.from ?? null,
+                      to: filters.to ?? null,
+                      start_date: filters.start_date ?? null,
+                      end_date: filters.end_date ?? null,
+                  },
+        })
+    }, [filters, umrahFilters, isUmrahSearch, summary, trackEvent])
+
     const heroCopy = isUmrahSearch
         ? {
               title: 'Find your Umrah package',
               description:
-                  'Select package duration, number of passengers, and package type to browse available Umrah tours.',
+                  'Select package duration, number of passengers, and package type to browse available Umrah packages.',
           }
         : {
               title: 'Find your trip',

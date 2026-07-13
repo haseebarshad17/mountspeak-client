@@ -22,6 +22,7 @@ import {
     useSubmitTourBooking,
 } from '@/services/tour-bookings/tour-bookings.queries'
 import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
+import { useTrackEvent } from '@/services/events/useTrackEvent'
 import { useAppSelector } from '@/store/hooks'
 import { selectHomepageAgencyId, selectHomepageSiteUrl, selectIsAgencySite } from '@/store/homepage/homepage.selectors'
 
@@ -83,6 +84,7 @@ export default function BookingPage({
 
     const { mutateAsync: submitTourBooking } = useSubmitTourBooking()
     const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
+    const trackEvent = useTrackEvent()
     const agencyId = useAppSelector(selectHomepageAgencyId)
     const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl)
     const isAgencySite = useAppSelector(selectIsAgencySite)
@@ -90,6 +92,7 @@ export default function BookingPage({
         agencyId,
         !isDemoMode && isAgencySite === true,
     )
+    const bookingStartedTrackedRef = useRef<string | null>(null)
 
     useEffect(() => {
         const draft = loadBookingDraft()
@@ -101,6 +104,23 @@ export default function BookingPage({
         }
         setDraftReady(true)
     }, [lockedTour?.id])
+
+    useEffect(() => {
+        if (isDemoMode || !lockedTour?.id) return
+        if (bookingStartedTrackedRef.current === lockedTour.id) return
+
+        bookingStartedTrackedRef.current = lockedTour.id
+        trackEvent({
+            event_type: 'BOOKING_STARTED',
+            path: `/booking?tour=${encodeURIComponent(lockedTour.slug)}`,
+            entity_type: 'tour',
+            entity_id: lockedTour.id,
+            metadata: {
+                tour_slug: lockedTour.slug,
+                tour_title: lockedTour.title,
+            },
+        })
+    }, [isDemoMode, lockedTour, trackEvent])
 
     const persistDraft = useCallback(
         (next: {
@@ -248,6 +268,19 @@ export default function BookingPage({
                 throw new Error('Booking was created but no booking id was returned.')
             }
 
+            trackEvent({
+                event_type: 'BOOKING_SUCCESS',
+                path: '/booking',
+                entity_type: 'booking',
+                entity_id: booking.id,
+                metadata: {
+                    tour_id: selectedTour.id,
+                    tour_slug: selectedTour.slug,
+                    tour_title: selectedTour.title,
+                    amount_total: totalAmount,
+                },
+            })
+
             void sendBookingConfirmationEmail({
                 toEmail: user.email ?? '',
                 toName: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
@@ -272,6 +305,17 @@ export default function BookingPage({
             setIsSuccess(true)
             toast.success(getMessage(MessageCode.SUCCESS_BOOKING_SUBMITTED))
         } catch (error) {
+            trackEvent({
+                event_type: 'BOOKING_FAILED',
+                path: '/booking',
+                entity_type: 'tour',
+                entity_id: selectedTour?.id ?? details.tourId ?? null,
+                metadata: {
+                    tour_id: selectedTour?.id ?? details.tourId ?? null,
+                    tour_slug: selectedTour?.slug ?? null,
+                    error: error instanceof Error ? error.message : 'unknown',
+                },
+            })
             toast.error(getApiErrorMessage(error, MessageCode.API_BOOKING_SUBMIT_FAILED))
         } finally {
             setIsSubmitting(false)

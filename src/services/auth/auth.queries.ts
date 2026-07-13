@@ -19,6 +19,13 @@ export const useLogin = () => {
     })
 }
 
+// MAGIC LINK (agency sites)
+export const useMagicLinkSignIn = () => {
+    return useMutation({
+        mutationFn: auth.signInWithMagicLink,
+    })
+}
+
 // GOOGLE LOGIN
 export const useGoogleLogin = () => {
     return useMutation({
@@ -34,12 +41,6 @@ export const useSignup = () => {
     })
 }
 
-// RESEND VERIFICATION EMAIL
-export const useResendVerificationEmail = () => {
-    return useMutation({
-        mutationFn: auth.resendVerificationEmail,
-    })
-}
 
 // FORGOT PASSWORD
 export const useForgotPassword = () => {
@@ -131,8 +132,4 @@ export const useUserProfile = () => {
 
 export const getUserRole = async (userId: string) => {
     return auth.getUserRole(userId)
-}
-
-export const persistUserAgencyId = async (userId: string, agencyId: string) => {
-    return auth.persistUserAgencyId(userId, agencyId)
 }

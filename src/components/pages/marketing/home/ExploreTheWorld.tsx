@@ -12,7 +12,7 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { cn } from '@/lib/utils/clsxUtils'
 import { DEMO_TOUR_DETAIL_PATH, DEMO_TOUR_LIST_ITEM } from '@/lib/tours/default-tour-page'
-import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { adaptTourCopyForUmrah, getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { supabase } from '@/lib/supabase/supabase.client'
 import { selectHomepageAgencyId, selectHomepageSpecializationId, selectHomepageSpecializations } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
@@ -32,6 +32,10 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const specializations = useAppSelector(selectHomepageSpecializations)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const listingCopy = getTourOrPackageCopy(isUmrahSite)
+    const eyebrow = adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
+    const title = adaptTourCopyForUmrah(section.title, isUmrahSite)
+    const paragraph = adaptTourCopyForUmrah(section.paragraph, isUmrahSite)
+    const emptyMessage = adaptTourCopyForUmrah(section.emptyMessage, isUmrahSite)
 
     const { data: homepageTours, isLoading } = useQuery({
         queryKey: ['homepage-latest-tours', isAgencySite, agencyId, isUmrahSite],
@@ -71,19 +75,19 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
         >
             <div className='agency-container'>
                 <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} />
+                    <SectionEyebrow name={eyebrow} />
                     <h2
                         id='explore-the-world-heading'
                         className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
-                        {section.title}
+                        {title}
                     </h2>
                     <p
                         className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6'
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
-                        {section.paragraph}
+                        {paragraph}
                     </p>
                 </header>
 
@@ -145,7 +149,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         <SectionEmptyState
                             icon={Compass}
                             title={listingCopy.emptyTitle}
-                            description={listingCopy.emptyHomeDescription ?? section.emptyMessage}
+                            description={listingCopy.emptyHomeDescription ?? emptyMessage}
                         />
                     </div>
                 )}
