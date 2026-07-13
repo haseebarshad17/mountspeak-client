@@ -39,14 +39,13 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
             redirect(buildLoginUrlForBooking(returnPath))
         }
 
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', authData.user.id)
-            .single()
+        const { data: canAccess, error: accessError } = await supabase.rpc(
+            'can_access_agency_customer_site',
+            { p_agency_id: agencyHomepage.agencyId },
+        )
 
-        if (profile?.role !== 'CLIENT') {
-            redirect('/login?error=role_not_allowed')
+        if (accessError || !canAccess) {
+            redirect('/login?error=customer_site_access_denied')
         }
     }
 

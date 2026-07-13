@@ -20,11 +20,14 @@ import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specia
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
+    selectHomepageAgencyId,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
     selectHomepageThemeUpdatedAt,
+    selectIsAgencySite,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
+import { trackLogoutEvent } from '@/services/events/events.service'
 import {
     headerLogoClassName,
     mobileDrawerLogoClassName,
@@ -140,6 +143,8 @@ const Header = ({ page }: HeaderProps) => {
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
+    const isAgencySite = useAppSelector(selectIsAgencySite)
+    const agencyId = useAppSelector(selectHomepageAgencyId)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const listingsNavLabel = getTourOrPackageCopy(isUmrahSite).listingsNavLabel
     const navigation = header.navigation.map((link) =>
@@ -200,6 +205,7 @@ const Header = ({ page }: HeaderProps) => {
     }, [isMobileMenuOpen])
 
     const handleLogout = async () => {
+        await trackLogoutEvent(agencyId)
         await logout()
         setIsMobileMenuOpen(false)
         router.push(loginHref)
@@ -244,15 +250,17 @@ const Header = ({ page }: HeaderProps) => {
     const renderMobileGuestAuthButtons = (onNavigate?: () => void) => (
         <div className='flex flex-col gap-3'>
             {renderLoginButton({ mobile: true, onNavigate })}
-            <Button
-                variant='default'
-                size='sm'
-                href={signUpHref}
-                onClick={onNavigate}
-                className='!w-full'
-            >
-                {header.auth.signUp.label}
-            </Button>
+            {!isAgencySite ? (
+                <Button
+                    variant='default'
+                    size='sm'
+                    href={signUpHref}
+                    onClick={onNavigate}
+                    className='!w-full'
+                >
+                    {header.auth.signUp.label}
+                </Button>
+            ) : null}
         </div>
     )
 

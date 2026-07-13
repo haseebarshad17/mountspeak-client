@@ -9,8 +9,13 @@ import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback
 import { useInternalPathname, usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
-import { selectHomepageThemeUpdatedAt } from '@/store/homepage/homepage.selectors'
+import {
+    selectHomepageAgencyId,
+    selectHomepageThemeUpdatedAt,
+    selectIsAgencySite,
+} from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
+import { trackLogoutEvent } from '@/services/events/events.service'
 import { useState } from 'react'
 
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
@@ -36,10 +41,13 @@ export function BookingHeader() {
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
+    const isAgencySite = useAppSelector(selectIsAgencySite)
+    const agencyId = useAppSelector(selectHomepageAgencyId)
     const isLoggedIn = !!currentUser
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     const handleLogout = async () => {
+        await trackLogoutEvent(agencyId)
         await logout()
         setIsMobileMenuOpen(false)
         router.push('/login')
@@ -206,14 +214,16 @@ export function BookingHeader() {
                                     >
                                         {header.auth?.login?.label ?? 'Login'}
                                     </Button>
-                                    <Button
-                                        variant='secondary'
-                                        className='!w-full rounded-md'
-                                        href={header.auth?.signUp?.href ?? '/register'}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        {header.auth?.signUp?.label ?? 'Sign Up'}
-                                    </Button>
+                                    {!isAgencySite ? (
+                                        <Button
+                                            variant='secondary'
+                                            className='!w-full rounded-md'
+                                            href={header.auth?.signUp?.href ?? '/register'}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        >
+                                            {header.auth?.signUp?.label ?? 'Sign Up'}
+                                        </Button>
+                                    ) : null}
                                 </div>
                             )}
                         </div>

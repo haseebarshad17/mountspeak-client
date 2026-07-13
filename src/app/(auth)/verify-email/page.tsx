@@ -1,23 +1,23 @@
-import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 
-import VerifyEmailPage from '@/components/pages/auth/VerifyEmailPage'
-import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import type { Metadata } from 'next'
-
-export async function generateMetadata(): Promise<Metadata> {
-    const homepage = await fetchAgencyHomepage()
-
-    return await buildPageMetadata({
-        pageTitle: 'Verify Email',
-        homepage,
-    })
+type VerifyEmailPageProps = {
+    searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
-export default function Page() {
-    return (
-        <Suspense fallback={<div className='min-h-dvh bg-white' aria-hidden />}>
-            <VerifyEmailPage />
-        </Suspense>
-    )
+export default async function Page({ searchParams }: VerifyEmailPageProps) {
+    const resolvedSearchParams = await searchParams
+    const query = new URLSearchParams()
+
+    const email = resolvedSearchParams.email
+    if (typeof email === 'string' && email.trim()) {
+        query.set('email', email.trim())
+    }
+
+    const next = resolvedSearchParams.next
+    if (typeof next === 'string' && next.startsWith('/')) {
+        query.set('next', next)
+    }
+
+    const queryString = query.toString()
+    redirect(queryString ? `/login?${queryString}` : '/login')
 }
