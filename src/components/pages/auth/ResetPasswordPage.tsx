@@ -11,7 +11,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/clsxUtils";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import AuthSidePanel from "./AuthSidePanel";
-import { authPasswordInputClassName, authFormContentClassName, authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName, authPageShellClassName, HP_THEME_LINK_CLASS } from "./auth-theme";
+import {
+  authPasswordInputClassName, authFormContentClassName,
+  authFormPanelClassName, authFormPanelInnerClassName, authPageSectionClassName,
+  authPageShellClassName, HP_THEME_LINK_CLASS
+} from "./auth-theme";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
