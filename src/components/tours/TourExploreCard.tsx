@@ -90,7 +90,7 @@ export function TourExploreCard({
             </div>
 
             <div className='flex flex-1 flex-col px-3.5 py-3 sm:px-4 sm:py-3.5'>
-                <h3 className='line-clamp-2 font-jost text-[15px] font-semibold leading-5 text-[#14141F] transition-colors group-hover:text-[var(--hp-color-primary)] sm:text-base'>
+                <h3 className='truncate font-jost text-[15px] font-semibold leading-5 text-[#14141F] transition-colors group-hover:text-[var(--hp-color-primary)] sm:text-base'>
                     {title}
                 </h3>
 

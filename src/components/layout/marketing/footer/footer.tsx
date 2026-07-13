@@ -121,6 +121,7 @@ function FooterNewsletter() {
                     Email address
                 </label>
                 <input
+                    required
                     id='footer-newsletter-email'
                     type='email'
                     name='email'
@@ -128,7 +129,6 @@ function FooterNewsletter() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder='Enter your email'
                     autoComplete='email'
-                    required
                     className={cn(
                         'h-10 w-full min-w-0 flex-1 rounded-full border border-white/25 bg-transparent px-3.5',
                         'text-sm text-white placeholder:text-white/50 outline-none',
@@ -183,11 +183,8 @@ const Footer = ({ page }: FooterProps) => {
                     <div className='relative px-5 py-8 xs:px-6 xs:py-9 sm:px-8 sm:py-10 md:px-10 lg:px-12 lg:py-12'>
                         <div
                             className={cn(
-                                'grid gap-8',
-                                'xs:gap-9',
-                                'sm:gap-10',
+                                'grid gap-8 xs:gap-9 sm:gap-10 xl:gap-14',
                                 'lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-10',
-                                'xl:gap-14',
                             )}
                         >
                             <div className='flex min-w-0 flex-col items-start gap-4 xs:gap-5 sm:gap-5'>
