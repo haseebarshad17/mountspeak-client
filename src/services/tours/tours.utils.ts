@@ -1,4 +1,4 @@
-import { getAvailableSeats, parseTourCalendarDate } from '@/lib/booking/tour-booking-rules'
+import { getAvailableSeats, isTourBookingClosed, parseTourCalendarDate } from '@/lib/booking/tour-booking-rules'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
@@ -149,6 +149,7 @@ export function toTourListItem(tour: TourRow): TourListItem {
         remainingSeats,
         departureDate,
         daysLeft: getTourDaysUntilStart(departureDate),
+        isBookingClosed: isTourBookingClosed(departureDate),
     }
 }
 

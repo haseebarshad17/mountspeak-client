@@ -1,4 +1,5 @@
 import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
+import { isTourBookingClosed } from '@/lib/booking/tour-booking-rules'
 import {
     formatTourDiscount,
     getTourDaysUntilStart,
@@ -71,6 +72,7 @@ export function toUmrahPlanListItem(plan: UmrahPlanRow): TourListItem {
         remainingSeats: availableSeats,
         departureDate,
         daysLeft: getTourDaysUntilStart(departureDate),
+        isBookingClosed: isTourBookingClosed(departureDate),
     }
 }
 

@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 
 import AgencyMagicLinkPage from '@/components/pages/auth/AgencyMagicLinkPage'
-import AuthSplitPage from '@/components/pages/auth/AuthSplitPage'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { redirectIfAuthenticated } from '@/lib/auth/redirect-if-authenticated'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
@@ -19,16 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-    const homepage = await fetchAgencyHomepage()
     await redirectIfAuthenticated()
 
     return (
         <Suspense fallback={<div className='min-h-dvh bg-white' aria-hidden />}>
-            {homepage.isAgencySite ? (
-                <AgencyMagicLinkPage />
-            ) : (
-                <AuthSplitPage mode='login' />
-            )}
+            <AgencyMagicLinkPage />
         </Suspense>
     )
 }

@@ -112,6 +112,11 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                             {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}
+                                    tourId={
+                                        isAgencySite === false || isUmrahSite
+                                            ? undefined
+                                            : tour.id
+                                    }
                                     slug={tour.slug}
                                     discountPercent={tour.discountPercent}
                                     pricePerSeat={tour.pricePerSeat}
@@ -122,6 +127,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     daysLeft={tour.daysLeft}
                                     departureDate={tour.departureDate}
                                     bookLabel={listingCopy.bookLabel}
+                                    isBookingClosed={tour.isBookingClosed}
                                     detailHref={
                                         isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
                                     }

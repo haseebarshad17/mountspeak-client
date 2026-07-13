@@ -15,9 +15,11 @@ import {
 } from '@/services/tours/tours.utils'
 
 import { TourDiscountBadge } from './TourDiscountBadge'
+import { TourSaveShareActions } from './TourSaveShareActions'
 
 type TourExploreCardProps = {
     slug: string
+    tourId?: string
     discountPercent?: number | null
     pricePerSeat?: number | null
     title: string
@@ -28,6 +30,7 @@ type TourExploreCardProps = {
     daysLeft?: number | null
     departureDate?: string | null
     bookLabel?: string
+    isBookingClosed?: boolean
 }
 
 function formatRemainingSeats(remainingSeats: number | null | undefined): string {
@@ -37,6 +40,7 @@ function formatRemainingSeats(remainingSeats: number | null | undefined): string
 
 export function TourExploreCard({
     slug,
+    tourId,
     discountPercent,
     pricePerSeat = null,
     title,
@@ -47,6 +51,7 @@ export function TourExploreCard({
     daysLeft = null,
     departureDate = null,
     bookLabel = 'Book Tour',
+    isBookingClosed = false,
 }: TourExploreCardProps) {
     const rawDetailPath = detailHref ?? tourDetailPath(slug)
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
@@ -63,6 +68,7 @@ export function TourExploreCard({
         pricePerSeat != null &&
         discountedPrice < pricePerSeat
     const daysLeftLabel = formatTourDaysLeft(daysLeft, departureDate)
+    const showSaveShare = Boolean(tourId) && !isDemoDetail
 
     return (
         <Link
@@ -85,6 +91,14 @@ export function TourExploreCard({
                     className='object-cover transition-transform duration-500 group-hover:scale-[1.03]'
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 416px'
                 />
+
+                {showSaveShare && tourId ? (
+                    <TourSaveShareActions
+                        tourId={tourId}
+                        shareHref={detailPath}
+                        className='absolute left-3 top-3'
+                    />
+                ) : null}
 
                 <TourDiscountBadge discountPercent={discountPercent} />
             </div>
@@ -142,11 +156,13 @@ export function TourExploreCard({
                             'mt-3 inline-flex h-10 w-full items-center justify-center rounded-md',
                             'text-sm font-semibold text-white',
                             'transition-opacity duration-300 group-hover:opacity-95',
-                            HP_THEME_BTN_CLASS,
+                            isBookingClosed
+                                ? 'cursor-not-allowed bg-[#9AA3A8] opacity-80'
+                                : HP_THEME_BTN_CLASS,
                         )}
-                        style={HP_THEME_BTN_STYLE}
+                        style={isBookingClosed ? undefined : HP_THEME_BTN_STYLE}
                     >
-                        {bookLabel}
+                        {isBookingClosed ? 'Booking Closed' : bookLabel}
                     </span>
                 </div>
             </div>

@@ -444,6 +444,19 @@
     background-color: #ffffff !important;
     border-color: var(--hp-color-primary) !important;
     color: var(--hp-color-primary) !important;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+/* On hover, fill with the primary color and flip text to the contrast color
+   so it stays legible (default hp-theme-btn:hover only darkens the bg). */
+.hp-theme-outline-btn:hover,
+.hp-theme-outline-btn:focus-visible {
+    background-color: var(--hp-color-primary) !important;
+    border-color: var(--hp-color-primary) !important;
+    color: var(--hp-color-primary-text) !important;
 }
 
 /* Light buttons on dark sections — theme primary bg used as text color. */
