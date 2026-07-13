@@ -24,7 +24,6 @@ import {
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
     selectHomepageThemeUpdatedAt,
-    selectIsAgencySite,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { trackLogoutEvent } from '@/services/events/events.service'
@@ -129,9 +128,11 @@ const Header = ({ page }: HeaderProps) => {
     const isLegalPage = isTermsPage || isPrivacyPage
     const isDashboardPage = internalPathname === '/dashboard' || internalPathname.startsWith('/dashboard/')
     const isBookingsPage = internalPathname === '/bookings' || internalPathname.startsWith('/bookings/')
+    const isSavedToursPage =
+        internalPathname === '/saved-tours' || internalPathname.startsWith('/saved-tours/')
     const isBookingPage = internalPathname === '/booking' || internalPathname.startsWith('/booking/')
     const isCompactHeaderPage =
-        isDashboardPage || isBookingsPage || isBookingPage || isLegalPage
+        isDashboardPage || isBookingsPage || isSavedToursPage || isBookingPage || isLegalPage
     const { data: currentUser } = useOptionalUser()
     const { mutateAsync: logout } = useLogout()
     const isLoggedIn = !!currentUser
@@ -143,7 +144,6 @@ const Header = ({ page }: HeaderProps) => {
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
-    const isAgencySite = useAppSelector(selectIsAgencySite)
     const agencyId = useAppSelector(selectHomepageAgencyId)
     const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
     const listingsNavLabel = getTourOrPackageCopy(isUmrahSite).listingsNavLabel
@@ -154,7 +154,6 @@ const Header = ({ page }: HeaderProps) => {
     const headerLogo = getHeaderBrandingLogo(branding, internalPathname, themeUpdatedAt)
     const mobileDrawerLogo = getBrandingLogo(branding, 'onDark', themeUpdatedAt)
     const loginHref = usePrefixedHref(header.auth.login.href ?? '/login') ?? '/login'
-    const signUpHref = usePrefixedHref(header.auth.signUp.href ?? '/register') ?? '/register'
     const useDarkChrome = isCompactHeaderPage && !isScrolled && !isLegalPage
 
     useEffect(() => {
@@ -250,17 +249,6 @@ const Header = ({ page }: HeaderProps) => {
     const renderMobileGuestAuthButtons = (onNavigate?: () => void) => (
         <div className='flex flex-col gap-3'>
             {renderLoginButton({ mobile: true, onNavigate })}
-            {!isAgencySite ? (
-                <Button
-                    variant='default'
-                    size='sm'
-                    href={signUpHref}
-                    onClick={onNavigate}
-                    className='!w-full'
-                >
-                    {header.auth.signUp.label}
-                </Button>
-            ) : null}
         </div>
     )
 

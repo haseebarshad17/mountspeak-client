@@ -86,6 +86,7 @@ export function SearchResultsSection({
                     {visibleTours.map((tour) => (
                         <TourExploreCard
                             key={tour.id}
+                            tourId={isUmrahSearch ? undefined : tour.id}
                             slug={tour.slug}
                             discountPercent={tour.discountPercent}
                             pricePerSeat={tour.pricePerSeat}
@@ -96,6 +97,7 @@ export function SearchResultsSection({
                             daysLeft={tour.daysLeft}
                             departureDate={tour.departureDate}
                             bookLabel={listingCopy.bookLabel}
+                            isBookingClosed={tour.isBookingClosed}
                         />
                     ))}
                 </div>

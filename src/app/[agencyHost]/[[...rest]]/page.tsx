@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next'
 import AboutUsPage from '@/app/about-us/page'
 import BookingPage from '@/app/booking/page'
 import BookingsPage from '@/app/bookings/page'
+import SavedToursRoutePage from '@/app/saved-tours/page'
 import ContactUsPage from '@/app/contact-us/page'
 import DashboardPage from '@/app/dashboard/page'
 import DiscoverPage from '@/app/discover/page'
@@ -113,6 +114,14 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
         return (
             <DashboardShell>
                 <BookingsPage />
+            </DashboardShell>
+        )
+    }
+
+    if (path === 'saved-tours') {
+        return (
+            <DashboardShell>
+                <SavedToursRoutePage />
             </DashboardShell>
         )
     }

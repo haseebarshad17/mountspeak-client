@@ -1,5 +1,5 @@
 import BookingPage from '@/components/pages/booking/BookingPage'
-import { buildBookingReturnPath, buildLoginUrlForBooking } from '@/lib/auth/booking-auth'
+import { buildBookingReturnPath } from '@/lib/auth/booking-auth'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
@@ -35,17 +35,17 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         const supabase = await createServerSupabase()
         const { data: authData } = await supabase.auth.getUser()
 
-        if (!authData.user) {
-            redirect(buildLoginUrlForBooking(returnPath))
-        }
+        // Guests may book after email OTP on the form. Logged-in staff of this
+        // agency are still blocked from the customer booking flow.
+        if (authData.user) {
+            const { data: canAccess, error: accessError } = await supabase.rpc(
+                'can_access_agency_customer_site',
+                { p_agency_id: agencyHomepage.agencyId },
+            )
 
-        const { data: canAccess, error: accessError } = await supabase.rpc(
-            'can_access_agency_customer_site',
-            { p_agency_id: agencyHomepage.agencyId },
-        )
-
-        if (accessError || !canAccess) {
-            redirect('/login?error=customer_site_access_denied')
+            if (accessError || !canAccess) {
+                redirect('/login?error=customer_site_access_denied')
+            }
         }
     }
 
@@ -71,6 +71,7 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
             lockedTour={lockedTour}
             isDemoMode={!isAgencySite}
             emailBranding={emailBranding}
+            bookingReturnPath={returnPath}
         />
     )
 }

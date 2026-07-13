@@ -1,9 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
 
-import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
-import { buildClientLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { isEmailVerified } from '@/lib/auth/email-verification'
 import { supabase } from '@/lib/supabase/supabase.client'
 
@@ -12,13 +11,8 @@ type UseBookingAuthOptions = {
 }
 
 export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {}) {
-    const router = usePreviewRouter()
-    const [userId, setUserId] = useState<string | null>(null)
+    const [user, setUser] = useState<User | null>(null)
     const [authReady, setAuthReady] = useState(skipAuth)
-
-    const redirectToLogin = useCallback(() => {
-        router.push(buildClientLoginUrlForBooking())
-    }, [router])
 
     const resolveUser = useCallback(async () => {
         const {
@@ -30,15 +24,15 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
         }
 
         const {
-            data: { user },
+            data: { user: authUser },
             error,
         } = await supabase.auth.getUser()
 
-        if (error || !user) {
+        if (error || !authUser) {
             return null
         }
 
-        return user
+        return authUser
     }, [])
 
     useEffect(() => {
@@ -50,21 +44,11 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
         let mounted = true
 
         async function verifySession() {
-            const user = await resolveUser()
-
+            const nextUser = await resolveUser()
             if (!mounted) return
 
-            if (!user) {
-                redirectToLogin()
-                return
-            }
-
-            if (!isEmailVerified(user)) {
-                redirectToLogin()
-                return
-            }
-
-            setUserId(user.id)
+            setUser(nextUser)
+            // Guests may stay on the page and verify via OTP on the Details step.
             setAuthReady(true)
         }
 
@@ -73,21 +57,8 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (!session?.user) {
-                setUserId(null)
-                setAuthReady(false)
-                redirectToLogin()
-                return
-            }
-
-            if (!isEmailVerified(session.user)) {
-                setUserId(null)
-                setAuthReady(false)
-                redirectToLogin()
-                return
-            }
-
-            setUserId(session.user.id)
+            const nextUser = session?.user ?? null
+            setUser(nextUser)
             setAuthReady(true)
         })
 
@@ -95,27 +66,32 @@ export function useBookingAuth({ skipAuth = false }: UseBookingAuthOptions = {})
             mounted = false
             subscription.unsubscribe()
         }
-    }, [redirectToLogin, resolveUser, skipAuth])
+    }, [resolveUser, skipAuth])
 
     const requireUser = useCallback(async () => {
         if (skipAuth) {
             return null
         }
 
-        const user = await resolveUser()
+        const nextUser = await resolveUser()
 
-        if (!user) {
-            redirectToLogin()
+        if (!nextUser || !isEmailVerified(nextUser)) {
             return null
         }
 
-        if (!isEmailVerified(user)) {
-            redirectToLogin()
-            return null
-        }
+        setUser(nextUser)
+        return nextUser
+    }, [resolveUser, skipAuth])
 
-        return user
-    }, [redirectToLogin, resolveUser, skipAuth])
+    const isAuthenticated = Boolean(user && isEmailVerified(user))
 
-    return { userId, authReady, requireUser, redirectToLogin }
+    return {
+        user,
+        userId: user?.id ?? null,
+        userEmail: user?.email ?? null,
+        isAuthenticated,
+        authReady,
+        requireUser,
+        setUser,
+    }
 }

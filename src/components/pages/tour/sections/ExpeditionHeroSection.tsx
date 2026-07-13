@@ -1,9 +1,15 @@
+'use client'
+
 import React from 'react'
 import { Banknote, CalendarDays, Mountain, type LucideIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import { TourSaveShareActions } from '@/components/tours/TourSaveShareActions'
+import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
+import { tourDetailPath } from '@/services/tours/tours.utils'
 
 import type { TourPage } from './tour-page.types'
 
@@ -12,6 +18,9 @@ const heroHighlightIcons: Record<string, LucideIcon> = {
     price: Banknote,
     mountain: Mountain,
 }
+
+const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 type ExpeditionHeroSectionProps = {
     page: TourPage
@@ -24,12 +33,20 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
         heroSection.ctaGroup.find((btn) => btn.style === 'primary')
         ?? finalCtaSection.buttons.find((btn) => btn.style === 'primary')
 
+    const rawDetailPath = tourDetailPath(page.slug)
+    const prefixedDetailPath = usePrefixedHref(rawDetailPath)
+    const shareHref = prefixedDetailPath ?? rawDetailPath
+    const canSaveTour =
+        Boolean(page.id) &&
+        UUID_RE.test(page.id) &&
+        shareHref !== DEMO_TOUR_DETAIL_PATH
+
     return (
         <section
             id={heroSection.id}
             className="px-2 pt-2 sm:px-3 sm:pt-3 md:px-4 md:pt-4 lg:pt-[30px] xl:px-[18px]"
         >
-            <div className="relative h-[min(42vh,320px)] overflow-hidden rounded-[16px] sm:h-[380px] md:h-[440px] lg:h-[500px]">
+            <div className="relative h-[70dvh] min-h-[480px] max-h-[720px] overflow-hidden rounded-[16px] sm:h-[75dvh] sm:min-h-[560px] sm:max-h-[780px] md:h-[80dvh] md:min-h-[620px] lg:min-h-[680px] xl:min-h-[720px]">
                 <div className="absolute inset-0">
                     <TourMediaImage
                         src={backgroundMedia.desktop}
@@ -80,25 +97,43 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                         })}
                                     </ul>
                                 ) : null}
+
+                                {canSaveTour ? (
+                                    <TourSaveShareActions
+                                        tourId={page.id}
+                                        shareHref={shareHref}
+                                        variant="hero"
+                                        className="mt-4 lg:hidden"
+                                    />
+                                ) : null}
                             </div>
 
-                            {primaryButton ? (
-                                <div className="hidden shrink-0 lg:block">
+                            <div className="hidden shrink-0 items-center gap-3 lg:flex">
+                                {canSaveTour ? (
+                                    <TourSaveShareActions
+                                        tourId={page.id}
+                                        shareHref={shareHref}
+                                        variant="hero"
+                                    />
+                                ) : null}
+                                {primaryButton ? (
                                     <Button
-                                        href={primaryButton.url}
+                                        href={page.isBookingClosed ? undefined : primaryButton.url}
+                                        disabled={page.isBookingClosed === true}
                                         variant="default"
                                         className={cn(
                                             'h-12 min-w-[200px] rounded-md px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
+                                            page.isBookingClosed && 'opacity-60 shadow-none',
                                         )}
                                         style={{
                                             backgroundColor: theme.secondaryColor,
                                             borderColor: theme.secondaryColor,
                                         }}
                                     >
-                                        {primaryButton.label}
+                                        {page.isBookingClosed ? 'Booking Closed' : primaryButton.label}
                                     </Button>
-                                </div>
-                            ) : null}
+                                ) : null}
+                            </div>
                         </div>
                     </div>
                 </div>

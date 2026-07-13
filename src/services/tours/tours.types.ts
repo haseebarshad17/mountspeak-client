@@ -22,4 +22,5 @@ export type TourListItem = {
     remainingSeats: number | null
     daysLeft: number | null
     departureDate: string | null
+    isBookingClosed: boolean
 }

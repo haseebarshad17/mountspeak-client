@@ -12,13 +12,6 @@ import { supabase } from '@/lib/supabase/supabase.client'
 const auth = authService({ supabase })
 
 
-// LOGIN
-export const useLogin = () => {
-    return useMutation({
-        mutationFn: auth.login
-    })
-}
-
 // MAGIC LINK (agency sites)
 export const useMagicLinkSignIn = () => {
     return useMutation({
@@ -26,33 +19,28 @@ export const useMagicLinkSignIn = () => {
     })
 }
 
+export const useSendBookingEmailOtp = () => {
+    return useMutation({
+        mutationFn: auth.sendBookingEmailOtp,
+    })
+}
+
+export const useVerifyBookingEmailOtp = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: auth.verifyBookingEmailOtp,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['user'] })
+            await queryClient.invalidateQueries({ queryKey: ['user-profile'] })
+        },
+    })
+}
+
 // GOOGLE LOGIN
 export const useGoogleLogin = () => {
     return useMutation({
         mutationFn: auth.loginWithGoogle
-    })
-}
-
-
-// SIGNUP
-export const useSignup = () => {
-    return useMutation({
-        mutationFn: auth.signup
-    })
-}
-
-
-// FORGOT PASSWORD
-export const useForgotPassword = () => {
-    return useMutation({
-        mutationFn: auth.resetPassword,
-    })
-}
-
-// RESET PASSWORD
-export const useUpdatePassword = () => {
-    return useMutation({
-        mutationFn: auth.updatePassword,
     })
 }
 

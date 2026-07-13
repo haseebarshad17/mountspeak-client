@@ -22,6 +22,7 @@ import { bookingFieldLabelClassName } from '../booking-form-ui'
 import type { BookingDetailsForm, BookingTourOption } from '../booking.types'
 import { calculateBookingPriceBreakdown } from '../booking.types'
 import { bookingDetailsSchema, formatCnicInput } from '../booking.validation'
+import { BookingEmailOtpGate } from './BookingEmailOtpGate'
 
 type IdentityStepProps = {
     tourOptions: BookingTourOption[]
@@ -30,6 +31,13 @@ type IdentityStepProps = {
     onDetailsChange?: (details: BookingDetailsForm) => void
     onContinue: (details: BookingDetailsForm, totalAmount: number) => void
     skipValidation?: boolean
+    /** When true, guest must verify email via OTP before Continue. */
+    requireEmailVerification?: boolean
+    agencyId?: string | null
+    agencySiteUrl?: string | null
+    emailRedirectTo?: string | null
+    isEmailVerified?: boolean
+    onEmailVerified?: () => void
 }
 
 function resolveSeatCapacityMessage(
@@ -54,6 +62,12 @@ export function IdentityStep({
     onDetailsChange,
     onContinue,
     skipValidation = false,
+    requireEmailVerification = false,
+    agencyId = null,
+    agencySiteUrl = null,
+    emailRedirectTo = null,
+    isEmailVerified = false,
+    onEmailVerified,
 }: IdentityStepProps) {
     const [firstName, setFirstName] = useState(initialDetails.firstName)
     const [lastName, setLastName] = useState(initialDetails.lastName)
@@ -297,6 +311,11 @@ export function IdentityStep({
     }, [lockedTour, tourOptions])
 
     const handleContinue = () => {
+        if (requireEmailVerification && !isEmailVerified) {
+            toast.error(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
+            return
+        }
+
         const nextMaleSeats = maleSeatsRef.current?.commit() ?? maleSeats
         const nextFemaleSeats = femaleSeatsRef.current?.commit() ?? femaleSeats
         const nextKidsSeats = kidsSeatsRef.current?.commit() ?? kidsSeats
@@ -406,9 +425,20 @@ export function IdentityStep({
         onContinue(snapshot, nextTotalAmount)
     }
 
+    const showEmailGate =
+        requireEmailVerification && !isEmailVerified && !!agencyId && !!emailRedirectTo
+
     return (
         <div className='flex h-max min-h-full flex-col justify-between'>
             <div className='grid gap-5 sm:grid-cols-2'>
+                {showEmailGate ? (
+                    <BookingEmailOtpGate
+                        agencyId={agencyId!}
+                        agencySiteUrl={agencySiteUrl}
+                        emailRedirectTo={emailRedirectTo!}
+                        onVerified={() => onEmailVerified?.()}
+                    />
+                ) : null}
                 <FormInput
                     label='First Name'
                     placeholder='First Name'

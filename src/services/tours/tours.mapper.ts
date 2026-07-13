@@ -1,6 +1,7 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
 import { resolveThemeButtons } from '@/lib/homepage/theme'
+import { isTourBookingClosed } from '@/lib/booking/tour-booking-rules'
 import type { Theme } from '@/services/homepage/homepage.page.types'
 
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
@@ -97,6 +98,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
         type: 'expedition_detail',
         status: row.publication_status === 'PUBLISHED' ? 'published' : 'draft',
         locale: 'en',
+        isBookingClosed: isTourBookingClosed(row.start_date),
         seo: {
             metaTitle: header?.title ?? row.title,
             metaDescription: overview?.body?.slice(0, 160) ?? row.title,

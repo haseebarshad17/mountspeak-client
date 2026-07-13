@@ -10,9 +10,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
+import { DEFAULT_AGENCY_ID } from '@/lib/homepage/default-homepage'
 import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode, isMessageCode } from '@/lib/messages/codes'
-import { getClientSiteUrl } from '@/lib/utils/site-url'
+import { buildAuthCallbackUrl, getClientSiteUrl } from '@/lib/utils/site-url'
 import { cn } from '@/lib/utils/clsxUtils'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
@@ -63,6 +64,7 @@ type BookingPageProps = {
     lockedTour: BookingTourOption | null
     isDemoMode?: boolean
     emailBranding: BookingEmailBranding
+    bookingReturnPath?: string
 }
 
 export default function BookingPage({
@@ -70,6 +72,7 @@ export default function BookingPage({
     lockedTour,
     isDemoMode = false,
     emailBranding,
+    bookingReturnPath = '/booking',
 }: BookingPageProps) {
     const [draftReady, setDraftReady] = useState(false)
     const [identityFormKey, setIdentityFormKey] = useState(0)
@@ -83,7 +86,10 @@ export default function BookingPage({
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { mutateAsync: submitTourBooking } = useSubmitTourBooking()
-    const { authReady, requireUser } = useBookingAuth({ skipAuth: isDemoMode })
+    const { authReady, requireUser, isAuthenticated, setUser } = useBookingAuth({
+        skipAuth: isDemoMode,
+    })
+    const [guestEmailVerified, setGuestEmailVerified] = useState(false)
     const trackEvent = useTrackEvent()
     const agencyId = useAppSelector(selectHomepageAgencyId)
     const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl)
@@ -93,6 +99,30 @@ export default function BookingPage({
         !isDemoMode && isAgencySite === true,
     )
     const bookingStartedTrackedRef = useRef<string | null>(null)
+
+    const resolvedAgencyId =
+        isAgencySite && agencyId && agencyId !== DEFAULT_AGENCY_ID ? agencyId : null
+    const requireEmailVerification = !isDemoMode && Boolean(resolvedAgencyId) && !isAuthenticated
+    const emailVerified = isAuthenticated || guestEmailVerified
+
+    const emailRedirectTo = useMemo(() => {
+        if (!resolvedAgencyId) return null
+        const siteUrl = (homepageSiteUrl?.trim() || getClientSiteUrl()).replace(/\/$/, '')
+        const callbackUrl = buildAuthCallbackUrl(siteUrl, bookingReturnPath, resolvedAgencyId)
+        try {
+            const parsed = new URL(callbackUrl)
+            parsed.searchParams.set('auth_email', 'otp')
+            return parsed.toString()
+        } catch {
+            return callbackUrl
+        }
+    }, [bookingReturnPath, homepageSiteUrl, resolvedAgencyId])
+
+    const handleEmailVerified = useCallback(async () => {
+        setGuestEmailVerified(true)
+        const user = await requireUser()
+        if (user) setUser(user)
+    }, [requireUser, setUser])
 
     useEffect(() => {
         const draft = loadBookingDraft()
@@ -144,6 +174,23 @@ export default function BookingPage({
         persistDraftRef.current = persistDraft
     }, [persistDraft])
 
+
+    useEffect(() => {
+        if (isDemoMode || !draftReady || !authReady) return
+        if (requireEmailVerification && !emailVerified && activeStep !== 0) {
+            setActiveStep(0)
+            persistDraft({ activeStep: 0 })
+        }
+    }, [
+        isDemoMode,
+        draftReady,
+        authReady,
+        requireEmailVerification,
+        emailVerified,
+        activeStep,
+        persistDraft,
+    ])
+
     const currentContent = bookingStepsContent[activeStep]
 
     const selectedTour = useMemo(() => {
@@ -174,6 +221,11 @@ export default function BookingPage({
     const handleSubmit = async () => {
         if (isDemoMode) {
             toast.info(getMessage(MessageCode.BOOKING_DEMO_PREVIEW))
+            return
+        }
+
+        if (!isAuthenticated && !guestEmailVerified) {
+            toast.error(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
             return
         }
 
@@ -410,6 +462,14 @@ export default function BookingPage({
                             onDetailsChange={handleDetailsChange}
                             onContinue={handleDetailsContinue}
                             skipValidation={isDemoMode}
+                            requireEmailVerification={requireEmailVerification}
+                            agencyId={resolvedAgencyId}
+                            agencySiteUrl={homepageSiteUrl}
+                            emailRedirectTo={emailRedirectTo}
+                            isEmailVerified={emailVerified}
+                            onEmailVerified={() => {
+                                void handleEmailVerified()
+                            }}
                         />
                     )}
                     {activeStep === 1 && (
