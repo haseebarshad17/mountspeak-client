@@ -19,6 +19,7 @@
   "SUCCESS_TOUR_LINK_COPIED": "Link copied.",
   "API_CONTACT_SUBMIT_FAILED": "Unable to send your message. Please try again.",
   "API_BOOKING_REQUEST_SUBMIT_FAILED": "Unable to submit booking request. Please try again.",
+  "API_NEWSLETTER_SUBSCRIBE_FAILED": "Could not subscribe. Please try again.",
   "API_PROFILE_SAVE_FAILED": "Unable to save changes. Please try again.",
   "API_AVATAR_UPLOAD_FAILED": "Unable to update your profile photo. Please try again.",
   "API_EMAIL_SEND_FAILED": "Unable to send email. Please try again.",
