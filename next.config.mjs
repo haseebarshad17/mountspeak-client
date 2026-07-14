@@ -1,26 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-function getSupabaseRemotePattern() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
-    if (!supabaseUrl) return null
-
-    try {
-        const parsed = new URL(supabaseUrl)
-        if (!parsed.hostname) return null
-
-        return {
-            protocol: parsed.protocol.replace(':', ''),
-            hostname: parsed.hostname,
-        }
-    } catch {
-        return null
-    }
-}
-
-const supabaseRemotePattern = getSupabaseRemotePattern()
 
 const nextConfig = {
     images: {
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: 'https',
@@ -32,9 +15,18 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'upload.wikimedia.org',
+                hostname: 'yaotglznodmjijvxtwbm.supabase.co',
+                pathname: '/storage/v1/object/public/**',
             },
-            ...(supabaseRemotePattern ? [supabaseRemotePattern] : []),
+            {
+                protocol: 'https',
+                hostname: '*.supabase.co',
+                pathname: '/storage/v1/object/public/**',
+            },
+            {
+                protocol: 'https',
+                hostname: '**.supabase.co',
+            },
         ],
     },
 }
