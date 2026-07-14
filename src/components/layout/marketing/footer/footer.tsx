@@ -10,10 +10,15 @@ import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import type { HomepagePage } from '@/data/homepage'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
+import { getApiErrorMessage } from '@/lib/api/errors'
 import { getBrandingLogo } from '@/lib/homepage/branding-logo'
 import { getActiveFooterSocialLinks } from '@/lib/homepage/footer-social'
 import { getFooterDisplayColumns } from '@/lib/homepage/normalize-homepage'
+import { MessageCode } from '@/lib/messages/codes'
+import { getMessage } from '@/lib/messages/get-message'
 import { cn } from '@/lib/utils/clsxUtils'
+import { useSubscribeNewsletter } from '@/services/newsletter/newsletter.queries'
 import { selectHomepageThemeUpdatedAt } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 
@@ -86,10 +91,20 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
 
 function FooterNewsletter() {
     const [email, setEmail] = useState('')
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const { mutate: subscribeToNewsletter, isPending: isSubmitting } = useSubscribeNewsletter()
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+
+        if (!isReady) {
+            return
+        }
+
+        if (isAgencySite && !resolvedAgencyId) {
+            toast.error(getMessage(MessageCode.BOOKING_MISSING_AGENCY))
+            return
+        }
 
         const trimmed = email.trim()
         if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
@@ -97,12 +112,28 @@ function FooterNewsletter() {
             return
         }
 
-        setIsSubmitting(true)
-        window.setTimeout(() => {
-            toast.success('Thanks for subscribing to our newsletter.')
-            setEmail('')
-            setIsSubmitting(false)
-        }, 400)
+        subscribeToNewsletter(
+            {
+                email: trimmed,
+                ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+            },
+            {
+                onSuccess: (data) => {
+                    setEmail('')
+                    if (data.already_subscribed) {
+                        toast.info(data.message)
+                    } else {
+                        toast.success(data.message)
+                    }
+                },
+                onError: (error) => {
+                    toast.error(
+                        error.message ||
+                        getApiErrorMessage(error, MessageCode.API_NEWSLETTER_SUBSCRIBE_FAILED),
+                    )
+                },
+            },
+        )
     }
 
     return (
