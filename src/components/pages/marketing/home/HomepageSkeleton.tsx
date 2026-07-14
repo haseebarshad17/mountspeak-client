@@ -1,4 +1,53 @@
+'use client'
+
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils/clsxUtils'
+import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    selectHomepageSpecializationId,
+    selectHomepageSpecializations,
+} from '@/store/homepage/homepage.selectors'
+import { useAppSelector } from '@/store/hooks'
+
+const heroFilterFieldSkeletonClass =
+    'h-12 w-full rounded-md xl:h-full xl:rounded-none xl:border-r xl:border-neutral-200'
+
+function HeroFilterBarSkeleton() {
+    const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const specializations = useAppSelector(selectHomepageSpecializations)
+    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const filterCount = isUmrahSite ? 3 : 4
+
+    return (
+        <div className='w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0'>
+            <div
+                className={cn(
+                    'grid min-w-0 grid-cols-1 gap-2',
+                    'xs:grid-cols-2',
+                    isUmrahSite
+                        ? 'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)]'
+                        : 'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)]',
+                    'xl:h-12 xl:items-stretch xl:gap-0',
+                )}
+            >
+                {Array.from({ length: filterCount }).map((_, index) => (
+                    <Skeleton
+                        key={index}
+                        className={cn(
+                            heroFilterFieldSkeletonClass,
+                            isUmrahSite && index === filterCount - 1 && 'xs:col-span-2 xl:col-span-1',
+                        )}
+                    />
+                ))}
+                <Skeleton
+                    className={cn(
+                        'h-12 w-full rounded-md xs:col-span-2 xl:col-span-1 xl:h-full xl:rounded-[3px] xl:border-r-0',
+                    )}
+                />
+            </div>
+        </div>
+    )
+}
 
 function SectionHeadingSkeleton() {
     return (
@@ -11,27 +60,17 @@ function SectionHeadingSkeleton() {
 
 function HeroSkeleton() {
     return (
-        <section className='p-2 pb-14 sm:p-3 sm:pb-16 md:p-4 lg:p-5 lg:pb-20 xl:p-[30px] xl:pb-[112px]'>
+        <section className='p-2 sm:p-3 md:p-4 lg:p-5'>
             <div className='overflow-hidden rounded-[16px] bg-neutral-200'>
-                <div className='px-4 pb-8 pt-[150px] sm:px-6 sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
+                <div className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
                     <div className='agency-container'>
                         <div className='mx-auto flex w-full max-w-[828px] flex-col items-center gap-3 text-center'>
-                            <Skeleton className='h-10 w-full max-w-[520px] bg-white/40 sm:h-12' />
-                            <Skeleton className='h-10 w-full max-w-[420px] bg-white/30 sm:h-12' />
-                            <Skeleton className='mt-2 h-5 w-full max-w-[640px] bg-white/25' />
-                            <Skeleton className='h-5 w-full max-w-[560px] bg-white/25' />
+                            <Skeleton className='h-10 w-full max-w-[520px] sm:h-12' />
+                            <Skeleton className='h-5 w-full max-w-[640px]' />
                         </div>
 
-                        <div className='mx-auto w-full max-w-[867px] pt-10 sm:pt-14 md:pt-20 lg:pt-24 xl:pt-[180px]'>
-                            <div className='rounded-2xl bg-white p-4 shadow-sm sm:p-5'>
-                                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
-                                    <Skeleton className='h-12 w-full rounded-lg' />
-                                    <Skeleton className='h-12 w-full rounded-lg' />
-                                    <Skeleton className='h-12 w-full rounded-lg' />
-                                    <Skeleton className='h-12 w-full rounded-lg' />
-                                </div>
-                                <Skeleton className='mt-4 h-12 w-full rounded-full' />
-                            </div>
+                        <div className='mx-auto w-full max-w-[867px] pt-6 sm:pt-8 md:pt-10 lg:pt-12 xl:pt-14'>
+                            <HeroFilterBarSkeleton />
                         </div>
                     </div>
                 </div>
