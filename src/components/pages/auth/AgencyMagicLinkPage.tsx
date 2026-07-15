@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   useGoogleLogin,
+  useLogout,
   useMagicLinkSignIn,
 } from "@/services/auth/auth.queries";
 import { fetchSignupAgencyId } from "@/lib/auth/resolve-signup-agency-id";
@@ -42,7 +43,11 @@ import {
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
-export default function AgencyMagicLinkPage() {
+export default function AgencyMagicLinkPage({
+  staffBookingBlocked = false,
+}: {
+  staffBookingBlocked?: boolean
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -55,12 +60,18 @@ export default function AgencyMagicLinkPage() {
     if (next?.startsWith("/")) return normalizeAuthRedirectPath(next);
     return "/dashboard";
   }, [searchParams]);
+  const bookingReturnPath = useMemo(() => {
+    const next = searchParams.get("next");
+    return next?.startsWith("/") ? normalizeAuthRedirectPath(next) : null;
+  }, [searchParams]);
+  const prefixedBookingReturnPath = usePreviewPath(bookingReturnPath ?? "/booking");
 
   const [email, setEmail] = useState(emailFromQuery);
   const [linkSent, setLinkSent] = useState(false);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { mutateAsync: sendMagicLink, isPending } = useMagicLinkSignIn();
   const { mutateAsync: loginWithGoogle, isPending: isGooglePending } = useGoogleLogin();
+  const { mutateAsync: logout, isPending: isLogoutPending } = useLogout();
   const agencyId = useAppSelector(selectHomepageAgencyId);
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useAppSelector(selectIsAgencySite);
@@ -118,6 +129,8 @@ export default function AgencyMagicLinkPage() {
   }, [queryError]);
 
   useEffect(() => {
+    if (staffBookingBlocked) return
+
     let active = true;
 
     const redirectAuthenticatedUser = async () => {
@@ -136,7 +149,7 @@ export default function AgencyMagicLinkPage() {
     return () => {
       active = false;
     };
-  }, [router, dashboardPath]);
+  }, [router, dashboardPath, staffBookingBlocked]);
 
   useEffect(() => {
     if (cooldownRemaining <= 0) return;
@@ -242,10 +255,37 @@ export default function AgencyMagicLinkPage() {
                 {linkSent ? "Check your inbox" : `Welcome to ${brandName}`}
               </h1>
               <p className="mb-[40px] text-[16px] leading-6 text-[#1A1C1E]">
-                {linkSent
+                {staffBookingBlocked
+                  ? getMessage(MessageCode.AUTH_CUSTOMER_SITE_ACCESS_DENIED)
+                  : linkSent
                   ? `We sent a sign-in link to ${email.trim()}. Open it to continue.`
                   : authCopy.authLoginSubtitle}
               </p>
+
+              {staffBookingBlocked ? (
+                <div className="mb-6 space-y-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+                  <p>
+                    You are signed in with an agency account. Sign out to continue booking as a
+                    customer.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    loading={isLogoutPending}
+                    onClick={async () => {
+                      await logout();
+                      if (bookingReturnPath) {
+                        router.replace(prefixedBookingReturnPath);
+                        router.refresh();
+                        return;
+                      }
+                      router.refresh();
+                    }}
+                  >
+                    Sign out and continue booking
+                  </Button>
+                </div>
+              ) : null}
 
               <form onSubmit={onSubmit} className="space-y-6">
                 <div>

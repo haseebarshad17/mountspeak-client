@@ -7,8 +7,11 @@ import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import type { TourListDepartureSlot } from '@/services/tours/tours.types'
 import {
     formatTourDaysLeft,
+    formatTourListSlotAvailability,
+    formatTourListSlotLabel,
     formatTourPrice,
     getTourDiscountedPricePerSeat,
     tourDetailPath,
@@ -29,6 +32,7 @@ type TourExploreCardProps = {
     remainingSeats?: number | null
     daysLeft?: number | null
     departureDate?: string | null
+    departureSlots?: TourListDepartureSlot[]
     bookLabel?: string
     isBookingClosed?: boolean
 }
@@ -36,6 +40,70 @@ type TourExploreCardProps = {
 function formatRemainingSeats(remainingSeats: number | null | undefined): string {
     if (remainingSeats == null) return 'N/A'
     return String(remainingSeats)
+}
+
+function TourCardAvailability({
+    departureSlots,
+    daysLeft,
+    departureDate,
+    totalBooked,
+    remainingSeats,
+}: {
+    departureSlots: TourListDepartureSlot[]
+    daysLeft: number | null | undefined
+    departureDate: string | null | undefined
+    totalBooked: number
+    remainingSeats: number | null | undefined
+}) {
+    if (departureSlots.length > 0) {
+        return (
+            <ul className='mt-1 space-y-0.5' aria-label='Departure dates and seats remaining'>
+                {departureSlots.map((slot) => (
+                    <li key={slot.id} className='text-[11px] leading-4 text-[#707979] sm:text-xs'>
+                        <span className='font-medium text-[#404849]'>
+                            {formatTourListSlotLabel(slot)}
+                        </span>
+                        <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
+                            ·
+                        </span>
+                        <span
+                            className={cn(
+                                'font-medium',
+                                slot.isBookable ? 'text-[#404849]' : 'text-[#9AA3A8]',
+                            )}
+                        >
+                            {slot.isBookable
+                                ? formatTourListSlotAvailability(slot.availableSeats)
+                                : 'Unavailable'}
+                        </span>
+                    </li>
+                ))}
+            </ul>
+        )
+    }
+
+    const daysLeftLabel = formatTourDaysLeft(daysLeft, departureDate)
+
+    return (
+        <p className='mt-1 text-[11px] leading-4 text-[#707979] sm:text-xs'>
+            {daysLeftLabel ? (
+                <>
+                    <span className='font-semibold text-[var(--hp-color-primary)]'>
+                        {daysLeftLabel}
+                    </span>
+                    <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
+                        ·
+                    </span>
+                </>
+            ) : null}
+            <span className='font-medium text-[#404849]'>{totalBooked}</span> booked
+            <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
+                ·
+            </span>
+            <span className='font-medium text-[#404849]'>{formatRemainingSeats(remainingSeats)}</span>{' '}
+            seats left
+        </p>
+    )
 }
 
 export function TourExploreCard({
@@ -50,6 +118,7 @@ export function TourExploreCard({
     remainingSeats = null,
     daysLeft = null,
     departureDate = null,
+    departureSlots = [],
     bookLabel = 'Book Tour',
     isBookingClosed = false,
 }: TourExploreCardProps) {
@@ -67,7 +136,6 @@ export function TourExploreCard({
         discountedPrice != null &&
         pricePerSeat != null &&
         discountedPrice < pricePerSeat
-    const daysLeftLabel = formatTourDaysLeft(daysLeft, departureDate)
     const showSaveShare = Boolean(tourId) && !isDemoDetail
 
     return (
@@ -108,26 +176,13 @@ export function TourExploreCard({
                     {title}
                 </h3>
 
-                <p className='mt-1 text-[11px] leading-4 text-[#707979] sm:text-xs'>
-                    {daysLeftLabel ? (
-                        <>
-                            <span className='font-semibold text-[var(--hp-color-primary)]'>
-                                {daysLeftLabel}
-                            </span>
-                            <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
-                                ·
-                            </span>
-                        </>
-                    ) : null}
-                    <span className='font-medium text-[#404849]'>{totalBooked}</span> booked
-                    <span className='mx-1.5 text-[#D6D9DC]' aria-hidden>
-                        ·
-                    </span>
-                    <span className='font-medium text-[#404849]'>
-                        {formatRemainingSeats(remainingSeats)}
-                    </span>{' '}
-                    seats left
-                </p>
+                <TourCardAvailability
+                    departureSlots={departureSlots}
+                    daysLeft={daysLeft}
+                    departureDate={departureDate}
+                    totalBooked={totalBooked}
+                    remainingSeats={remainingSeats}
+                />
 
                 <div className='mt-3 flex flex-1 flex-col border-t border-[#e0e1e2] pt-3'>
                     {hasPrice && discountedPrice != null ? (

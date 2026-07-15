@@ -6,6 +6,8 @@ export type BookingFormDraft = {
     details: BookingDetailsForm
     activeStep: number
     totalAmount: number
+    advanceAmountDue: number
+    balanceDue: number
 }
 
 function isBrowser() {
@@ -30,6 +32,7 @@ export function loadBookingDraft(): BookingFormDraft | null {
                 emergencyPhone: parsed.details.emergencyPhone ?? '',
                 cnic: parsed.details.cnic ?? '',
                 tourId: parsed.details.tourId ?? '',
+                slotId: parsed.details.slotId ?? '',
                 maleSeats: Number(parsed.details.maleSeats) || 0,
                 femaleSeats: Number(parsed.details.femaleSeats) || 0,
                 kidsSeats:
@@ -39,6 +42,8 @@ export function loadBookingDraft(): BookingFormDraft | null {
             },
             activeStep: Math.min(Math.max(parsed.activeStep, 0), 1),
             totalAmount: Number(parsed.totalAmount) || 0,
+            advanceAmountDue: Number(parsed.advanceAmountDue) || 0,
+            balanceDue: Number(parsed.balanceDue) || 0,
         }
     } catch {
         return null
@@ -67,6 +72,7 @@ export function clearBookingDraft(): void {
 
 export function mergeDetailsWithDraft(
     lockedTourId: string | undefined,
+    initialSlotId: string | null | undefined,
     draft: BookingFormDraft | null,
 ): BookingDetailsForm {
     const base = draft?.details
@@ -78,6 +84,7 @@ export function mergeDetailsWithDraft(
         emergencyPhone: base?.emergencyPhone ?? '',
         cnic: base?.cnic ?? '',
         tourId: lockedTourId ?? base?.tourId ?? '',
+        slotId: initialSlotId ?? base?.slotId ?? '',
         maleSeats: base?.maleSeats ?? 0,
         femaleSeats: base?.femaleSeats ?? 0,
         kidsSeats: base?.kidsSeats ?? (base as { childrenCount?: number } | undefined)?.childrenCount ?? 0,

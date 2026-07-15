@@ -72,6 +72,7 @@ export function toUmrahPlanListItem(plan: UmrahPlanRow): TourListItem {
         remainingSeats: availableSeats,
         departureDate,
         daysLeft: getTourDaysUntilStart(departureDate),
+        departureSlots: [],
         isBookingClosed: isTourBookingClosed(departureDate),
     }
 }

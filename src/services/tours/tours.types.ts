@@ -10,6 +10,14 @@ export const TOUR_PUBLICATION_STATUS = {
 /** Alias for Supabase row */
 export type TourRow = import('./tours.payload.types').TourRecord
 
+export type TourListDepartureSlot = {
+    id: string
+    startDate: string
+    startTime: string
+    availableSeats: number
+    isBookable: boolean
+}
+
 export type TourListItem = {
     id: string
     slug: string
@@ -22,5 +30,6 @@ export type TourListItem = {
     remainingSeats: number | null
     daysLeft: number | null
     departureDate: string | null
+    departureSlots: TourListDepartureSlot[]
     isBookingClosed: boolean
 }

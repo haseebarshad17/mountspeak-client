@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
+import { buildBookingHref } from '@/components/pages/booking/booking.types'
 import {
     getAgencyPreviewBaseFromPathname,
     prefixHref,
@@ -28,6 +29,14 @@ export function usePreviewPath(path: string): string {
     const previewBase = useAgencyPreviewBase()
 
     return useMemo(() => prefixHref(path, previewBase), [path, previewBase])
+}
+
+export function useBookingHref(tourSlug?: string | null, slotId?: string | null): string {
+    const previewBase = useAgencyPreviewBase()
+
+    return useMemo(() => {
+        return prefixHref(buildBookingHref(tourSlug ?? undefined, slotId ?? undefined), previewBase)
+    }, [previewBase, slotId, tourSlug])
 }
 
 export function useInternalPathname(): string {

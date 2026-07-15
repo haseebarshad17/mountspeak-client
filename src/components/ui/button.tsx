@@ -4,7 +4,7 @@ import { tv, type VariantProps } from "tailwind-variants";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { usePrefixedHref, useInternalPathname } from "@/hooks/useAgencyPreviewBase";
-import { isBookingRoute } from "@/lib/homepage/agency-preview";
+import { isBookingRoute, stripAgencyPreviewBase } from "@/lib/homepage/agency-preview";
 import { cn } from "@/lib/utils/clsxUtils";
 
 /** Shared CTA typography — matches auth / form primary buttons site-wide */
@@ -193,7 +193,9 @@ export const Button = React.forwardRef<ButtonElement, ButtonPropsType>(({
             return
         }
 
-        if (isBookingRoute(internalPathname)) {
+        const targetPath = stripAgencyPreviewBase(effectiveHref.split('?')[0] ?? '')
+
+        if (isBookingRoute(internalPathname) || isBookingRoute(targetPath)) {
             e.preventDefault()
             window.location.assign(effectiveHref)
         }

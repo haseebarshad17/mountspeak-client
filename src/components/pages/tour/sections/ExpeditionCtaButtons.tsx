@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { useBookingHref } from '@/hooks/useAgencyPreviewBase'
 import { cn } from '@/lib/utils/clsxUtils'
 
 import type { TourPage } from './tour-page.types'
@@ -8,6 +9,7 @@ type ExpeditionCtaButton = TourPage['finalCtaSection']['buttons'][number]
 type ExpeditionCtaButtonsProps = {
     buttons: ExpeditionCtaButton[]
     theme: TourPage['theme']
+    tourSlug: string
     className?: string
     buttonClassName?: string
     /** Disables primary booking CTAs (past start date). */
@@ -17,10 +19,13 @@ type ExpeditionCtaButtonsProps = {
 export function ExpeditionCtaButtons({
     buttons,
     theme,
+    tourSlug,
     className,
     buttonClassName,
     bookingClosed = false,
 }: ExpeditionCtaButtonsProps) {
+    const bookingHref = useBookingHref(tourSlug)
+
     if (buttons.length === 0) return null
 
     return (
@@ -32,7 +37,7 @@ export function ExpeditionCtaButtons({
                 return (
                     <Button
                         key={btn.label}
-                        href={isDisabledBooking ? undefined : btn.url}
+                        href={isDisabledBooking ? undefined : isPrimary ? bookingHref : btn.url}
                         disabled={isDisabledBooking}
                         variant={isPrimary ? 'default' : 'outline'}
                         className={cn(

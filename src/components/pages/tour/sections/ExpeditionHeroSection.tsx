@@ -6,7 +6,7 @@ import { Banknote, CalendarDays, Mountain, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
 import { TourSaveShareActions } from '@/components/tours/TourSaveShareActions'
-import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { useBookingHref, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
 import { tourDetailPath } from '@/services/tours/tours.utils'
@@ -36,6 +36,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
     const rawDetailPath = tourDetailPath(page.slug)
     const prefixedDetailPath = usePrefixedHref(rawDetailPath)
     const shareHref = prefixedDetailPath ?? rawDetailPath
+    const bookingHref = useBookingHref(page.slug)
     const canSaveTour =
         Boolean(page.id) &&
         UUID_RE.test(page.id) &&
@@ -118,7 +119,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                 ) : null}
                                 {primaryButton ? (
                                     <Button
-                                        href={page.isBookingClosed ? undefined : primaryButton.url}
+                                        href={page.isBookingClosed ? undefined : bookingHref}
                                         disabled={page.isBookingClosed === true}
                                         variant="default"
                                         className={cn(

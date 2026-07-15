@@ -13,6 +13,7 @@ const tourColumns = [
     'start_date',
     'end_date',
     'price_per_seat',
+    'advance_amount_per_seat',
     'discount_percent',
     'kids_discount',
     'capacity_total',

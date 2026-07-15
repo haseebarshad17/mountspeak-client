@@ -1,5 +1,6 @@
 import BookingPage from '@/components/pages/booking/BookingPage'
 import { buildBookingReturnPath } from '@/lib/auth/booking-auth'
+import { redirectWithAgencyPreview } from '@/lib/auth/preview-redirect'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
@@ -9,7 +10,6 @@ import {
     fetchPublishedToursForBooking,
 } from '@/services/tours/tours.server'
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
 
 export async function generateMetadata(): Promise<Metadata> {
     const homepage = await fetchAgencyHomepage()
@@ -22,12 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type BookingRoutePageProps = {
-    searchParams: Promise<{ tour?: string }>
+    searchParams: Promise<{ tour?: string; slot?: string }>
 }
 
 export default async function Page({ searchParams }: BookingRoutePageProps) {
-    const { tour: tourSlug } = await searchParams
-    const returnPath = buildBookingReturnPath(tourSlug)
+    const { tour: tourSlug, slot: slotId } = await searchParams
+    const returnPath = buildBookingReturnPath(tourSlug, slotId)
     const agencyHomepage = await fetchAgencyHomepage()
     const isAgencySite = agencyHomepage.isAgencySite
 
@@ -44,7 +44,10 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
             )
 
             if (accessError || !canAccess) {
-                redirect('/login?error=customer_site_access_denied')
+                const next = encodeURIComponent(returnPath)
+                await redirectWithAgencyPreview(
+                    `/login?error=customer_site_access_denied&next=${next}`,
+                )
             }
         }
     }
@@ -56,7 +59,7 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         ;[tourOptions, lockedTour] = await Promise.all([
             fetchPublishedToursForBooking(),
             tourSlug?.trim()
-                ? fetchBookingTourBySlug(tourSlug.trim())
+                ? fetchBookingTourBySlug(tourSlug.trim(), slotId?.trim() || null)
                 : Promise.resolve(null),
         ])
     } catch {
@@ -69,6 +72,7 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         <BookingPage
             tourOptions={tourOptions}
             lockedTour={lockedTour}
+            initialSlotId={slotId?.trim() || null}
             isDemoMode={!isAgencySite}
             emailBranding={emailBranding}
             bookingReturnPath={returnPath}

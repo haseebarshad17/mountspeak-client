@@ -172,7 +172,7 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
         placesVisitedSection: {
             id: 'places-visited',
             eyebrow: 'CULTURAL LANDMARKS',
-            title: 'Places Visited',
+            title: 'Places to be visited',
             intro:
                 row.to_location && row.from_location
                     ? `From ${row.from_location} to ${row.to_location}, explore the highlights of this expedition.`

@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { toApiError } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
-import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
+import { mapTourRowsToListItemsWithSlots } from '@/services/tours/tour-seat-availability'
 import type { TourRow } from '@/services/tours/tours.types'
 
 import type {
@@ -121,7 +121,7 @@ export const savedToursService = ({ supabase }: SavedToursServiceProps) => {
                 savedAtByTourId.set(tour.id, row.created_at)
             }
 
-            return mapTourRowsToListItems(tourRows).map((item) => ({
+            return (await mapTourRowsToListItemsWithSlots(supabase, tourRows)).map((item) => ({
                 ...item,
                 savedAt: savedAtByTourId.get(item.id),
             }))

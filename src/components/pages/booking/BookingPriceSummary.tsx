@@ -47,10 +47,11 @@ export function BookingPriceSummary({
     kidsDiscountPercent,
 }: BookingPriceSummaryProps) {
     const hasTravelers = breakdown.subtotal > 0
+    const hasPartialAdvance = breakdown.balanceDue > 0
 
     return (
         <div className='flex flex-col gap-2 sm:col-span-2'>
-            <span className={bookingFieldLabelClassName}>Total Amount</span>
+            <span className={bookingFieldLabelClassName}>Price summary</span>
 
             <div className='overflow-hidden rounded-[10px] border border-[#D5DADD] bg-white'>
                 <div className='space-y-3 px-4 py-4'>
@@ -81,16 +82,34 @@ export function BookingPriceSummary({
                             valueClassName='text-emerald-700'
                         />
                     ) : null}
+
+                    {hasPartialAdvance ? (
+                        <>
+                            <SummaryRow
+                                label='Trip total'
+                                value={formatBookingTotalAmount(breakdown.total)}
+                            />
+                            <SummaryRow
+                                label='Advance due now'
+                                hint='Pay this amount in the next step'
+                                value={formatBookingTotalAmount(breakdown.advanceDue)}
+                                valueClassName={HP_THEME_TEXT_CLASS}
+                            />
+                            <SummaryRow
+                                label='Balance later'
+                                hint='Due before departure'
+                                value={formatBookingTotalAmount(breakdown.balanceDue)}
+                            />
+                        </>
+                    ) : null}
                 </div>
 
-                <div
-                    className='flex items-center justify-between gap-4 border-t border-neutral-200 bg-white px-4 py-3.5'
-                >
+                <div className='flex items-center justify-between gap-4 border-t border-neutral-200 bg-white px-4 py-3.5'>
                     <span className='text-xs font-semibold uppercase tracking-wide text-neutral-700'>
-                        Total payable
+                        {hasPartialAdvance ? 'Due now' : 'Total payable'}
                     </span>
                     <span className={cn('text-xl font-semibold tabular-nums', HP_THEME_TEXT_CLASS)}>
-                        {formatBookingTotalAmount(breakdown.total)}
+                        {formatBookingTotalAmount(hasPartialAdvance ? breakdown.advanceDue : breakdown.total)}
                     </span>
                 </div>
             </div>

@@ -81,6 +81,7 @@ const SavedToursPage = () => {
                                 remainingSeats={tour.remainingSeats}
                                 daysLeft={tour.daysLeft}
                                 departureDate={tour.departureDate}
+                                departureSlots={tour.departureSlots}
                                 bookLabel={copy.bookLabel}
                                 isBookingClosed={tour.isBookingClosed}
                             />

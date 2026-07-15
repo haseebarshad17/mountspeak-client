@@ -3,6 +3,7 @@ import type { SubmitTourBookingDTO } from './tour-bookings.types'
 export function buildSubmitTourBookingPayload(params: {
     bookingId: string
     tourId: string
+    slotId?: string | null
     name: string
     email: string
     phone: string
@@ -13,6 +14,8 @@ export function buildSubmitTourBookingPayload(params: {
     kidsSeats: number
     notes?: string
     screenshotPath: string
+    idCardFrontPath: string
+    idCardBackPath: string
     provider?: 'EASYPAISA' | 'JAZZCASH' | null
     transactionReference?: string | null
 }): SubmitTourBookingDTO {
@@ -29,6 +32,9 @@ export function buildSubmitTourBookingPayload(params: {
         p_kids_seats: params.kidsSeats,
         p_notes: params.notes?.trim() || null,
         p_screenshot_path: params.screenshotPath,
+        p_id_card_front_path: params.idCardFrontPath,
+        p_id_card_back_path: params.idCardBackPath,
+        ...(params.slotId ? { p_slot_id: params.slotId } : {}),
         ...(params.provider ? { p_provider: params.provider } : {}),
         ...(params.transactionReference?.trim()
             ? { p_transaction_reference: params.transactionReference.trim() }
