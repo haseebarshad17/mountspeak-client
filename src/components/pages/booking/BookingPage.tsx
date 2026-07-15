@@ -19,6 +19,7 @@ import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
 import { buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
+    uploadBookingIdCard,
     uploadBookingPaymentScreenshot,
     useSubmitTourBooking,
 } from '@/services/tour-bookings/tour-bookings.queries'
@@ -32,13 +33,14 @@ import { bookingFormPanelClassName, bookingPageTopPaddingClassName, bookingStepp
 import { OnboardIntro } from './OnboardIntro'
 import { OnboardStepper } from './OnboardStepper'
 import type { BookingDetailsForm, BookingTourOption } from './booking.types'
+import { resolveSelectedBookingTour, resolveSelectedSlotAvailableSeats } from './booking.types'
 import {
     clearBookingDraft,
     loadBookingDraft,
     mergeDetailsWithDraft,
     saveBookingDraft,
 } from './booking-form-storage'
-import { bookingPaymentSchema } from './booking.validation'
+import { bookingIdCardSchema, bookingPaymentSchema } from './booking.validation'
 import { bookingStepsContent } from './content'
 import { FinalizeStep } from './steps/FinalizeStep'
 import { IdentityStep } from './steps/IdentityStep'
@@ -53,6 +55,7 @@ const emptyDetails: BookingDetailsForm = {
     emergencyPhone: '',
     cnic: '',
     tourId: '',
+    slotId: '',
     maleSeats: 0,
     femaleSeats: 0,
     kidsSeats: 0,
@@ -62,6 +65,7 @@ const emptyDetails: BookingDetailsForm = {
 type BookingPageProps = {
     tourOptions: BookingTourOption[]
     lockedTour: BookingTourOption | null
+    initialSlotId?: string | null
     isDemoMode?: boolean
     emailBranding: BookingEmailBranding
     bookingReturnPath?: string
@@ -70,6 +74,7 @@ type BookingPageProps = {
 export default function BookingPage({
     tourOptions,
     lockedTour,
+    initialSlotId = null,
     isDemoMode = false,
     emailBranding,
     bookingReturnPath = '/booking',
@@ -79,9 +84,13 @@ export default function BookingPage({
     const [activeStep, setActiveStep] = useState(0)
     const [isSuccess, setIsSuccess] = useState(false)
     const [details, setDetails] = useState<BookingDetailsForm>(() =>
-        mergeDetailsWithDraft(lockedTour?.id, null),
+        mergeDetailsWithDraft(lockedTour?.id, initialSlotId, null),
     )
     const [totalAmount, setTotalAmount] = useState(0)
+    const [advanceAmountDue, setAdvanceAmountDue] = useState(0)
+    const [balanceDue, setBalanceDue] = useState(0)
+    const [idCardFront, setIdCardFront] = useState<File | null>(null)
+    const [idCardBack, setIdCardBack] = useState<File | null>(null)
     const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -127,13 +136,15 @@ export default function BookingPage({
     useEffect(() => {
         const draft = loadBookingDraft()
         if (draft) {
-            setDetails(mergeDetailsWithDraft(lockedTour?.id, draft))
+            setDetails(mergeDetailsWithDraft(lockedTour?.id, initialSlotId, draft))
             setActiveStep(draft.activeStep)
             setTotalAmount(draft.totalAmount)
+            setAdvanceAmountDue(draft.advanceAmountDue)
+            setBalanceDue(draft.balanceDue)
             setIdentityFormKey((key) => key + 1)
         }
         setDraftReady(true)
-    }, [lockedTour?.id])
+    }, [initialSlotId, lockedTour?.id])
 
     useEffect(() => {
         if (isDemoMode || !lockedTour?.id) return
@@ -157,6 +168,8 @@ export default function BookingPage({
             details?: BookingDetailsForm
             activeStep?: number
             totalAmount?: number
+            advanceAmountDue?: number
+            balanceDue?: number
         }) => {
             if (!draftReady) return
 
@@ -164,9 +177,11 @@ export default function BookingPage({
                 details: next.details ?? details,
                 activeStep: next.activeStep ?? activeStep,
                 totalAmount: next.totalAmount ?? totalAmount,
+                advanceAmountDue: next.advanceAmountDue ?? advanceAmountDue,
+                balanceDue: next.balanceDue ?? balanceDue,
             })
         },
-        [details, activeStep, totalAmount, draftReady],
+        [activeStep, advanceAmountDue, balanceDue, details, draftReady, totalAmount],
     )
     const persistDraftRef = useRef(persistDraft)
 
@@ -193,10 +208,10 @@ export default function BookingPage({
 
     const currentContent = bookingStepsContent[activeStep]
 
-    const selectedTour = useMemo(() => {
-        const id = lockedTour?.id ?? details.tourId
-        return tourOptions.find((tour) => tour.id === id) ?? lockedTour ?? null
-    }, [details.tourId, lockedTour, tourOptions])
+    const selectedTour = useMemo(
+        () => resolveSelectedBookingTour(lockedTour, details.tourId, tourOptions),
+        [details.tourId, lockedTour, tourOptions],
+    )
 
     const handleDetailsChange = useCallback((nextDetails: BookingDetailsForm) => {
         if (!draftReady) return
@@ -211,11 +226,22 @@ export default function BookingPage({
         persistDraft({ activeStep: nextStep })
     }
 
-    const handleDetailsContinue = (nextDetails: BookingDetailsForm, nextTotal: number) => {
+    const handleDetailsContinue = (
+        nextDetails: BookingDetailsForm,
+        pricing: { totalAmount: number; advanceAmountDue: number; balanceDue: number },
+    ) => {
         setDetails(nextDetails)
-        setTotalAmount(nextTotal)
+        setTotalAmount(pricing.totalAmount)
+        setAdvanceAmountDue(pricing.advanceAmountDue)
+        setBalanceDue(pricing.balanceDue)
         setActiveStep(1)
-        persistDraft({ details: nextDetails, activeStep: 1, totalAmount: nextTotal })
+        persistDraft({
+            details: nextDetails,
+            activeStep: 1,
+            totalAmount: pricing.totalAmount,
+            advanceAmountDue: pricing.advanceAmountDue,
+            balanceDue: pricing.balanceDue,
+        })
     }
 
     const handleSubmit = async () => {
@@ -246,7 +272,9 @@ export default function BookingPage({
             return
         }
 
-        if (!selectedTour || totalAmount <= 0) {
+        const paymentDue = advanceAmountDue > 0 ? advanceAmountDue : totalAmount
+
+        if (!selectedTour || totalAmount <= 0 || paymentDue <= 0) {
             toast.error(getMessage(MessageCode.BOOKING_DETAILS_INCOMPLETE))
             setActiveStep(0)
             persistDraft({ activeStep: 0 })
@@ -270,11 +298,19 @@ export default function BookingPage({
             maleSeats: details.maleSeats,
             femaleSeats: details.femaleSeats,
             kidsSeats: details.kidsSeats,
-            availableSeats: selectedTour.availableSeats,
+            availableSeats: resolveSelectedSlotAvailableSeats(selectedTour, details.slotId),
         })
 
         if (seatError) {
             toast.error(getMessage(seatError.code, seatError.params))
+            setActiveStep(0)
+            persistDraft({ activeStep: 0 })
+            return
+        }
+
+        const idCardParsed = bookingIdCardSchema.safeParse({ idCardFront, idCardBack })
+        if (!idCardParsed.success) {
+            toast.error(getMessage(MessageCode.VALIDATION_REQUIRED_FIELDS))
             setActiveStep(0)
             persistDraft({ activeStep: 0 })
             return
@@ -293,15 +329,30 @@ export default function BookingPage({
 
             const bookingId = crypto.randomUUID()
 
-            const screenshotPath = await uploadBookingPaymentScreenshot(
-                selectedTour.agencyId,
-                bookingId,
-                paymentParsed.data.paymentScreenshot,
-            )
+            const [idCardFrontPath, idCardBackPath, screenshotPath] = await Promise.all([
+                uploadBookingIdCard(
+                    selectedTour.agencyId,
+                    bookingId,
+                    'front',
+                    idCardParsed.data.idCardFront,
+                ),
+                uploadBookingIdCard(
+                    selectedTour.agencyId,
+                    bookingId,
+                    'back',
+                    idCardParsed.data.idCardBack,
+                ),
+                uploadBookingPaymentScreenshot(
+                    selectedTour.agencyId,
+                    bookingId,
+                    paymentParsed.data.paymentScreenshot,
+                ),
+            ])
 
             const rpcPayload = buildSubmitTourBookingPayload({
                 bookingId,
                 tourId: selectedTour.id,
+                slotId: details.slotId || null,
                 name: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
                 email: user.email ?? '',
                 phone: details.phone.trim(),
@@ -312,6 +363,8 @@ export default function BookingPage({
                 kidsSeats: details.kidsSeats,
                 notes: details.note,
                 screenshotPath,
+                idCardFrontPath,
+                idCardBackPath,
             })
 
             const booking = await submitTourBooking(rpcPayload)
@@ -330,6 +383,8 @@ export default function BookingPage({
                     tour_slug: selectedTour.slug,
                     tour_title: selectedTour.title,
                     amount_total: totalAmount,
+                    advance_amount_due: paymentDue,
+                    balance_due: balanceDue,
                 },
             })
 
@@ -381,8 +436,13 @@ export default function BookingPage({
         setDetails({
             ...emptyDetails,
             tourId: lockedTour?.id ?? '',
+            slotId: initialSlotId ?? '',
         })
         setTotalAmount(0)
+        setAdvanceAmountDue(0)
+        setBalanceDue(0)
+        setIdCardFront(null)
+        setIdCardBack(null)
         setPaymentScreenshot(null)
     }
 
@@ -428,8 +488,11 @@ export default function BookingPage({
                 </h2>
                 <p className='mx-auto mt-4 max-w-md text-base text-neutral-600'>
                     Thank you for booking
-                    {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your
-                    payment and contact you shortly.
+                    {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your ID and
+                    advance payment, then contact you shortly.
+                    {balanceDue > 0
+                        ? ` The remaining balance of PKR ${balanceDue.toLocaleString('en-PK')} is due before departure.`
+                        : ''}
                 </p>
                 <Button
                     type='button'
@@ -470,12 +533,18 @@ export default function BookingPage({
                             onEmailVerified={() => {
                                 void handleEmailVerified()
                             }}
+                            idCardFront={idCardFront}
+                            idCardBack={idCardBack}
+                            onIdCardFrontChange={setIdCardFront}
+                            onIdCardBackChange={setIdCardBack}
                         />
                     )}
                     {activeStep === 1 && (
                         <FinalizeStep
                             tourTitle={selectedTour?.title}
                             totalAmount={totalAmount}
+                            advanceAmountDue={advanceAmountDue}
+                            balanceDue={balanceDue}
                             paymentAccounts={paymentAccounts}
                             paymentAccountsLoading={paymentAccountsLoading}
                             showFallbackPaymentMethods={isDemoMode}

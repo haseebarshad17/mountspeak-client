@@ -1,2 +1,0 @@
--- Example matches API payload shape. Set publication_status = 'PUBLISHED' to show on site.
--- Image paths resolve via NEXT_PUBLIC_SUPABASE_TOUR_STORAGE_BUCKET (default: tour-media).

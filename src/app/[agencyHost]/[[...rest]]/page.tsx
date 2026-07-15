@@ -131,7 +131,7 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
     }
 
     if (path === 'login') {
-        return <LoginPage />
+        return <LoginPage searchParams={searchParams} />
     }
 
     if (path === 'register') {

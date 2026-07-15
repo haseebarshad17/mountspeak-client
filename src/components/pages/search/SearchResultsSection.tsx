@@ -96,6 +96,7 @@ export function SearchResultsSection({
                             remainingSeats={tour.remainingSeats}
                             daysLeft={tour.daysLeft}
                             departureDate={tour.departureDate}
+                            departureSlots={tour.departureSlots}
                             bookLabel={listingCopy.bookLabel}
                             isBookingClosed={tour.isBookingClosed}
                         />

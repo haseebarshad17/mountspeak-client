@@ -17,7 +17,7 @@ import { supabase } from '@/lib/supabase/supabase.client'
 import { selectHomepageAgencyId, selectHomepageSpecializationId, selectHomepageSpecializations } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
-import { mapTourRowsToListItems } from '@/services/tours/tour-seat-availability'
+import { mapTourRowsToListItemsWithSlots } from '@/services/tours/tour-seat-availability'
 import { umrahPlanService } from '@/services/umrah-plan/umrah-plan.service'
 import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.utils'
 import { Compass, ArrowRightIcon } from 'lucide-react'
@@ -57,7 +57,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
             const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
 
             return {
-                tours: mapTourRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+                tours: await mapTourRowsToListItemsWithSlots(supabase, rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
                 hasMore,
             }
         },
@@ -126,6 +126,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     remainingSeats={tour.remainingSeats}
                                     daysLeft={tour.daysLeft}
                                     departureDate={tour.departureDate}
+                                    departureSlots={tour.departureSlots}
                                     bookLabel={listingCopy.bookLabel}
                                     isBookingClosed={tour.isBookingClosed}
                                     detailHref={

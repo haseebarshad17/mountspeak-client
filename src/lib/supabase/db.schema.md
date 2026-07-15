@@ -85,7 +85,6 @@ tours
 
 - id: uuid (PK)
 - agency_id: uuid (FK → agencies.id, nullable)
-- driver_id: uuid (nullable)
 - title: text
 - slug: text (unique) — detail URL: `/tours/{slug}`
 - from_location, to_location: text

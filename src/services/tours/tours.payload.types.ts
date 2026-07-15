@@ -70,13 +70,13 @@ export type TourRecord = {
     start_date: string | null
     end_date: string | null
     price_per_seat: number | null
+    advance_amount_per_seat?: number | null
     discount_percent: number | null
     /** Supabase column for child seat discount (ages 4–8). */
     kids_discount: number | null
     capacity_total: number | null
     confirmed_seats: number | null
     publication_status: TourPublicationStatus
-    driver_id: string | null
     agency_id: string | null
     created_at: string
     header: TourHeaderPayload | null

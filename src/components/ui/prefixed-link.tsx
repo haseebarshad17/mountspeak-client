@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ComponentProps, MouseEvent } from 'react'
 
-import { isBookingRoute } from '@/lib/homepage/agency-preview'
+import { isBookingRoute, stripAgencyPreviewBase } from '@/lib/homepage/agency-preview'
 import { useInternalPathname, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 
 type PrefixedLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
@@ -29,7 +29,9 @@ export function PrefixedLink({ href, onClick, ...props }: PrefixedLinkProps) {
         onClick?.(event)
         if (!shouldHandleNavigation(event)) return
 
-        if (isBookingRoute(internalPathname)) {
+        const targetPath = stripAgencyPreviewBase(resolvedHref.split('?')[0] ?? '')
+
+        if (isBookingRoute(internalPathname) || isBookingRoute(targetPath)) {
             event.preventDefault()
             window.location.assign(resolvedHref)
         }

@@ -43,6 +43,7 @@ export const bookingDetailsSchema = z
                 message: MessageCode.BOOKING_CNIC_INVALID,
             }),
         tourId: z.string().uuid(MessageCode.BOOKING_TOUR_REQUIRED),
+        slotId: z.string().optional(),
         maleSeats: z.coerce.number().int().min(0),
         femaleSeats: z.coerce.number().int().min(0),
         kidsSeats: z.coerce.number().int().min(0),
@@ -57,4 +58,13 @@ export const bookingPaymentSchema = z.object({
     paymentScreenshot: z
         .custom<File>((value) => value instanceof File, MessageCode.BOOKING_PAYMENT_SCREENSHOT_REQUIRED)
         .refine((file) => file.size <= 10 * 1024 * 1024, MessageCode.BOOKING_PAYMENT_SCREENSHOT_SIZE),
+})
+
+export const bookingIdCardSchema = z.object({
+    idCardFront: z
+        .custom<File>((value) => value instanceof File, MessageCode.BOOKING_ID_CARD_FRONT_REQUIRED)
+        .refine((file) => file.size <= 10 * 1024 * 1024, MessageCode.BOOKING_ID_CARD_SIZE),
+    idCardBack: z
+        .custom<File>((value) => value instanceof File, MessageCode.BOOKING_ID_CARD_BACK_REQUIRED)
+        .refine((file) => file.size <= 10 * 1024 * 1024, MessageCode.BOOKING_ID_CARD_SIZE),
 })

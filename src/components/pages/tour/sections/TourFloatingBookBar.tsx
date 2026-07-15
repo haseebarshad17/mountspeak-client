@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { useBookingHref } from '@/hooks/useAgencyPreviewBase'
 import { cn } from '@/lib/utils/clsxUtils'
 
 import type { TourPage } from './tour-page.types'
@@ -14,6 +15,7 @@ type TourFloatingBookBarProps = {
 export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
     const { finalCtaSection, theme, isBookingClosed } = page
     const primaryButton = finalCtaSection.buttons.find((btn) => btn.style === 'primary')
+    const bookingHref = useBookingHref(page.slug)
     const [isFooterVisible, setIsFooterVisible] = useState(false)
 
     useEffect(() => {
@@ -53,7 +55,7 @@ export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
             aria-hidden={isFooterVisible}
         >
             <Button
-                href={isBookingClosed ? undefined : primaryButton.url}
+                href={isBookingClosed ? undefined : bookingHref}
                 disabled={isBookingClosed === true}
                 variant="default"
                 className={cn(

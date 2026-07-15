@@ -1,8 +1,4 @@
-import {
-    getAvailableSeats,
-    isTourBookingClosed,
-    isTourBookable,
-} from '@/lib/booking/tour-booking-rules'
+import { isTourBookable } from '@/lib/booking/tour-booking-rules'
 import { DEMO_BOOKING_TOUR_OPTION } from '@/lib/booking/demo-booking'
 import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
@@ -18,8 +14,9 @@ import type { UmrahSearchFilters } from './tours.umrah-search.utils'
 import { hasUmrahSearchFilters } from './tours.umrah-search.utils'
 import { toursService } from './tours.service'
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
+import { mapPublishedTourToBookingOption, type PublishedTourRpc, type PublishedTourSlotRpc } from './booking-tour.mapper'
 
-import { mapTourRowsToListItems } from './tour-seat-availability'
+import { mapTourRowsToListItemsWithSlots } from './tour-seat-availability'
 
 import type { TourListItem, TourRow } from './tours.types'
 
@@ -66,7 +63,102 @@ async function isUmrahAgencySite(): Promise<boolean> {
 }
 
 async function mapRowsToTourListItems(rows: TourRow[]): Promise<TourListItem[]> {
-    return mapTourRowsToListItems(rows)
+    const supabase = await getServerSupabase()
+    return mapTourRowsToListItemsWithSlots(supabase, rows)
+}
+
+async function fetchPublishedTourRpc(slug: string, agencyId: string): Promise<PublishedTourRpc | null> {
+    const supabase = await getServerSupabase()
+    const { data, error } = await supabase.rpc('get_published_tour_by_slug', {
+        p_slug: slug,
+        p_agency_id: agencyId,
+    })
+
+    if (error) throw error
+    if (!data || typeof data !== 'object') return null
+
+    return data as PublishedTourRpc
+}
+
+function getUtcTodayDateString(): string {
+    return new Date().toISOString().slice(0, 10)
+}
+
+function mapTourSlotRowToRpc(row: {
+    id: string
+    tour_id: string
+    start_date: string
+    end_date: string
+    start_time: string
+    end_time: string
+    capacity_total: number
+    confirmed_seats: number | null
+    is_active: boolean
+}): PublishedTourSlotRpc {
+    const confirmedSeats = Math.max(0, row.confirmed_seats ?? 0)
+    const today = getUtcTodayDateString()
+
+    return {
+        id: row.id,
+        start_date: row.start_date,
+        end_date: row.end_date,
+        start_time: row.start_time?.slice(0, 5) ?? '00:00',
+        end_time: row.end_time?.slice(0, 5) ?? '00:00',
+        capacity_total: row.capacity_total,
+        confirmed_seats: confirmedSeats,
+        available_seats: Math.max(0, row.capacity_total - confirmedSeats),
+        is_bookable: row.is_active && row.start_date > today,
+    }
+}
+
+async function fetchPublishedTourSlotsByTourIds(
+    tourIds: string[],
+): Promise<Map<string, PublishedTourSlotRpc[]>> {
+    const slotsByTourId = new Map<string, PublishedTourSlotRpc[]>()
+    if (tourIds.length === 0) return slotsByTourId
+
+    const supabase = await getServerSupabase()
+    const { data, error } = await supabase
+        .from('tour_slots')
+        .select(
+            'id, tour_id, start_date, end_date, start_time, end_time, capacity_total, confirmed_seats, is_active',
+        )
+        .in('tour_id', tourIds)
+        .eq('is_active', true)
+        .order('start_date', { ascending: true })
+        .order('start_time', { ascending: true })
+
+    if (error) throw error
+
+    for (const row of data ?? []) {
+        const mapped = mapTourSlotRowToRpc(row)
+        const existing = slotsByTourId.get(row.tour_id) ?? []
+        existing.push(mapped)
+        slotsByTourId.set(row.tour_id, existing)
+    }
+
+    return slotsByTourId
+}
+
+function toBookingTourOption(
+    row: TourRow,
+    slots: PublishedTourSlotRpc[] = [],
+): BookingTourOption | null {
+    return mapPublishedTourToBookingOption({
+        id: row.id,
+        agency_id: row.agency_id ?? '',
+        slug: row.slug,
+        title: row.title,
+        price_per_seat: Number(row.price_per_seat),
+        discount_percent: row.discount_percent,
+        kids_discount: row.kids_discount,
+        advance_amount_per_seat: row.advance_amount_per_seat ?? null,
+        start_date: row.start_date,
+        end_date: row.end_date,
+        capacity_total: row.capacity_total,
+        confirmed_seats: row.confirmed_seats,
+        slots,
+    })
 }
 
 export async function fetchPublishedTours(): Promise<TourListItem[]> {
@@ -137,33 +229,11 @@ export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null
     return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
 
-function toBookingTourOption(row: TourRow): BookingTourOption | null {
-    if (row.price_per_seat == null || row.price_per_seat <= 0) return null
-
-    const confirmedSeats = Math.max(0, row.confirmed_seats ?? 0)
-    const availableSeats = getAvailableSeats(row.capacity_total, confirmedSeats)
-    const startDate = row.start_date ?? null
-    const isBookingClosed = isTourBookingClosed(startDate)
-
-    return {
-        id: row.id,
-        slug: row.slug,
-        title: row.title,
-        agencyId: row.agency_id ?? 'unassigned',
-        pricePerSeat: Number(row.price_per_seat),
-        discountPercent: Number(row.discount_percent ?? 0),
-        kidsDiscountPercent: Number(row.kids_discount ?? 0),
-        startDate,
-        capacityTotal: row.capacity_total ?? null,
-        confirmedSeats,
-        availableSeats,
-        isBookingClosed,
-    }
-}
-
 async function mapRowsToBookingTourOptions(rows: TourRow[]): Promise<BookingTourOption[]> {
+    const slotsByTourId = await fetchPublishedTourSlotsByTourIds(rows.map((row) => row.id))
+
     return rows
-        .map((row) => toBookingTourOption(row))
+        .map((row) => toBookingTourOption(row, slotsByTourId.get(row.id) ?? []))
         .filter((option): option is BookingTourOption => option !== null)
         .filter((option) => isTourBookable(option))
 }
@@ -183,7 +253,10 @@ export async function fetchPublishedToursForBooking(): Promise<BookingTourOption
     }
 }
 
-export async function fetchBookingTourBySlug(slug: string): Promise<BookingTourOption | null> {
+export async function fetchBookingTourBySlug(
+    slug: string,
+    preferredSlotId?: string | null,
+): Promise<BookingTourOption | null> {
     const scope = await getAgencyTourScope()
     if (!scope.isAgencySite) {
         if (slug === DEMO_BOOKING_TOUR_OPTION.slug) {
@@ -192,11 +265,30 @@ export async function fetchBookingTourBySlug(slug: string): Promise<BookingTourO
         return null
     }
 
-    try {
-        const row = await fetchPublishedTourBySlug(slug)
-        if (!row) return null
+    if (!scope.agencyId) return null
 
-        return toBookingTourOption(row)
+    try {
+        const rpcRow = await fetchPublishedTourRpc(slug, scope.agencyId)
+        if (!rpcRow) return null
+
+        const option = mapPublishedTourToBookingOption(rpcRow)
+        if (!option) return null
+
+        const hasSlots = option.slots.length > 0
+        if (!hasSlots && !isTourBookable(option)) return null
+
+        if (preferredSlotId) {
+            const slot = option.slots.find((entry) => entry.id === preferredSlotId)
+            if (slot?.isBookable && slot.availableSeats > 0) {
+                return {
+                    ...option,
+                    startDate: slot.startDate,
+                    availableSeats: slot.availableSeats,
+                }
+            }
+        }
+
+        return option
     } catch {
         return null
     }

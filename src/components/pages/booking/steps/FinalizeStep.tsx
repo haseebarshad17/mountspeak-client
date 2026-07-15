@@ -18,6 +18,8 @@ import type { AgencyPaymentAccount } from '@/services/agency-payment/agency-paym
 type FinalizeStepProps = {
     tourTitle?: string
     totalAmount: number
+    advanceAmountDue: number
+    balanceDue: number
     paymentAccounts: AgencyPaymentAccount[]
     paymentAccountsLoading?: boolean
     showFallbackPaymentMethods?: boolean
@@ -36,6 +38,8 @@ const paymentMethods = [
 export function FinalizeStep({
     tourTitle,
     totalAmount,
+    advanceAmountDue,
+    balanceDue,
     paymentAccounts,
     paymentAccountsLoading = false,
     showFallbackPaymentMethods = false,
@@ -45,6 +49,8 @@ export function FinalizeStep({
     onSubmit,
     isSubmitting = false,
 }: FinalizeStepProps) {
+    const hasPartialAdvance = balanceDue > 0
+    const amountDueNow = advanceAmountDue > 0 ? advanceAmountDue : totalAmount
     const hasPaymentDetails =
         showFallbackPaymentMethods || paymentAccounts.length > 0
     const canSubmit = hasPaymentDetails && !paymentAccountsLoading && !isSubmitting
@@ -54,30 +60,39 @@ export function FinalizeStep({
             <div className='rounded-[8px] bg-neutral-100 px-5 py-5'>
                 <div className='flex items-start justify-between gap-5'>
                     <div>
-                        <p className='text-sm font-semibold text-neutral-700'>Expedition Total</p>
+                        <p className='text-sm font-semibold text-neutral-700'>
+                            {hasPartialAdvance ? 'Advance payment' : 'Expedition total'}
+                        </p>
                         {tourTitle ? (
                             <p className='mt-1 text-xs text-neutral-500'>{tourTitle}</p>
                         ) : null}
                     </div>
-                    <p
-                        className='text-xl font-semibold text-neutral-900'
-                    >
-                        {formatBookingTotalAmount(totalAmount)}
+                    <p className='text-xl font-semibold text-neutral-900'>
+                        {formatBookingTotalAmount(amountDueNow)}
                     </p>
                 </div>
 
+                {hasPartialAdvance ? (
+                    <div className='mt-3 space-y-1 border-t border-neutral-200 pt-3 text-sm text-neutral-600'>
+                        <div className='flex justify-between gap-4'>
+                            <span>Trip total</span>
+                            <span className='tabular-nums'>{formatBookingTotalAmount(totalAmount)}</span>
+                        </div>
+                        <div className='flex justify-between gap-4'>
+                            <span>Balance due later</span>
+                            <span className='tabular-nums'>{formatBookingTotalAmount(balanceDue)}</span>
+                        </div>
+                    </div>
+                ) : null}
+
                 <div className='mt-4 flex items-end justify-between gap-4 border-t border-neutral-200 pt-4'>
-                    <span
-                        className='text-xs font-semibold uppercase tracking-wide text-neutral-700'
-                    >
-                        Total Payable
+                    <span className='text-xs font-semibold uppercase tracking-wide text-neutral-700'>
+                        {hasPartialAdvance ? 'Pay now' : 'Total payable'}
                     </span>
                     <span className='text-right'>
                         <span className='block text-[10px] text-neutral-400'>inc. all local taxes</span>
-                        <span
-                            className={cn('text-3xl font-semibold leading-none', HP_THEME_TEXT_CLASS)}
-                        >
-                            {formatBookingTotalAmount(totalAmount)}
+                        <span className={cn('text-3xl font-semibold leading-none', HP_THEME_TEXT_CLASS)}>
+                            {formatBookingTotalAmount(amountDueNow)}
                         </span>
                     </span>
                 </div>
@@ -138,17 +153,18 @@ export function FinalizeStep({
                 <Info className='mt-0.5 h-5 w-5 shrink-0 text-orange-500' />
                 <div>
                     <p className='text-xs font-semibold uppercase tracking-wide text-neutral-800'>
-                        Payment Instruction
+                        Payment instruction
                     </p>
                     <p className='mt-1 text-xs leading-5'>
-                        After transferring the payment, please attach a screenshot of the payment
-                        below.
+                        Transfer {formatBookingTotalAmount(amountDueNow)}
+                        {hasPartialAdvance ? ' as your advance payment' : ''}. After transferring,
+                        attach a screenshot of the payment below.
                     </p>
                 </div>
             </div>
 
             <FileUploadField
-                label='Upload Screenshot'
+                label='Upload payment screenshot'
                 required
                 mode='image'
                 value={paymentScreenshot}

@@ -2,7 +2,7 @@ import { getAvailableSeats, isTourBookingClosed, parseTourCalendarDate } from '@
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
-import type { TourListItem, TourRow } from './tours.types'
+import type { TourListDepartureSlot, TourListItem, TourRow } from './tours.types'
 
 export { DEMO_TOUR_DETAIL_PATH }
 
@@ -127,9 +127,41 @@ export function formatTourDaysLeft(
     return `${daysPart} from ${dateLabel}`
 }
 
-export function toTourListItem(tour: TourRow): TourListItem {
+export function formatTourListSlotTime(time: string | null | undefined): string | null {
+    const normalized = time?.slice(0, 5)
+    if (!normalized || normalized === '00:00') return null
+
+    const parsed = new Date(`1970-01-01T${normalized}:00`)
+    if (Number.isNaN(parsed.getTime())) return normalized
+
+    return parsed.toLocaleTimeString('en-PK', {
+        hour: 'numeric',
+        minute: '2-digit',
+    })
+}
+
+export function formatTourListSlotLabel(
+    slot: Pick<TourListDepartureSlot, 'startDate' | 'startTime'>,
+): string {
+    const dateLabel = formatTourCardDateLabel(slot.startDate)
+    const timeLabel = formatTourListSlotTime(slot.startTime)
+
+    if (dateLabel && timeLabel) return `${dateLabel} · ${timeLabel}`
+    return dateLabel ?? slot.startDate
+}
+
+export function formatTourListSlotAvailability(availableSeats: number): string {
+    return `${availableSeats} seat${availableSeats === 1 ? '' : 's'} left`
+}
+
+export function toTourListItem(tour: TourRow, departureSlots: TourListDepartureSlot[] = []): TourListItem {
     const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
-    const departureDate = getTourDepartureDate(tour)
+    const hasSlots = departureSlots.length > 0
+    const bookableSlots = departureSlots.filter((slot) => slot.isBookable)
+    const nearestBookableSlot = bookableSlots[0] ?? departureSlots[0] ?? null
+    const departureDate = hasSlots
+        ? (nearestBookableSlot?.startDate ?? getTourDepartureDate(tour))
+        : getTourDepartureDate(tour)
 
     return {
         id: tour.id,
@@ -148,8 +180,9 @@ export function toTourListItem(tour: TourRow): TourListItem {
         totalBooked,
         remainingSeats,
         departureDate,
+        departureSlots,
         daysLeft: getTourDaysUntilStart(departureDate),
-        isBookingClosed: isTourBookingClosed(departureDate),
+        isBookingClosed: hasSlots ? bookableSlots.length === 0 : isTourBookingClosed(departureDate),
     }
 }
 

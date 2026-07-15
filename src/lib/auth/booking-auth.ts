@@ -1,7 +1,10 @@
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
 
-export function buildBookingReturnPath(tourSlug?: string | null): string {
-    return buildBookingHref(tourSlug ?? undefined)
+export function buildBookingReturnPath(
+    tourSlug?: string | null,
+    slotId?: string | null,
+): string {
+    return buildBookingHref(tourSlug ?? undefined, slotId ?? undefined)
 }
 
 export function buildLoginUrlForBooking(returnPath: string): string {
