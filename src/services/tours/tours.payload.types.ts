@@ -76,7 +76,6 @@ export type TourRecord = {
     capacity_total: number | null
     confirmed_seats: number | null
     publication_status: TourPublicationStatus
-    driver_id: string | null
     agency_id: string | null
     created_at: string
     header: TourHeaderPayload | null

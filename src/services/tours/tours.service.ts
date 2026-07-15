@@ -18,7 +18,6 @@ const tourColumns = [
     'capacity_total',
     'confirmed_seats',
     'publication_status',
-    'driver_id',
     'agency_id',
     'created_at',
     'header',
