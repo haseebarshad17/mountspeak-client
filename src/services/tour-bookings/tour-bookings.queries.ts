@@ -1,5 +1,3 @@
-'use client'
-
 import { useMutation } from '@tanstack/react-query'
 
 import { supabase } from '@/lib/supabase/supabase.client'
@@ -20,10 +18,3 @@ export const uploadBookingPaymentScreenshot = (
     bookingId: string,
     file: File,
 ) => tourBookings.uploadPaymentScreenshot(agencyId, bookingId, file)
-
-export const uploadBookingIdCard = (
-    agencyId: string,
-    bookingId: string,
-    side: 'front' | 'back',
-    file: File,
-) => tourBookings.uploadIdCard(agencyId, bookingId, side, file)

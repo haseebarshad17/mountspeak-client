@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { assertRpcSuccess, callSupabaseRpc } from '@/lib/api/rpc'
 import { toApiError } from '@/lib/api/errors'
-import { MessageCode, type MessageCodeValue } from '@/lib/messages/codes'
+import { MessageCode } from '@/lib/messages/codes'
 
 import { SUBMIT_TOUR_BOOKING_RPC } from './tour-bookings.constants'
 import type {
@@ -11,14 +11,14 @@ import type {
     TourBookingRecord,
 } from './tour-bookings.types'
 
-/** Supabase storage bucket for payment screenshots and ID cards. */
+/** Supabase storage bucket for payment screenshots. */
 export const BOOKING_PAYMENT_SCREENSHOTS_BUCKET = 'booking-payment-screenshots'
 
 type TourBookingsServiceProps = {
     supabase: SupabaseClient
 }
 
-function mediaExtension(file: File): string {
+function paymentScreenshotExtension(file: File): string {
     const fromName = file.name.split('.').pop()?.toLowerCase()
     if (fromName === 'png' || fromName === 'jpg' || fromName === 'jpeg' || fromName === 'webp') {
         return fromName === 'jpeg' ? 'jpg' : fromName
@@ -35,38 +35,8 @@ export function buildBookingPaymentScreenshotPath(
     bookingId: string,
     file: File,
 ): string {
-    const ext = mediaExtension(file)
+    const ext = paymentScreenshotExtension(file)
     return `${agencyId}/${bookingId}/payment.${ext}`
-}
-
-export function buildBookingIdCardPath(
-    agencyId: string,
-    bookingId: string,
-    side: 'front' | 'back',
-    file: File,
-): string {
-    const ext = mediaExtension(file)
-    return `${agencyId}/${bookingId}/id-${side}.${ext}`
-}
-
-async function uploadBookingMedia(
-    supabase: SupabaseClient,
-    path: string,
-    file: File,
-    failureCode: MessageCodeValue,
-): Promise<string> {
-    const { error: uploadError } = await supabase.storage
-        .from(BOOKING_PAYMENT_SCREENSHOTS_BUCKET)
-        .upload(path, file, {
-            contentType: file.type || `image/${mediaExtension(file)}`,
-            upsert: true,
-        })
-
-    if (uploadError) {
-        throw toApiError(uploadError, failureCode)
-    }
-
-    return path
 }
 
 export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
@@ -93,17 +63,19 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
             file: File,
         ): Promise<string> => {
             const path = buildBookingPaymentScreenshotPath(agencyId, bookingId, file)
-            return uploadBookingMedia(supabase, path, file, MessageCode.API_PAYMENT_SCREENSHOT_UPLOAD_FAILED)
-        },
 
-        uploadIdCard: async (
-            agencyId: string,
-            bookingId: string,
-            side: 'front' | 'back',
-            file: File,
-        ): Promise<string> => {
-            const path = buildBookingIdCardPath(agencyId, bookingId, side, file)
-            return uploadBookingMedia(supabase, path, file, MessageCode.API_ID_CARD_UPLOAD_FAILED)
+            const { error: uploadError } = await supabase.storage
+                .from(BOOKING_PAYMENT_SCREENSHOTS_BUCKET)
+                .upload(path, file, {
+                    contentType: file.type || `image/${paymentScreenshotExtension(file)}`,
+                    upsert: true,
+                })
+
+            if (uploadError) {
+                throw toApiError(uploadError, MessageCode.API_PAYMENT_SCREENSHOT_UPLOAD_FAILED)
+            }
+
+            return path
         },
     }
 }
