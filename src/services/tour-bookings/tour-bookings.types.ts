@@ -14,9 +14,6 @@ export type SubmitTourBookingDTO = {
     p_screenshot_path: string
     p_provider?: 'EASYPAISA' | 'JAZZCASH' | null
     p_transaction_reference?: string | null
-    p_slot_id?: string | null
-    p_id_card_front_path: string
-    p_id_card_back_path: string
 }
 
 export type SubmitTourBookingRpcResponse = {
@@ -26,10 +23,6 @@ export type SubmitTourBookingRpcResponse = {
     payment_id: string
     payment_status: string
     booking_status: string
-    slot_id?: string | null
-    amount_total?: number
-    advance_amount_due?: number
-    balance_due?: number
 }
 
 export type TourBookingRecord = {

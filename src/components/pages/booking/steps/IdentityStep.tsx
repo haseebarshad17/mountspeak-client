@@ -16,50 +16,28 @@ import {
 import { supabase } from '@/lib/supabase/supabase.client'
 
 import { BookingPriceSummary } from '../BookingPriceSummary'
-import { BookingSlotAvailabilitySummary } from '../BookingSlotAvailabilitySummary'
-import { FileUploadField } from '../FileUploadField'
 import { FormInput } from '../FormInput'
 import { QuantityStepper, type QuantityStepperHandle } from '../QuantityStepper'
 import { bookingFieldLabelClassName } from '../booking-form-ui'
 import type { BookingDetailsForm, BookingTourOption } from '../booking.types'
-import {
-    calculateBookingPriceBreakdown,
-    formatBookingSlotOptionLabel,
-    getTourDepartureSlots,
-    resolveSelectedBookingSlot,
-    resolveSelectedBookingTour,
-    resolveSelectedSlotAvailableSeats,
-} from '../booking.types'
-import {
-    bookingDetailsSchema,
-    bookingIdCardSchema,
-    formatCnicInput,
-} from '../booking.validation'
+import { calculateBookingPriceBreakdown } from '../booking.types'
+import { bookingDetailsSchema, formatCnicInput } from '../booking.validation'
 import { BookingEmailOtpGate } from './BookingEmailOtpGate'
-
-export type BookingPricingSnapshot = {
-    totalAmount: number
-    advanceAmountDue: number
-    balanceDue: number
-}
 
 type IdentityStepProps = {
     tourOptions: BookingTourOption[]
     lockedTour: BookingTourOption | null
     initialDetails: BookingDetailsForm
     onDetailsChange?: (details: BookingDetailsForm) => void
-    onContinue: (details: BookingDetailsForm, pricing: BookingPricingSnapshot) => void
+    onContinue: (details: BookingDetailsForm, totalAmount: number) => void
     skipValidation?: boolean
+    /** When true, guest must verify email via OTP before Continue. */
     requireEmailVerification?: boolean
     agencyId?: string | null
     agencySiteUrl?: string | null
     emailRedirectTo?: string | null
     isEmailVerified?: boolean
     onEmailVerified?: () => void
-    idCardFront: File | null
-    idCardBack: File | null
-    onIdCardFrontChange: (file: File | null) => void
-    onIdCardBackChange: (file: File | null) => void
 }
 
 function resolveSeatCapacityMessage(
@@ -90,10 +68,6 @@ export function IdentityStep({
     emailRedirectTo = null,
     isEmailVerified = false,
     onEmailVerified,
-    idCardFront,
-    idCardBack,
-    onIdCardFrontChange,
-    onIdCardBackChange,
 }: IdentityStepProps) {
     const [firstName, setFirstName] = useState(initialDetails.firstName)
     const [lastName, setLastName] = useState(initialDetails.lastName)
@@ -101,7 +75,7 @@ export function IdentityStep({
     const [emergencyPhone, setEmergencyPhone] = useState(initialDetails.emergencyPhone)
     const [cnic, setCnic] = useState(() => formatCnicInput(initialDetails.cnic))
     const [tourId, setTourId] = useState(initialDetails.tourId || lockedTour?.id || '')
-    const [slotId, setSlotId] = useState(initialDetails.slotId ?? '')
+    const [slotId, setSlotId] = useState(initialDetails.slotId || '')
     const [maleSeats, setMaleSeats] = useState(initialDetails.maleSeats)
     const [femaleSeats, setFemaleSeats] = useState(initialDetails.femaleSeats)
     const [kidsSeats, setKidsSeats] = useState(initialDetails.kidsSeats)
@@ -159,6 +133,12 @@ export function IdentityStep({
             setTourId(lockedTour.id)
         }
     }, [lockedTour])
+
+    useEffect(() => {
+        if (initialDetails.slotId) {
+            setSlotId(initialDetails.slotId)
+        }
+    }, [initialDetails.slotId])
 
     useEffect(() => {
         onDetailsChangeRef.current?.(buildDetailsSnapshot())
@@ -219,63 +199,20 @@ export function IdentityStep({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const selectedTour = useMemo(
-        () => resolveSelectedBookingTour(lockedTour, tourId, tourOptions),
-        [lockedTour, tourId, tourOptions],
-    )
-
-    const departureSlots = useMemo(
-        () => (selectedTour ? getTourDepartureSlots(selectedTour) : []),
-        [selectedTour],
-    )
-
-    const hasDepartureSlots = departureSlots.length > 0
-    const requiresSlotPick = departureSlots.length > 1
-
-    useEffect(() => {
-        if (!selectedTour) return
-
-        if (slotId && departureSlots.some((slot) => slot.id === slotId)) {
-            return
-        }
-
-        if (departureSlots.length === 1) {
-            setSlotId(departureSlots[0].id)
-            return
-        }
-
-        if (initialDetails.slotId && departureSlots.some((slot) => slot.id === initialDetails.slotId)) {
-            setSlotId(initialDetails.slotId)
-        }
-    }, [departureSlots, initialDetails.slotId, selectedTour, slotId])
+    const selectedTour = useMemo(() => {
+        const id = lockedTour?.id ?? tourId
+        return tourOptions.find((tour) => tour.id === id) ?? lockedTour ?? null
+    }, [lockedTour, tourId, tourOptions])
 
     const adultSeats = maleSeats + femaleSeats
     const totalTravelers = adultSeats + kidsSeats
 
-    const availableSeats = useMemo(() => {
-        if (!selectedTour) return null
-        return resolveSelectedSlotAvailableSeats(selectedTour, slotId)
-    }, [selectedTour, slotId])
-
-    const selectedSlotClosed = useMemo(() => {
-        if (!selectedTour || !slotId) return false
-        const slot = selectedTour.slots.find((entry) => entry.id === slotId)
-        return slot != null && !slot.isBookable
-    }, [selectedTour, slotId])
-
-    const selectedSlot = useMemo(() => {
-        if (!selectedTour) return null
-        return resolveSelectedBookingSlot(selectedTour, slotId)
-    }, [selectedTour, slotId])
-
-    const selectedSlotBookable = selectedSlot?.isBookable === true && (selectedSlot?.availableSeats ?? 0) > 0
+    const availableSeats = selectedTour?.availableSeats ?? null
 
     const seatCapacityError = useMemo(() => {
         if (skipValidation || !selectedTour) return null
 
-        if (hasDepartureSlots && !slotId) return null
-
-        if (selectedTour.isBookingClosed || selectedSlotClosed || (selectedSlot && !selectedSlotBookable)) {
+        if (selectedTour.isBookingClosed) {
             return MessageCode.BOOKING_CLOSED
         }
 
@@ -285,19 +222,7 @@ export function IdentityStep({
             kidsSeats,
             availableSeats,
         })
-    }, [
-        availableSeats,
-        femaleSeats,
-        kidsSeats,
-        maleSeats,
-        requiresSlotPick,
-        selectedSlot,
-        selectedSlotBookable,
-        selectedSlotClosed,
-        selectedTour,
-        skipValidation,
-        slotId,
-    ])
+    }, [availableSeats, femaleSeats, kidsSeats, maleSeats, selectedTour, skipValidation])
 
     const seatCapacityMessage = useMemo(
         () => (seatCapacityError ? resolveSeatCapacityMessage(seatCapacityError) : null),
@@ -310,27 +235,13 @@ export function IdentityStep({
             return
         }
 
-        if (selectedTour?.isBookingClosed || selectedSlotClosed) {
+        if (selectedTour?.isBookingClosed) {
             setFieldError('tourId', getMessage(MessageCode.BOOKING_CLOSED))
             return
         }
 
         setFieldError('tourId')
-    }, [selectedSlotClosed, selectedTour, skipValidation])
-
-    useEffect(() => {
-        if (skipValidation || !hasDepartureSlots) {
-            setFieldError('slotId')
-            return
-        }
-
-        if (requiresSlotPick && !slotId) {
-            setFieldError('slotId', getMessage(MessageCode.BOOKING_SLOT_REQUIRED))
-            return
-        }
-
-        setFieldError('slotId')
-    }, [hasDepartureSlots, requiresSlotPick, skipValidation, slotId])
+    }, [selectedTour, skipValidation])
 
     useEffect(() => {
         setFieldError('seatCapacity', seatCapacityMessage ?? undefined)
@@ -411,19 +322,6 @@ export function IdentityStep({
         }))
     }, [lockedTour, tourOptions])
 
-    const slotOptions = useMemo(
-        () =>
-            departureSlots.map((slot) => ({
-                value: slot.id,
-                label: formatBookingSlotOptionLabel(slot),
-            })),
-        [departureSlots],
-    )
-
-    const seatsBlocked =
-        (requiresSlotPick && !slotId) ||
-        (hasDepartureSlots && Boolean(selectedSlot) && !selectedSlotBookable)
-
     const handleContinue = () => {
         if (requireEmailVerification && !isEmailVerified) {
             toast.error(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
@@ -435,31 +333,24 @@ export function IdentityStep({
         const nextKidsSeats = kidsSeatsRef.current?.commit() ?? kidsSeats
         const nextAdultSeats = nextMaleSeats + nextFemaleSeats
         const nextTotalTravelers = nextAdultSeats + nextKidsSeats
-        const resolvedSlotId = slotId || (departureSlots.length === 1 ? departureSlots[0]?.id : '')
-
-        const nextAvailableSeats = selectedTour
-            ? resolveSelectedSlotAvailableSeats(selectedTour, resolvedSlotId)
-            : null
 
         const nextCapacityError =
             skipValidation || !selectedTour
                 ? null
-                : hasDepartureSlots && !resolvedSlotId
-                  ? null
-                  : selectedTour.isBookingClosed || selectedSlotClosed
-                    ? MessageCode.BOOKING_CLOSED
-                    : validateSeatCapacity({
-                          maleSeats: nextMaleSeats,
-                          femaleSeats: nextFemaleSeats,
-                          kidsSeats: nextKidsSeats,
-                          availableSeats: nextAvailableSeats,
-                      })
+                : selectedTour.isBookingClosed
+                  ? MessageCode.BOOKING_CLOSED
+                  : validateSeatCapacity({
+                        maleSeats: nextMaleSeats,
+                        femaleSeats: nextFemaleSeats,
+                        kidsSeats: nextKidsSeats,
+                        availableSeats,
+                    })
 
         const nextCapacityMessage = nextCapacityError
             ? resolveSeatCapacityMessage(nextCapacityError)
             : null
 
-        const nextBreakdown =
+        const nextTotalAmount =
             selectedTour && nextTotalTravelers > 0
                 ? calculateBookingPriceBreakdown({
                       adultSeats: nextAdultSeats,
@@ -468,32 +359,11 @@ export function IdentityStep({
                       discountPercent: selectedTour.discountPercent,
                       kidsDiscountPercent: selectedTour.kidsDiscountPercent,
                       advanceAmountPerSeat: selectedTour.advanceAmountPerSeat,
-                  })
-                : null
-
-        const nextPricing: BookingPricingSnapshot = {
-            totalAmount: nextBreakdown?.total ?? 0,
-            advanceAmountDue: nextBreakdown?.advanceDue ?? 0,
-            balanceDue: nextBreakdown?.balanceDue ?? 0,
-        }
+                  }).total
+                : 0
 
         if (!skipValidation) {
-            if (hasDepartureSlots && !resolvedSlotId) {
-                const message = getMessage(MessageCode.BOOKING_SLOT_REQUIRED)
-                setFieldError('slotId', message)
-                toast.error(message)
-                return
-            }
-
-            const resolvedSlot = selectedTour
-                ? resolveSelectedBookingSlot(selectedTour, resolvedSlotId)
-                : null
-            if (resolvedSlot && (!resolvedSlot.isBookable || resolvedSlot.availableSeats <= 0)) {
-                toast.error(getMessage(MessageCode.BOOKING_CLOSED))
-                return
-            }
-
-            if (selectedTour?.isBookingClosed || selectedSlotClosed) {
+            if (selectedTour?.isBookingClosed) {
                 setFieldError('tourId', getMessage(MessageCode.BOOKING_CLOSED))
                 toast.error(getMessage(MessageCode.BOOKING_CLOSED))
                 return
@@ -513,7 +383,7 @@ export function IdentityStep({
             emergencyPhone,
             cnic,
             tourId: lockedTour?.id ?? tourId,
-            slotId: resolvedSlotId,
+            slotId,
             maleSeats: nextMaleSeats,
             femaleSeats: nextFemaleSeats,
             kidsSeats: nextKidsSeats,
@@ -528,7 +398,7 @@ export function IdentityStep({
                 emergencyPhone,
                 cnic,
                 tourId: lockedTour?.id ?? tourId,
-                slotId: resolvedSlotId || undefined,
+                slotId,
                 maleSeats: nextMaleSeats,
                 femaleSeats: nextFemaleSeats,
                 kidsSeats: nextKidsSeats,
@@ -544,17 +414,7 @@ export function IdentityStep({
                 return
             }
 
-            const idCardParsed = bookingIdCardSchema.safeParse({ idCardFront, idCardBack })
-            if (!idCardParsed.success) {
-                setFieldErrors((prev) => ({
-                    ...prev,
-                    ...mapZodIssuesToFieldErrors(idCardParsed.error.issues),
-                }))
-                toast.error(getMessage(MessageCode.VALIDATION_REQUIRED_FIELDS))
-                return
-            }
-
-            if (!selectedTour || nextPricing.totalAmount <= 0) {
+            if (!selectedTour || nextTotalAmount <= 0) {
                 toast.error(getMessage(MessageCode.BOOKING_SELECT_VALID_PLAN))
                 return
             }
@@ -567,103 +427,26 @@ export function IdentityStep({
                     emergencyPhone: parsed.data.emergencyPhone,
                     cnic: parsed.data.cnic,
                     tourId: parsed.data.tourId,
-                    slotId: resolvedSlotId,
+                    slotId: parsed.data.slotId ?? slotId,
                     maleSeats: parsed.data.maleSeats,
                     femaleSeats: parsed.data.femaleSeats,
                     kidsSeats: parsed.data.kidsSeats,
                     note: parsed.data.note ?? '',
                 },
-                nextPricing,
+                nextTotalAmount,
             )
             return
         }
 
-        onContinue(snapshot, nextPricing)
+        onContinue(snapshot, nextTotalAmount)
     }
 
     const showEmailGate =
         requireEmailVerification && !isEmailVerified && !!agencyId && !!emailRedirectTo
 
-    const slotSelectionBlocked = (requiresSlotPick && !slotId) || seatsBlocked
-
     return (
         <div className='flex h-max min-h-full flex-col justify-between'>
             <div className='grid gap-5 sm:grid-cols-2'>
-                {planLocked ? (
-                    <FormInput
-                        label='Destination'
-                        required
-                        readOnly
-                        staticField
-                        value={lockedTour?.title ?? selectedTour?.title ?? ''}
-                        aria-readonly
-                        className='sm:col-span-2'
-                    />
-                ) : (
-                    <div className='flex flex-col gap-2 sm:col-span-2'>
-                        <label className={bookingFieldLabelClassName}>
-                            Destination
-                            <span className='text-red-400'> *</span>
-                        </label>
-                        <BookingFormSelect
-                            name='tourId'
-                            value={tourId}
-                            onChange={(nextValue) => {
-                                setTourId(nextValue)
-                                setSlotId('')
-                                clearFieldErrors('tourId', 'slotId')
-                            }}
-                            placeholder='Select destination'
-                            options={planOptions}
-                            searchable
-                            searchPlaceholder='Search destinations...'
-                            noResultsMessage='No tours found'
-                            aria-label='Destination'
-                        />
-                    </div>
-                )}
-                {fieldErrors.tourId ? (
-                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.tourId}</p>
-                ) : null}
-
-                {hasDepartureSlots ? (
-                    <div className='flex flex-col gap-2 sm:col-span-2'>
-                        <label className={bookingFieldLabelClassName}>
-                            Departure
-                            <span className='text-red-400'> *</span>
-                        </label>
-                        <BookingFormSelect
-                            name='slotId'
-                            value={slotId}
-                            onChange={(nextValue) => {
-                                setSlotId(nextValue)
-                                clearFieldErrors('slotId', 'seatCapacity')
-                            }}
-                            placeholder='Select a departure date'
-                            options={slotOptions}
-                            searchable={slotOptions.length > 4}
-                            searchPlaceholder='Search departures...'
-                            noResultsMessage='No departures available'
-                            aria-label='Departure'
-                        />
-                        {fieldErrors.slotId ? (
-                            <p className='text-xs text-red-500'>{fieldErrors.slotId}</p>
-                        ) : null}
-                    </div>
-                ) : null}
-
-                {hasDepartureSlots && !selectedSlot ? (
-                    <div className='rounded-[10px] border border-dashed border-[#D5DADD] bg-[#F8FAFB] px-4 py-3.5 text-sm text-neutral-600 sm:col-span-2'>
-                        Select a departure to view how many seats are booked and available.
-                    </div>
-                ) : (
-                    <BookingSlotAvailabilitySummary
-                        key={selectedSlot?.id ?? 'tour-fallback'}
-                        slot={selectedSlot}
-                        tour={hasDepartureSlots ? null : selectedTour}
-                    />
-                )}
-
                 {showEmailGate ? (
                     <BookingEmailOtpGate
                         agencyId={agencyId!}
@@ -738,18 +521,46 @@ export function IdentityStep({
                     error={fieldErrors.cnic}
                     className='sm:col-span-2'
                 />
-                {seatsBlocked ? (
-                    <p className='-mt-3 text-xs text-neutral-500 sm:col-span-2'>
-                        {requiresSlotPick && !slotId
-                            ? 'Select a departure above to choose seats.'
-                            : 'This departure is not available for booking.'}
-                    </p>
+                {planLocked ? (
+                    <FormInput
+                        label='Destination'
+                        required
+                        readOnly
+                        staticField
+                        value={lockedTour?.title ?? selectedTour?.title ?? ''}
+                        aria-readonly
+                        className='sm:col-span-2'
+                    />
+                ) : (
+                    <div className='flex flex-col gap-2 sm:col-span-2'>
+                        <label className={bookingFieldLabelClassName}>
+                            Destination
+                            <span className='text-red-400'> *</span>
+                        </label>
+                        <BookingFormSelect
+                            name='tourId'
+                            value={tourId}
+                            onChange={(nextValue) => {
+                                setTourId(nextValue)
+                                clearFieldErrors('tourId')
+                            }}
+                            placeholder='Select destination'
+                            options={planOptions}
+                            searchable
+                            searchPlaceholder='Search destinations...'
+                            noResultsMessage='No tours found'
+                            aria-label='Destination'
+                        />
+                    </div>
+                )}
+                {fieldErrors.tourId ? (
+                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.tourId}</p>
                 ) : null}
                 <QuantityStepper
                     ref={maleSeatsRef}
                     label='Male Seats'
                     value={maleSeats}
-                    max={seatsBlocked ? 0 : maxMaleSeats}
+                    max={maxMaleSeats}
                     variant='field'
                     onChange={(value) => {
                         setMaleSeats(value)
@@ -764,7 +575,7 @@ export function IdentityStep({
                     ref={femaleSeatsRef}
                     label='Female Seats'
                     value={femaleSeats}
-                    max={seatsBlocked ? 0 : maxFemaleSeats}
+                    max={maxFemaleSeats}
                     variant='field'
                     onChange={(value) => {
                         setFemaleSeats(value)
@@ -779,7 +590,7 @@ export function IdentityStep({
                     ref={kidsSeatsRef}
                     label='Total Number Children (4 to 8 years):'
                     value={kidsSeats}
-                    max={seatsBlocked ? 0 : maxKidsSeats}
+                    max={maxKidsSeats}
                     variant='field'
                     onChange={(value) => {
                         setKidsSeats(value)
@@ -805,34 +616,6 @@ export function IdentityStep({
                     onChange={(event) => setNote(event.target.value)}
                     className='sm:col-span-2'
                 />
-                <FileUploadField
-                    label='CNIC front'
-                    required={!skipValidation}
-                    mode='image'
-                    value={idCardFront}
-                    onChange={(file) => {
-                        onIdCardFrontChange(file)
-                        clearFieldErrors('idCardFront')
-                    }}
-                    className='sm:col-span-2'
-                />
-                {fieldErrors.idCardFront ? (
-                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.idCardFront}</p>
-                ) : null}
-                <FileUploadField
-                    label='CNIC back'
-                    required={!skipValidation}
-                    mode='image'
-                    value={idCardBack}
-                    onChange={(file) => {
-                        onIdCardBackChange(file)
-                        clearFieldErrors('idCardBack')
-                    }}
-                    className='sm:col-span-2'
-                />
-                {fieldErrors.idCardBack ? (
-                    <p className='-mt-3 text-xs text-red-500 sm:col-span-2'>{fieldErrors.idCardBack}</p>
-                ) : null}
                 <BookingPriceSummary
                     breakdown={priceBreakdown}
                     adultSeats={adultSeats}
@@ -851,9 +634,7 @@ export function IdentityStep({
                     disabled={
                         (tourOptions.length === 0 && !lockedTour) ||
                         !!seatCapacityError ||
-                        !!selectedTour?.isBookingClosed ||
-                        selectedSlotClosed ||
-                        slotSelectionBlocked
+                        !!selectedTour?.isBookingClosed
                     }
                     className={cn('w-full rounded-md px-12 sm:w-auto', HP_THEME_BTN_CLASS)}
                     style={HP_THEME_BTN_STYLE}

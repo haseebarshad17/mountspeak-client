@@ -17,21 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
     })
 }
 
-type LoginPageProps = {
-    searchParams?: Promise<{ error?: string }>
-}
-
-export default async function Page({ searchParams }: LoginPageProps) {
-    const resolvedSearchParams = searchParams ? await searchParams : {}
-    const showStaffBookingBlock = resolvedSearchParams.error === 'customer_site_access_denied'
-
-    if (!showStaffBookingBlock) {
-        await redirectIfAuthenticated()
-    }
+export default async function Page() {
+    await redirectIfAuthenticated()
 
     return (
         <Suspense fallback={<div className='min-h-dvh bg-white' aria-hidden />}>
-            <AgencyMagicLinkPage staffBookingBlocked={showStaffBookingBlock} />
+            <AgencyMagicLinkPage />
         </Suspense>
     )
 }
