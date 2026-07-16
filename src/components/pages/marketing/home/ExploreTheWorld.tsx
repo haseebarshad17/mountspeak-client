@@ -121,6 +121,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     discountPercent={tour.discountPercent}
                                     pricePerSeat={tour.pricePerSeat}
                                     title={tour.title}
+                                    category={isUmrahSite ? null : tour.category}
                                     image={tour.image}
                                     totalBooked={tour.totalBooked}
                                     remainingSeats={tour.remainingSeats}

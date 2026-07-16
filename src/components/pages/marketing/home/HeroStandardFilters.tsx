@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils/clsxUtils"
 import { usePakistanCities } from "@/services/cities/cities.queries"
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
+import {
+    TOUR_CATEGORY_FILTER_OPTIONS,
+    type TourCategory,
+} from "@/services/tours/tours.category"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
-import { Calendar, Loader2, MapPin, Navigation, Search } from "lucide-react"
+import { Calendar, Heart, Loader2, MapPin, Navigation, Search, Users } from "lucide-react"
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { DEFAULT_HERO_SEARCH_FILTERS } from '@/components/pages/marketing/home/hero-search.defaults'
@@ -105,6 +109,7 @@ export type HeroFiltersValues = {
     to?: string
     start_date?: string
     end_date?: string
+    category?: TourCategory
 }
 
 type HeroStandardFiltersProps = {
@@ -132,14 +137,22 @@ export default function HeroStandardFilters({
     const [to, setTo] = useState(initialValues?.to ?? "")
     const [startDate, setStartDate] = useState(initialValues?.start_date ?? "")
     const [endDate, setEndDate] = useState(initialValues?.end_date ?? "")
-    const [open, setOpen] = useState<"from" | "to" | null>(null)
+    const [category, setCategory] = useState(initialValues?.category ?? "")
+    const [open, setOpen] = useState<"from" | "to" | "category" | null>(null)
 
     useEffect(() => {
         setFrom(initialValues?.from ?? "")
         setTo(initialValues?.to ?? "")
         setStartDate(initialValues?.start_date ?? "")
         setEndDate(initialValues?.end_date ?? "")
-    }, [initialValues?.from, initialValues?.to, initialValues?.start_date, initialValues?.end_date])
+        setCategory(initialValues?.category ?? "")
+    }, [
+        initialValues?.from,
+        initialValues?.to,
+        initialValues?.start_date,
+        initialValues?.end_date,
+        initialValues?.category,
+    ])
 
     const cityOptions = useMemo(() => {
         const merged = new Set<string>([...pakistanCities, ...tourLocations])
@@ -158,6 +171,11 @@ export default function HeroStandardFilters({
 
     const minTravelDate = new Date().toISOString().slice(0, 10)
 
+    const categoryFilterOptions = useMemo(
+        () => TOUR_CATEGORY_FILTER_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+        [],
+    )
+
     const handleSearch = () => {
         startSearchTransition(() => {
             router.push(
@@ -166,6 +184,7 @@ export default function HeroStandardFilters({
                     to,
                     start_date: startDate || undefined,
                     end_date: endDate || undefined,
+                    category: category === 'PUBLIC_TRIP' || category === 'HONEYMOON' ? category : undefined,
                 }),
             )
         })
@@ -189,9 +208,23 @@ export default function HeroStandardFilters({
                 className={cn(
                     "grid min-w-0 grid-cols-1 gap-2",
                     "xs:grid-cols-2",
-                    "xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)] xl:items-stretch xl:gap-0 xl:h-12",
+                    "xl:grid-cols-[minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(130px,155px)] xl:items-stretch xl:gap-0 xl:h-12",
                 )}
             >
+                <div className="min-w-0 w-full">
+                    <FilterDropdown
+                        options={categoryFilterOptions}
+                        value={category}
+                        onChange={(value) => setCategory(String(value))}
+                        placeholder="Category"
+                        triggerIcon={category === 'HONEYMOON' ? Heart : Users}
+                        theme="slate"
+                        open={open === "category"}
+                        onOpenChange={(isOpen) => setOpen(isOpen ? "category" : null)}
+                        classNames={{ triggerButton: heroTriggerButtonClass }}
+                    />
+                </div>
+
                 <div className="min-w-0 w-full">
                     {isCitiesLoading ? (
                         <div className={cn(heroTriggerButtonClass, 'flex items-center')}>

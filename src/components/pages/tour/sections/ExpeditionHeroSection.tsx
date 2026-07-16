@@ -28,7 +28,7 @@ type ExpeditionHeroSectionProps = {
 
 export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
     const { heroSection, finalCtaSection, theme } = page
-    const { backgroundMedia, overlay, title, subtitle, tripHighlights } = heroSection
+    const { backgroundMedia, overlay, title, subtitle, tripHighlights, eyebrow } = heroSection
     const primaryButton =
         heroSection.ctaGroup.find((btn) => btn.style === 'primary')
         ?? finalCtaSection.buttons.find((btn) => btn.style === 'primary')
@@ -73,6 +73,11 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                     <div className="agency-container px-4 sm:px-8 lg:px-16">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
                             <div className="max-w-3xl text-white">
+                                {eyebrow?.trim() ? (
+                                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/85 sm:mb-3 sm:text-xs">
+                                        {eyebrow.trim()}
+                                    </p>
+                                ) : null}
                                 <h1
                                     className="font-heading w-full max-w-[672px] text-2xl font-semibold leading-tight tracking-tight xs:text-[26px] sm:text-4xl lg:text-[48px] lg:leading-[57px]"
                                     style={{ textShadow: '0 2px 40px rgba(0,0,0,0.35)' }}

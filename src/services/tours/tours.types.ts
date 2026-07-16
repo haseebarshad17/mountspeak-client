@@ -1,3 +1,5 @@
+import type { TourCategory } from './tours.category'
+
 export type { TourRecord } from './tours.payload.types'
 
 export type TourPublicationStatus = 'PUBLISHED' | 'UNPUBLISHED'
@@ -22,6 +24,7 @@ export type TourListItem = {
     id: string
     slug: string
     title: string
+    category: TourCategory | null
     discountLabel: string
     discountPercent: number | null
     pricePerSeat: number | null

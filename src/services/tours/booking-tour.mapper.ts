@@ -2,8 +2,18 @@ import {
     getAvailableSeats,
     isTourBookingClosed,
 } from '@/lib/booking/tour-booking-rules'
-import type { BookingTourOption, BookingTourSlot } from '@/components/pages/booking/booking.types'
+import { formatPickupPointLabel } from '@/services/tours/tours.pickup'
+import type { BookingTourOption, BookingTourPickupPoint, BookingTourSlot } from '@/components/pages/booking/booking.types'
 import { formatBookingSlotLabel } from '@/components/pages/booking/booking.types'
+
+export type PublishedTourPickupPointRpc = {
+    id: string
+    city: string
+    pickup_time: string | null
+    notes: string | null
+    sort_order: number
+    is_primary: boolean
+}
 
 export type PublishedTourSlotRpc = {
     id: string
@@ -31,6 +41,24 @@ export type PublishedTourRpc = {
     capacity_total: number | null
     confirmed_seats: number | null
     slots?: PublishedTourSlotRpc[] | null
+    pickup_points?: PublishedTourPickupPointRpc[] | null
+}
+
+function mapPickupPoint(point: PublishedTourPickupPointRpc): BookingTourPickupPoint {
+    return {
+        id: point.id,
+        city: point.city,
+        pickupTime: point.pickup_time,
+        notes: point.notes,
+        sortOrder: point.sort_order,
+        isPrimary: Boolean(point.is_primary),
+        label: formatPickupPointLabel({
+            city: point.city,
+            pickupTime: point.pickup_time,
+            notes: point.notes,
+            isPrimary: Boolean(point.is_primary),
+        }),
+    }
 }
 
 function mapSlot(slot: PublishedTourSlotRpc): BookingTourSlot {
@@ -57,6 +85,7 @@ export function mapPublishedTourToBookingOption(row: PublishedTourRpc): BookingT
 
     const confirmedSeats = Math.max(0, row.confirmed_seats ?? 0)
     const slots = (row.slots ?? []).map(mapSlot)
+    const pickupPoints = (row.pickup_points ?? []).map(mapPickupPoint)
     const hasSlots = slots.length > 0
     const bookableSlots = slots.filter((slot) => slot.isBookable && slot.availableSeats > 0)
     const selectedSlot = bookableSlots.length === 1 ? bookableSlots[0] : null
@@ -90,5 +119,6 @@ export function mapPublishedTourToBookingOption(row: PublishedTourRpc): BookingT
         availableSeats,
         isBookingClosed,
         slots,
+        pickupPoints,
     }
 }

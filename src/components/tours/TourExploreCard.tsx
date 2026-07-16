@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import { getTourCategoryLabel, type TourCategory } from '@/services/tours/tours.category'
 import type { TourListDepartureSlot } from '@/services/tours/tours.types'
 import {
     formatTourDaysLeft,
@@ -26,6 +27,7 @@ type TourExploreCardProps = {
     discountPercent?: number | null
     pricePerSeat?: number | null
     title: string
+    category?: TourCategory | null
     image: string
     detailHref?: string
     totalBooked?: number
@@ -112,6 +114,7 @@ export function TourExploreCard({
     discountPercent,
     pricePerSeat = null,
     title,
+    category = null,
     image,
     detailHref,
     totalBooked = 0,
@@ -137,6 +140,7 @@ export function TourExploreCard({
         pricePerSeat != null &&
         discountedPrice < pricePerSeat
     const showSaveShare = Boolean(tourId) && !isDemoDetail
+    const categoryLabel = getTourCategoryLabel(category)
 
     return (
         <Link
@@ -169,6 +173,11 @@ export function TourExploreCard({
                 ) : null}
 
                 <TourDiscountBadge discountPercent={discountPercent} />
+                {categoryLabel ? (
+                    <span className='absolute bottom-3 right-3 rounded-full border border-white/30 bg-black/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm'>
+                        {categoryLabel}
+                    </span>
+                ) : null}
             </div>
 
             <div className='flex flex-1 flex-col px-3.5 py-3 sm:px-4 sm:py-3.5'>

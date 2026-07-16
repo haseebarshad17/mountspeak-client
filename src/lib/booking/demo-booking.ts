@@ -39,4 +39,5 @@ export const DEMO_BOOKING_TOUR_OPTION: BookingTourOption = {
             label: 'Sample departure',
         },
     ],
+    pickupPoints: [],
 }

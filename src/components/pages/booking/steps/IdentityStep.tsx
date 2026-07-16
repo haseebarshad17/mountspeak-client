@@ -26,6 +26,7 @@ import {
     calculateBookingPriceBreakdown,
     formatBookingSlotOptionLabel,
     getTourDepartureSlots,
+    getTourPickupPoints,
     resolveSelectedBookingSlot,
     resolveSelectedBookingTour,
     resolveSelectedSlotAvailableSeats,
@@ -102,6 +103,7 @@ export function IdentityStep({
     const [cnic, setCnic] = useState(() => formatCnicInput(initialDetails.cnic))
     const [tourId, setTourId] = useState(initialDetails.tourId || lockedTour?.id || '')
     const [slotId, setSlotId] = useState(initialDetails.slotId ?? '')
+    const [pickupPointId, setPickupPointId] = useState(initialDetails.pickupPointId ?? '')
     const [maleSeats, setMaleSeats] = useState(initialDetails.maleSeats)
     const [femaleSeats, setFemaleSeats] = useState(initialDetails.femaleSeats)
     const [kidsSeats, setKidsSeats] = useState(initialDetails.kidsSeats)
@@ -148,6 +150,7 @@ export function IdentityStep({
         cnic,
         tourId: lockedTour?.id ?? tourId,
         slotId,
+        pickupPointId,
         maleSeats,
         femaleSeats,
         kidsSeats,
@@ -171,6 +174,7 @@ export function IdentityStep({
         cnic,
         tourId,
         slotId,
+        pickupPointId,
         maleSeats,
         femaleSeats,
         kidsSeats,
@@ -232,6 +236,14 @@ export function IdentityStep({
     const hasDepartureSlots = departureSlots.length > 0
     const requiresSlotPick = departureSlots.length > 1
 
+    const pickupPoints = useMemo(
+        () => (selectedTour ? getTourPickupPoints(selectedTour) : []),
+        [selectedTour],
+    )
+
+    const hasPickupPoints = pickupPoints.length > 0
+    const requiresPickupPick = pickupPoints.length > 1
+
     useEffect(() => {
         if (!selectedTour) return
 
@@ -248,6 +260,26 @@ export function IdentityStep({
             setSlotId(initialDetails.slotId)
         }
     }, [departureSlots, initialDetails.slotId, selectedTour, slotId])
+
+    useEffect(() => {
+        if (!selectedTour) return
+
+        if (pickupPointId && pickupPoints.some((point) => point.id === pickupPointId)) {
+            return
+        }
+
+        if (pickupPoints.length === 1) {
+            setPickupPointId(pickupPoints[0].id)
+            return
+        }
+
+        if (
+            initialDetails.pickupPointId &&
+            pickupPoints.some((point) => point.id === initialDetails.pickupPointId)
+        ) {
+            setPickupPointId(initialDetails.pickupPointId)
+        }
+    }, [initialDetails.pickupPointId, pickupPointId, pickupPoints, selectedTour])
 
     const adultSeats = maleSeats + femaleSeats
     const totalTravelers = adultSeats + kidsSeats
@@ -288,9 +320,9 @@ export function IdentityStep({
     }, [
         availableSeats,
         femaleSeats,
+        hasDepartureSlots,
         kidsSeats,
         maleSeats,
-        requiresSlotPick,
         selectedSlot,
         selectedSlotBookable,
         selectedSlotClosed,
@@ -331,6 +363,20 @@ export function IdentityStep({
 
         setFieldError('slotId')
     }, [hasDepartureSlots, requiresSlotPick, skipValidation, slotId])
+
+    useEffect(() => {
+        if (skipValidation || !hasPickupPoints) {
+            setFieldError('pickupPointId')
+            return
+        }
+
+        if (requiresPickupPick && !pickupPointId) {
+            setFieldError('pickupPointId', getMessage(MessageCode.BOOKING_PICKUP_POINT_REQUIRED))
+            return
+        }
+
+        setFieldError('pickupPointId')
+    }, [hasPickupPoints, pickupPointId, requiresPickupPick, skipValidation])
 
     useEffect(() => {
         setFieldError('seatCapacity', seatCapacityMessage ?? undefined)
@@ -420,6 +466,15 @@ export function IdentityStep({
         [departureSlots],
     )
 
+    const pickupOptions = useMemo(
+        () =>
+            pickupPoints.map((point) => ({
+                value: point.id,
+                label: point.label,
+            })),
+        [pickupPoints],
+    )
+
     const seatsBlocked =
         (requiresSlotPick && !slotId) ||
         (hasDepartureSlots && Boolean(selectedSlot) && !selectedSlotBookable)
@@ -436,6 +491,8 @@ export function IdentityStep({
         const nextAdultSeats = nextMaleSeats + nextFemaleSeats
         const nextTotalTravelers = nextAdultSeats + nextKidsSeats
         const resolvedSlotId = slotId || (departureSlots.length === 1 ? departureSlots[0]?.id : '')
+        const resolvedPickupPointId =
+            pickupPointId || (pickupPoints.length === 1 ? pickupPoints[0]?.id : '')
 
         const nextAvailableSeats = selectedTour
             ? resolveSelectedSlotAvailableSeats(selectedTour, resolvedSlotId)
@@ -485,6 +542,13 @@ export function IdentityStep({
                 return
             }
 
+            if (hasPickupPoints && !resolvedPickupPointId) {
+                const message = getMessage(MessageCode.BOOKING_PICKUP_POINT_REQUIRED)
+                setFieldError('pickupPointId', message)
+                toast.error(message)
+                return
+            }
+
             const resolvedSlot = selectedTour
                 ? resolveSelectedBookingSlot(selectedTour, resolvedSlotId)
                 : null
@@ -514,6 +578,7 @@ export function IdentityStep({
             cnic,
             tourId: lockedTour?.id ?? tourId,
             slotId: resolvedSlotId,
+            pickupPointId: resolvedPickupPointId,
             maleSeats: nextMaleSeats,
             femaleSeats: nextFemaleSeats,
             kidsSeats: nextKidsSeats,
@@ -529,6 +594,7 @@ export function IdentityStep({
                 cnic,
                 tourId: lockedTour?.id ?? tourId,
                 slotId: resolvedSlotId || undefined,
+                pickupPointId: resolvedPickupPointId || undefined,
                 maleSeats: nextMaleSeats,
                 femaleSeats: nextFemaleSeats,
                 kidsSeats: nextKidsSeats,
@@ -568,6 +634,7 @@ export function IdentityStep({
                     cnic: parsed.data.cnic,
                     tourId: parsed.data.tourId,
                     slotId: resolvedSlotId,
+                    pickupPointId: resolvedPickupPointId,
                     maleSeats: parsed.data.maleSeats,
                     femaleSeats: parsed.data.femaleSeats,
                     kidsSeats: parsed.data.kidsSeats,
@@ -611,7 +678,8 @@ export function IdentityStep({
                             onChange={(nextValue) => {
                                 setTourId(nextValue)
                                 setSlotId('')
-                                clearFieldErrors('tourId', 'slotId')
+                                setPickupPointId('')
+                                clearFieldErrors('tourId', 'slotId', 'pickupPointId')
                             }}
                             placeholder='Select destination'
                             options={planOptions}
@@ -648,6 +716,32 @@ export function IdentityStep({
                         />
                         {fieldErrors.slotId ? (
                             <p className='text-xs text-red-500'>{fieldErrors.slotId}</p>
+                        ) : null}
+                    </div>
+                ) : null}
+
+                {hasPickupPoints ? (
+                    <div className='flex flex-col gap-2 sm:col-span-2'>
+                        <label className={bookingFieldLabelClassName}>
+                            Pickup point
+                            <span className='text-red-400'> *</span>
+                        </label>
+                        <BookingFormSelect
+                            name='pickupPointId'
+                            value={pickupPointId}
+                            onChange={(nextValue) => {
+                                setPickupPointId(nextValue)
+                                clearFieldErrors('pickupPointId')
+                            }}
+                            placeholder='Select where you will join the trip'
+                            options={pickupOptions}
+                            searchable={pickupOptions.length > 4}
+                            searchPlaceholder='Search cities...'
+                            noResultsMessage='No pickup points available'
+                            aria-label='Pickup point'
+                        />
+                        {fieldErrors.pickupPointId ? (
+                            <p className='text-xs text-red-500'>{fieldErrors.pickupPointId}</p>
                         ) : null}
                     </div>
                 ) : null}

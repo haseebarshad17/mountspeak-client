@@ -1,3 +1,4 @@
+import type { TourCategory } from './tours.category'
 import type { TourPublicationStatus } from './tours.types'
 
 export type TourHeaderPayload = {
@@ -65,6 +66,7 @@ export type TourRecord = {
     id: string
     slug: string
     title: string
+    category?: TourCategory | null
     from_location: string | null
     to_location: string | null
     start_date: string | null
@@ -88,4 +90,6 @@ export type TourRecord = {
     stay_and_dine: TourStayPayload[] | null
     expedition_perks: TourPerkPayload[] | null
     visual_fragments: string[] | null
+    /** Populated client-side for search filtering when pickup points exist. */
+    pickup_cities?: string[]
 }

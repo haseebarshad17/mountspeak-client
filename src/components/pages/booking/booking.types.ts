@@ -1,3 +1,13 @@
+export type BookingTourPickupPoint = {
+    id: string
+    city: string
+    pickupTime: string | null
+    notes: string | null
+    sortOrder: number
+    isPrimary: boolean
+    label: string
+}
+
 export type BookingTourSlot = {
     id: string
     startDate: string
@@ -27,6 +37,7 @@ export type BookingTourOption = {
     availableSeats: number | null
     isBookingClosed: boolean
     slots: BookingTourSlot[]
+    pickupPoints: BookingTourPickupPoint[]
 }
 
 /** Prefer `lockedTour` when it matches the selected id — it includes RPC slot data. */
@@ -51,6 +62,7 @@ export type BookingDetailsForm = {
     cnic: string
     tourId: string
     slotId: string
+    pickupPointId: string
     maleSeats: number
     femaleSeats: number
     kidsSeats: number
@@ -281,4 +293,21 @@ export function resolveSelectedSlotAvailableSeats(
     }
 
     return tour.availableSeats
+}
+
+export function getTourPickupPoints(tour: Pick<BookingTourOption, 'pickupPoints'>): BookingTourPickupPoint[] {
+    return tour.pickupPoints ?? []
+}
+
+export function resolveSelectedBookingPickupPoint(
+    tour: BookingTourOption,
+    pickupPointId: string,
+): BookingTourPickupPoint | null {
+    const points = getTourPickupPoints(tour)
+
+    if (pickupPointId) {
+        return points.find((entry) => entry.id === pickupPointId) ?? null
+    }
+
+    return points.length === 1 ? points[0] : null
 }

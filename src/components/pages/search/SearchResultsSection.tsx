@@ -91,6 +91,7 @@ export function SearchResultsSection({
                             discountPercent={tour.discountPercent}
                             pricePerSeat={tour.pricePerSeat}
                             title={tour.title}
+                            category={isUmrahSearch ? null : tour.category}
                             image={tour.image}
                             totalBooked={tour.totalBooked}
                             remainingSeats={tour.remainingSeats}

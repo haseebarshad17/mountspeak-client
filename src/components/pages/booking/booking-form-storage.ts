@@ -33,6 +33,7 @@ export function loadBookingDraft(): BookingFormDraft | null {
                 cnic: parsed.details.cnic ?? '',
                 tourId: parsed.details.tourId ?? '',
                 slotId: parsed.details.slotId ?? '',
+                pickupPointId: parsed.details.pickupPointId ?? '',
                 maleSeats: Number(parsed.details.maleSeats) || 0,
                 femaleSeats: Number(parsed.details.femaleSeats) || 0,
                 kidsSeats:
@@ -85,6 +86,7 @@ export function mergeDetailsWithDraft(
         cnic: base?.cnic ?? '',
         tourId: lockedTourId ?? base?.tourId ?? '',
         slotId: initialSlotId ?? base?.slotId ?? '',
+        pickupPointId: base?.pickupPointId ?? '',
         maleSeats: base?.maleSeats ?? 0,
         femaleSeats: base?.femaleSeats ?? 0,
         kidsSeats: base?.kidsSeats ?? (base as { childrenCount?: number } | undefined)?.childrenCount ?? 0,

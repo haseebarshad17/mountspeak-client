@@ -8,13 +8,14 @@ import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.ut
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 
 import { applyAgencyThemeToTourPage, mapTourRecordToPage } from './tours.mapper'
+import { mapTourPickupPointRow, type TourPickupPointRow } from './tours.pickup'
 import type { TourSearchFilters } from './tours.search.types'
 import { hasTourSearchFilters } from './tours.search.utils'
 import type { UmrahSearchFilters } from './tours.umrah-search.utils'
 import { hasUmrahSearchFilters } from './tours.umrah-search.utils'
 import { toursService } from './tours.service'
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
-import { mapPublishedTourToBookingOption, type PublishedTourRpc, type PublishedTourSlotRpc } from './booking-tour.mapper'
+import { mapPublishedTourToBookingOption, type PublishedTourPickupPointRpc, type PublishedTourRpc, type PublishedTourSlotRpc } from './booking-tour.mapper'
 
 import { mapTourRowsToListItemsWithSlots } from './tour-seat-availability'
 
@@ -140,9 +141,36 @@ async function fetchPublishedTourSlotsByTourIds(
     return slotsByTourId
 }
 
+async function fetchPublishedTourPickupPointsByTourIds(
+    tourIds: string[],
+): Promise<Map<string, ReturnType<typeof mapTourPickupPointRow>[]>> {
+    const pointsByTourId = new Map<string, ReturnType<typeof mapTourPickupPointRow>[]>()
+    if (tourIds.length === 0) return pointsByTourId
+
+    const supabase = await getServerSupabase()
+    const { data, error } = await supabase
+        .from('tour_pickup_points')
+        .select('id, tour_id, city, pickup_time, notes, sort_order, is_primary')
+        .in('tour_id', tourIds)
+        .order('sort_order', { ascending: true })
+        .order('is_primary', { ascending: false })
+
+    if (error) throw error
+
+    for (const row of data ?? []) {
+        const mapped = mapTourPickupPointRow(row as TourPickupPointRow)
+        const existing = pointsByTourId.get(row.tour_id) ?? []
+        existing.push(mapped)
+        pointsByTourId.set(row.tour_id, existing)
+    }
+
+    return pointsByTourId
+}
+
 function toBookingTourOption(
     row: TourRow,
     slots: PublishedTourSlotRpc[] = [],
+    pickupPoints: PublishedTourPickupPointRpc[] = [],
 ): BookingTourOption | null {
     return mapPublishedTourToBookingOption({
         id: row.id,
@@ -158,6 +186,7 @@ function toBookingTourOption(
         capacity_total: row.capacity_total,
         confirmed_seats: row.confirmed_seats,
         slots,
+        pickup_points: pickupPoints,
     })
 }
 
@@ -223,17 +252,37 @@ export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null
     const row = await fetchPublishedTourBySlug(slug)
     if (!row) return null
 
+    const pickupPointsByTourId = await fetchPublishedTourPickupPointsByTourIds([row.id])
+    const pickupPoints = pickupPointsByTourId.get(row.id) ?? []
+
     const homepage = await fetchAgencyHomepage()
-    const page = mapTourRecordToPage(row)
+    const page = mapTourRecordToPage(row, pickupPoints)
 
     return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
 
 async function mapRowsToBookingTourOptions(rows: TourRow[]): Promise<BookingTourOption[]> {
-    const slotsByTourId = await fetchPublishedTourSlotsByTourIds(rows.map((row) => row.id))
+    const tourIds = rows.map((row) => row.id)
+    const [slotsByTourId, pickupPointsByTourId] = await Promise.all([
+        fetchPublishedTourSlotsByTourIds(tourIds),
+        fetchPublishedTourPickupPointsByTourIds(tourIds),
+    ])
 
     return rows
-        .map((row) => toBookingTourOption(row, slotsByTourId.get(row.id) ?? []))
+        .map((row) =>
+            toBookingTourOption(
+                row,
+                slotsByTourId.get(row.id) ?? [],
+                (pickupPointsByTourId.get(row.id) ?? []).map((point) => ({
+                    id: point.id,
+                    city: point.city,
+                    pickup_time: point.pickupTime,
+                    notes: point.notes,
+                    sort_order: point.sortOrder,
+                    is_primary: point.isPrimary,
+                })),
+            ),
+        )
         .filter((option): option is BookingTourOption => option !== null)
         .filter((option) => isTourBookable(option))
 }

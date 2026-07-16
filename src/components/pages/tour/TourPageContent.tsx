@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react'
 
 import type { TourPage } from './sections/tour-page.types'
+import { PickupPointsSection } from './sections/PickupPointsSection'
 import { DayByDayItinerarySection } from './sections/DayByDayItinerarySection'
 import { ExpeditionClosingCtaSection } from './sections/ExpeditionClosingCtaSection'
 import { ExpeditionHeroSection } from './sections/ExpeditionHeroSection'
@@ -64,6 +65,9 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
         >
             <ExpeditionHeroSection page={page} />
             <ExpeditionOverviewSection page={page} />
+            {page.pickupPointsSection ? (
+                <PickupPointsSection section={page.pickupPointsSection} />
+            ) : null}
             <TechnicalRouteBreakdownSection page={page} />
             <DayByDayItinerarySection page={page} />
             <StayAndDineCardsSection page={page} />

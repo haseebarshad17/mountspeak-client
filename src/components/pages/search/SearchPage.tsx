@@ -68,6 +68,7 @@ export default function SearchPage({
                   to: filters.to ?? '',
                   start_date: filters.start_date ?? '',
                   end_date: filters.end_date ?? '',
+                  category: filters.category ?? '',
               })
 
         const sessionId = getOrCreateEventSessionId()
@@ -100,6 +101,7 @@ export default function SearchPage({
                       to: filters.to ?? null,
                       start_date: filters.start_date ?? null,
                       end_date: filters.end_date ?? null,
+                      category: filters.category ?? null,
                   },
         })
     }, [filters, umrahFilters, isUmrahSearch, summary, trackEvent])

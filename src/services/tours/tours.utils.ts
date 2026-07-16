@@ -2,6 +2,7 @@ import { getAvailableSeats, isTourBookingClosed, parseTourCalendarDate } from '@
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
+import { normalizeTourCategory } from './tours.category'
 import type { TourListDepartureSlot, TourListItem, TourRow } from './tours.types'
 
 export { DEMO_TOUR_DETAIL_PATH }
@@ -167,6 +168,7 @@ export function toTourListItem(tour: TourRow, departureSlots: TourListDepartureS
         id: tour.id,
         slug: tour.slug,
         title: tour.title,
+        category: normalizeTourCategory(tour.category) ?? null,
         discountLabel: formatTourDiscount(tour.discount_percent),
         discountPercent:
             tour.discount_percent == null || Number.isNaN(Number(tour.discount_percent))

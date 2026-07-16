@@ -64,6 +64,7 @@
   "BOOKING_ID_CARD_BACK_REQUIRED": "CNIC back image is required.",
   "BOOKING_ID_CARD_SIZE": "ID card image must be 10MB or smaller.",
   "BOOKING_SLOT_REQUIRED": "Please select a departure.",
+  "BOOKING_PICKUP_POINT_REQUIRED": "Please select where you will join the trip.",
   "API_ID_CARD_UPLOAD_FAILED": "Unable to upload ID card image. Please try again.",
   "BOOKING_PAYMENT_STEP_INCOMPLETE": "Please complete the payment step.",
   "BOOKING_DETAILS_INCOMPLETE": "Please complete your travel details before submitting.",

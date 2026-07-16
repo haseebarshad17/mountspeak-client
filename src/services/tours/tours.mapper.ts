@@ -7,6 +7,9 @@ import type { Theme } from '@/services/homepage/homepage.page.types'
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
 import { applyTourSectionFallbacks } from '@/lib/tours/tour-section-fallbacks'
 
+import { getTourCategoryLabel, normalizeTourCategory } from './tours.category'
+import { formatPickupTimeDisplay } from './tours.pickup'
+import type { TourPickupPoint } from './tours.pickup'
 import type { TourRecord } from './tours.payload.types'
 import { tourDetailPath } from './tours.utils'
 
@@ -68,7 +71,7 @@ function formatDayNightLabel(dayCount?: number, nightCount?: number): string {
     return `${days} DAYS / ${nights} NIGHTS`
 }
 
-export function mapTourRecordToPage(row: TourRecord): TourPage {
+export function mapTourRecordToPage(row: TourRecord, pickupPoints: TourPickupPoint[] = []): TourPage {
     const header = row.header
     const overview = row.overview
     const heroUrl = resolveTourMediaUrlOrPlaceholder(header?.hero_image_url)
@@ -124,7 +127,10 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 alt: header?.title ?? row.title,
             },
             overlay: { enabled: true, color: '#000000', opacity: 0.45 },
-            eyebrow: header?.tag ?? '',
+            eyebrow:
+                header?.tag?.trim() ||
+                getTourCategoryLabel(normalizeTourCategory(row.category)) ||
+                '',
             title: header?.title ?? row.title,
             subtitle: header?.subtitle ?? '',
             tripHighlights,
@@ -255,5 +261,23 @@ export function mapTourRecordToPage(row: TourRecord): TourPage {
                 { label: 'Contact Us', url: '/contact-us', style: 'secondary' },
             ],
         },
+        pickupPointsSection:
+            pickupPoints.length > 0
+                ? {
+                      id: 'pickup-points',
+                      title: 'Pickup points',
+                      intro:
+                          pickupPoints.length > 1
+                              ? 'Passengers can join this trip from the following cities.'
+                              : 'Passengers board from the city below.',
+                      points: pickupPoints.map((point) => ({
+                          id: point.id,
+                          city: point.city,
+                          pickupTime: formatPickupTimeDisplay(point.pickupTime),
+                          notes: point.notes,
+                          isPrimary: point.isPrimary,
+                      })),
+                  }
+                : undefined,
     })
 }

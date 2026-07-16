@@ -4,6 +4,7 @@ export function buildSubmitTourBookingPayload(params: {
     bookingId: string
     tourId: string
     slotId?: string | null
+    pickupPointId?: string | null
     name: string
     email: string
     phone: string
@@ -35,6 +36,7 @@ export function buildSubmitTourBookingPayload(params: {
         p_id_card_front_path: params.idCardFrontPath,
         p_id_card_back_path: params.idCardBackPath,
         ...(params.slotId ? { p_slot_id: params.slotId } : {}),
+        ...(params.pickupPointId ? { p_pickup_point_id: params.pickupPointId } : {}),
         ...(params.provider ? { p_provider: params.provider } : {}),
         ...(params.transactionReference?.trim()
             ? { p_transaction_reference: params.transactionReference.trim() }

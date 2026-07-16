@@ -15,6 +15,7 @@ export type SubmitTourBookingDTO = {
     p_provider?: 'EASYPAISA' | 'JAZZCASH' | null
     p_transaction_reference?: string | null
     p_slot_id?: string | null
+    p_pickup_point_id?: string | null
     p_id_card_front_path: string
     p_id_card_back_path: string
 }

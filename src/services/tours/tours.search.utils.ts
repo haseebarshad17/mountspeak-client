@@ -1,3 +1,5 @@
+import { getTourCategoryLabel, normalizeTourCategory } from './tours.category'
+import { tourMatchesPickupCity } from './tours.pickup'
 import type { TourSearchFilters } from './tours.search.types'
 import type { TourRow } from './tours.types'
 
@@ -25,6 +27,7 @@ export function parseTourSearchParams(
         to: pick('to') || undefined,
         start_date: pick('start_date') || legacyDate || undefined,
         end_date: pick('end_date') || legacyDate || undefined,
+        category: normalizeTourCategory(pick('category')),
     }
 }
 
@@ -35,6 +38,7 @@ export function buildTourSearchPath(filters: TourSearchFilters): string {
     if (filters.to?.trim()) search.set('to', filters.to.trim())
     if (filters.start_date?.trim()) search.set('start_date', filters.start_date.trim())
     if (filters.end_date?.trim()) search.set('end_date', filters.end_date.trim())
+    if (filters.category) search.set('category', filters.category)
 
     const query = search.toString()
     return query ? `/search?${query}` : '/search'
@@ -43,6 +47,8 @@ export function buildTourSearchPath(filters: TourSearchFilters): string {
 export function formatTourSearchSummary(filters: TourSearchFilters): string | null {
     const parts: string[] = []
 
+    const categoryLabel = getTourCategoryLabel(filters.category)
+    if (categoryLabel) parts.push(categoryLabel)
     if (filters.from) parts.push(`From ${filters.from}`)
     if (filters.to) parts.push(`To ${filters.to}`)
 
@@ -60,7 +66,7 @@ export function formatTourSearchSummary(filters: TourSearchFilters): string | nu
 }
 
 export function hasTourSearchFilters(filters: TourSearchFilters): boolean {
-    return Boolean(filters.from || filters.to || filters.start_date || filters.end_date)
+    return Boolean(filters.from || filters.to || filters.start_date || filters.end_date || filters.category)
 }
 
 export function normalizeTourLocation(value: string | null | undefined): string {
@@ -72,6 +78,18 @@ export function isExactTourLocationMatch(
     tourValue: string | null | undefined,
 ): boolean {
     return normalizeTourLocation(searchValue) === normalizeTourLocation(tourValue)
+}
+
+export function tourMatchesFromFilter(
+    tour: Pick<TourRow, 'from_location' | 'pickup_cities'>,
+    from: string,
+): boolean {
+    const pickupCities = tour.pickup_cities ?? []
+    return tourMatchesPickupCity(from, tour.from_location, pickupCities)
+}
+
+export function tourMatchesToFilter(tour: Pick<TourRow, 'to_location'>, to: string): boolean {
+    return isExactTourLocationMatch(to, tour.to_location)
 }
 
 export function tourMatchesDateFilter(
@@ -106,12 +124,18 @@ export function filterToursForSearch(tours: TourRow[], filters: TourSearchFilter
 
     let result = tours
 
+    if (filters.category) {
+        result = result.filter((tour) => tour.category === filters.category)
+    }
+
     if (from && to) {
         result = result.filter(
-            (tour) =>
-                isExactTourLocationMatch(from, tour.from_location) &&
-                isExactTourLocationMatch(to, tour.to_location),
+            (tour) => tourMatchesFromFilter(tour, from) && tourMatchesToFilter(tour, to),
         )
+    } else if (from) {
+        result = result.filter((tour) => tourMatchesFromFilter(tour, from))
+    } else if (to) {
+        result = result.filter((tour) => tourMatchesToFilter(tour, to))
     }
 
     if (filters.start_date || filters.end_date) {
@@ -134,8 +158,8 @@ export function getTourSearchRank(tour: TourRow, filters: TourSearchFilters): nu
     const to = filters.to?.trim()
 
     if (from && to) {
-        const exactFrom = isExactTourLocationMatch(from, tour.from_location)
-        const exactTo = isExactTourLocationMatch(to, tour.to_location)
+        const exactFrom = tourMatchesFromFilter(tour, from)
+        const exactTo = tourMatchesToFilter(tour, to)
 
         if (exactFrom && exactTo) return 0
         if (exactFrom) return 1
@@ -143,11 +167,11 @@ export function getTourSearchRank(tour: TourRow, filters: TourSearchFilters): nu
     }
 
     if (from) {
-        return isExactTourLocationMatch(from, tour.from_location) ? 0 : 1
+        return tourMatchesFromFilter(tour, from) ? 0 : 1
     }
 
     if (to) {
-        return isExactTourLocationMatch(to, tour.to_location) ? 0 : 1
+        return tourMatchesToFilter(tour, to) ? 0 : 1
     }
 
     return 0

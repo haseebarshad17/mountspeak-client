@@ -10,6 +10,7 @@ export const DEMO_TOUR_LIST_ITEM: TourListItem = {
     id: DEMO_TOUR_PAGE.id,
     slug: DEMO_TOUR_PAGE.slug,
     title: DEMO_TOUR_PAGE.heroSection.title,
+    category: 'PUBLIC_TRIP',
     discountLabel: '10% Off',
     discountPercent: 10,
     pricePerSeat: 25000,

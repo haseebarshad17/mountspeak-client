@@ -64,6 +64,7 @@ export function toUmrahPlanListItem(plan: UmrahPlanRow): TourListItem {
         id: plan.id,
         slug: plan.id,
         title: plan.basic_information?.package_title?.trim() || 'Umrah package',
+        category: null,
         discountLabel: formatTourDiscount(discountPercent),
         discountPercent,
         pricePerSeat,

@@ -76,6 +76,7 @@ const SavedToursPage = () => {
                                 discountPercent={tour.discountPercent}
                                 pricePerSeat={tour.pricePerSeat}
                                 title={tour.title}
+                                category={tour.category}
                                 image={tour.image}
                                 totalBooked={tour.totalBooked}
                                 remainingSeats={tour.remainingSeats}

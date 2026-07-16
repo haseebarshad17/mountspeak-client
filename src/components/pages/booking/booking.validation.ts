@@ -44,6 +44,7 @@ export const bookingDetailsSchema = z
             }),
         tourId: z.string().uuid(MessageCode.BOOKING_TOUR_REQUIRED),
         slotId: z.string().optional(),
+        pickupPointId: z.string().optional(),
         maleSeats: z.coerce.number().int().min(0),
         femaleSeats: z.coerce.number().int().min(0),
         kidsSeats: z.coerce.number().int().min(0),
