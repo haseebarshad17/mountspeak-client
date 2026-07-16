@@ -8,7 +8,6 @@ import { ExpeditionClosingCtaSection } from './sections/ExpeditionClosingCtaSect
 import { ExpeditionHeroSection } from './sections/ExpeditionHeroSection'
 import { ExpeditionOverviewSection } from './sections/ExpeditionOverviewSection'
 import { ExpeditionPerksTechnicalsSection } from './sections/ExpeditionPerksTechnicalsSection'
-import { PlacesVisitedCardsSection } from './sections/PlacesVisitedCardsSection'
 import { TechnicalRouteBreakdownSection } from './sections/TechnicalRouteBreakdownSection'
 import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
@@ -66,7 +65,6 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
             <ExpeditionHeroSection page={page} />
             <ExpeditionOverviewSection page={page} />
             <TechnicalRouteBreakdownSection page={page} />
-            <PlacesVisitedCardsSection page={page} />
             <DayByDayItinerarySection page={page} />
             <StayAndDineCardsSection page={page} />
             <ExpeditionPerksTechnicalsSection page={page} />
