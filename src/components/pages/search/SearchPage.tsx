@@ -8,7 +8,6 @@ import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
 import {
-    getTourOrPackageCopy,
     listingUsesPackageCopy,
     shouldUseSingleSpecUmrahUx,
     type ListingKind,
@@ -62,7 +61,6 @@ export default function SearchPage({
         listingType === 'umrah' ||
         listingType === 'international' ||
         shouldUseSingleSpecUmrahUx(specializationId, agencySpecializationIds, specializations)
-    const listingCopy = getTourOrPackageCopy(usesPackageCopy)
     const backgroundImage = useHeroBackgroundImage()
     const trackEvent = useTrackEvent()
 

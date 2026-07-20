@@ -127,6 +127,9 @@ export function mapPackagePlanToTourPage(
                 ...(pricePerSeat != null
                     ? [{ icon: 'price' as const, label: `FROM PKR ${pricePerSeat.toLocaleString()} / SEAT` }]
                     : []),
+                ...(discountPercent != null && discountPercent > 0
+                    ? [{ icon: 'price' as const, label: `${discountPercent}% OFF` }]
+                    : []),
             ],
             ctaGroup:
                 kind === 'international'
@@ -138,6 +141,26 @@ export function mapPackagePlanToTourPage(
                           },
                       ]
                     : [],
+        },
+        perksAndTechnicalsSection: {
+            id: 'perks-technicals',
+            title: 'Package highlights',
+            items: [],
+        },
+        gallerySection: {
+            id: 'visual-fragments',
+            background: 'dark',
+            eyebrow: 'THE EXPERIENCE',
+            title: 'Gallery',
+            actionLabel: 'VIEW FULL GALLERY',
+            actionUrl: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
+            layout: 'masonry-grid',
+            media: gallery.map((src, index) => ({
+                id: `gallery-${index + 1}`,
+                type: 'image' as const,
+                src,
+                alt: `${title} gallery ${index + 1}`,
+            })),
         },
         finalCtaSection: {
             id: 'final-cta',

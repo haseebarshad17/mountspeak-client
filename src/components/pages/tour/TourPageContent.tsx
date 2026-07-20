@@ -69,7 +69,7 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
         } catch {
             // private mode / blocked storage
         }
-    }, [isTrackingReady, page.id, page.slug, page.heroSection?.title, page.seo?.metaTitle, trackEvent])
+    }, [isTrackingReady, page.id, page.slug, page.listingKind, page.heroSection?.title, page.seo?.metaTitle, trackEvent])
 
     return (
         <div
