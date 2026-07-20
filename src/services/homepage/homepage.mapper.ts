@@ -86,6 +86,7 @@ export function mapAgencySiteThemeRowToHomepage(row: AgencySiteThemeRow): Agency
         agencyId: row.agency_id,
         siteUrl: normalizeSiteUrl(row.site_url),
         specializationId: null,
+        agencySpecializationIds: [],
         specializations: [],
         isAgencySite: true,
         themeUpdatedAt: row.updated_at ?? null,

@@ -12,6 +12,7 @@ import { getMessage } from '@/lib/messages/get-message'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
 import { useAgencyPreviewBase, useInternalPathname } from '@/hooks/useAgencyPreviewBase'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { useOptionalUser } from '@/services/auth/auth.queries'
 import {
     useSavedTourIds,
@@ -41,6 +42,7 @@ export function TourSaveShareActions({
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
     const internalPathname = useInternalPathname()
     const previewBase = useAgencyPreviewBase()
+    const { savedPage } = useSiteListingCopy()
 
     const { data: savedIds } = useSavedTourIds(
         user?.id ?? null,
@@ -135,7 +137,7 @@ export function TourSaveShareActions({
         >
             <button
                 type="button"
-                aria-label={isSaved ? 'Remove from saved tours' : 'Save tour'}
+                aria-label={isSaved ? savedPage.unsaveAriaLabel : savedPage.saveAriaLabel}
                 aria-pressed={isSaved}
                 disabled={isPending || isUserLoading}
                 className={buttonClassName}
@@ -151,7 +153,7 @@ export function TourSaveShareActions({
             </button>
             <button
                 type="button"
-                aria-label="Copy tour link"
+                aria-label={savedPage.copyLinkAriaLabel}
                 className={buttonClassName}
                 onClick={(event) => {
                     void handleCopy(event)

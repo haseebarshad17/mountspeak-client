@@ -17,6 +17,9 @@ export const selectHomepageSpecializationId = (state: RootState): string | null 
 export const selectHomepageSpecializations = (state: RootState) =>
     state.homepage.data?.specializations ?? []
 
+export const selectHomepageAgencySpecializationIds = (state: RootState): string[] =>
+    state.homepage.data?.agencySpecializationIds ?? []
+
 export const selectHomepagePage = (state: RootState): HomepagePage | null =>
     state.homepage.data?.page ?? null
 

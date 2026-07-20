@@ -5,11 +5,13 @@ import { useEffect, useRef, useState } from 'react'
 
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
-import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { getTourOrPackageCopy, listingUsesPackageCopy, type ListingKind } from '@/lib/homepage/specialization'
 import {
+    selectHomepageAgencySpecializationIds,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
+import { listingDetailPath } from '@/services/tours/tours.utils'
 import { useAppSelector } from '@/store/hooks'
 import type { TourSearchFilters } from '@/services/tours/tours.search.types'
 import { hasTourSearchFilters } from '@/services/tours/tours.search.utils'
@@ -25,18 +27,27 @@ type SearchResultsSectionProps = {
     tours: TourListItem[]
     filters: TourSearchFilters
     umrahFilters: UmrahSearchFilters
+    listingType: ListingKind
 }
 
 export function SearchResultsSection({
     tours,
     filters,
     umrahFilters,
+    listingType,
 }: SearchResultsSectionProps) {
     const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
-    const listingCopy = getTourOrPackageCopy(isUmrahSearch)
-    const isFiltered = isUmrahSearch
+    const usesPackageCopy = listingUsesPackageCopy(
+        listingType,
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
+    const listingCopy = getTourOrPackageCopy(usesPackageCopy)
+    const isPackageSearch = listingType === 'umrah' || listingType === 'international'
+    const isFiltered = isPackageSearch
         ? hasUmrahSearchFilters(umrahFilters)
         : hasTourSearchFilters(filters)
 
@@ -86,12 +97,12 @@ export function SearchResultsSection({
                     {visibleTours.map((tour) => (
                         <TourExploreCard
                             key={tour.id}
-                            tourId={isUmrahSearch ? undefined : tour.id}
+                            tourId={isPackageSearch ? undefined : tour.id}
                             slug={tour.slug}
                             discountPercent={tour.discountPercent}
                             pricePerSeat={tour.pricePerSeat}
                             title={tour.title}
-                            category={isUmrahSearch ? null : tour.category}
+                            category={isPackageSearch ? null : tour.category}
                             image={tour.image}
                             totalBooked={tour.totalBooked}
                             remainingSeats={tour.remainingSeats}
@@ -100,6 +111,7 @@ export function SearchResultsSection({
                             departureSlots={tour.departureSlots}
                             bookLabel={listingCopy.bookLabel}
                             isBookingClosed={tour.isBookingClosed}
+                            detailHref={listingDetailPath(tour)}
                         />
                     ))}
                 </div>
@@ -111,7 +123,7 @@ export function SearchResultsSection({
                         aria-hidden
                     >
                         <span className='text-sm text-[#707979]'>
-                            {isUmrahSearch ? 'Loading more packages...' : 'Loading more trips...'}
+                            {isPackageSearch ? 'Loading more packages...' : 'Loading more trips...'}
                         </span>
                     </div>
                 ) : null}
@@ -125,15 +137,17 @@ export function SearchResultsSection({
                 icon={isFiltered ? SearchX : Compass}
                 title={
                     isFiltered
-                        ? isUmrahSearch
+                        ? isPackageSearch
                             ? 'No packages found'
                             : 'No results found'
                         : listingCopy.emptyPublishedTitle
                 }
                 description={
                     isFiltered
-                        ? isUmrahSearch
-                            ? 'No Umrah packages match your search. Try different duration or package type.'
+                        ? isPackageSearch
+                            ? listingType === 'international'
+                                ? 'No international tours match your search. Try different duration or package type.'
+                                : 'No Umrah packages match your search. Try different duration or package type.'
                             : 'No trips match your search. Try different locations or dates.'
                         : listingCopy.emptyPublishedDescription
                 }

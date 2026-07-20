@@ -7,11 +7,10 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BG_CLASS, HP_THEME_BORDER_CLASS, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
-import { adaptTourCopyForUmrah, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
+import { adaptTourCopyForUmrah } from '@/lib/homepage/specialization'
 import {
     selectHomepageIsLoading,
-    selectHomepageSpecializationId,
-    selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -23,11 +22,10 @@ type DiscoverPageProps = {
 export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps) {
     const pageFromStore = useHomepagePageWithFallback()
     const isLoading = useAppSelector(selectHomepageIsLoading)
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
+    const { isUmrahSite, isMultiSpec } = useSiteListingCopy()
     const page = pageFromServer ?? pageFromStore
     const backgroundImage = useHeroBackgroundImage()
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
+    const usesUmrahDiscoverCopy = isUmrahSite && !isMultiSpec
 
     if (isLoading || !page) {
         return (
@@ -49,9 +47,13 @@ export default function DiscoverPage({ page: pageFromServer }: DiscoverPageProps
 
     const preFooterDescription = adaptTourCopyForUmrah(
         'Browse published tours or speak with our team for a tailored consultation.',
-        isUmrahSite,
+        usesUmrahDiscoverCopy,
     )
-    const browseLabel = isUmrahSite ? 'Browse Packages' : 'Browse Tours'
+    const browseLabel = isMultiSpec
+        ? 'Explore listings'
+        : usesUmrahDiscoverCopy
+          ? 'Browse Packages'
+          : 'Browse Tours'
 
     return (
         <>

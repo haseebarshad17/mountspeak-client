@@ -13,7 +13,7 @@ import { mapAuthErrorToMessageCode } from "@/lib/auth/map-auth-error";
 import { getMessage } from "@/lib/messages/get-message";
 import { MessageCode, isMessageCode } from "@/lib/messages/codes";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
-import { getTourOrPackageCopy, usesHajjUmrahBanner } from "@/lib/homepage/specialization";
+import { useSiteListingCopy } from "@/hooks/useTourOrPackageCopy";
 import { usePreviewPath } from "@/hooks/useAgencyPreviewBase";
 import { HP_THEME_OUTLINE_BTN_CLASS, HP_THEME_INPUT_FOCUS_CLASS } from "@/data/homepage";
 import { cn } from "@/lib/utils/clsxUtils";
@@ -24,8 +24,6 @@ import {
   selectHomepageAgencyId,
   selectHomepagePage,
   selectHomepageSiteUrl,
-  selectHomepageSpecializationId,
-  selectHomepageSpecializations,
   selectIsAgencySite,
 } from "@/store/homepage/homepage.selectors";
 import { useAppSelector } from "@/store/hooks";
@@ -76,10 +74,7 @@ export default function AgencyMagicLinkPage({
   const homepageSiteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useAppSelector(selectIsAgencySite);
   const homepagePage = useAppSelector(selectHomepagePage);
-  const specializationId = useAppSelector(selectHomepageSpecializationId);
-  const specializations = useAppSelector(selectHomepageSpecializations);
-  const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations);
-  const authCopy = getTourOrPackageCopy(isUmrahSite);
+  const { copy: authCopy } = useSiteListingCopy();
   const brandName = homepagePage?.branding?.name?.trim() || "Pakistan Travel Systems";
   const previewAgencyHost = useMemo(
     () => getAgencyPreviewHostFromPathname(pathname),

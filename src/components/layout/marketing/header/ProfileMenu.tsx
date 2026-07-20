@@ -10,6 +10,7 @@ import { resolveProfileAvatarUrl } from '@/lib/profile/avatar-url'
 import { useOptionalUserProfile } from '@/services/auth/auth.queries'
 import { BookMarked, Heart, LogOut, UserRound } from 'lucide-react'
 
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 
 export type ProfileMenuProps = {
@@ -29,6 +30,7 @@ export function ProfileMenu({
     triggerClassName,
     menuItemClassName,
 }: ProfileMenuProps) {
+    const { savedListingsLabel } = useSiteListingCopy()
     const [open, setOpen] = useState(false)
     const rootRef = useRef<HTMLDivElement>(null)
     const { data: profile } = useOptionalUserProfile()
@@ -152,7 +154,7 @@ export function ProfileMenu({
                         }}
                     >
                         <Heart className='h-4 w-4 shrink-0' />
-                        Saved Tours
+                        {savedListingsLabel}
                     </PrefixedLink>
                     <div className='my-1 h-px bg-[#C0C8C9]/40' aria-hidden />
                     <button

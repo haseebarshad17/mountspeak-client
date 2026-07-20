@@ -1,4 +1,5 @@
 import type { TourCategory } from './tours.category'
+import type { ListingKind } from '@/lib/homepage/specialization'
 
 export type { TourRecord } from './tours.payload.types'
 
@@ -35,4 +36,6 @@ export type TourListItem = {
     departureDate: string | null
     departureSlots: TourListDepartureSlot[]
     isBookingClosed: boolean
+    listingKind?: ListingKind
+    detailHref?: string
 }

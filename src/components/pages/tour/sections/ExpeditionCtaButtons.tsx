@@ -1,6 +1,12 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { useBookingHref } from '@/hooks/useAgencyPreviewBase'
 import { cn } from '@/lib/utils/clsxUtils'
+import {
+    isInquiryOnlyTourPage,
+    scrollToPackageBookingRequest,
+} from '@/lib/tours/tour-inquiry-cta'
 
 import type { TourPage } from './tour-page.types'
 
@@ -10,6 +16,7 @@ type ExpeditionCtaButtonsProps = {
     buttons: ExpeditionCtaButton[]
     theme: TourPage['theme']
     tourSlug: string
+    listingKind?: TourPage['listingKind']
     className?: string
     buttonClassName?: string
     /** Disables primary booking CTAs (past start date). */
@@ -20,11 +27,13 @@ export function ExpeditionCtaButtons({
     buttons,
     theme,
     tourSlug,
+    listingKind,
     className,
     buttonClassName,
     bookingClosed = false,
 }: ExpeditionCtaButtonsProps) {
     const bookingHref = useBookingHref(tourSlug)
+    const inquiryOnly = isInquiryOnlyTourPage({ listingKind })
 
     if (buttons.length === 0) return null
 
@@ -32,12 +41,25 @@ export function ExpeditionCtaButtons({
         <div className={cn('flex flex-wrap gap-4', className)}>
             {buttons.map((btn) => {
                 const isPrimary = btn.style === 'primary'
-                const isDisabledBooking = isPrimary && bookingClosed
+                const isDisabledBooking = isPrimary && bookingClosed && !inquiryOnly
 
                 return (
                     <Button
                         key={btn.label}
-                        href={isDisabledBooking ? undefined : isPrimary ? bookingHref : btn.url}
+                        href={
+                            isDisabledBooking
+                                ? undefined
+                                : isPrimary && inquiryOnly
+                                  ? undefined
+                                  : isPrimary
+                                    ? bookingHref
+                                    : btn.url
+                        }
+                        onClick={
+                            isPrimary && inquiryOnly && !isDisabledBooking
+                                ? scrollToPackageBookingRequest
+                                : undefined
+                        }
                         disabled={isDisabledBooking}
                         variant={isPrimary ? 'default' : 'outline'}
                         className={cn(

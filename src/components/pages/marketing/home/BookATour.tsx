@@ -13,7 +13,8 @@ import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
-import { adaptTourCopyForUmrah, getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
+import { adaptTourCopyForUmrah } from '@/lib/homepage/specialization'
 import { usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -21,11 +22,6 @@ import {
     type BookingRequestCategory,
 } from '@/services/booking-requests/booking-requests.types'
 import { useCreateBookingRequest } from '@/services/booking-requests/booking-requests.queries'
-import {
-    selectHomepageSpecializationId,
-    selectHomepageSpecializations,
-} from '@/store/homepage/homepage.selectors'
-import { useAppSelector } from '@/store/hooks'
 import { ArrowRight, Calendar } from 'lucide-react'
 import React, { FormEvent, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -63,14 +59,12 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const listingCopy = getTourOrPackageCopy(isUmrahSite)
-    const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
-    const bookTitle = adaptTourCopyForUmrah(section.title, isUmrahSite)
+    const { isUmrahSite, isMultiSpec, copy: listingCopy } = useSiteListingCopy()
+    const usesUmrahBookingForm = isUmrahSite && !isMultiSpec
+    const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, usesUmrahBookingForm)
+    const bookTitle = adaptTourCopyForUmrah(section.title, usesUmrahBookingForm)
     const bookParagraphs = section.paragraphs.map((paragraph) =>
-        adaptTourCopyForUmrah(paragraph, isUmrahSite),
+        adaptTourCopyForUmrah(paragraph, usesUmrahBookingForm),
     )
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -84,7 +78,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const minTravelDate = getTodayDateInputValue()
 
     const categoryOptions = useMemo(() => {
-        const categories = isUmrahSite
+        const categories = usesUmrahBookingForm
             ? BOOKING_REQUEST_CATEGORIES.filter(
                   (item) => !UMRAH_BOOKING_EXCLUDED_CATEGORIES.includes(item),
               )
@@ -94,10 +88,10 @@ const BookATour = ({ page }: HomepagePageProps) => {
             value: item,
             label: BOOKING_REQUEST_CATEGORY_LABELS[item],
         }))
-    }, [isUmrahSite])
+    }, [usesUmrahBookingForm])
 
     const destinationOptions = useMemo(() => {
-        if (isUmrahSite) {
+        if (usesUmrahBookingForm) {
             return UMRAH_BOOKING_DESTINATIONS.map((city) => ({
                 value: city,
                 label: city,
@@ -108,9 +102,9 @@ const BookATour = ({ page }: HomepagePageProps) => {
             value: city,
             label: city,
         }))
-    }, [isUmrahSite, pakistanCities])
+    }, [usesUmrahBookingForm, pakistanCities])
 
-    const isDestinationLoading = !isUmrahSite && isCitiesLoading
+    const isDestinationLoading = !usesUmrahBookingForm && isCitiesLoading
 
     const clearFieldError = (key: string) => {
         setFieldErrors((prev) => {
@@ -361,7 +355,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         }
                                         options={destinationOptions}
                                         disabled={isDestinationLoading}
-                                        searchable={!isUmrahSite}
+                                        searchable={!usesUmrahBookingForm}
                                         searchPlaceholder='Search destination...'
                                         noResultsMessage='No cities found'
                                         aria-label='Destination'

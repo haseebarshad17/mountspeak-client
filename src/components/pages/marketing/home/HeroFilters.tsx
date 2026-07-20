@@ -5,9 +5,16 @@ import HeroStandardFilters, {
     type HeroFiltersValues,
 } from '@/components/pages/marketing/home/HeroStandardFilters'
 import HeroUmrahFilters from '@/components/pages/marketing/home/HeroUmrahFilters'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import HeroListingTypeTabs from '@/components/pages/marketing/home/HeroListingTypeTabs'
+import {
+    isMultiSpecializationAgency,
+    resolveOwnedListingKinds,
+    shouldUseSingleSpecUmrahUx,
+    type ListingKind,
+} from '@/lib/homepage/specialization'
 import type { UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
 import {
+    selectHomepageAgencySpecializationIds,
     selectHomepagePage,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
@@ -21,6 +28,7 @@ type HeroFiltersProps = {
     initialValues?: HeroFiltersValues
     umrahInitialValues?: UmrahSearchFilters
     tourLocations?: string[]
+    listingType?: ListingKind
 }
 
 export default function HeroFilters({
@@ -28,21 +36,46 @@ export default function HeroFilters({
     initialValues,
     umrahInitialValues,
     tourLocations = [],
+    listingType = 'tour',
 }: HeroFiltersProps) {
     const pageFromStore = useAppSelector(selectHomepagePage)
     const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const page = pageProp ?? pageFromStore
+    const ownedKinds = resolveOwnedListingKinds(
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
+    const isMultiSpec = isMultiSpecializationAgency(specializationId, agencySpecializationIds)
+    const isUmrahFilters = isMultiSpec ? listingType === 'umrah' : shouldUseSingleSpecUmrahUx(
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
+    const isInternationalFilters = isMultiSpec && listingType === 'international'
 
-    if (usesHajjUmrahBanner(specializationId, specializations)) {
-        return <HeroUmrahFilters initialValues={umrahInitialValues} />
+    if (isUmrahFilters || isInternationalFilters) {
+        return (
+            <>
+                <HeroListingTypeTabs activeType={listingType} ownedKinds={ownedKinds} />
+                <HeroUmrahFilters
+                    initialValues={umrahInitialValues}
+                    listingType={listingType === 'tour' ? 'umrah' : listingType}
+                />
+            </>
+        )
     }
 
     return (
-        <HeroStandardFilters
-            page={page}
-            initialValues={initialValues}
-            tourLocations={tourLocations}
-        />
+        <>
+            <HeroListingTypeTabs activeType={listingType} ownedKinds={ownedKinds} />
+            <HeroStandardFilters
+                page={page}
+                initialValues={initialValues}
+                tourLocations={tourLocations}
+            />
+        </>
     )
 }

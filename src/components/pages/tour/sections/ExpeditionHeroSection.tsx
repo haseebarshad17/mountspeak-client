@@ -9,6 +9,10 @@ import { TourSaveShareActions } from '@/components/tours/TourSaveShareActions'
 import { useBookingHref, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
+import {
+    isInquiryOnlyTourPage,
+    scrollToPackageBookingRequest,
+} from '@/lib/tours/tour-inquiry-cta'
 import { tourDetailPath } from '@/services/tours/tours.utils'
 
 import type { TourPage } from './tour-page.types'
@@ -37,6 +41,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
     const prefixedDetailPath = usePrefixedHref(rawDetailPath)
     const shareHref = prefixedDetailPath ?? rawDetailPath
     const bookingHref = useBookingHref(page.slug)
+    const inquiryOnly = isInquiryOnlyTourPage(page)
     const canSaveTour =
         Boolean(page.id) &&
         UUID_RE.test(page.id) &&
@@ -124,19 +129,30 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                 ) : null}
                                 {primaryButton ? (
                                     <Button
-                                        href={page.isBookingClosed ? undefined : bookingHref}
-                                        disabled={page.isBookingClosed === true}
+                                        href={
+                                            inquiryOnly || page.isBookingClosed
+                                                ? undefined
+                                                : bookingHref
+                                        }
+                                        onClick={
+                                            inquiryOnly && page.isBookingClosed !== true
+                                                ? scrollToPackageBookingRequest
+                                                : undefined
+                                        }
+                                        disabled={page.isBookingClosed === true && !inquiryOnly}
                                         variant="default"
                                         className={cn(
                                             'h-12 min-w-[200px] rounded-md px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
-                                            page.isBookingClosed && 'opacity-60 shadow-none',
+                                            page.isBookingClosed && !inquiryOnly && 'opacity-60 shadow-none',
                                         )}
                                         style={{
                                             backgroundColor: theme.secondaryColor,
                                             borderColor: theme.secondaryColor,
                                         }}
                                     >
-                                        {page.isBookingClosed ? 'Booking Closed' : primaryButton.label}
+                                        {page.isBookingClosed && !inquiryOnly
+                                            ? 'Booking Closed'
+                                            : primaryButton.label}
                                     </Button>
                                 ) : null}
                             </div>

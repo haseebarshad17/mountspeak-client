@@ -2,29 +2,32 @@
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils/clsxUtils'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
-import {
-    selectHomepageSpecializationId,
-    selectHomepageSpecializations,
-} from '@/store/homepage/homepage.selectors'
-import { useAppSelector } from '@/store/hooks'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 
 const heroFilterFieldSkeletonClass =
     'h-12 w-full rounded-md xl:h-full xl:rounded-none xl:border-r xl:border-neutral-200'
 
 function HeroFilterBarSkeleton() {
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const filterCount = isUmrahSite ? 3 : 4
+    const { isMultiSpec, isUmrahSite, ownedKinds } = useSiteListingCopy()
+    const usesPackageFilters = !isMultiSpec && isUmrahSite
+    const filterCount = usesPackageFilters ? 3 : 4
+    const showTypeTabs = isMultiSpec && ownedKinds.length > 1
 
     return (
+        <>
+            {showTypeTabs ? (
+                <div className='mx-auto mb-4 flex flex-wrap items-center justify-center gap-2'>
+                    {ownedKinds.map((kind) => (
+                        <Skeleton key={kind} className='h-9 w-24 rounded-full' />
+                    ))}
+                </div>
+            ) : null}
         <div className='w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0'>
             <div
                 className={cn(
                     'grid min-w-0 grid-cols-1 gap-2',
                     'xs:grid-cols-2',
-                    isUmrahSite
+                    usesPackageFilters
                         ? 'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)]'
                         : 'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(140px,170px)]',
                     'xl:h-12 xl:items-stretch xl:gap-0',
@@ -35,7 +38,7 @@ function HeroFilterBarSkeleton() {
                         key={index}
                         className={cn(
                             heroFilterFieldSkeletonClass,
-                            isUmrahSite && index === filterCount - 1 && 'xs:col-span-2 xl:col-span-1',
+                            usesPackageFilters && index === filterCount - 1 && 'xs:col-span-2 xl:col-span-1',
                         )}
                     />
                 ))}
@@ -46,6 +49,7 @@ function HeroFilterBarSkeleton() {
                 />
             </div>
         </div>
+        </>
     )
 }
 

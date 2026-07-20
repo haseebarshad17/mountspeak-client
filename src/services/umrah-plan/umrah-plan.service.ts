@@ -14,6 +14,8 @@ const planColumns = [
     'duration_dates',
     'booking_info',
     'images',
+    'descriptions',
+    'seo',
     'created_at',
 ].join(', ')
 
@@ -43,6 +45,23 @@ export const umrahPlanService = ({ supabase, agencyId }: UmrahPlanServiceProps) 
             if (error) throw error
 
             return (data ?? []) as unknown as UmrahPlanRow[]
+        },
+
+        getPublishedPlanById: async (planId: string): Promise<UmrahPlanRow | null> => {
+            let query = supabase
+                .from('umrah_plan')
+                .select(planColumns)
+                .eq('id', planId)
+                .filter('basic_information->>package_status', 'eq', UMRAH_PLAN_STATUS.active)
+
+            if (agencyId) {
+                query = query.eq('agency_id', agencyId)
+            }
+
+            const { data, error } = await query.maybeSingle()
+
+            if (error) throw error
+            return (data ?? null) as unknown as UmrahPlanRow | null
         },
 
         getLatestPublishedPlans: async (limit: number): Promise<UmrahPlanRow[]> => {

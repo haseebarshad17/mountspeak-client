@@ -28,12 +28,8 @@ import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, HP_THEME_TEXT_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
-import {
-    selectHomepageSpecializationId,
-    selectHomepageSpecializations,
-} from '@/store/homepage/homepage.selectors'
 import { useAppSelector } from '@/store/hooks'
 import { getFooterContactColumnItems } from '@/lib/homepage/footer-contact'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -90,11 +86,10 @@ export default function ContactUsPage({ page: pageFromServer }: ContactUsPagePro
     const [inquiryType, setInquiryType] = useState('')
     const [title, setTitle] = useState('')
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const inquiryOptions = useMemo(() => getConsultationInquiryOptions(isUmrahSite), [isUmrahSite])
-    const titleOptions = useMemo(() => getConsultationTitleOptions(isUmrahSite), [isUmrahSite])
+    const { isUmrahSite, isMultiSpec } = useSiteListingCopy()
+    const usesUmrahInquiryForm = isUmrahSite && !isMultiSpec
+    const inquiryOptions = useMemo(() => getConsultationInquiryOptions(usesUmrahInquiryForm), [usesUmrahInquiryForm])
+    const titleOptions = useMemo(() => getConsultationTitleOptions(usesUmrahInquiryForm), [usesUmrahInquiryForm])
     const errorColor = STATIC_UI_COLORS.error
 
     const clearFieldError = (key: string) => {

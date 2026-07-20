@@ -9,8 +9,31 @@ import { mapAgencySiteThemeRowToHomepage } from './homepage.mapper'
 import { homepageService } from './homepage.service'
 import type { AgencyHomepage } from './homepage.types'
 import { fetchSpecializations } from '@/services/specializations/specializations.server'
+import { resolveAgencySpecializationIds } from '@/lib/homepage/specialization'
 
 const HOMEPAGE_REVALIDATE_SECONDS = 120
+
+async function loadAgencySpecializationIds(
+    supabase: ReturnType<typeof createPublicSupabase>,
+    agencyId: string,
+    primarySpecializationId: string | null,
+): Promise<string[]> {
+    try {
+        const { data, error } = await supabase.rpc('get_public_agency_specialization_ids', {
+            p_agency_id: agencyId,
+        })
+
+        if (error) throw error
+
+        const ids = Array.isArray(data)
+            ? data.map((id) => String(id).trim()).filter(Boolean)
+            : []
+
+        return resolveAgencySpecializationIds(primarySpecializationId, ids)
+    } catch {
+        return resolveAgencySpecializationIds(primarySpecializationId, [])
+    }
+}
 
 async function resolveRequestHost(): Promise<string> {
     try {
@@ -33,22 +56,30 @@ async function loadAgencyHomepageForHost(requestHost: string): Promise<AgencyHom
             return {
                 ...createDefaultAgencyHomepage(requestHost),
                 specializations,
+                agencySpecializationIds: [],
             }
         }
 
         try {
             const homepage = mapAgencySiteThemeRowToHomepage(row)
             const specializationId = row.specialization_id?.trim() || null
+            const agencySpecializationIds = await loadAgencySpecializationIds(
+                supabase,
+                homepage.agencyId,
+                specializationId,
+            )
 
             return {
                 ...homepage,
                 specializationId,
+                agencySpecializationIds,
                 specializations,
             }
         } catch {
             return {
                 ...createDefaultAgencyHomepage(requestHost),
                 specializations,
+                agencySpecializationIds: [],
             }
         }
     } catch {

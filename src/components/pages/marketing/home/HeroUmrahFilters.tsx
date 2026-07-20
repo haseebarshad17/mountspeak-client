@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/clsxUtils'
 import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { buildUmrahSearchPath, type UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
+import type { ListingKind } from '@/lib/homepage/specialization'
 import { Clock, Loader2, Package, Search, Users } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 
@@ -18,6 +19,7 @@ import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 
 type HeroUmrahFiltersProps = {
     initialValues?: UmrahSearchFilters
+    listingType?: Exclude<ListingKind, 'tour'>
 }
 
 const heroTriggerButtonClass = cn(
@@ -27,7 +29,10 @@ const heroTriggerButtonClass = cn(
     'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
 )
 
-export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProps) {
+export default function HeroUmrahFilters({
+    initialValues,
+    listingType = 'umrah',
+}: HeroUmrahFiltersProps) {
     const router = usePreviewRouter()
     const [isSearching, startSearchTransition] = useTransition()
     const [duration, setDuration] = useState(initialValues?.duration ?? '')
@@ -58,7 +63,7 @@ export default function HeroUmrahFilters({ initialValues }: HeroUmrahFiltersProp
 
     const handleSearch = () => {
         startSearchTransition(() => {
-            router.push(buildUmrahSearchPath({ duration, passengers, packageType }))
+            router.push(buildUmrahSearchPath({ duration, passengers, packageType }, listingType))
         })
     }
 

@@ -16,11 +16,12 @@ import {
     getBrandingLogo,
     getHeaderBrandingLogo,
 } from '@/lib/homepage/branding-logo'
-import { getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { resolveListingsNavLabel } from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
     selectHomepageAgencyId,
+    selectHomepageAgencySpecializationIds,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
     selectHomepageThemeUpdatedAt,
@@ -142,11 +143,15 @@ const Header = ({ page }: HeaderProps) => {
 
     const { header, branding } = page
     const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
     const agencyId = useAppSelector(selectHomepageAgencyId)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const listingsNavLabel = getTourOrPackageCopy(isUmrahSite).listingsNavLabel
+    const listingsNavLabel = resolveListingsNavLabel(
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
     const navigation = header.navigation.map((link) =>
         link.href === '/search' ? { ...link, label: listingsNavLabel } : link,
     )

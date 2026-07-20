@@ -40,7 +40,7 @@ export function AccountNavLinks({
   drawerTone = "dark",
 }: AccountNavLinksProps) {
   const internalPathname = useInternalPathname();
-  const { copy, isUmrahSite } = useTourOrPackageCopy();
+  const { copy, savedListingsLabel } = useTourOrPackageCopy();
   const dashboardPath = usePreviewPath("/dashboard");
   const bookingsPath = usePreviewPath("/bookings");
   const savedToursPath = usePreviewPath("/saved-tours");
@@ -49,7 +49,7 @@ export function AccountNavLinks({
   const isBookingsActive = internalPathname.startsWith("/bookings");
   const isSavedToursActive = internalPathname.startsWith("/saved-tours");
   const isToursActive = internalPathname === "/search" || internalPathname.startsWith("/search/");
-  const savedToursLabel = isUmrahSite ? "Saved Packages" : "Saved Tours";
+  const savedToursLabel = savedListingsLabel;
   const linkClassName =
     variant === "drawer"
       ? (isActive: boolean) => drawerLinkClassName(isActive, drawerTone)

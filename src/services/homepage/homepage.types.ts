@@ -22,6 +22,8 @@ export type AgencyHomepage = {
     siteUrl: string | null
     /** From agency_site_theme.specialization_id */
     specializationId: string | null
+    /** From agency_specializations junction (falls back to primary). */
+    agencySpecializationIds: string[]
     /** All options from `specializations` table (for banner + UI). */
     specializations: Specialization[]
     /** True when request host matches a configured agency_site_theme.site_url */

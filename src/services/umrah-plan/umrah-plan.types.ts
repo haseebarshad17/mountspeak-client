@@ -20,6 +20,16 @@ export type UmrahPlanRow = {
     } | null
     images: {
         featured_image?: string | null
+        gallery_images?: string[] | null
+    } | null
+    descriptions?: {
+        short_description?: string | null
+        detailed_description?: string | null
+    } | null
+    seo?: {
+        meta_title?: string | null
+        meta_description?: string | null
+        meta_keywords?: string | null
     } | null
     created_at: string
 }

@@ -7,11 +7,17 @@ import { PageHeroBanner } from '@/components/ui/page-hero-banner'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    getTourOrPackageCopy,
+    listingUsesPackageCopy,
+    shouldUseSingleSpecUmrahUx,
+    type ListingKind,
+} from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
 import { getOrCreateEventSessionId } from '@/services/events/events.session'
 import { useTrackEvent } from '@/services/events/useTrackEvent'
 import {
+    selectHomepageAgencySpecializationIds,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
@@ -32,6 +38,7 @@ type SearchPageProps = {
     filters: TourSearchFilters
     umrahFilters: UmrahSearchFilters
     tourLocations: string[]
+    listingType: ListingKind
 }
 
 export default function SearchPage({
@@ -39,25 +46,37 @@ export default function SearchPage({
     filters,
     umrahFilters,
     tourLocations,
+    listingType,
 }: SearchPageProps) {
     const page = useHomepagePageWithFallback()
     const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSearch = usesHajjUmrahBanner(specializationId, specializations)
+    const usesPackageCopy = listingUsesPackageCopy(
+        listingType,
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
+    const isPackageSearch =
+        listingType === 'umrah' ||
+        listingType === 'international' ||
+        shouldUseSingleSpecUmrahUx(specializationId, agencySpecializationIds, specializations)
+    const listingCopy = getTourOrPackageCopy(usesPackageCopy)
     const backgroundImage = useHeroBackgroundImage()
     const trackEvent = useTrackEvent()
 
-    const summary = isUmrahSearch
+    const summary = isPackageSearch
         ? formatUmrahSearchSummary(umrahFilters)
         : formatTourSearchSummary(filters)
 
     useEffect(() => {
-        const hasFilters = isUmrahSearch
+        const hasFilters = isPackageSearch
             ? hasUmrahSearchFilters(umrahFilters)
             : hasTourSearchFilters(filters)
         if (!hasFilters) return
 
-        const fingerprint = isUmrahSearch
+        const fingerprint = isPackageSearch
             ? JSON.stringify({
                   duration: umrahFilters.duration ?? '',
                   passengers: umrahFilters.passengers ?? '',
@@ -86,10 +105,10 @@ export default function SearchPage({
         trackEvent({
             event_type: 'TOUR_SEARCH',
             path: typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/search',
-            metadata: isUmrahSearch
+            metadata: isPackageSearch
                 ? {
                       summary,
-                      is_umrah: true,
+                      listing_type: listingType,
                       duration: umrahFilters.duration ?? null,
                       passengers: umrahFilters.passengers ?? null,
                       package_type: umrahFilters.packageType ?? null,
@@ -104,13 +123,15 @@ export default function SearchPage({
                       category: filters.category ?? null,
                   },
         })
-    }, [filters, umrahFilters, isUmrahSearch, summary, trackEvent])
+    }, [filters, umrahFilters, isPackageSearch, listingType, summary, trackEvent])
 
-    const heroCopy = isUmrahSearch
+    const heroCopy = usesPackageCopy
         ? {
-              title: 'Find your Umrah package',
+              title: listingType === 'international' ? 'Find your international tour' : 'Find your Umrah package',
               description:
-                  'Select package duration, number of passengers, and package type to browse available Umrah packages.',
+                  listingType === 'international'
+                      ? 'Select duration, passengers, and package type to browse international tours.'
+                      : 'Select package duration, number of passengers, and package type to browse available Umrah packages.',
           }
         : {
               title: 'Find your trip',
@@ -147,6 +168,7 @@ export default function SearchPage({
                             initialValues={filters}
                             umrahInitialValues={umrahFilters}
                             tourLocations={tourLocations}
+                            listingType={listingType}
                         />
                     </div>
                 </div>
@@ -167,8 +189,10 @@ export default function SearchPage({
                         >
                             {summary
                                 ? summary
-                                : isUmrahSearch
-                                  ? 'Explore available Umrah packages and pick the one that suits you.'
+                                : usesPackageCopy
+                                  ? listingType === 'international'
+                                      ? 'Explore available international tours and pick the one that suits you.'
+                                      : 'Explore available Umrah packages and pick the one that suits you.'
                                   : 'Explore available trips and pick your next adventure.'}
                         </p>
                     </header>

@@ -3,6 +3,7 @@ import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
 import { normalizeTourCategory } from './tours.category'
+import type { ListingKind } from '@/lib/homepage/specialization'
 import type { TourListDepartureSlot, TourListItem, TourRow } from './tours.types'
 
 export { DEMO_TOUR_DETAIL_PATH }
@@ -194,4 +195,16 @@ export function tourDetailPath(slug: string, options?: { demo?: boolean }): stri
     }
 
     return `/tours/${slug}`
+}
+
+export function packageDetailPath(kind: Exclude<ListingKind, 'tour'>, id: string): string {
+    return `/packages/${kind}/${id}`
+}
+
+export function listingDetailPath(item: Pick<TourListItem, 'slug' | 'listingKind' | 'detailHref' | 'id'>): string {
+    if (item.detailHref) return item.detailHref
+    if (item.listingKind === 'umrah' || item.listingKind === 'international') {
+        return packageDetailPath(item.listingKind, item.id)
+    }
+    return tourDetailPath(item.slug)
 }

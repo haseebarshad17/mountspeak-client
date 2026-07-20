@@ -6,8 +6,13 @@ import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
 import { PageHeroBanner } from '@/components/ui/page-hero-banner'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
-import { adaptTourCopyForUmrah, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import {
+    adaptTourCopyForUmrah,
+    resolveDefaultListingKind,
+} from '@/lib/homepage/specialization'
+import {
+    selectHomepageAgencySpecializationIds,
     selectHomepageSpecializationId,
     selectHomepageSpecializations,
 } from '@/store/homepage/homepage.selectors'
@@ -20,10 +25,18 @@ type HeroProps = HomepagePageProps & {
 const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
     const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
+    const { isUmrahSite, isMultiSpec } = useSiteListingCopy()
     const specializationId = useAppSelector(selectHomepageSpecializationId)
+    const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const heroParagraph = adaptTourCopyForUmrah(hero.paragraph, isUmrahSite)
+    const listingType = resolveDefaultListingKind(
+        specializationId,
+        agencySpecializationIds,
+        specializations,
+    )
+    const heroParagraph = isMultiSpec
+        ? hero.paragraph
+        : adaptTourCopyForUmrah(hero.paragraph, isUmrahSite)
 
     return (
         <PageHeroBanner backgroundImage={backgroundImage}>
@@ -45,7 +58,11 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                     </div>
 
                     <div className='mx-auto w-full max-w-[867px] pt-6 sm:pt-8 md:pt-10 lg:pt-12 xl:pt-14'>
-                        <HeroFilters page={page} tourLocations={tourLocations} />
+                        <HeroFilters
+                            page={page}
+                            tourLocations={tourLocations}
+                            listingType={listingType}
+                        />
                     </div>
                 </div>
             </main>

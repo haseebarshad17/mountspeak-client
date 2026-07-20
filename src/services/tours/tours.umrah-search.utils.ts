@@ -1,18 +1,24 @@
+import type { ListingKind } from '@/lib/homepage/specialization'
+
 export type UmrahSearchFilters = {
     duration?: string
     passengers?: string
     packageType?: string
 }
 
-export function buildUmrahSearchPath(filters: UmrahSearchFilters): string {
+export function buildUmrahSearchPath(
+    filters: UmrahSearchFilters,
+    listingType: Exclude<ListingKind, 'tour'> = 'umrah',
+): string {
     const search = new URLSearchParams()
+    search.set('type', listingType)
 
     if (filters.duration?.trim()) search.set('duration', filters.duration.trim())
     if (filters.passengers?.trim()) search.set('passengers', filters.passengers.trim())
     if (filters.packageType?.trim()) search.set('packageType', filters.packageType.trim())
 
     const query = search.toString()
-    return query ? `/search?${query}` : '/search'
+    return query ? `/search?${query}` : `/search?type=${listingType}`
 }
 
 export function parseUmrahSearchParams(

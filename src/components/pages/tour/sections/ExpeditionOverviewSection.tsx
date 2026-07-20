@@ -46,6 +46,7 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                             buttons={finalCtaSection.buttons.filter((btn) => btn.style === 'primary')}
                             theme={theme}
                             tourSlug={page.slug}
+                            listingKind={page.listingKind}
                             className="mt-8 sm:mt-10"
                             bookingClosed={page.isBookingClosed === true}
                         />

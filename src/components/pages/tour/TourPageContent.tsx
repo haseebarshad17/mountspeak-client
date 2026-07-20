@@ -13,6 +13,8 @@ import { TechnicalRouteBreakdownSection } from './sections/TechnicalRouteBreakdo
 import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
 import { TourFloatingBookBar } from './sections/TourFloatingBookBar'
+import { PackageBookingRequestSection } from './sections/PackageBookingRequestSection'
+import { isInquiryOnlyTourPage } from '@/lib/tours/tour-inquiry-cta'
 import { getOrCreateEventSessionId } from '@/services/events/events.session'
 import { useAgencyTrackingReady } from '@/services/events/useAgencyTrackingReady'
 import { useTrackEvent } from '@/services/events/useTrackEvent'
@@ -42,12 +44,21 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
 
         const tracked = trackEvent({
             event_type: 'TOUR_VIEW',
-            path: `/tours/${page.slug}`,
-            entity_type: 'tour',
+            path: page.listingKind === 'international'
+                ? `/packages/international/${page.id}`
+                : page.listingKind === 'umrah'
+                  ? `/packages/umrah/${page.id}`
+                  : `/tours/${page.slug}`,
+            entity_type: page.listingKind === 'international'
+                ? 'international_tour'
+                : page.listingKind === 'umrah'
+                  ? 'umrah_plan'
+                  : 'tour',
             entity_id: page.id,
             metadata: {
                 tour_slug: page.slug,
                 tour_title: page.heroSection?.title ?? page.seo?.metaTitle ?? null,
+                listing_kind: page.listingKind ?? 'tour',
             },
         })
 
@@ -82,6 +93,7 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
             <StayAndDineCardsSection page={page} />
             <ExpeditionPerksTechnicalsSection page={page} />
             <VisualFragmentsGallerySection page={page} />
+            {isInquiryOnlyTourPage(page) ? <PackageBookingRequestSection page={page} /> : null}
             <ExpeditionClosingCtaSection page={page} />
             <TourFloatingBookBar page={page} />
         </div>

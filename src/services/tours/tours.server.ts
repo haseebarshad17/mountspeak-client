@@ -1,8 +1,14 @@
 import { isTourBookable } from '@/lib/booking/tour-booking-rules'
 import { DEMO_BOOKING_TOUR_OPTION } from '@/lib/booking/demo-booking'
-import { usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    resolveListingSearchType,
+    type ListingKind,
+} from '@/lib/homepage/specialization'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import { internationalTourService } from '@/services/international-tour/international-tour.service'
+import { mapInternationalTourRowsToListItems } from '@/services/international-tour/international-tour.utils'
+import { mapPackagePlanToTourPage } from '@/services/packages/package-plan.mapper'
 import { umrahPlanService } from '@/services/umrah-plan/umrah-plan.service'
 import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.utils'
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
@@ -55,11 +61,21 @@ async function getUmrahPlansApi(scope: AgencyTourScope) {
     })
 }
 
-async function isUmrahAgencySite(): Promise<boolean> {
+async function getInternationalToursApi(scope: AgencyTourScope) {
+    const supabase = await getServerSupabase()
+    return internationalTourService({
+        supabase,
+        agencyId: scope.agencyId ?? undefined,
+    })
+}
+
+async function resolveListingType(requestedType?: ListingKind | null): Promise<ListingKind> {
     const homepage = await fetchAgencyHomepage()
-    return (
-        homepage.isAgencySite &&
-        usesHajjUmrahBanner(homepage.specializationId, homepage.specializations)
+    return resolveListingSearchType(
+        requestedType ?? null,
+        homepage.specializationId,
+        homepage.agencySpecializationIds,
+        homepage.specializations,
     )
 }
 
@@ -216,11 +232,14 @@ export async function searchPublishedTours(
 export async function searchPublishedListings(
     filters: TourSearchFilters = {},
     umrahFilters: UmrahSearchFilters = {},
+    requestedListingType?: ListingKind | null,
 ): Promise<TourListItem[]> {
     const scope = await getAgencyTourScope()
     if (!scope.isAgencySite) return []
 
-    if (await isUmrahAgencySite()) {
+    const listingType = await resolveListingType(requestedListingType)
+
+    if (listingType === 'umrah') {
         const plans = await getUmrahPlansApi(scope)
         const rows = hasUmrahSearchFilters(umrahFilters)
             ? await plans.searchPublishedPlans(umrahFilters)
@@ -229,7 +248,42 @@ export async function searchPublishedListings(
         return mapUmrahPlanRowsToListItems(rows)
     }
 
+    if (listingType === 'international') {
+        const tours = await getInternationalToursApi(scope)
+        const rows = hasUmrahSearchFilters(umrahFilters)
+            ? await tours.searchPublishedPlans(umrahFilters)
+            : await tours.getPublishedPlans()
+
+        return mapInternationalTourRowsToListItems(rows)
+    }
+
     return searchPublishedTours(filters)
+}
+
+export async function fetchUmrahPackagePageById(planId: string): Promise<TourPage | null> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return null
+
+    const plans = await getUmrahPlansApi(scope)
+    const row = await plans.getPublishedPlanById(planId)
+    if (!row) return null
+
+    const homepage = await fetchAgencyHomepage()
+    const page = mapPackagePlanToTourPage(row, 'umrah')
+    return applyAgencyThemeToTourPage(page, homepage.page?.theme)
+}
+
+export async function fetchInternationalPackagePageById(planId: string): Promise<TourPage | null> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite) return null
+
+    const tours = await getInternationalToursApi(scope)
+    const row = await tours.getPublishedPlanById(planId)
+    if (!row) return null
+
+    const homepage = await fetchAgencyHomepage()
+    const page = mapPackagePlanToTourPage(row, 'international')
+    return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
 
 export async function fetchTourLocationOptions(): Promise<string[]> {

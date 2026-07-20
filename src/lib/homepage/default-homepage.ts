@@ -30,6 +30,7 @@ export function createDefaultAgencyHomepage(requestHost: string): AgencyHomepage
         agencyId: DEFAULT_AGENCY_ID,
         siteUrl: resolveFallbackSiteUrl(requestHost),
         specializationId: null,
+        agencySpecializationIds: [],
         specializations: [],
         isAgencySite: false,
         themeUpdatedAt: null,

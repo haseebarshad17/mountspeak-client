@@ -2,6 +2,7 @@
 
 import { HP_THEME_LINK_CLASS, STATIC_UI_COLORS } from '@/data/homepage'
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
@@ -10,11 +11,18 @@ import { PrefixedLink } from '@/components/ui/prefixed-link'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
+import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { cn } from '@/lib/utils/clsxUtils'
 import { DEMO_TOUR_DETAIL_PATH, DEMO_TOUR_LIST_ITEM } from '@/lib/tours/default-tour-page'
-import { adaptTourCopyForUmrah, getTourOrPackageCopy, usesHajjUmrahBanner } from '@/lib/homepage/specialization'
+import {
+    adaptTourCopyForUmrah,
+    type ListingKind,
+} from '@/lib/homepage/specialization'
 import { supabase } from '@/lib/supabase/supabase.client'
-import { selectHomepageAgencyId, selectHomepageSpecializationId, selectHomepageSpecializations } from '@/store/homepage/homepage.selectors'
+import { selectHomepageAgencyId } from '@/store/homepage/homepage.selectors'
+import { listingDetailPath } from '@/services/tours/tours.utils'
+import { internationalTourService } from '@/services/international-tour/international-tour.service'
+import { mapInternationalTourRowsToListItems } from '@/services/international-tour/international-tour.utils'
 import { useAppSelector } from '@/store/hooks'
 import { toursService } from '@/services/tours/tours.service'
 import { mapTourRowsToListItemsWithSlots } from '@/services/tours/tour-seat-availability'
@@ -24,43 +32,68 @@ import { Compass, ArrowRightIcon } from 'lucide-react'
 
 const HOMEPAGE_TOUR_LIMIT = 6
 
+async function fetchLatestListings(agencyId: string, kind: ListingKind) {
+    if (kind === 'umrah') {
+        const api = umrahPlanService({ supabase, agencyId })
+        const rows = await api.getLatestPublishedPlans(HOMEPAGE_TOUR_LIMIT + 1)
+        return {
+            tours: mapUmrahPlanRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+            hasMore: rows.length > HOMEPAGE_TOUR_LIMIT,
+        }
+    }
+
+    if (kind === 'international') {
+        const api = internationalTourService({ supabase, agencyId })
+        const rows = await api.getLatestPublishedPlans(HOMEPAGE_TOUR_LIMIT + 1)
+        return {
+            tours: mapInternationalTourRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+            hasMore: rows.length > HOMEPAGE_TOUR_LIMIT,
+        }
+    }
+
+    const api = toursService({ supabase, agencyId })
+    const rows = await api.getLatestPublishedTours(HOMEPAGE_TOUR_LIMIT + 1)
+    return {
+        tours: await mapTourRowsToListItemsWithSlots(supabase, rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
+        hasMore: rows.length > HOMEPAGE_TOUR_LIMIT,
+    }
+}
+
 const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const section = page.sections.exploreTheWorld
     const isAgencySite = useIsAgencySite()
     const agencyId = useAppSelector(selectHomepageAgencyId)
-    const specializationId = useAppSelector(selectHomepageSpecializationId)
-    const specializations = useAppSelector(selectHomepageSpecializations)
-    const isUmrahSite = usesHajjUmrahBanner(specializationId, specializations)
-    const listingCopy = getTourOrPackageCopy(isUmrahSite)
-    const eyebrow = adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
-    const title = adaptTourCopyForUmrah(section.title, isUmrahSite)
-    const paragraph = adaptTourCopyForUmrah(section.paragraph, isUmrahSite)
-    const emptyMessage = adaptTourCopyForUmrah(section.emptyMessage, isUmrahSite)
+    const {
+        isMultiSpec,
+        isUmrahSite,
+        ownedKinds,
+        copy: defaultCopy,
+    } = useSiteListingCopy()
+    const [activeKind, setActiveKind] = useState<ListingKind>(ownedKinds[0] ?? 'tour')
+    const listingKind = isMultiSpec ? activeKind : (ownedKinds[0] ?? 'tour')
+    const isPackageListing = listingKind === 'umrah' || listingKind === 'international'
+    const listingCopy = isMultiSpec
+        ? {
+              ...defaultCopy,
+              viewAllLabel:
+                  listingKind === 'umrah'
+                      ? 'View all Umrah packages'
+                      : listingKind === 'international'
+                        ? 'View all international tours'
+                        : 'View all tours',
+              bookLabel: listingKind === 'tour' ? 'Book Tour' : 'View details',
+          }
+        : defaultCopy
+
+    const eyebrow = isMultiSpec ? section.eyebrow : adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
+    const title = isMultiSpec ? section.title : adaptTourCopyForUmrah(section.title, isUmrahSite)
+    const paragraph = isMultiSpec ? section.paragraph : adaptTourCopyForUmrah(section.paragraph, isUmrahSite)
+    const emptyMessage = isMultiSpec ? section.emptyMessage : adaptTourCopyForUmrah(section.emptyMessage, isUmrahSite)
 
     const { data: homepageTours, isLoading } = useQuery({
-        queryKey: ['homepage-latest-tours', isAgencySite, agencyId, isUmrahSite],
+        queryKey: ['homepage-latest-tours', isAgencySite, agencyId, listingKind],
         enabled: isAgencySite === true && !!agencyId,
-        queryFn: async () => {
-            if (isUmrahSite) {
-                const api = umrahPlanService({ supabase, agencyId: agencyId ?? undefined })
-                const rows = await api.getLatestPublishedPlans(HOMEPAGE_TOUR_LIMIT + 1)
-                const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
-
-                return {
-                    tours: mapUmrahPlanRowsToListItems(rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
-                    hasMore,
-                }
-            }
-
-            const api = toursService({ supabase, agencyId: agencyId ?? undefined })
-            const rows = await api.getLatestPublishedTours(HOMEPAGE_TOUR_LIMIT + 1)
-            const hasMore = rows.length > HOMEPAGE_TOUR_LIMIT
-
-            return {
-                tours: await mapTourRowsToListItemsWithSlots(supabase, rows.slice(0, HOMEPAGE_TOUR_LIMIT)),
-                hasMore,
-            }
-        },
+        queryFn: () => fetchLatestListings(agencyId!, listingKind),
         staleTime: 60_000,
     })
 
@@ -91,6 +124,32 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     </p>
                 </header>
 
+                {isMultiSpec && ownedKinds.length > 1 ? (
+                    <div className='pt-8 sm:pt-10'>
+                        <div className='flex flex-wrap items-center justify-center gap-2'>
+                            {ownedKinds.map((kind) => (
+                                <button
+                                    key={kind}
+                                    type='button'
+                                    onClick={() => setActiveKind(kind)}
+                                    className={cn(
+                                        'rounded-full px-4 py-2 text-sm font-medium transition',
+                                        kind === activeKind
+                                            ? 'bg-[#064045] text-white shadow-sm'
+                                            : 'border border-[#D6D9DC] bg-white text-[#404849] hover:border-[#064045]/40',
+                                    )}
+                                >
+                                    {kind === 'tour'
+                                        ? 'Tours'
+                                        : kind === 'umrah'
+                                          ? 'Umrah'
+                                          : 'International'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
+
                 {showLoading ? (
                     <div
                         className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'
@@ -106,14 +165,12 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     </div>
                 ) : displayTours.length > 0 ? (
                     <>
-                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 
-                        sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch 
-                        lg:gap-6 lg:pt-14'>
+                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
                             {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}
                                     tourId={
-                                        isAgencySite === false || isUmrahSite
+                                        isAgencySite === false || isPackageListing
                                             ? undefined
                                             : tour.id
                                     }
@@ -121,7 +178,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     discountPercent={tour.discountPercent}
                                     pricePerSeat={tour.pricePerSeat}
                                     title={tour.title}
-                                    category={isUmrahSite ? null : tour.category}
+                                    category={isPackageListing ? null : tour.category}
                                     image={tour.image}
                                     totalBooked={tour.totalBooked}
                                     remainingSeats={tour.remainingSeats}
@@ -131,7 +188,9 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     bookLabel={listingCopy.bookLabel}
                                     isBookingClosed={tour.isBookingClosed}
                                     detailHref={
-                                        isAgencySite === false ? DEMO_TOUR_DETAIL_PATH : undefined
+                                        isAgencySite === false
+                                            ? DEMO_TOUR_DETAIL_PATH
+                                            : listingDetailPath(tour)
                                     }
                                 />
                             ))}
@@ -140,7 +199,11 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                         {showViewAllButton ? (
                             <div className='mt-8 flex justify-center sm:mt-10'>
                                 <PrefixedLink
-                                    href='/search'
+                                    href={
+                                        listingKind === 'tour'
+                                            ? '/search'
+                                            : `/search?type=${listingKind}`
+                                    }
                                     className={cn(
                                         HP_THEME_LINK_CLASS,
                                         'flex items-center text-sm font-semibold underline underline-offset-4 sm:text-base',
