@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { mergeGeoIntoMetadata, resolveClientGeo } from '@/lib/geo/resolve-client-geo'
 import { DEFAULT_AGENCY_ID } from '@/lib/homepage/default-homepage'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
@@ -72,10 +73,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'agency_required' }, { status: 400 })
         }
 
-        const metadata =
+        const rawMetadata =
             body.metadata && typeof body.metadata === 'object' && !Array.isArray(body.metadata)
                 ? (body.metadata as Record<string, unknown>)
                 : {}
+
+        const clientIp = resolveClientIp(request)
+        const geo = await resolveClientGeo(request, clientIp)
+        const metadata = mergeGeoIntoMetadata(rawMetadata, geo)
 
         const supabase = await createServerSupabase()
         const { data, error } = await supabase.rpc('record_agency_event', {
@@ -85,7 +90,7 @@ export async function POST(request: NextRequest) {
             p_entity_type: asOptionalString(body.entity_type),
             p_entity_id: asOptionalUuid(body.entity_id),
             p_session_id: asOptionalString(body.session_id),
-            p_ip_address: resolveClientIp(request),
+            p_ip_address: clientIp,
             p_user_agent: asOptionalString(request.headers.get('user-agent')),
             p_metadata: metadata,
         })

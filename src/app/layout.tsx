@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils/clsxUtils";
 import LayoutWrapper from "@/components/layout/marketing/LayoutWraper";
 import HomepageBootstrap from "@/components/providers/HomepageBootstrap";
 import HomepageThemeSync from "@/components/providers/HomepageThemeSync";
+import SessionPageViewTracker from "@/components/providers/SessionPageViewTracker";
 import StoreProvider from "@/store/StoreProvider";
 import { getHomepageThemeCssVars } from "@/data/homepage";
 import { getAgencyLayoutMetadata } from "@/lib/homepage/homepage-meta";
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                 <StoreProvider initialHomepage={agencyHomepage}>
                     <HomepageBootstrap />
                     <HomepageThemeSync />
+                    <SessionPageViewTracker />
                     <LayoutWrapper>
                         {children}
                     </LayoutWrapper>
