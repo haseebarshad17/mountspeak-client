@@ -1,5 +1,7 @@
 import { AGENCY_PREVIEW_HOST_COOKIE, prefixHref } from "@/lib/homepage/agency-preview";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
+import { mergeGeoIntoMetadata, resolveClientGeo } from "@/lib/geo/resolve-client-geo";
+import { resolveClientIp } from "@/lib/geo/resolve-client-ip";
 import { createServerSupabase } from "@/lib/supabase/supabase.server";
 import {
   getServerSiteUrl,
@@ -109,20 +111,23 @@ export async function GET(request: NextRequest) {
     const isNewUser =
       Number.isFinite(createdAtMs) && Date.now() - createdAtMs < 10 * 60 * 1000;
 
+    const clientIp = resolveClientIp(request);
+    const geo = await resolveClientGeo(request, clientIp);
+
     await recordServerEvent({
       supabase,
       agencyId,
       eventType: isNewUser ? "SIGNUP" : "LOGIN",
       path: "/auth/callback",
-      ipAddress:
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        request.headers.get("x-real-ip")?.trim() ||
-        null,
+      ipAddress: clientIp,
       userAgent: request.headers.get("user-agent"),
-      metadata: {
-        provider: user.app_metadata?.provider ?? "email",
-        email: user.email ?? null,
-      },
+      metadata: mergeGeoIntoMetadata(
+        {
+          provider: user.app_metadata?.provider ?? "email",
+          email: user.email ?? null,
+        },
+        geo,
+      ),
     });
   }
 

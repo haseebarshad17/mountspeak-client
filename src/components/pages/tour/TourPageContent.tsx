@@ -14,6 +14,7 @@ import { StayAndDineCardsSection } from './sections/StayAndDineCardsSection'
 import { VisualFragmentsGallerySection } from './sections/VisualFragmentsGallerySection'
 import { TourFloatingBookBar } from './sections/TourFloatingBookBar'
 import { getOrCreateEventSessionId } from '@/services/events/events.session'
+import { useAgencyTrackingReady } from '@/services/events/useAgencyTrackingReady'
 import { useTrackEvent } from '@/services/events/useTrackEvent'
 
 type TourPageContentProps = {
@@ -22,10 +23,11 @@ type TourPageContentProps = {
 
 const TourPageContent = ({ page }: TourPageContentProps) => {
     const { theme } = page
+    const isTrackingReady = useAgencyTrackingReady()
     const trackEvent = useTrackEvent()
 
     useEffect(() => {
-        if (!page.id) return
+        if (!isTrackingReady || !page.id) return
 
         const sessionId = getOrCreateEventSessionId()
         const dedupeKey = `tour_view:${page.id}:${sessionId}`
@@ -34,12 +36,11 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
             if (typeof window !== 'undefined' && sessionStorage.getItem(dedupeKey)) {
                 return
             }
-            sessionStorage.setItem(dedupeKey, '1')
         } catch {
             // private mode / blocked storage — still track
         }
 
-        trackEvent({
+        const tracked = trackEvent({
             event_type: 'TOUR_VIEW',
             path: `/tours/${page.slug}`,
             entity_type: 'tour',
@@ -49,7 +50,15 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
                 tour_title: page.heroSection?.title ?? page.seo?.metaTitle ?? null,
             },
         })
-    }, [page.id, page.slug, page.heroSection?.title, page.seo?.metaTitle, trackEvent])
+
+        if (!tracked) return
+
+        try {
+            sessionStorage.setItem(dedupeKey, '1')
+        } catch {
+            // private mode / blocked storage
+        }
+    }, [isTrackingReady, page.id, page.slug, page.heroSection?.title, page.seo?.metaTitle, trackEvent])
 
     return (
         <div

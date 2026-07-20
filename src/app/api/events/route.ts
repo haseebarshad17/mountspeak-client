@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { mergeGeoIntoMetadata, resolveClientGeo } from '@/lib/geo/resolve-client-geo'
+import { resolveClientIp } from '@/lib/geo/resolve-client-ip'
 import { DEFAULT_AGENCY_ID } from '@/lib/homepage/default-homepage'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-
-function resolveClientIp(request: NextRequest): string | null {
-    const forwarded = request.headers.get('x-forwarded-for')
-    if (forwarded) {
-        const first = forwarded.split(',')[0]?.trim()
-        if (first) return first
-    }
-
-    const realIp = request.headers.get('x-real-ip')?.trim()
-    return realIp || null
-}
 
 type EventsBody = {
     event_type?: unknown
