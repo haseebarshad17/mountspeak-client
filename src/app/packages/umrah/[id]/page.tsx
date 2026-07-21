@@ -30,11 +30,17 @@ export default async function UmrahPackageDetailPage({ params }: PackageDetailPa
     }
 
     const { id } = await params
-    const page = await fetchUmrahPackagePageById(id)
 
-    if (!page) {
+    try {
+        const page = await fetchUmrahPackagePageById(id)
+
+        if (!page) {
+            notFound()
+        }
+
+        return <TourPageContent page={page} />
+    } catch (error) {
+        console.error('[umrah-package] failed to load detail page', { id, error })
         notFound()
     }
-
-    return <TourPageContent page={page} />
 }

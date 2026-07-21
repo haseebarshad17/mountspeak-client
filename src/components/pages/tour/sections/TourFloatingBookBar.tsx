@@ -21,6 +21,15 @@ export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
     const primaryButton = finalCtaSection.buttons.find((btn) => btn.style === 'primary')
     const bookingHref = useBookingHref(page.slug)
     const inquiryOnly = isInquiryOnlyTourPage(page)
+    const primaryHref = primaryButton?.url?.trim() || undefined
+    const actionHref =
+        inquiryOnly && primaryHref
+            ? primaryHref.startsWith('#')
+                ? undefined
+                : primaryHref
+            : isBookingClosed
+              ? undefined
+              : bookingHref
     const [isFooterVisible, setIsFooterVisible] = useState(false)
 
     useEffect(() => {
@@ -66,27 +75,27 @@ export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
             aria-hidden={isFooterVisible}
         >
             <Button
-                href={
-                    inquiryOnly || isBookingClosed ? undefined : bookingHref
-                }
+                href={actionHref}
                 onClick={
                     inquiryOnly && !isBookingClosed
-                        ? scrollToPackageBookingRequest
+                        ? primaryHref?.startsWith('#')
+                            ? scrollToPackageBookingRequest
+                            : undefined
                         : undefined
                 }
-                disabled={isBookingClosed === true && !inquiryOnly}
+                disabled={isBookingClosed === true}
                 variant="default"
                 className={cn(
                     'pointer-events-auto h-11 rounded-full px-12 text-xs shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
                     isFooterVisible && 'pointer-events-none',
-                    isBookingClosed && !inquiryOnly && 'opacity-60 shadow-none',
+                    isBookingClosed && 'opacity-60 shadow-none',
                 )}
                 style={{
                     backgroundColor: theme.secondaryColor,
                     borderColor: theme.secondaryColor,
                 }}
             >
-                {isBookingClosed && !inquiryOnly ? 'Booking Closed' : primaryButton.label}
+                {isBookingClosed ? 'Booking Closed' : primaryButton.label}
             </Button>
         </div>
     )

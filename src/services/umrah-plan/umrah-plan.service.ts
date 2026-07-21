@@ -6,7 +6,7 @@ import { hasUmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils
 import { filterUmrahPlansForSearch } from './umrah-plan.utils'
 import { UMRAH_PLAN_STATUS, type UmrahPlanRow } from './umrah-plan.types'
 
-const planColumns = [
+const planListColumns = [
     'id',
     'agency_id',
     'basic_information',
@@ -19,6 +19,8 @@ const planColumns = [
     'created_at',
 ].join(', ')
 
+const planDetailColumns = `${planListColumns},makkah_hotel,madinah_hotel,ziyarat,package_includes`
+
 type UmrahPlanServiceProps = {
     supabase: SupabaseClient
     agencyId?: string
@@ -28,7 +30,7 @@ export const umrahPlanService = ({ supabase, agencyId }: UmrahPlanServiceProps) 
     const publishedQuery = () => {
         let query = supabase
             .from('umrah_plan')
-            .select(planColumns)
+            .select(planListColumns)
             .filter('basic_information->>package_status', 'eq', UMRAH_PLAN_STATUS.active)
 
         if (agencyId) {
@@ -50,7 +52,7 @@ export const umrahPlanService = ({ supabase, agencyId }: UmrahPlanServiceProps) 
         getPublishedPlanById: async (planId: string): Promise<UmrahPlanRow | null> => {
             let query = supabase
                 .from('umrah_plan')
-                .select(planColumns)
+                .select(planDetailColumns)
                 .eq('id', planId)
                 .filter('basic_information->>package_status', 'eq', UMRAH_PLAN_STATUS.active)
 

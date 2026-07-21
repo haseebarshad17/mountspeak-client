@@ -19,10 +19,7 @@ const LOREM_BODY =
 const PLACEHOLDER_IMAGE = TOUR_MEDIA_PLACEHOLDER
 const PLACEHOLDER_IMAGE_ALT = 'Placeholder image'
 
-const PLACEHOLDER_STATISTICS: TourPage['overviewSection']['statistics'] = [
-    { label: 'LOREM IPSUM', value: '00' },
-    { label: 'DOLOR SIT', value: '00' },
-]
+const PLACEHOLDER_STATISTICS: TourPage['overviewSection']['statistics'] = []
 
 const PLACEHOLDER_ROUTE_SEGMENTS: TourPage['technicalRouteSection']['segments'] = [
     {
@@ -201,53 +198,122 @@ const PLACEHOLDER_GALLERY_MEDIA: TourPage['gallerySection']['media'] = [
 ]
 
 export function applyTourSectionFallbacks(page: TourPage): TourPage {
+    const isPackagePage = page.listingKind === 'umrah' || page.listingKind === 'international'
+
+    const overviewSection = page.overviewSection ?? {
+        id: 'overview',
+        title: 'Overview',
+        description: '',
+        statistics: [],
+        sideCard: { type: 'image' as const, title: '', image: '', alt: '' },
+        highlightColumns: [],
+    }
+
+    const technicalRouteSection = page.technicalRouteSection ?? {
+        id: 'technical-route',
+        title: isPackagePage ? 'Route' : LOREM_TITLE,
+        background: 'light-card' as const,
+        segments: [],
+    }
+
+    const placesVisitedSection = page.placesVisitedSection ?? {
+        id: 'places-visited',
+        eyebrow: 'HIGHLIGHTS',
+        title: 'Places to be visited',
+        intro: '',
+        cards: [],
+    }
+
+    const itinerarySection = page.itinerarySection ?? {
+        id: 'itinerary',
+        title: 'Day-by-Day Journey',
+        timelineStyle: 'zigzag-cards' as const,
+        days: [],
+    }
+
+    const stayAndDineSection = page.stayAndDineSection ?? {
+        id: 'stay-and-dine',
+        title: 'Stay & Dine',
+        properties: [],
+    }
+
+    const perksAndTechnicalsSection = page.perksAndTechnicalsSection ?? {
+        id: 'perks-technicals',
+        title: 'Package highlights',
+        items: [],
+    }
+
+    const gallerySection = page.gallerySection ?? {
+        id: 'visual-fragments',
+        background: 'dark' as const,
+        eyebrow: 'THE EXPERIENCE',
+        title: 'Gallery',
+        actionLabel: 'VIEW FULL GALLERY',
+        actionUrl: '#',
+        layout: 'masonry-grid' as const,
+        media: [],
+    }
+
+    // Package pages keep real empty sections — no Lorem Ipsum placeholders.
+    if (isPackagePage) {
+        return {
+            ...page,
+            overviewSection: {
+                ...overviewSection,
+                sideCard: {
+                    ...overviewSection.sideCard,
+                    image: overviewSection.sideCard.image?.trim()
+                        ? overviewSection.sideCard.image
+                        : PLACEHOLDER_IMAGE,
+                },
+            },
+            technicalRouteSection,
+            placesVisitedSection,
+            itinerarySection,
+            stayAndDineSection,
+            perksAndTechnicalsSection,
+            gallerySection,
+        }
+    }
+
     return {
         ...page,
         overviewSection: {
-            ...page.overviewSection,
-            description: withTextFallback(page.overviewSection.description, LOREM_BODY),
-            statistics: withListFallback(page.overviewSection.statistics, PLACEHOLDER_STATISTICS),
+            ...overviewSection,
+            description: withTextFallback(overviewSection.description, LOREM_BODY),
+            statistics: withListFallback(overviewSection.statistics, PLACEHOLDER_STATISTICS),
             sideCard: {
-                ...page.overviewSection.sideCard,
-                image: page.overviewSection.sideCard.image?.trim()
-                    ? page.overviewSection.sideCard.image
+                ...overviewSection.sideCard,
+                image: overviewSection.sideCard.image?.trim()
+                    ? overviewSection.sideCard.image
                     : PLACEHOLDER_IMAGE,
             },
         },
         technicalRouteSection: {
-            ...page.technicalRouteSection,
-            title: withTextFallback(page.technicalRouteSection.title, LOREM_TITLE),
-            segments: withListFallback(
-                page.technicalRouteSection.segments,
-                PLACEHOLDER_ROUTE_SEGMENTS,
-            ),
+            ...technicalRouteSection,
+            title: withTextFallback(technicalRouteSection.title, LOREM_TITLE),
+            segments: withListFallback(technicalRouteSection.segments, PLACEHOLDER_ROUTE_SEGMENTS),
         },
         placesVisitedSection: {
-            ...page.placesVisitedSection,
-            intro: withTextFallback(page.placesVisitedSection.intro, LOREM_SHORT),
-            cards: withListFallback(page.placesVisitedSection.cards, PLACEHOLDER_PLACES_CARDS),
+            ...placesVisitedSection,
+            intro: withTextFallback(placesVisitedSection.intro, LOREM_SHORT),
+            cards: withListFallback(placesVisitedSection.cards, PLACEHOLDER_PLACES_CARDS),
         },
         itinerarySection: {
-            ...page.itinerarySection,
-            days: withListFallback(page.itinerarySection.days, PLACEHOLDER_ITINERARY_DAYS),
+            ...itinerarySection,
+            days: withListFallback(itinerarySection.days, PLACEHOLDER_ITINERARY_DAYS),
         },
         stayAndDineSection: {
-            ...page.stayAndDineSection,
-            properties: withListFallback(
-                page.stayAndDineSection.properties,
-                PLACEHOLDER_STAY_PROPERTIES,
-            ),
+            ...stayAndDineSection,
+            properties: withListFallback(stayAndDineSection.properties, PLACEHOLDER_STAY_PROPERTIES),
         },
         perksAndTechnicalsSection: {
-            ...page.perksAndTechnicalsSection,
-            items: withListFallback(
-                page.perksAndTechnicalsSection.items,
-                PLACEHOLDER_PERKS,
-            ),
+            ...perksAndTechnicalsSection,
+            items: withListFallback(perksAndTechnicalsSection.items, PLACEHOLDER_PERKS),
         },
         gallerySection: {
-            ...page.gallerySection,
-            media: withListFallback(page.gallerySection.media, PLACEHOLDER_GALLERY_MEDIA),
+            ...gallerySection,
+            media: withListFallback(gallerySection.media, PLACEHOLDER_GALLERY_MEDIA),
         },
     }
 }

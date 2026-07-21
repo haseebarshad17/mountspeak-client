@@ -6,7 +6,7 @@ import { hasUmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils
 import { filterInternationalToursForSearch } from './international-tour.utils'
 import { INTERNATIONAL_TOUR_STATUS, type InternationalTourRow } from './international-tour.types'
 
-const planColumns = [
+const planListColumns = [
     'id',
     'agency_id',
     'basic_information',
@@ -19,6 +19,8 @@ const planColumns = [
     'created_at',
 ].join(', ')
 
+const planDetailColumns = `${planListColumns},hotels,itinerary,package_includes`
+
 type InternationalTourServiceProps = {
     supabase: SupabaseClient
     agencyId?: string
@@ -28,7 +30,7 @@ export const internationalTourService = ({ supabase, agencyId }: InternationalTo
     const publishedQuery = () => {
         let query = supabase
             .from('international_tour')
-            .select(planColumns)
+            .select(planListColumns)
             .filter('basic_information->>package_status', 'eq', INTERNATIONAL_TOUR_STATUS.active)
 
         if (agencyId) {
@@ -50,7 +52,7 @@ export const internationalTourService = ({ supabase, agencyId }: InternationalTo
         getPublishedPlanById: async (planId: string): Promise<InternationalTourRow | null> => {
             let query = supabase
                 .from('international_tour')
-                .select(planColumns)
+                .select(planDetailColumns)
                 .eq('id', planId)
                 .filter('basic_information->>package_status', 'eq', INTERNATIONAL_TOUR_STATUS.active)
 

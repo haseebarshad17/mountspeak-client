@@ -90,16 +90,7 @@
             "id": "overview",
             "title": "The Vertical Ascent",
             "description": "Journey into the heart of the Karakoram range. This curated expedition balances the soul-stirring tranquility of the Hunza Valley with the raw, untamed majesty of the Fairy Meadows—located at the base of Nanga Parbat, the 'Killer Mountain.' Experience the precision of our logistics and the warmth of Northern hospitality.",
-            "statistics": [
-                {
-                    "label": "MAX ELEVATION",
-                    "value": "3,300m"
-                },
-                {
-                    "label": "DIFFICULTY",
-                    "value": "Moderate-Challenging"
-                }
-            ],
+            "statistics": [],
             "sideCard": {
                 "type": "map",
                 "title": "EXPEDITION ROUTE",
