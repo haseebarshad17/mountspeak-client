@@ -10,14 +10,14 @@ export const platformMetaContent = {
     siteTitle,
     description,
     keywords: [
-        'Trip Connect',
+        'Mountspeak',
         'Pakistan travel',
         'tour packages',
         'travel agency',
         'adventure tours',
     ],
-    applicationName: 'Trip Connect',
-    siteName: 'Trip Connect',
+    applicationName: 'Mountspeak',
+    siteName: 'Mountspeak',
     ogImagePath: '/images/pages/home/tour-list.png',
 } as const
 
@@ -44,7 +44,7 @@ export function buildPlatformMetadata(siteUrl: string): Metadata {
                     url: ogImage,
                     width: 1200,
                     height: 630,
-                    alt: 'Trip Connect — travel and tours',
+                    alt: 'Mountspeak — travel and tours',
                     type: 'image/png',
                 },
             ],

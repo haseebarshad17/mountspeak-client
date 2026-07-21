@@ -30,11 +30,17 @@ export default async function InternationalPackageDetailPage({ params }: Package
     }
 
     const { id } = await params
-    const page = await fetchInternationalPackagePageById(id)
 
-    if (!page) {
+    try {
+        const page = await fetchInternationalPackagePageById(id)
+
+        if (!page) {
+            notFound()
+        }
+
+        return <TourPageContent page={page} />
+    } catch (error) {
+        console.error('[international-package] failed to load detail page', { id, error })
         notFound()
     }
-
-    return <TourPageContent page={page} />
 }

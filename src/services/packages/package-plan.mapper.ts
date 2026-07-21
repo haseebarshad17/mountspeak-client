@@ -1,12 +1,32 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { applyTourSectionFallbacks } from '@/lib/tours/tour-section-fallbacks'
-import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
-import { isTourBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { resolvePackageMediaUrlOrPlaceholder, type PackageMediaKind } from '@/lib/supabase/package-media'
+import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
 import {
     INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
     PACKAGE_BOOKING_REQUEST_SECTION_ID,
 } from '@/lib/tours/tour-inquiry-cta'
 import type { ListingKind } from '@/lib/homepage/specialization'
+import {
+    createEmptyPackageTourSections,
+    mapPackageHotelsToStaySection,
+    mapPackageIncludesToPerks,
+    mapPackageZiyaratToRouteSection,
+} from '@/lib/tours/package-page-sections'
+
+type PackageItemsList = {
+    items?: string[] | null
+} | null
+
+type PackageHotelLike = {
+    hotel_name?: string | null
+    hotel_rating?: string | null
+    number_of_nights?: number | null
+    room_type?: string | null
+    distance_from_haram_meters?: number | null
+    distance_from_masjid_e_nabawi_meters?: number | null
+    image?: string | null
+} | null
 
 type PackagePlanRow = {
     id: string
@@ -25,6 +45,7 @@ type PackagePlanRow = {
     } | null
     booking_info?: {
         available_seats?: number | null
+        booking_deadline?: string | null
     } | null
     images?: {
         featured_image?: string | null
@@ -39,6 +60,21 @@ type PackagePlanRow = {
         meta_description?: string | null
         meta_keywords?: string | null
     } | null
+    makkah_hotel?: PackageHotelLike
+    madinah_hotel?: PackageHotelLike
+    hotels?: {
+        makkah_hotel?: PackageHotelLike
+        madinah_hotel?: PackageHotelLike
+    } | null
+    ziyarat?: {
+        makkah_ziyarat_details?: string | null
+        madinah_ziyarat_details?: string | null
+    } | null
+    itinerary?: {
+        makkah_ziyarat_details?: string | null
+        madinah_ziyarat_details?: string | null
+    } | null
+    package_includes?: PackageItemsList
 }
 
 function resolvePackagePrice(pricing: PackagePlanRow['pricing']) {
@@ -56,20 +92,42 @@ function resolvePackagePrice(pricing: PackagePlanRow['pricing']) {
     return { pricePerSeat: null, discountPercent: null }
 }
 
+function resolvePackageHotels(plan: PackagePlanRow) {
+    const makkah = plan.makkah_hotel ?? plan.hotels?.makkah_hotel ?? null
+    const madinah = plan.madinah_hotel ?? plan.hotels?.madinah_hotel ?? null
+    return { makkah, madinah }
+}
+
+function resolvePackageZiyarat(plan: PackagePlanRow) {
+    const source = plan.ziyarat ?? plan.itinerary ?? null
+    return {
+        makkah: source?.makkah_ziyarat_details ?? null,
+        madinah: source?.madinah_ziyarat_details ?? null,
+    }
+}
+
 export function mapPackagePlanToTourPage(
     plan: PackagePlanRow,
     kind: Exclude<ListingKind, 'tour'>,
 ): TourPage {
+    const mediaKind: PackageMediaKind = kind === 'umrah' ? 'umrah' : 'international'
+
     const title = plan.basic_information?.package_title?.trim() || (kind === 'umrah' ? 'Umrah package' : 'International tour')
-    const heroImage = resolveTourMediaUrlOrPlaceholder(plan.images?.featured_image)
+    const heroImage = resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, mediaKind)
     const departureDate = plan.duration_dates?.departure_date?.trim() || null
+    const bookingDeadline = plan.booking_info?.booking_deadline?.trim() || null
     const durationDays = plan.duration_dates?.duration_days ?? null
     const { pricePerSeat, discountPercent } = resolvePackagePrice(plan.pricing)
     const shortDescription = plan.descriptions?.short_description?.trim() || ''
     const detailedDescription = plan.descriptions?.detailed_description?.trim() || shortDescription
     const gallery = (plan.images?.gallery_images ?? [])
-        .map((url) => resolveTourMediaUrlOrPlaceholder(url))
+        .map((url) => resolvePackageMediaUrlOrPlaceholder(url, mediaKind))
         .filter(Boolean)
+    const { makkah, madinah } = resolvePackageHotels(plan)
+    const ziyarat = resolvePackageZiyarat(plan)
+    const includeItems = plan.package_includes?.items ?? []
+    const emptySections = createEmptyPackageTourSections()
+    const usesInquiryForm = kind === 'international' || kind === 'umrah'
 
     const page = applyTourSectionFallbacks({
         id: plan.id,
@@ -131,21 +189,36 @@ export function mapPackagePlanToTourPage(
                     ? [{ icon: 'price' as const, label: `${discountPercent}% OFF` }]
                     : []),
             ],
-            ctaGroup:
-                kind === 'international'
-                    ? [
-                          {
-                              label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
-                              url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
-                              style: 'primary',
-                          },
-                      ]
-                    : [],
+            ctaGroup: usesInquiryForm
+                ? [
+                      {
+                          label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
+                          url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
+                          style: 'primary',
+                      },
+                  ]
+                : [],
         },
+        overviewSection: {
+            id: 'overview',
+            title: 'Overview',
+            description: detailedDescription || shortDescription,
+            statistics: [],
+            sideCard: {
+                type: 'image',
+                title,
+                image: heroImage,
+                alt: title,
+            },
+            highlightColumns: [],
+        },
+        ...emptySections,
+        technicalRouteSection: mapPackageZiyaratToRouteSection(ziyarat.makkah, ziyarat.madinah),
+        stayAndDineSection: mapPackageHotelsToStaySection(makkah, madinah, mediaKind),
         perksAndTechnicalsSection: {
             id: 'perks-technicals',
             title: 'Package highlights',
-            items: [],
+            items: mapPackageIncludesToPerks(includeItems),
         },
         gallerySection: {
             id: 'visual-fragments',
@@ -167,47 +240,29 @@ export function mapPackagePlanToTourPage(
             title:
                 kind === 'international'
                     ? 'Interested in this international tour?'
-                    : kind === 'umrah'
-                      ? 'Ready to plan your Umrah?'
-                      : 'Ready for your next adventure?',
-            buttons:
-                kind === 'international'
-                    ? [
-                          {
-                              label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
-                              url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
-                              style: 'primary',
-                          },
-                          {
-                              label: 'Contact Us',
-                              url: '/contact-us',
-                              style: 'secondary',
-                          },
-                      ]
-                    : kind === 'umrah'
-                      ? [
-                            {
-                                label: 'Contact Us',
-                                url: '/contact-us',
-                                style: 'primary',
-                            },
-                        ]
-                      : [],
+                    : 'Ready to plan your Umrah?',
+            buttons: usesInquiryForm
+                ? [
+                      {
+                          label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
+                          url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
+                          style: 'primary',
+                      },
+                      {
+                          label: 'Contact Us',
+                          url: '/contact-us',
+                          style: 'secondary',
+                      },
+                  ]
+                : [
+                      {
+                          label: 'Contact Us',
+                          url: '/contact-us',
+                          style: 'primary',
+                      },
+                  ],
         },
-        overviewSection: {
-            id: 'overview',
-            title: 'Overview',
-            description: detailedDescription || shortDescription,
-            statistics: [],
-            sideCard: {
-                type: 'image',
-                title,
-                image: heroImage,
-                alt: title,
-            },
-            highlightColumns: [],
-        },
-        isBookingClosed: isTourBookingClosed(departureDate),
+        isBookingClosed: isPackageBookingClosed({ departureDate, bookingDeadline }),
     } as unknown as TourPage)
 
     return page

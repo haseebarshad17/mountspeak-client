@@ -146,14 +146,7 @@ export function mapTourRecordToPage(row: TourRecord, pickupPoints: TourPickupPoi
             id: 'overview',
             title: overview?.title ?? 'Overview',
             description: overview?.body ?? '',
-            statistics: [
-                ...(overview?.elevation_m != null
-                    ? [{ label: 'MAX ELEVATION', value: `${overview.elevation_m}m` }]
-                    : []),
-                ...(overview?.difficulty
-                    ? [{ label: 'DIFFICULTY', value: overview.difficulty }]
-                    : []),
-            ],
+            statistics: [],
             sideCard: {
                 type: 'map',
                 title: 'EXPEDITION ROUTE',

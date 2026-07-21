@@ -12,7 +12,7 @@ export const INTERNATIONAL_INQUIRY_SECTION_INTRO =
 export function isInquiryOnlyTourPage(
     page: Pick<TourPage, 'listingKind'>,
 ): boolean {
-    return page.listingKind === 'international'
+    return page.listingKind === 'international' || page.listingKind === 'umrah'
 }
 
 export function usesDomesticCheckout(listingKind: ListingKind | undefined): boolean {
@@ -30,10 +30,13 @@ export function scrollToPackageBookingRequest() {
 export function buildInternationalInquiryMessage(
     packageInquiry: TourPage['packageInquiry'],
     userMessage?: string,
+    listingKind: TourPage['listingKind'] = 'international',
 ): string | undefined {
     if (!packageInquiry) return userMessage?.trim() || undefined
 
-    const prefix = `[International tour inquiry: ${packageInquiry.title} · Ref ${packageInquiry.packageId}]`
+    const label =
+        listingKind === 'umrah' ? 'Umrah package inquiry' : 'International tour inquiry'
+    const prefix = `[${label}: ${packageInquiry.title} · Ref ${packageInquiry.packageId}]`
     const trimmed = userMessage?.trim()
 
     return trimmed ? `${prefix}\n\n${trimmed}` : prefix

@@ -1,5 +1,5 @@
-import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
-import { isTourBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { resolvePackageMediaUrlOrPlaceholder } from '@/lib/supabase/package-media'
 import {
     formatTourDiscount,
     getTourDaysUntilStart,
@@ -59,6 +59,7 @@ export function toInternationalTourListItem(plan: InternationalTourRow): TourLis
             ? Math.max(0, totalSeats - availableSeats)
             : 0
     const departureDate = plan.duration_dates?.departure_date?.trim() || null
+    const bookingDeadline = plan.booking_info?.booking_deadline?.trim() || null
     const { pricePerSeat, discountPercent } = getInternationalTourPricing(plan.pricing)
 
     return {
@@ -69,13 +70,13 @@ export function toInternationalTourListItem(plan: InternationalTourRow): TourLis
         discountLabel: formatTourDiscount(discountPercent),
         discountPercent,
         pricePerSeat,
-        image: resolveTourMediaUrlOrPlaceholder(plan.images?.featured_image),
+        image: resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, 'international'),
         totalBooked,
         remainingSeats: availableSeats,
         departureDate,
         daysLeft: getTourDaysUntilStart(departureDate),
         departureSlots: [],
-        isBookingClosed: isTourBookingClosed(departureDate),
+        isBookingClosed: isPackageBookingClosed({ departureDate, bookingDeadline }),
         listingKind: 'international',
         detailHref: packageDetailPath('international', plan.id),
     }

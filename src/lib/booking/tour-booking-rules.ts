@@ -36,6 +36,23 @@ export function isTourBookingClosed(startDate: string | null | undefined): boole
     return parsed.getTime() <= today.getTime()
 }
 
+export function isPackageBookingClosed(params: {
+    departureDate?: string | null
+    bookingDeadline?: string | null
+}): boolean {
+    const dates = [params.departureDate, params.bookingDeadline]
+        .map((value) => parseTourCalendarDate(value))
+        .filter((value): value is Date => value != null)
+
+    if (dates.length === 0) return false
+
+    const earliest = dates.reduce((min, date) => (date.getTime() < min.getTime() ? date : min))
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    return earliest.getTime() <= today.getTime()
+}
+
 export function getAvailableSeats(
     capacityTotal: number | null | undefined,
     confirmedSeats: number,

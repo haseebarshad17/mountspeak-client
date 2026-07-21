@@ -108,6 +108,8 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
         event.preventDefault()
         setFieldErrors({})
 
+        if (page.isBookingClosed) return
+
         if (!isReady) return
 
         if (isAgencySite && !resolvedAgencyId) {
@@ -142,6 +144,7 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
             request_message: buildInternationalInquiryMessage(
                 packageInquiry,
                 parsed.data.request_message,
+                page.listingKind,
             ),
             ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
         }
@@ -180,6 +183,13 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
                 </div>
 
                 <div className={cn('mx-auto mt-8 max-w-3xl sm:mt-10', marketingFormPanelClassName)}>
+                    {page.isBookingClosed ? (
+                        <div className="rounded-lg border border-[#E3E8EA] bg-white px-6 py-10 text-center">
+                            <p className="text-base font-medium text-[#434849]">
+                                Booking is closed for this package. The departure date or booking deadline has passed.
+                            </p>
+                        </div>
+                    ) : (
                     <form
                         className="flex w-full min-w-0 flex-col gap-3 sm:gap-4"
                         onSubmit={handleSubmit}
@@ -347,6 +357,7 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
                             Send booking request
                         </Button>
                     </form>
+                    )}
                 </div>
             </div>
         </section>

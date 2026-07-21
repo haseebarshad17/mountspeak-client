@@ -10,15 +10,23 @@ export type TourHeroCta = {
 
 type BaseTourPage = (typeof tourDocument)['page']
 
+export type TourOverviewStatistic = {
+    label: string
+    value: string
+}
+
 export type TourPackageInquiry = {
     packageId: string
     title: string
     departureDate?: string | null
 }
 
-export type TourPage = Omit<BaseTourPage, 'heroSection'> & {
+export type TourPage = Omit<BaseTourPage, 'heroSection' | 'overviewSection'> & {
     heroSection: Omit<BaseTourPage['heroSection'], 'ctaGroup'> & {
         ctaGroup: TourHeroCta[]
+    }
+    overviewSection: Omit<BaseTourPage['overviewSection'], 'statistics'> & {
+        statistics: TourOverviewStatistic[]
     }
     /** Domestic tours use checkout; international tours use booking-request inquiry only. */
     listingKind?: ListingKind

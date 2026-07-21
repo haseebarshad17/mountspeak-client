@@ -29,19 +29,6 @@ export function ExpeditionOverviewSection({ page }: ExpeditionOverviewSectionPro
                             {overviewSection.description}
                         </p>
 
-                        <dl className="mt-10 grid gap-8 border-t border-[#C3C7C8] pt-6 sm:grid-cols-2">
-                            {overviewSection.statistics.map((stat) => (
-                                <div key={stat.label}>
-                                    <dt className="text-base font-roboto font-normal uppercase tracking-wider text-[#434849]">
-                                        {stat.label}
-                                    </dt>
-                                    <dd className="mt-2 font-heading font-heading text-2xl font-semibold text-[#191C1C]">
-                                        {stat.value}
-                                    </dd>
-                                </div>
-                            ))}
-                        </dl>
-
                         <ExpeditionCtaButtons
                             buttons={finalCtaSection.buttons.filter((btn) => btn.style === 'primary')}
                             theme={theme}

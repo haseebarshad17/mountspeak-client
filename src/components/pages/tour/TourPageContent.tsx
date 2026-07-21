@@ -88,11 +88,21 @@ const TourPageContent = ({ page }: TourPageContentProps) => {
             {page.pickupPointsSection ? (
                 <PickupPointsSection section={page.pickupPointsSection} />
             ) : null}
-            <TechnicalRouteBreakdownSection page={page} />
-            <DayByDayItinerarySection page={page} />
-            <StayAndDineCardsSection page={page} />
-            <ExpeditionPerksTechnicalsSection page={page} />
-            <VisualFragmentsGallerySection page={page} />
+            {page.technicalRouteSection.segments.length > 0 ? (
+                <TechnicalRouteBreakdownSection page={page} />
+            ) : null}
+            {page.itinerarySection.days.length > 0 ? (
+                <DayByDayItinerarySection page={page} />
+            ) : null}
+            {page.stayAndDineSection.properties.length > 0 ? (
+                <StayAndDineCardsSection page={page} />
+            ) : null}
+            {page.perksAndTechnicalsSection.items.length > 0 ? (
+                <ExpeditionPerksTechnicalsSection page={page} />
+            ) : null}
+            {page.gallerySection.media.length > 0 ? (
+                <VisualFragmentsGallerySection page={page} />
+            ) : null}
             {isInquiryOnlyTourPage(page) ? <PackageBookingRequestSection page={page} /> : null}
             <ExpeditionClosingCtaSection page={page} />
             <TourFloatingBookBar page={page} />

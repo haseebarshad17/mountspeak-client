@@ -17,6 +17,7 @@ export type InternationalTourRow = {
     booking_info: {
         total_seats?: number | null
         available_seats?: number | null
+        booking_deadline?: string | null
     } | null
     images: {
         featured_image?: string | null

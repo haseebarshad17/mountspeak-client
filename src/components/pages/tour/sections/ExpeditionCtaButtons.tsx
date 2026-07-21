@@ -41,7 +41,7 @@ export function ExpeditionCtaButtons({
         <div className={cn('flex flex-wrap gap-4', className)}>
             {buttons.map((btn) => {
                 const isPrimary = btn.style === 'primary'
-                const isDisabledBooking = isPrimary && bookingClosed && !inquiryOnly
+                const isDisabledBooking = isPrimary && bookingClosed
 
                 return (
                     <Button
@@ -56,7 +56,7 @@ export function ExpeditionCtaButtons({
                                     : btn.url
                         }
                         onClick={
-                            isPrimary && inquiryOnly && !isDisabledBooking
+                            isPrimary && inquiryOnly && !bookingClosed
                                 ? scrollToPackageBookingRequest
                                 : undefined
                         }

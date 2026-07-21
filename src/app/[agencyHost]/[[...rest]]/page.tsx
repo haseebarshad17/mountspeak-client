@@ -23,6 +23,8 @@ import { isAgencyHostPathSegment } from '@/lib/homepage/agency-preview'
 import { getHomepageMetadata } from '@/lib/homepage/homepage-meta'
 import { getRequestSiteUrl } from '@/lib/homepage/resolve-request-host'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
+import InternationalPackageDetailPage from '@/app/packages/international/[id]/page'
+import UmrahPackageDetailPage from '@/app/packages/umrah/[id]/page'
 
 type AgencyPreviewPageProps = {
     params: {
@@ -144,6 +146,16 @@ export default async function AgencyPreviewPage({ params, searchParams }: Agency
 
     if (rest[0] === 'tours' && rest[1]) {
         return <TourDetailPage params={Promise.resolve({ slug: rest[1] })} />
+    }
+
+    // Agency site is served through this catch-all route (/[agencyHost]/[[...rest]]).
+    // Ensure package detail pages are reachable here as well.
+    if (rest[0] === 'packages' && rest[1] === 'umrah' && rest[2]) {
+        return <UmrahPackageDetailPage params={Promise.resolve({ id: rest[2] })} />
+    }
+
+    if (rest[0] === 'packages' && rest[1] === 'international' && rest[2]) {
+        return <InternationalPackageDetailPage params={Promise.resolve({ id: rest[2] })} />
     }
 
     if (path === 'details') {

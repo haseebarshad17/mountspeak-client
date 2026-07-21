@@ -139,18 +139,18 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                                 ? scrollToPackageBookingRequest
                                                 : undefined
                                         }
-                                        disabled={page.isBookingClosed === true && !inquiryOnly}
+                                        disabled={page.isBookingClosed === true}
                                         variant="default"
                                         className={cn(
                                             'h-12 min-w-[200px] rounded-md px-10 text-sm shadow-[0_8px_28px_rgba(0,0,0,0.22)]',
-                                            page.isBookingClosed && !inquiryOnly && 'opacity-60 shadow-none',
+                                            page.isBookingClosed && 'opacity-60 shadow-none',
                                         )}
                                         style={{
                                             backgroundColor: theme.secondaryColor,
                                             borderColor: theme.secondaryColor,
                                         }}
                                     >
-                                        {page.isBookingClosed && !inquiryOnly
+                                        {page.isBookingClosed
                                             ? 'Booking Closed'
                                             : primaryButton.label}
                                     </Button>
