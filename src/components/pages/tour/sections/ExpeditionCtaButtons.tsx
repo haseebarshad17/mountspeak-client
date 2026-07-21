@@ -32,7 +32,7 @@ export function ExpeditionCtaButtons({
     buttonClassName,
     bookingClosed = false,
 }: ExpeditionCtaButtonsProps) {
-    const bookingHref = useBookingHref(tourSlug, null, listingKind)
+    const bookingHref = useBookingHref(tourSlug)
     const inquiryOnly = isInquiryOnlyTourPage({ listingKind })
 
     if (buttons.length === 0) return null

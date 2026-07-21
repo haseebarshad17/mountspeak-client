@@ -9,7 +9,10 @@ import {
     mapPackageIncludesToPerks,
     mapPackageZiyaratToRouteSection,
 } from '@/lib/tours/package-page-sections'
-import { buildPackageBookingHref } from '@/services/packages/package-booking.mapper'
+import {
+    INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
+    PACKAGE_BOOKING_REQUEST_SECTION_ID,
+} from '@/lib/tours/tour-inquiry-cta'
 
 type PackageItemsList = {
     items?: string[] | null
@@ -124,8 +127,8 @@ export function mapPackagePlanToTourPage(
     const ziyarat = resolvePackageZiyarat(plan)
     const includeItems = plan.package_includes?.items ?? []
     const emptySections = createEmptyPackageTourSections()
-    const bookingHref = buildPackageBookingHref(kind, plan.id)
-    const primaryBookLabel = 'Book Now'
+    const bookingHref = `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`
+    const primaryBookLabel = INTERNATIONAL_INQUIRY_PRIMARY_LABEL
 
     const page = applyTourSectionFallbacks({
         id: plan.id,

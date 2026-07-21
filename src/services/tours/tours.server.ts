@@ -28,6 +28,8 @@ import type { BookingTourOption } from '@/components/pages/booking/booking.types
 import { mapPublishedTourToBookingOption, type PublishedTourPickupPointRpc, type PublishedTourRpc, type PublishedTourSlotRpc } from './booking-tour.mapper'
 
 import { mapTourRowsToListItemsWithSlots } from './tour-seat-availability'
+import { fetchTourListDepartureSlotsByTourIds } from './tour-list-slots'
+import { resolveTourBookingClosed } from './tours.utils'
 
 import type { TourListItem, TourRow } from './tours.types'
 
@@ -310,11 +312,18 @@ export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null
     const row = await fetchPublishedTourBySlug(slug)
     if (!row) return null
 
-    const pickupPointsByTourId = await fetchPublishedTourPickupPointsByTourIds([row.id])
+    const supabase = await getServerSupabase()
+    const [pickupPointsByTourId, slotsByTourId] = await Promise.all([
+        fetchPublishedTourPickupPointsByTourIds([row.id]),
+        fetchTourListDepartureSlotsByTourIds(supabase, [row.id]),
+    ])
     const pickupPoints = pickupPointsByTourId.get(row.id) ?? []
+    const departureSlots = slotsByTourId.get(row.id) ?? []
 
     const homepage = await fetchAgencyHomepage()
-    const page = mapTourRecordToPage(row, pickupPoints)
+    const page = mapTourRecordToPage(row, pickupPoints, {
+        isBookingClosed: resolveTourBookingClosed(row.start_date, departureSlots),
+    })
 
     return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }

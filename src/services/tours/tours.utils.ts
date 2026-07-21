@@ -156,6 +156,18 @@ export function formatTourListSlotAvailability(availableSeats: number): string {
     return `${availableSeats} seat${availableSeats === 1 ? '' : 's'} left`
 }
 
+/** Prefer open departures when the tour has slots; otherwise use the tour start date. */
+export function resolveTourBookingClosed(
+    startDate: string | null | undefined,
+    departureSlots: Pick<TourListDepartureSlot, 'isBookable'>[] = [],
+): boolean {
+    if (departureSlots.length > 0) {
+        return departureSlots.every((slot) => !slot.isBookable)
+    }
+
+    return isTourBookingClosed(startDate)
+}
+
 export function toTourListItem(tour: TourRow, departureSlots: TourListDepartureSlot[] = []): TourListItem {
     const { totalBooked, remainingSeats } = getTourSeatCounts(tour)
     const hasSlots = departureSlots.length > 0
@@ -185,7 +197,7 @@ export function toTourListItem(tour: TourRow, departureSlots: TourListDepartureS
         departureDate,
         departureSlots,
         daysLeft: getTourDaysUntilStart(departureDate),
-        isBookingClosed: hasSlots ? bookableSlots.length === 0 : isTourBookingClosed(departureDate),
+        isBookingClosed: resolveTourBookingClosed(tour.start_date, departureSlots),
     }
 }
 

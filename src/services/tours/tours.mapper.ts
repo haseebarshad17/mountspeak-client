@@ -71,7 +71,11 @@ function formatDayNightLabel(dayCount?: number, nightCount?: number): string {
     return `${days} DAYS / ${nights} NIGHTS`
 }
 
-export function mapTourRecordToPage(row: TourRecord, pickupPoints: TourPickupPoint[] = []): TourPage {
+export function mapTourRecordToPage(
+    row: TourRecord,
+    pickupPoints: TourPickupPoint[] = [],
+    options?: { isBookingClosed?: boolean },
+): TourPage {
     const header = row.header
     const overview = row.overview
     const heroUrl = resolveTourMediaUrlOrPlaceholder(header?.hero_image_url)
@@ -101,7 +105,8 @@ export function mapTourRecordToPage(row: TourRecord, pickupPoints: TourPickupPoi
         type: 'expedition_detail',
         status: row.publication_status === 'PUBLISHED' ? 'published' : 'draft',
         locale: 'en',
-        isBookingClosed: isTourBookingClosed(row.start_date),
+        isBookingClosed:
+            options?.isBookingClosed ?? isTourBookingClosed(row.start_date),
         seo: {
             metaTitle: header?.title ?? row.title,
             metaDescription: overview?.body?.slice(0, 160) ?? row.title,

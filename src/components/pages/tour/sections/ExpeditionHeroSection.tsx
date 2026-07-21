@@ -41,7 +41,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
     })
     const prefixedDetailPath = usePrefixedHref(rawDetailPath)
     const shareHref = prefixedDetailPath ?? rawDetailPath
-    const bookingHref = useBookingHref(page.slug, null, page.listingKind)
+    const bookingHref = useBookingHref(page.slug)
     const inquiryOnly = isInquiryOnlyTourPage(page)
     const canSaveTour =
         Boolean(page.id) &&
