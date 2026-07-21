@@ -17,10 +17,11 @@ import { buildAuthCallbackUrl, getClientSiteUrl } from '@/lib/utils/site-url'
 import { cn } from '@/lib/utils/clsxUtils'
 import { sendBookingConfirmationEmail } from '@/services/email/email.client'
 import type { BookingEmailBranding } from '@/services/email/email-branding'
-import { buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
+import { buildSubmitPackageBookingPayload, buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
     uploadBookingIdCard,
     uploadBookingPaymentScreenshot,
+    useSubmitPackageBooking,
     useSubmitTourBooking,
 } from '@/services/tour-bookings/tour-bookings.queries'
 import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
@@ -33,7 +34,7 @@ import { bookingFormPanelClassName, bookingPageTopPaddingClassName, bookingStepp
 import { OnboardIntro } from './OnboardIntro'
 import { OnboardStepper } from './OnboardStepper'
 import type { BookingDetailsForm, BookingTourOption } from './booking.types'
-import { resolveSelectedBookingTour, resolveSelectedSlotAvailableSeats } from './booking.types'
+import { isPackageBookingOption, resolveSelectedBookingTour, resolveSelectedSlotAvailableSeats } from './booking.types'
 import {
     clearBookingDraft,
     loadBookingDraft,
@@ -96,6 +97,7 @@ export default function BookingPage({
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { mutateAsync: submitTourBooking } = useSubmitTourBooking()
+    const { mutateAsync: submitPackageBooking } = useSubmitPackageBooking()
     const { authReady, requireUser, isAuthenticated, setUser } = useBookingAuth({
         skipAuth: isDemoMode,
     })
@@ -350,11 +352,8 @@ export default function BookingPage({
                 ),
             ])
 
-            const rpcPayload = buildSubmitTourBookingPayload({
+            const commonPayload = {
                 bookingId,
-                tourId: selectedTour.id,
-                slotId: details.slotId || null,
-                pickupPointId: details.pickupPointId || null,
                 name: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
                 email: user.email ?? '',
                 phone: details.phone.trim(),
@@ -367,9 +366,27 @@ export default function BookingPage({
                 screenshotPath,
                 idCardFrontPath,
                 idCardBackPath,
-            })
+            }
 
-            const booking = await submitTourBooking(rpcPayload)
+            const booking = isPackageBookingOption(selectedTour)
+                ? await submitPackageBooking(
+                      buildSubmitPackageBookingPayload({
+                          ...commonPayload,
+                          listingKind:
+                              selectedTour.listingKind === 'international'
+                                  ? 'international'
+                                  : 'umrah',
+                          packageId: selectedTour.id,
+                      }),
+                  )
+                : await submitTourBooking(
+                      buildSubmitTourBookingPayload({
+                          ...commonPayload,
+                          tourId: selectedTour.id,
+                          slotId: details.slotId || null,
+                          pickupPointId: details.pickupPointId || null,
+                      }),
+                  )
 
             if (!booking.id) {
                 throw new Error('Booking was created but no booking id was returned.')

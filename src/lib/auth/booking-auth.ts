@@ -1,9 +1,20 @@
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
+import type { ListingKind } from '@/lib/homepage/specialization'
+import { buildPackageBookingHref } from '@/services/packages/package-booking.mapper'
 
 export function buildBookingReturnPath(
     tourSlug?: string | null,
     slotId?: string | null,
+    listingKind?: ListingKind | null,
+    packageId?: string | null,
 ): string {
+    if (
+        (listingKind === 'umrah' || listingKind === 'international') &&
+        packageId?.trim()
+    ) {
+        return buildPackageBookingHref(listingKind, packageId.trim())
+    }
+
     return buildBookingHref(tourSlug ?? undefined, slotId ?? undefined)
 }
 

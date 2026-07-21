@@ -19,7 +19,7 @@ type TourFloatingBookBarProps = {
 export function TourFloatingBookBar({ page }: TourFloatingBookBarProps) {
     const { finalCtaSection, theme, isBookingClosed } = page
     const primaryButton = finalCtaSection.buttons.find((btn) => btn.style === 'primary')
-    const bookingHref = useBookingHref(page.slug)
+    const bookingHref = useBookingHref(page.slug, null, page.listingKind)
     const inquiryOnly = isInquiryOnlyTourPage(page)
     const primaryHref = primaryButton?.url?.trim() || undefined
     const actionHref =

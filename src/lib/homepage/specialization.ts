@@ -289,7 +289,7 @@ export function getSavedListingsPageCopy(mode: SiteCopyMode) {
     if (mode === 'multi') {
         return {
             pageTitle: 'Saved Listings',
-            pageIntro: 'Listings you have saved for later.',
+            pageIntro: 'Listings you have saved for later, grouped by type.',
             emptyTitle: 'No saved listings yet',
             emptyDescription: 'Tap the heart on a listing to save it here.',
             saveAriaLabel: 'Save listing',
@@ -307,6 +307,18 @@ export function getSavedListingsPageCopy(mode: SiteCopyMode) {
             saveAriaLabel: 'Save package',
             unsaveAriaLabel: 'Remove from saved packages',
             copyLinkAriaLabel: 'Copy package link',
+        } as const
+    }
+
+    if (mode === 'international') {
+        return {
+            pageTitle: 'Saved Tours',
+            pageIntro: 'International tours you have saved for later.',
+            emptyTitle: 'No saved tours yet',
+            emptyDescription: 'Tap the heart on a tour to save it here.',
+            saveAriaLabel: 'Save tour',
+            unsaveAriaLabel: 'Remove from saved tours',
+            copyLinkAriaLabel: 'Copy tour link',
         } as const
     }
 

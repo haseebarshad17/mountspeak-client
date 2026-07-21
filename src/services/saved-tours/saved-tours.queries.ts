@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase/supabase.client'
 
 import { savedToursService } from './saved-tours.service'
+import type { SavedListingKind } from './saved-tours.types'
+import { savedListingKey } from './saved-tours.types'
 
 const savedTours = savedToursService({ supabase })
 
@@ -54,8 +56,8 @@ export const useSavedTourIds = (
         queryKey: savedTourIdsQueryKey(userId, agencyId),
         enabled: queryReady,
         queryFn: async () => {
-            const ids = await savedTours.listSavedTourIds(agencyId ?? undefined)
-            return new Set(ids)
+            const keys = await savedTours.listSavedListingKeys(agencyId ?? undefined)
+            return new Set(keys)
         },
         staleTime: 30_000,
     })
@@ -102,23 +104,34 @@ export const useToggleSavedTour = () => {
 
     return useMutation({
         mutationFn: async (payload: {
-            tourId: string
+            listingKind?: SavedListingKind
+            listingId?: string
+            /** @deprecated Prefer listingId */
+            tourId?: string
             agencyId: string
             currentlySaved: boolean
         }) => {
-            if (payload.currentlySaved) {
-                await savedTours.unsaveTour({
-                    tourId: payload.tourId,
-                    agencyId: payload.agencyId,
-                })
-                return { saved: false as const }
+            const listingKind = payload.listingKind ?? 'tour'
+            const listingId = payload.listingId ?? payload.tourId
+            if (!listingId) {
+                throw new Error('listingId is required')
             }
 
-            await savedTours.saveTour({
-                tourId: payload.tourId,
+            if (payload.currentlySaved) {
+                await savedTours.unsaveListing({
+                    listingKind,
+                    listingId,
+                    agencyId: payload.agencyId,
+                })
+                return { saved: false as const, key: savedListingKey(listingKind, listingId) }
+            }
+
+            await savedTours.saveListing({
+                listingKind,
+                listingId,
                 agencyId: payload.agencyId,
             })
-            return { saved: true as const }
+            return { saved: true as const, key: savedListingKey(listingKind, listingId) }
         },
         onSuccess: async () => {
             await Promise.all([

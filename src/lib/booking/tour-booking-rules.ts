@@ -98,7 +98,9 @@ export function validateSeatCapacity(params: {
 export function isTourBookable(params: {
     startDate: string | null | undefined
     availableSeats: number | null
+    isBookingClosed?: boolean
 }): boolean {
+    if (params.isBookingClosed === true) return false
     if (isTourBookingClosed(params.startDate)) return false
     if (params.availableSeats != null && params.availableSeats <= 0) return false
     return true

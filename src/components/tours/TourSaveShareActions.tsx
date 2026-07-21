@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { buildLoginUrlForBooking } from '@/lib/auth/booking-auth'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { prefixHref } from '@/lib/homepage/agency-preview'
+import type { ListingKind } from '@/lib/homepage/specialization'
 import { MessageCode } from '@/lib/messages/codes'
 import { getMessage } from '@/lib/messages/get-message'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -18,10 +19,12 @@ import {
     useSavedTourIds,
     useToggleSavedTour,
 } from '@/services/saved-tours/saved-tours.queries'
+import { savedListingKey } from '@/services/saved-tours/saved-tours.types'
 
 type TourSaveShareActionsProps = {
     tourId: string
     shareHref: string
+    listingKind?: ListingKind
     /** Overlay on card images (top-left). */
     variant?: 'overlay' | 'hero'
     className?: string
@@ -35,6 +38,7 @@ function stopCardNavigation(event: MouseEvent) {
 export function TourSaveShareActions({
     tourId,
     shareHref,
+    listingKind = 'tour',
     variant = 'overlay',
     className,
 }: TourSaveShareActionsProps) {
@@ -55,7 +59,8 @@ export function TourSaveShareActions({
     )
 
     const { mutateAsync: toggleSaved, isPending } = useToggleSavedTour()
-    const isSaved = Boolean(savedIds?.has(tourId))
+    const listingKey = savedListingKey(listingKind, tourId)
+    const isSaved = Boolean(savedIds?.has(listingKey))
 
     const isOverlay = variant === 'overlay'
     const buttonClassName = cn(
@@ -103,7 +108,8 @@ export function TourSaveShareActions({
 
             try {
                 const result = await toggleSaved({
-                    tourId,
+                    listingKind,
+                    listingId: tourId,
                     agencyId: resolvedAgencyId,
                     currentlySaved: isSaved,
                 })
@@ -125,6 +131,7 @@ export function TourSaveShareActions({
             resolvedAgencyId,
             toggleSaved,
             tourId,
+            listingKind,
             isSaved,
         ],
     )

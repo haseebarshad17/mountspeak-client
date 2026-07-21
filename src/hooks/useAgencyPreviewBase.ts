@@ -9,6 +9,8 @@ import {
     prefixHref,
     stripAgencyPreviewBase,
 } from '@/lib/homepage/agency-preview'
+import type { ListingKind } from '@/lib/homepage/specialization'
+import { buildPackageBookingHref } from '@/services/packages/package-booking.mapper'
 
 export function useAgencyPreviewBase(): string | null {
     const pathname = usePathname()
@@ -31,12 +33,21 @@ export function usePreviewPath(path: string): string {
     return useMemo(() => prefixHref(path, previewBase), [path, previewBase])
 }
 
-export function useBookingHref(tourSlug?: string | null, slotId?: string | null): string {
+export function useBookingHref(
+    tourSlug?: string | null,
+    slotId?: string | null,
+    listingKind?: ListingKind | null,
+): string {
     const previewBase = useAgencyPreviewBase()
 
     return useMemo(() => {
-        return prefixHref(buildBookingHref(tourSlug ?? undefined, slotId ?? undefined), previewBase)
-    }, [previewBase, slotId, tourSlug])
+        const href =
+            listingKind === 'umrah' || listingKind === 'international'
+                ? buildPackageBookingHref(listingKind, tourSlug ?? '')
+                : buildBookingHref(tourSlug ?? undefined, slotId ?? undefined)
+
+        return prefixHref(href, previewBase)
+    }, [listingKind, previewBase, slotId, tourSlug])
 }
 
 export function useInternalPathname(): string {

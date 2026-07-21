@@ -6,6 +6,7 @@ import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import {
+    fetchBookingPackageById,
     fetchBookingTourBySlug,
     fetchPublishedToursForBooking,
 } from '@/services/tours/tours.server'
@@ -22,12 +23,33 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type BookingRoutePageProps = {
-    searchParams: Promise<{ tour?: string; slot?: string }>
+    searchParams: Promise<{
+        tour?: string
+        slot?: string
+        kind?: string
+        id?: string
+    }>
+}
+
+function resolvePackageKind(kind: string | undefined): 'umrah' | 'international' | null {
+    if (kind === 'umrah' || kind === 'international') return kind
+    return null
 }
 
 export default async function Page({ searchParams }: BookingRoutePageProps) {
-    const { tour: tourSlug, slot: slotId } = await searchParams
-    const returnPath = buildBookingReturnPath(tourSlug, slotId)
+    const {
+        tour: tourSlug,
+        slot: slotId,
+        kind: kindParam,
+        id: packageId,
+    } = await searchParams
+    const packageKind = resolvePackageKind(kindParam?.trim())
+    const returnPath = buildBookingReturnPath(
+        tourSlug,
+        slotId,
+        packageKind,
+        packageId,
+    )
     const agencyHomepage = await fetchAgencyHomepage()
     const isAgencySite = agencyHomepage.isAgencySite
 
@@ -56,12 +78,16 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
     let lockedTour: Awaited<ReturnType<typeof fetchBookingTourBySlug>> = null
 
     try {
-        ;[tourOptions, lockedTour] = await Promise.all([
-            fetchPublishedToursForBooking(),
-            tourSlug?.trim()
-                ? fetchBookingTourBySlug(tourSlug.trim(), slotId?.trim() || null)
-                : Promise.resolve(null),
-        ])
+        if (packageKind && packageId?.trim()) {
+            lockedTour = await fetchBookingPackageById(packageKind, packageId.trim())
+        } else {
+            ;[tourOptions, lockedTour] = await Promise.all([
+                fetchPublishedToursForBooking(),
+                tourSlug?.trim()
+                    ? fetchBookingTourBySlug(tourSlug.trim(), slotId?.trim() || null)
+                    : Promise.resolve(null),
+            ])
+        }
     } catch {
         // Avoid 500 when Supabase is unavailable; client shows empty plan list.
     }
@@ -72,7 +98,7 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         <BookingPage
             tourOptions={tourOptions}
             lockedTour={lockedTour}
-            initialSlotId={slotId?.trim() || null}
+            initialSlotId={packageKind ? null : slotId?.trim() || null}
             isDemoMode={!isAgencySite}
             emailBranding={emailBranding}
             bookingReturnPath={returnPath}

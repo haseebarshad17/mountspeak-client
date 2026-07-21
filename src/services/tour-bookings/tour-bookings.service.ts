@@ -4,8 +4,10 @@ import { assertRpcSuccess, callSupabaseRpc } from '@/lib/api/rpc'
 import { toApiError } from '@/lib/api/errors'
 import { MessageCode, type MessageCodeValue } from '@/lib/messages/codes'
 
-import { SUBMIT_TOUR_BOOKING_RPC } from './tour-bookings.constants'
+import { SUBMIT_PACKAGE_BOOKING_RPC, SUBMIT_TOUR_BOOKING_RPC } from './tour-bookings.constants'
 import type {
+    SubmitPackageBookingDTO,
+    SubmitPackageBookingRpcResponse,
     SubmitTourBookingDTO,
     SubmitTourBookingRpcResponse,
     TourBookingRecord,
@@ -75,6 +77,22 @@ export const tourBookingsService = ({ supabase }: TourBookingsServiceProps) => {
             const data = await callSupabaseRpc<SubmitTourBookingRpcResponse>(
                 supabase,
                 SUBMIT_TOUR_BOOKING_RPC,
+                payload,
+                MessageCode.API_BOOKING_SUBMIT_FAILED,
+            )
+
+            const result = assertRpcSuccess(data, MessageCode.API_BOOKING_SUBMIT_FAILED)
+
+            return {
+                id: result.booking_id,
+                payment_id: result.payment_id,
+            }
+        },
+
+        submitPackageBooking: async (payload: SubmitPackageBookingDTO): Promise<TourBookingRecord> => {
+            const data = await callSupabaseRpc<SubmitPackageBookingRpcResponse>(
+                supabase,
+                SUBMIT_PACKAGE_BOOKING_RPC,
                 payload,
                 MessageCode.API_BOOKING_SUBMIT_FAILED,
             )

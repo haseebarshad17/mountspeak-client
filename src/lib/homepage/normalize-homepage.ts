@@ -1,8 +1,9 @@
 import homepageDefaultsDocument from '@/data/homepage-defaults.json'
 import type { HomepagePage } from '@/data/homepage'
-import type { Footer, FooterSocialLinks, Theme } from '@/services/homepage/homepage.page.types'
+import type { Column, Footer, FooterSocialLinks, Theme } from '@/services/homepage/homepage.page.types'
 import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 
+import { isFooterContactItemVisible } from './footer-contact'
 import { getActiveFooterSocialLinks } from './footer-social'
 import { STATIC_HEADER, getStaticFooterLinkColumns } from './static-site-content'
 
@@ -105,6 +106,23 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
     }
 }
 
-export function getFooterDisplayColumns() {
-    return getStaticFooterLinkColumns()
+/** Static Site Map + Legal, plus Contact items from the agency theme payload. */
+export function getFooterDisplayColumns(footer?: Footer | null): Column[] {
+    const staticColumns = getStaticFooterLinkColumns()
+    if (!footer) return staticColumns
+
+    const contactSource = getContactColumn(footer)
+    const contactItems = (contactSource.items ?? contactSource.links ?? []).filter(
+        isFooterContactItemVisible,
+    )
+
+    if (contactItems.length === 0) return staticColumns
+
+    const contactColumn: Column = {
+        title: contactSource.title?.trim() || 'Contact',
+        items: contactItems,
+    }
+
+    // Site Map | Contact | Legal
+    return [staticColumns[0], contactColumn, staticColumns[1]]
 }

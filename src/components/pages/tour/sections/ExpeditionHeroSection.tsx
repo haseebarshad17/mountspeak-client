@@ -9,11 +9,8 @@ import { TourSaveShareActions } from '@/components/tours/TourSaveShareActions'
 import { useBookingHref, usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
-import {
-    isInquiryOnlyTourPage,
-    scrollToPackageBookingRequest,
-} from '@/lib/tours/tour-inquiry-cta'
-import { tourDetailPath } from '@/services/tours/tours.utils'
+import { isInquiryOnlyTourPage, scrollToPackageBookingRequest } from '@/lib/tours/tour-inquiry-cta'
+import { listingDetailPath } from '@/services/tours/tours.utils'
 
 import type { TourPage } from './tour-page.types'
 
@@ -37,10 +34,14 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
         heroSection.ctaGroup.find((btn) => btn.style === 'primary')
         ?? finalCtaSection.buttons.find((btn) => btn.style === 'primary')
 
-    const rawDetailPath = tourDetailPath(page.slug)
+    const rawDetailPath = listingDetailPath({
+        id: page.id,
+        slug: page.slug,
+        listingKind: page.listingKind,
+    })
     const prefixedDetailPath = usePrefixedHref(rawDetailPath)
     const shareHref = prefixedDetailPath ?? rawDetailPath
-    const bookingHref = useBookingHref(page.slug)
+    const bookingHref = useBookingHref(page.slug, null, page.listingKind)
     const inquiryOnly = isInquiryOnlyTourPage(page)
     const canSaveTour =
         Boolean(page.id) &&
@@ -112,6 +113,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                 {canSaveTour ? (
                                     <TourSaveShareActions
                                         tourId={page.id}
+                                        listingKind={page.listingKind}
                                         shareHref={shareHref}
                                         variant="hero"
                                         className="mt-4 lg:hidden"
@@ -123,6 +125,7 @@ export function ExpeditionHeroSection({ page }: ExpeditionHeroSectionProps) {
                                 {canSaveTour ? (
                                     <TourSaveShareActions
                                         tourId={page.id}
+                                        listingKind={page.listingKind}
                                         shareHref={shareHref}
                                         variant="hero"
                                     />
