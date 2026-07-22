@@ -1,17 +1,22 @@
 import { back4appFetch } from '@/lib/api/back4app'
 import { PAKISTAN_CITIES_FALLBACK } from '@/constants/pakistan-cities'
+import { WORLD_COUNTRIES } from '@/constants/world-countries'
 
 import type { Back4AppCityListResponse, CityOption } from './cities.types'
 
 const PAKISTAN_WHERE = JSON.stringify({ country: 'Pakistan' })
 
-function uniqueSortedCityNames(cities: CityOption[]): string[] {
+function uniqueSortedNames(values: Array<string | null | undefined>): string[] {
     const names = new Set<string>()
-    cities.forEach((city) => {
-        const trimmed = city.name?.trim()
+    values.forEach((value) => {
+        const trimmed = value?.trim()
         if (trimmed) names.add(trimmed)
     })
     return Array.from(names).sort((a, b) => a.localeCompare(b))
+}
+
+function uniqueSortedCityNames(cities: CityOption[]): string[] {
+    return uniqueSortedNames(cities.map((city) => city.name))
 }
 
 export async function fetchPakistanCities(): Promise<string[]> {
@@ -38,4 +43,9 @@ export async function fetchPakistanCities(): Promise<string[]> {
     } catch {
         return [...PAKISTAN_CITIES_FALLBACK]
     }
+}
+
+/** Back4App City rows are Pakistan-only — use the world countries list for international filters. */
+export async function fetchCountries(): Promise<string[]> {
+    return [...WORLD_COUNTRIES]
 }

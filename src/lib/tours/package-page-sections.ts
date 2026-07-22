@@ -1,4 +1,5 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
+import type { ListingKind } from '@/lib/homepage/specialization'
 import { resolvePackageMediaUrlOrPlaceholder, type PackageMediaKind } from '@/lib/supabase/package-media'
 
 export function createEmptyPackageTourSections(): Pick<
@@ -51,6 +52,7 @@ function mapHotelToStayProperty(
     label: string,
     hotel: PackageHotelLike | null | undefined,
     mediaKind: PackageMediaKind,
+    distanceSuffix = 'from holy site',
 ): TourPage['stayAndDineSection']['properties'][number] | null {
     const name = hotel?.hotel_name?.trim()
     if (!name) return null
@@ -65,7 +67,7 @@ function mapHotelToStayProperty(
         nights ? `${nights} night${nights === 1 ? '' : 's'}` : null,
         rating || null,
         room || null,
-        distance != null ? `${distance}m from holy site` : null,
+        distance != null ? `${distance}m ${distanceSuffix}` : null,
     ]
         .filter(Boolean)
         .join(' · ')
@@ -85,10 +87,40 @@ export function mapPackageHotelsToStaySection(
     makkahHotel?: PackageHotelLike | null,
     madinahHotel?: PackageHotelLike | null,
     mediaKind: PackageMediaKind = 'umrah',
+    kind: Exclude<ListingKind, 'tour'> = 'umrah',
 ): TourPage['stayAndDineSection'] {
+    const isUmrah = kind === 'umrah'
+    const labels = isUmrah
+        ? {
+              firstId: 'makkah-hotel',
+              first: 'Makkah hotel',
+              secondId: 'madinah-hotel',
+              second: 'Madinah hotel',
+              distanceSuffix: 'from holy site',
+          }
+        : {
+              firstId: 'hotel-1',
+              first: '',
+              secondId: 'hotel-2',
+              second: '',
+              distanceSuffix: 'from landmark',
+          }
+
     const properties = [
-        mapHotelToStayProperty('makkah-hotel', 'Makkah hotel', makkahHotel, mediaKind),
-        mapHotelToStayProperty('madinah-hotel', 'Madinah hotel', madinahHotel, mediaKind),
+        mapHotelToStayProperty(
+            labels.firstId,
+            labels.first,
+            makkahHotel,
+            mediaKind,
+            labels.distanceSuffix,
+        ),
+        mapHotelToStayProperty(
+            labels.secondId,
+            labels.second,
+            madinahHotel,
+            mediaKind,
+            labels.distanceSuffix,
+        ),
     ].filter((item): item is NonNullable<typeof item> => Boolean(item))
 
     return {
@@ -101,13 +133,31 @@ export function mapPackageHotelsToStaySection(
 export function mapPackageZiyaratToRouteSection(
     makkahDetails?: string | null,
     madinahDetails?: string | null,
+    kind: Exclude<ListingKind, 'tour'> = 'umrah',
 ): TourPage['technicalRouteSection'] {
+    const isUmrah = kind === 'umrah'
+    const labels = isUmrah
+        ? {
+              title: 'Ziyarat route',
+              first: 'Makkah ziyarat',
+              second: 'Madinah ziyarat',
+              firstId: 'makkah-ziyarat',
+              secondId: 'madinah-ziyarat',
+          }
+        : {
+              title: 'Tour route',
+              first: 'Outbound highlights',
+              second: 'Return highlights',
+              firstId: 'outbound-route',
+              secondId: 'return-route',
+          }
+
     const segments: TourPage['technicalRouteSection']['segments'] = []
 
     if (makkahDetails?.trim()) {
         segments.push({
-            segmentId: 'makkah-ziyarat',
-            title: 'Makkah ziyarat',
+            segmentId: labels.firstId,
+            title: labels.first,
             description: makkahDetails.trim(),
             distanceKm: 0,
             estimatedDuration: '',
@@ -117,8 +167,8 @@ export function mapPackageZiyaratToRouteSection(
 
     if (madinahDetails?.trim()) {
         segments.push({
-            segmentId: 'madinah-ziyarat',
-            title: 'Madinah ziyarat',
+            segmentId: labels.secondId,
+            title: labels.second,
             description: madinahDetails.trim(),
             distanceKm: 0,
             estimatedDuration: '',
@@ -128,7 +178,7 @@ export function mapPackageZiyaratToRouteSection(
 
     return {
         id: 'technical-route',
-        title: 'Ziyarat route',
+        title: labels.title,
         background: 'light-card',
         segments,
     }
