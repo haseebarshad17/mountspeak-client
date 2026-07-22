@@ -15,8 +15,6 @@ import { getMessage } from '@/lib/messages/get-message'
 import { MessageCode, isMessageCode } from '@/lib/messages/codes'
 import { buildAuthCallbackUrl, getClientSiteUrl } from '@/lib/utils/site-url'
 import { cn } from '@/lib/utils/clsxUtils'
-import { sendBookingConfirmationEmail } from '@/services/email/email.client'
-import type { BookingEmailBranding } from '@/services/email/email-branding'
 import { buildSubmitPackageBookingPayload, buildSubmitTourBookingPayload } from '@/services/tour-bookings/bookings.mapper'
 import {
     uploadBookingIdCard,
@@ -69,7 +67,6 @@ type BookingPageProps = {
     lockedTour: BookingTourOption | null
     initialSlotId?: string | null
     isDemoMode?: boolean
-    emailBranding: BookingEmailBranding
     bookingReturnPath?: string
 }
 
@@ -78,7 +75,6 @@ export default function BookingPage({
     lockedTour,
     initialSlotId = null,
     isDemoMode = false,
-    emailBranding,
     bookingReturnPath = '/booking',
 }: BookingPageProps) {
     const [draftReady, setDraftReady] = useState(false)
@@ -405,26 +401,6 @@ export default function BookingPage({
                     advance_amount_due: paymentDue,
                     balance_due: balanceDue,
                 },
-            })
-
-            void sendBookingConfirmationEmail({
-                toEmail: user.email ?? '',
-                toName: `${details.firstName.trim()} ${details.lastName.trim()}`.trim(),
-                bookingId: booking.id,
-                tourTitle: selectedTour.title,
-                tourSlug: selectedTour.slug,
-                maleSeats: details.maleSeats,
-                femaleSeats: details.femaleSeats,
-                kidsSeats: details.kidsSeats,
-                amountTotal: totalAmount,
-                phone: details.phone.trim(),
-                emergencyPhone: details.emergencyPhone.trim(),
-                cnic: details.cnic.trim(),
-                notes: details.note,
-                siteUrl: homepageSiteUrl ?? getClientSiteUrl(),
-                branding: emailBranding,
-            }).catch(() => {
-                // Booking succeeded; email is best-effort and should not block the user.
             })
 
             clearBookingDraft()

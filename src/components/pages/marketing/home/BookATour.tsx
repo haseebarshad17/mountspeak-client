@@ -6,13 +6,14 @@ import {
 } from '@/data/homepage'
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
+import { BookingEmailOtpGate } from '@/components/pages/booking/steps/BookingEmailOtpGate'
 import { Button } from '@/components/ui/button'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { cn } from '@/lib/utils/clsxUtils'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { MessageCode } from '@/lib/messages/codes'
-import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
+import { useBookingRequestEmailGate } from '@/hooks/useBookingRequestEmailGate'
 import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { adaptTourCopyForUmrah } from '@/lib/homepage/specialization'
 import { usePakistanCities } from '@/services/cities/cities.queries'
@@ -58,7 +59,18 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const formCopy = section.form
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
-    const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const {
+        resolvedAgencyId,
+        isAgencySite,
+        isReady,
+        requireEmailVerification,
+        emailVerified,
+        verifiedEmail,
+        userId,
+        emailRedirectTo,
+        handleEmailVerified,
+        requireUser,
+    } = useBookingRequestEmailGate({ returnPath: '/#book-a-tour-heading' })
     const { isUmrahSite, isMultiSpec, copy: listingCopy } = useSiteListingCopy()
     const usesUmrahBookingForm = isUmrahSite && !isMultiSpec
     const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, usesUmrahBookingForm)
@@ -74,8 +86,11 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const [travelDate, setTravelDate] = useState('')
     const [destination, setDestination] = useState('')
     const [category, setCategory] = useState('')
+    const [pastHistory, setPastHistory] = useState('')
     const dateInputRef = useRef<HTMLInputElement>(null)
     const minTravelDate = getTodayDateInputValue()
+    const showOtpGate =
+        requireEmailVerification && !emailVerified && !!resolvedAgencyId && !!emailRedirectTo
 
     const categoryOptions = useMemo(() => {
         const categories = usesUmrahBookingForm
@@ -133,6 +148,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        const form = event.currentTarget
         setFieldErrors({})
 
         if (!isReady) {
@@ -144,11 +160,27 @@ const BookATour = ({ page }: HomepagePageProps) => {
             return
         }
 
-        const form = event.currentTarget
+        if (requireEmailVerification && !emailVerified) {
+            toast.error('Verify your email to continue')
+            return
+        }
+
         const formData = new FormData(form)
+        const sessionUser = await requireUser()
+        const submitUserId = sessionUser?.id ?? userId
+        if (resolvedAgencyId && !submitUserId) {
+            toast.error('Verify your email to continue')
+            return
+        }
+
+        const emailValue =
+            (verifiedEmail && emailVerified
+                ? verifiedEmail
+                : String(formData.get('email') ?? '')
+            ).trim().toLowerCase()
         const raw = {
             full_name: String(formData.get('full_name') ?? ''),
-            email: String(formData.get('email') ?? ''),
+            email: emailValue,
             phone: String(formData.get('phone') ?? ''),
             travel_date: travelDate,
             destination: String(formData.get('destination') ?? ''),
@@ -166,10 +198,15 @@ const BookATour = ({ page }: HomepagePageProps) => {
             return
         }
 
+        const pastHistoryTrimmed = pastHistory.trim()
         const payload = {
             ...parsed.data,
             request_message: parsed.data.request_message || undefined,
             ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+            ...(submitUserId ? { user_id: submitUserId } : {}),
+            ...(usesUmrahBookingForm && pastHistoryTrimmed
+                ? { past_history: pastHistoryTrimmed }
+                : {}),
         }
 
         try {
@@ -182,6 +219,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
             setTravelDate('')
             setDestination('')
             setCategory('')
+            setPastHistory('')
         } catch (error) {
             toast.error(getApiErrorMessage(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED))
         }
@@ -272,6 +310,17 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             onSubmit={handleSubmit}
                             noValidate
                         >
+                            {showOtpGate && resolvedAgencyId && emailRedirectTo ? (
+                                <BookingEmailOtpGate
+                                    agencyId={resolvedAgencyId}
+                                    agencySiteUrl={undefined}
+                                    emailRedirectTo={emailRedirectTo}
+                                    onVerified={(email) => {
+                                        void handleEmailVerified(email)
+                                    }}
+                                />
+                            ) : null}
+
                             <div className={marketingFormRowClass}>
                                 <MarketingFormField errorColor={colors.error} label='Full name' error={fieldErrors.full_name}>
                                     <input
@@ -288,7 +337,13 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         name='email'
                                         placeholder={formCopy.placeholders.email}
                                         required
-                                        className={marketingFormInputClass}
+                                        readOnly={Boolean(emailVerified && verifiedEmail)}
+                                        defaultValue={verifiedEmail ?? undefined}
+                                        key={verifiedEmail ?? 'email-open'}
+                                        className={cn(
+                                            marketingFormInputClass,
+                                            emailVerified && verifiedEmail ? 'bg-neutral-50 text-neutral-700' : null,
+                                        )}
                                     />
                                 </MarketingFormField>
                             </div>
@@ -423,6 +478,23 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 />
                             </MarketingFormField>
 
+                            {usesUmrahBookingForm ? (
+                                <MarketingFormField
+                                    errorColor={colors.error}
+                                    label='Past travel / Umrah history'
+                                    className='block w-full'
+                                >
+                                    <textarea
+                                        name='past_history'
+                                        rows={3}
+                                        value={pastHistory}
+                                        onChange={(event) => setPastHistory(event.target.value)}
+                                        placeholder='Share any previous Umrah or travel history (optional).'
+                                        className={marketingFormTextareaClass}
+                                    />
+                                </MarketingFormField>
+                            ) : null}
+
                             <MarketingFormField errorColor={colors.error} label='Request message' className='block w-full' error={fieldErrors.request_message}>
                                 <textarea
                                     name='request_message'
@@ -438,6 +510,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                 loading={isPending}
                                 loadingText={formCopy.submittingLabel}
                                 shouldScale
+                                disabled={Boolean(requireEmailVerification && !emailVerified)}
                                 style={HP_THEME_BTN_STYLE}
                                 className={cn('w-full', HP_THEME_BTN_CLASS)}
                             >

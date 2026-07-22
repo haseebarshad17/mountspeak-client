@@ -1,23 +1,28 @@
 'use client'
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SectionEmptyState } from "@/components/ui/section-empty-state";
 
 import { useIsAgencySite } from "@/hooks/useIsAgencySite";
 import { useTourOrPackageCopy } from "@/hooks/useTourOrPackageCopy";
+import { downloadBookingItineraryPdf } from "@/lib/bookings/download-booking-itinerary-pdf";
 import { DEFAULT_AGENCY_ID } from "@/lib/homepage/default-homepage";
 import { cn } from "@/lib/utils/clsxUtils";
 import { useAppSelector } from "@/store/hooks";
-import { selectHomepageAgencyId } from "@/store/homepage/homepage.selectors";
+import {
+  selectHomepagePage,
+  selectHomepageAgencyId,
+  selectHomepageSiteUrl,
+} from "@/store/homepage/homepage.selectors";
 import { useOptionalUser } from "@/services/auth/auth.queries";
 import { useUserBookings } from "@/services/user-bookings/user-bookings.queries";
 import type {
+  UserBookingDisplay,
   UserBookingStatusTone,
   UserPastBookingDisplay,
 } from "@/services/user-bookings/user-bookings.types";
-import { tourDetailPath } from "@/services/tours/tours.utils";
 
 import {
   accountCardClassName,
@@ -41,11 +46,26 @@ function upcomingStatusClassName(tone: UserBookingStatusTone, index: number): st
   return index === 0 ? "bg-[#B9EBF1] text-[#002023]" : "bg-[#F4DFCB] text-[#716252]";
 }
 
+function listingKindClassName(): string {
+  return "bg-[#E8F0EF] text-[#0B4552]";
+}
+
 function tabButtonClassName(isActive: boolean): string {
   return [
     "pb-4 text-xs font-medium uppercase tracking-[0.6px] text-[#00292C] transition",
     isActive ? "border-b-2 border-[#00292C]" : "border-b-2 border-transparent",
   ].join(" ");
+}
+
+function extractFooterContact(page: ReturnType<typeof selectHomepagePage>): string {
+  const columns = page?.footer?.columns ?? [];
+  const labels = columns
+    .flatMap((column) => column.items ?? [])
+    .map((item) => item.label?.trim())
+    .filter((label): label is string => Boolean(label))
+    .filter((label) => /phone|email|address|whatsapp/i.test(label));
+
+  return labels.slice(0, 3).join(" · ");
 }
 
 function PastExpeditionCard({
@@ -61,7 +81,7 @@ function PastExpeditionCard({
 }) {
   return (
     <article className={cn(accountCardClassName, "bg-[#F3F3F6] p-5 sm:p-6 md:max-w-[362px] md:flex-1")}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <span
           className={`px-2 py-1 text-xs font-medium uppercase ${tour.statusTone === "completed"
               ? "bg-[#E2E2E5] text-[#404849]"
@@ -77,8 +97,12 @@ function PastExpeditionCard({
         </span>
       </div>
 
+      <span className={`mt-4 inline-flex px-2 py-1 text-[10px] font-semibold uppercase tracking-[1px] ${listingKindClassName()}`}>
+        {tour.listingKindLabel}
+      </span>
+
       <h4
-        className="mt-4 text-[20px] leading-[28px] text-[#00292C]"
+        className="mt-3 text-[20px] leading-[28px] text-[#00292C]"
       >
         {resolveTitle(tour.title)}
       </h4>
@@ -112,6 +136,8 @@ const BookingsPage = () => {
   const [activeTab, setActiveTab] = useState<BookingsTab>("upcoming");
   const { data: currentUser, isLoading: isUserLoading } = useOptionalUser();
   const agencyId = useAppSelector(selectHomepageAgencyId);
+  const homepagePage = useAppSelector(selectHomepagePage);
+  const siteUrl = useAppSelector(selectHomepageSiteUrl);
   const isAgencySite = useIsAgencySite();
   const { copy } = useTourOrPackageCopy();
   const resolvedAgencyId = useMemo(() => {
@@ -129,6 +155,28 @@ const BookingsPage = () => {
       agencyContextResolved: isAgencySite !== null,
       isUserLoading,
     },
+  );
+
+  const agencyName = homepagePage?.branding?.name?.trim() || "Travel Agency";
+  const agencyContact = useMemo(() => extractFooterContact(homepagePage), [homepagePage]);
+
+  const handleDownloadItinerary = useCallback(
+    (booking: UserBookingDisplay) => {
+      downloadBookingItineraryPdf({
+        agencyName,
+        agencyContact,
+        agencySiteUrl: siteUrl,
+        referenceId: booking.referenceId,
+        listingKindLabel: booking.listingKindLabel,
+        title: copy.resolveBookingTitle(booking.title),
+        schedule: booking.schedule,
+        location: booking.location,
+        members: booking.members,
+        status: booking.status,
+        itineraryContent: booking.itineraryContent,
+      });
+    },
+    [agencyContact, agencyName, copy, siteUrl],
   );
 
   const upcomingTours = bookingsData?.upcoming ?? [];
@@ -186,11 +234,18 @@ const BookingsPage = () => {
                     </div>
                     <div className="flex w-full min-w-0 flex-col justify-between md:w-auto">
                       <div className="flex flex-wrap items-center justify-between gap-4 ">
-                        <span
-                          className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
-                        >
-                          {tour.status}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold uppercase tracking-[1.2px] ${upcomingStatusClassName(tour.statusTone, index)}`}
+                          >
+                            {tour.status}
+                          </span>
+                          <span
+                            className={`px-2 py-1 text-[10px] font-semibold uppercase tracking-[1px] ${listingKindClassName()}`}
+                          >
+                            {tour.listingKindLabel}
+                          </span>
+                        </div>
                         <span
                           className="text-xs font-medium uppercase text-[#404849]"
                         >
@@ -247,13 +302,9 @@ const BookingsPage = () => {
 
                       <div className="mt-0 flex flex-wrap items-center gap-3 border-t border-[#C0C8C966] pt-6">
                         <Button
+                          type="button"
                           className="shrink-0"
-                          href={
-                            copy.resolvePrimaryAction(tour.primaryAction) === copy.viewBookingAction &&
-                            tour.slug
-                              ? tourDetailPath(tour.slug)
-                              : undefined
-                          }
+                          onClick={() => handleDownloadItinerary(tour)}
                         >
                           {copy.resolvePrimaryAction(tour.primaryAction)}
                         </Button>

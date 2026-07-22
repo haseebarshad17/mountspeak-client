@@ -7,6 +7,39 @@ import { partitionBookings } from './user-bookings.utils'
 
 import type { UserBookingRow } from './user-bookings.types'
 
+const UMRAH_BOOKING_EMBED_SELECT = `
+    id,
+    agency_id,
+    basic_information,
+    pricing,
+    duration_dates,
+    booking_info,
+    images,
+    descriptions,
+    seo,
+    created_at,
+    makkah_hotel,
+    madinah_hotel,
+    ziyarat,
+    package_includes
+`
+
+const INTERNATIONAL_BOOKING_EMBED_SELECT = `
+    id,
+    agency_id,
+    basic_information,
+    pricing,
+    duration_dates,
+    booking_info,
+    images,
+    descriptions,
+    seo,
+    created_at,
+    hotels,
+    itinerary,
+    package_includes
+`
+
 const USER_BOOKINGS_SELECT = `
   id,
   status,
@@ -16,6 +49,9 @@ const USER_BOOKINGS_SELECT = `
   kids_seats,
   booking_payment_screenshot,
   payment_id,
+  listing_kind,
+  umrah_plan_id,
+  international_tour_id,
   payment:payments (
     status
   ),
@@ -29,8 +65,13 @@ const USER_BOOKINGS_SELECT = `
     end_date,
     header,
     overview,
-    visual_fragments
-  )
+    visual_fragments,
+    route,
+    stay_and_dine,
+    expedition_perks
+  ),
+  umrah_plan:umrah_plan (${UMRAH_BOOKING_EMBED_SELECT}),
+  international_tour:international_tour (${INTERNATIONAL_BOOKING_EMBED_SELECT})
 `
 
 type UserBookingsServiceProps = {

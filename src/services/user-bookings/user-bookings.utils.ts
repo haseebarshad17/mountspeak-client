@@ -1,11 +1,23 @@
+import type { ListingKind } from '@/lib/homepage/specialization'
+import {
+    EMPTY_BOOKING_ITINERARY_CONTENT,
+    extractDomesticTourItineraryContent,
+    extractPackageItineraryContent,
+    type BookingItineraryContent,
+} from '@/lib/bookings/booking-itinerary-content'
+import { resolvePackageMediaUrlOrPlaceholder } from '@/lib/supabase/package-media'
+import type { InternationalTourRow } from '@/services/international-tour/international-tour.types'
 import { getTourCoverImage } from '@/services/tours/tours.utils'
+import type { UmrahPlanRow } from '@/services/umrah-plan/umrah-plan.types'
 
 import type {
     UserBookingDisplay,
+    UserBookingInternationalTourRow,
     UserBookingPaymentRow,
     UserBookingRow,
     UserBookingStatusTone,
     UserBookingTourRow,
+    UserBookingUmrahPlanRow,
     UserPastBookingDisplay,
 } from './user-bookings.types'
 
@@ -20,9 +32,75 @@ const MONTH_YEAR_FORMAT: Intl.DateTimeFormatOptions = {
     year: 'numeric',
 }
 
+const LISTING_KIND_LABELS: Record<ListingKind, string> = {
+    tour: 'Domestic Tour',
+    umrah: 'Hajj & Umrah',
+    international: 'International Tour',
+}
+
+function unwrapRelation<T>(value: T | T[] | null | undefined): T | null {
+    if (!value) return null
+    return Array.isArray(value) ? (value[0] ?? null) : value
+}
+
 function parseTour(row: UserBookingRow): UserBookingTourRow | null {
-    if (!row.tours) return null
-    return Array.isArray(row.tours) ? (row.tours[0] ?? null) : row.tours
+    return unwrapRelation(row.tours)
+}
+
+function parseUmrahPlan(row: UserBookingRow): UserBookingUmrahPlanRow | null {
+    return unwrapRelation(row.umrah_plan)
+}
+
+function parseInternationalTour(row: UserBookingRow): UserBookingInternationalTourRow | null {
+    return unwrapRelation(row.international_tour)
+}
+
+function resolveListingKind(row: UserBookingRow): ListingKind {
+    const kind = row.listing_kind?.trim().toLowerCase()
+    if (kind === 'umrah' || kind === 'international') return kind
+    if (row.umrah_plan_id) return 'umrah'
+    if (row.international_tour_id) return 'international'
+    return 'tour'
+}
+
+function listingKindLabel(kind: ListingKind): string {
+    return LISTING_KIND_LABELS[kind]
+}
+
+function toIsoDate(date: Date): string {
+    return date.toISOString().slice(0, 10)
+}
+
+function formatPackageSchedule(plan: UmrahPlanRow | InternationalTourRow): string {
+    const departure = plan.duration_dates?.departure_date?.trim()
+    if (!departure) return 'Dates to be announced'
+
+    const durationDays = Number(plan.duration_dates?.duration_days ?? 0)
+    if (Number.isFinite(durationDays) && durationDays > 1) {
+        const start = new Date(departure)
+        if (!Number.isNaN(start.getTime())) {
+            const end = new Date(start)
+            end.setDate(end.getDate() + durationDays - 1)
+            return formatBookingSchedule(departure, toIsoDate(end))
+        }
+    }
+
+    return formatBookingSchedule(departure, null)
+}
+
+function resolvePackageLocation(
+    kind: ListingKind,
+    plan: UmrahPlanRow | InternationalTourRow,
+): string {
+    const category = plan.basic_information?.package_category?.trim()
+    if (category) return category
+    if (kind === 'umrah') return 'Saudi Arabia'
+    if (kind === 'international') return 'International'
+    return 'Pakistan'
+}
+
+function resolvePackageTitle(plan: UmrahPlanRow | InternationalTourRow, fallback: string): string {
+    return plan.basic_information?.package_title?.trim() || fallback
 }
 
 export function toBookingReference(id: string): string {
@@ -77,7 +155,7 @@ export function formatPastBookingDate(
     return date.toLocaleDateString('en-US', MONTH_YEAR_FORMAT)
 }
 
-function isPastTour(endDate: string | null, startDate: string | null): boolean {
+function isPastBooking(endDate: string | null, startDate: string | null): boolean {
     const reference = endDate ?? startDate
     if (!reference) return false
 
@@ -90,8 +168,7 @@ function isPastTour(endDate: string | null, startDate: string | null): boolean {
 }
 
 function parsePayment(row: UserBookingRow): UserBookingPaymentRow | null {
-    if (!row.payment) return null
-    return Array.isArray(row.payment) ? (row.payment[0] ?? null) : row.payment
+    return unwrapRelation(row.payment)
 }
 
 function mapStatus(
@@ -144,34 +221,95 @@ function mapStatus(
     return { label: 'Pending', tone: 'pending', warning: '' }
 }
 
-function mapActions(): {
-    primaryAction: string
-    secondaryAction: string
-} {
-    return {
-        primaryAction: 'View Itinerary',
-        secondaryAction: '',
-    }
+type ResolvedBookingContent = {
+    listingKind: ListingKind
+    title: string
+    image: string
+    schedule: string
+    location: string
+    region: string
+    dateLabel: string
+    slug: string | null
+    packageId: string | null
+    isPast: boolean
+    itineraryContent: BookingItineraryContent
 }
 
-export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay {
+function resolveItineraryContent(row: UserBookingRow, listingKind: ListingKind): BookingItineraryContent {
+    if (listingKind === 'umrah') {
+        const plan = parseUmrahPlan(row)
+        if (plan) return extractPackageItineraryContent(plan, 'umrah')
+    }
+
+    if (listingKind === 'international') {
+        const plan = parseInternationalTour(row)
+        if (plan) return extractPackageItineraryContent(plan, 'international')
+    }
+
     const tour = parseTour(row)
-    const payment = parsePayment(row)
-    const members = formatMemberCount(row.male_seat, row.female_seat, row.kids_seats)
-    const status = mapStatus(
-        row.status,
-        payment?.status ?? null,
-        Boolean(row.booking_payment_screenshot),
-    )
-    const actions = mapActions()
+    if (tour) {
+        return extractDomesticTourItineraryContent({
+            route: tour.route,
+            stay_and_dine: tour.stay_and_dine,
+            expedition_perks: tour.expedition_perks,
+        })
+    }
+
+    return EMPTY_BOOKING_ITINERARY_CONTENT
+}
+
+function resolveBookingContent(row: UserBookingRow): ResolvedBookingContent {
+    const listingKind = resolveListingKind(row)
+    const tour = parseTour(row)
+    const itineraryContent = resolveItineraryContent(row, listingKind)
+
+    if (listingKind === 'umrah') {
+        const plan = parseUmrahPlan(row)
+        if (plan) {
+            const departure = plan.duration_dates?.departure_date?.trim() || null
+            const location = resolvePackageLocation('umrah', plan)
+            return {
+                listingKind,
+                title: resolvePackageTitle(plan, 'Umrah package'),
+                image: resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, 'umrah'),
+                schedule: formatPackageSchedule(plan),
+                location,
+                region: location,
+                dateLabel: formatBookingDateLabel(departure),
+                slug: plan.id,
+                packageId: plan.id,
+                isPast: isPastBooking(null, departure),
+                itineraryContent,
+            }
+        }
+    }
+
+    if (listingKind === 'international') {
+        const plan = parseInternationalTour(row)
+        if (plan) {
+            const departure = plan.duration_dates?.departure_date?.trim() || null
+            const location = resolvePackageLocation('international', plan)
+            return {
+                listingKind,
+                title: resolvePackageTitle(plan, 'International tour'),
+                image: resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, 'international'),
+                schedule: formatPackageSchedule(plan),
+                location,
+                region: location,
+                dateLabel: formatBookingDateLabel(departure),
+                slug: plan.id,
+                packageId: plan.id,
+                isPast: isPastBooking(null, departure),
+                itineraryContent,
+            }
+        }
+    }
+
     const location = tour?.to_location ?? tour?.from_location ?? 'Pakistan'
     const region = tour?.from_location ?? tour?.to_location ?? location
 
     return {
-        id: row.id,
-        referenceId: toBookingReference(row.id),
-        status: status.label,
-        statusTone: status.tone,
+        listingKind: 'tour',
         title: tour?.title ?? 'Expedition booking',
         image: getTourCoverImage(
             tour ?? { header: null, overview: null, visual_fragments: null },
@@ -180,26 +318,74 @@ export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay 
         location,
         region,
         dateLabel: formatBookingDateLabel(tour?.start_date ?? null),
-        members: members.label,
-        memberCount: members.count,
-        warning: status.warning,
         slug: tour?.slug ?? null,
-        primaryAction: actions.primaryAction,
-        secondaryAction: actions.secondaryAction,
-        isPast: isPastTour(tour?.end_date ?? null, tour?.start_date ?? null),
+        packageId: null,
+        isPast: isPastBooking(tour?.end_date ?? null, tour?.start_date ?? null),
+        itineraryContent,
     }
 }
 
+export function mapBookingRowToDisplay(row: UserBookingRow): UserBookingDisplay {
+    const payment = parsePayment(row)
+    const members = formatMemberCount(row.male_seat, row.female_seat, row.kids_seats)
+    const status = mapStatus(
+        row.status,
+        payment?.status ?? null,
+        Boolean(row.booking_payment_screenshot),
+    )
+    const content = resolveBookingContent(row)
+
+    return {
+        id: row.id,
+        referenceId: toBookingReference(row.id),
+        status: status.label,
+        statusTone: status.tone,
+        listingKind: content.listingKind,
+        listingKindLabel: listingKindLabel(content.listingKind),
+        title: content.title,
+        image: content.image,
+        schedule: content.schedule,
+        location: content.location,
+        region: content.region,
+        dateLabel: content.dateLabel,
+        members: members.label,
+        memberCount: members.count,
+        warning: status.warning,
+        slug: content.slug,
+        packageId: content.packageId,
+        primaryAction: 'Download Itinerary',
+        secondaryAction: '',
+        isPast: content.isPast,
+        itineraryContent: content.itineraryContent,
+    }
+}
+
+function resolveScheduleStartDate(row: UserBookingRow, listingKind: ListingKind): string | null {
+    if (listingKind === 'tour') {
+        return parseTour(row)?.start_date ?? null
+    }
+
+    if (listingKind === 'umrah') {
+        return parseUmrahPlan(row)?.duration_dates?.departure_date?.trim() || null
+    }
+
+    return parseInternationalTour(row)?.duration_dates?.departure_date?.trim() || null
+}
+
 export function mapBookingRowToPastDisplay(row: UserBookingRow): UserPastBookingDisplay {
-    const tour = parseTour(row)
+    const content = resolveBookingContent(row)
     const normalized = (row.status ?? '').trim().toLowerCase()
     const isCancelled = normalized === 'cancelled' || normalized === 'canceled'
 
     return {
         status: isCancelled ? 'Cancelled' : 'Completed',
         statusTone: isCancelled ? 'cancelled' : 'completed',
-        date: formatPastBookingDate(tour?.start_date ?? null, row.created_at),
-        title: tour?.title ?? 'Expedition booking',
+        date: formatPastBookingDate(
+            resolveScheduleStartDate(row, content.listingKind),
+            row.created_at,
+        ),
+        title: content.title,
+        listingKindLabel: listingKindLabel(content.listingKind),
         note: isCancelled
             ? 'This booking was cancelled.'
             : 'Thank you for traveling with us.',
