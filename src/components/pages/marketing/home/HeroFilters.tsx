@@ -9,6 +9,7 @@ import HeroListingTypeTabs from '@/components/pages/marketing/home/HeroListingTy
 import {
     isMultiSpecializationAgency,
     resolveOwnedListingKinds,
+    shouldUseSingleSpecInternationalUx,
     shouldUseSingleSpecUmrahUx,
     type ListingKind,
 } from '@/lib/homepage/specialization'
@@ -49,21 +50,22 @@ export default function HeroFilters({
         specializations,
     )
     const isMultiSpec = isMultiSpecializationAgency(specializationId, agencySpecializationIds)
-    const isUmrahFilters = isMultiSpec ? listingType === 'umrah' : shouldUseSingleSpecUmrahUx(
-        specializationId,
-        agencySpecializationIds,
-        specializations,
-    )
-    const isInternationalFilters = isMultiSpec && listingType === 'international'
+    const isUmrahFilters = isMultiSpec
+        ? listingType === 'umrah'
+        : shouldUseSingleSpecUmrahUx(specializationId, agencySpecializationIds, specializations)
+    const isInternationalFilters = isMultiSpec
+        ? listingType === 'international'
+        : shouldUseSingleSpecInternationalUx(
+              specializationId,
+              agencySpecializationIds,
+              specializations,
+          )
 
-    if (isUmrahFilters || isInternationalFilters) {
+    if (isUmrahFilters) {
         return (
             <>
                 <HeroListingTypeTabs activeType={listingType} ownedKinds={ownedKinds} />
-                <HeroUmrahFilters
-                    initialValues={umrahInitialValues}
-                    listingType={listingType === 'tour' ? 'umrah' : listingType}
-                />
+                <HeroUmrahFilters initialValues={umrahInitialValues} listingType='umrah' />
             </>
         )
     }
@@ -75,6 +77,8 @@ export default function HeroFilters({
                 page={page}
                 initialValues={initialValues}
                 tourLocations={tourLocations}
+                locationKind={isInternationalFilters ? 'country' : 'city'}
+                listingType={isInternationalFilters ? 'international' : 'tour'}
             />
         </>
     )

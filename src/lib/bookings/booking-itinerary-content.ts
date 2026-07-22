@@ -138,8 +138,9 @@ export function extractPackageItineraryContent(
     const routeSection = mapPackageZiyaratToRouteSection(
         ziyaratSource?.makkah_ziyarat_details,
         ziyaratSource?.madinah_ziyarat_details,
+        kind,
     )
-    const staySection = mapPackageHotelsToStaySection(makkahHotel, madinahHotel, mediaKind)
+    const staySection = mapPackageHotelsToStaySection(makkahHotel, madinahHotel, mediaKind, kind)
     const serviceItems = mapPackageIncludesToPerks(plan.package_includes?.items)
 
     return {

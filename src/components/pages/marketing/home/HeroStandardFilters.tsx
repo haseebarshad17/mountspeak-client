@@ -3,13 +3,14 @@
 import FilterDropdown from "@/components/generic/FilterDropdown"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils/clsxUtils"
-import { usePakistanCities } from "@/services/cities/cities.queries"
+import { useCountries, usePakistanCities } from "@/services/cities/cities.queries"
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
 import {
     TOUR_CATEGORY_FILTER_OPTIONS,
     type TourCategory,
 } from "@/services/tours/tours.category"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
+import { buildListingSearchPath, type ListingKind } from "@/lib/homepage/specialization"
 import { Calendar, Heart, Loader2, MapPin, Navigation, Search, Users } from "lucide-react"
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
@@ -116,6 +117,9 @@ type HeroStandardFiltersProps = {
     page?: HomepagePage | null
     initialValues?: HeroFiltersValues
     tourLocations?: string[]
+    /** Domestic tours use cities; international uses countries. */
+    locationKind?: 'city' | 'country'
+    listingType?: ListingKind
 }
 
 const heroTriggerButtonClass = cn(
@@ -129,10 +133,15 @@ export default function HeroStandardFilters({
     page,
     initialValues,
     tourLocations = [],
+    locationKind = 'city',
+    listingType = 'tour',
 }: HeroStandardFiltersProps) {
     const router = usePreviewRouter()
     const [isSearching, startSearchTransition] = useTransition()
-    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
+    const useCountryLocations = locationKind === 'country'
+    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities(!useCountryLocations)
+    const { data: countries = [], isLoading: isCountriesLoading } = useCountries(useCountryLocations)
+    const isLocationsLoading = useCountryLocations ? isCountriesLoading : isCitiesLoading
     const [from, setFrom] = useState(initialValues?.from ?? "")
     const [to, setTo] = useState(initialValues?.to ?? "")
     const [startDate, setStartDate] = useState(initialValues?.start_date ?? "")
@@ -154,19 +163,26 @@ export default function HeroStandardFilters({
         initialValues?.category,
     ])
 
-    const cityOptions = useMemo(() => {
+    const locationOptions = useMemo(() => {
+        if (useCountryLocations) {
+            return [...countries].sort((a, b) => a.localeCompare(b))
+        }
+
         const merged = new Set<string>([...pakistanCities, ...tourLocations])
         return [...merged].sort((a, b) => a.localeCompare(b))
-    }, [pakistanCities, tourLocations])
+    }, [useCountryLocations, countries, pakistanCities, tourLocations])
 
-    const cityFilterOptions = useMemo(
-        () => cityOptions.map((city) => ({ value: city, label: city })),
-        [cityOptions],
+    const fromFilterOptions = useMemo(
+        () => locationOptions.map((location) => ({ value: location, label: location })),
+        [locationOptions],
     )
 
     const toFilterOptions = useMemo(
-        () => cityOptions.filter((city) => city !== from).map((city) => ({ value: city, label: city })),
-        [cityOptions, from],
+        () =>
+            locationOptions
+                .filter((location) => location !== from)
+                .map((location) => ({ value: location, label: location })),
+        [locationOptions, from],
     )
 
     const minTravelDate = new Date().toISOString().slice(0, 10)
@@ -178,15 +194,28 @@ export default function HeroStandardFilters({
 
     const handleSearch = () => {
         startSearchTransition(() => {
-            router.push(
-                buildTourSearchPath({
-                    from,
-                    to,
-                    start_date: startDate || undefined,
-                    end_date: endDate || undefined,
-                    category: category === 'PUBLIC_TRIP' || category === 'HONEYMOON' ? category : undefined,
-                }),
-            )
+            const filters = {
+                from,
+                to,
+                start_date: startDate || undefined,
+                end_date: endDate || undefined,
+                category: category === 'PUBLIC_TRIP' || category === 'HONEYMOON' ? category : undefined,
+            }
+
+            if (listingType === 'international') {
+                router.push(
+                    buildListingSearchPath('international', {
+                        from: filters.from || undefined,
+                        to: filters.to || undefined,
+                        start_date: filters.start_date,
+                        end_date: filters.end_date,
+                        category: filters.category,
+                    }),
+                )
+                return
+            }
+
+            router.push(buildTourSearchPath(filters))
         })
     }
 
@@ -195,6 +224,10 @@ export default function HeroStandardFilters({
     const endDateLabel = heroSearch.endDateLabel ?? DEFAULT_HERO_SEARCH_FILTERS.endDateLabel
     const startDatePlaceholder = startDateLabel ?? 'Start date'
     const endDatePlaceholder = endDateLabel ?? 'End date'
+    const loadingLocationsLabel = useCountryLocations ? 'Loading countries...' : heroSearch.loadingCities
+    const emptyLocationsLabel = useCountryLocations ? 'No countries available' : heroSearch.noCities
+    const fromPlaceholder = useCountryLocations ? 'From country' : heroSearch.fromPlaceholder
+    const toPlaceholder = useCountryLocations ? 'To country' : heroSearch.toPlaceholder
 
     return (
         <form
@@ -226,26 +259,26 @@ export default function HeroStandardFilters({
                 </div>
 
                 <div className="min-w-0 w-full">
-                    {isCitiesLoading ? (
+                    {isLocationsLoading ? (
                         <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
                             <MapPin className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
-                            <span className="truncate text-neutral-500">{heroSearch.loadingCities}</span>
+                            <span className="truncate text-neutral-500">{loadingLocationsLabel}</span>
                         </div>
-                    ) : cityOptions.length === 0 ? (
+                    ) : locationOptions.length === 0 ? (
                         <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
                             <MapPin className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
-                            <span className="truncate text-neutral-500">{heroSearch.noCities}</span>
+                            <span className="truncate text-neutral-500">{emptyLocationsLabel}</span>
                         </div>
                     ) : (
                         <FilterDropdown
-                            options={cityFilterOptions}
+                            options={fromFilterOptions}
                             value={from}
                             onChange={(value) => {
                                 const nextFrom = String(value)
                                 setFrom(nextFrom)
                                 if (to === nextFrom) setTo("")
                             }}
-                            placeholder={heroSearch.fromPlaceholder}
+                            placeholder={fromPlaceholder}
                             triggerIcon={MapPin}
                             theme="slate"
                             open={open === "from"}
@@ -256,22 +289,22 @@ export default function HeroStandardFilters({
                 </div>
 
                 <div className="min-w-0 w-full">
-                    {isCitiesLoading ? (
+                    {isLocationsLoading ? (
                         <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
                             <Navigation className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
-                            <span className="truncate text-neutral-500">{heroSearch.loadingCities}</span>
+                            <span className="truncate text-neutral-500">{loadingLocationsLabel}</span>
                         </div>
                     ) : toFilterOptions.length === 0 ? (
                         <div className={cn(heroTriggerButtonClass, 'flex items-center')}>
                             <Navigation className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden />
-                            <span className="truncate text-neutral-500">{heroSearch.noCities}</span>
+                            <span className="truncate text-neutral-500">{emptyLocationsLabel}</span>
                         </div>
                     ) : (
                         <FilterDropdown
                             options={toFilterOptions}
                             value={to}
                             onChange={(value) => setTo(String(value))}
-                            placeholder={heroSearch.toPlaceholder}
+                            placeholder={toPlaceholder}
                             triggerIcon={Navigation}
                             theme="slate"
                             open={open === "to"}

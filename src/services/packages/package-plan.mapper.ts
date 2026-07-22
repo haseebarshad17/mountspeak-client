@@ -212,8 +212,8 @@ export function mapPackagePlanToTourPage(
             highlightColumns: [],
         },
         ...emptySections,
-        technicalRouteSection: mapPackageZiyaratToRouteSection(ziyarat.makkah, ziyarat.madinah),
-        stayAndDineSection: mapPackageHotelsToStaySection(makkah, madinah, mediaKind),
+        technicalRouteSection: mapPackageZiyaratToRouteSection(ziyarat.makkah, ziyarat.madinah, kind),
+        stayAndDineSection: mapPackageHotelsToStaySection(makkah, madinah, mediaKind, kind),
         perksAndTechnicalsSection: {
             id: 'perks-technicals',
             title: 'Package highlights',
