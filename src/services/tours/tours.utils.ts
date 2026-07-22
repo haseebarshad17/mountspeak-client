@@ -1,4 +1,5 @@
 import { getAvailableSeats, isTourBookingClosed, parseTourCalendarDate } from '@/lib/booking/tour-booking-rules'
+import { formatMoneyAmount } from '@/lib/money/format-money'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { TOUR_MEDIA_PLACEHOLDER, resolveTourMediaUrl } from '@/lib/supabase/tour-media'
 
@@ -33,8 +34,12 @@ export function formatTourDiscount(percent: number | null | undefined): string {
     return `${value}% off`
 }
 
-export function formatTourPrice(amount: number): string {
-    return `PKR ${amount.toLocaleString('en-PK')}`
+export function formatTourPrice(
+    amount: number,
+    currency?: string | null,
+    listingKind: ListingKind = 'tour',
+): string {
+    return formatMoneyAmount(amount, currency, listingKind)
 }
 
 export function getTourDiscountedPricePerSeat(
@@ -191,6 +196,7 @@ export function toTourListItem(tour: TourRow, departureSlots: TourListDepartureS
             tour.price_per_seat != null && Number(tour.price_per_seat) > 0
                 ? Number(tour.price_per_seat)
                 : null,
+        currency: 'PKR',
         image: getTourCoverImage(tour),
         totalBooked,
         remainingSeats,

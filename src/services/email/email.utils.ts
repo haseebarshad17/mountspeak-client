@@ -1,3 +1,4 @@
+import { formatMoneyAmount } from '@/lib/money/format-money'
 import { EMAIL_EVENT_TYPES } from './email.constants'
 import {
     bookingEmailBrandingToTemplateVariables,
@@ -15,6 +16,7 @@ export function buildBookingConfirmationEmailPayload(params: {
     femaleSeats: number
     kidsSeats: number
     amountTotal: number
+    currency?: string | null
     phone: string
     emergencyPhone: string
     cnic: string
@@ -43,7 +45,7 @@ export function buildBookingConfirmationEmailPayload(params: {
             female_seats: params.femaleSeats,
             kids_seats: params.kidsSeats,
             total_seats: totalSeats,
-            amount_total: `PKR ${params.amountTotal.toLocaleString('en-PK')}`,
+            amount_total: formatMoneyAmount(params.amountTotal, params.currency),
             phone: params.phone,
             emergency_phone: params.emergencyPhone,
             cnic: params.cnic,

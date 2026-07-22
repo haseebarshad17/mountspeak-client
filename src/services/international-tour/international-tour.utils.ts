@@ -1,4 +1,5 @@
 import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { normalizeCurrencyCode } from '@/lib/money/format-money'
 import { resolvePackageMediaUrlOrPlaceholder } from '@/lib/supabase/package-media'
 import {
     formatTourDiscount,
@@ -13,19 +14,21 @@ import type { InternationalTourRow } from './international-tour.types'
 function getInternationalTourPricing(pricing: InternationalTourRow['pricing']) {
     const original = Number(pricing?.original_price ?? 0)
     const discounted = Number(pricing?.discount_price ?? 0)
+    const currency = normalizeCurrencyCode(pricing?.currency, 'international')
 
     if (original > 0 && discounted > 0 && discounted < original) {
         return {
             pricePerSeat: original,
             discountPercent: Math.round(((original - discounted) / original) * 100),
+            currency,
         }
     }
 
     if (original > 0) {
-        return { pricePerSeat: original, discountPercent: null }
+        return { pricePerSeat: original, discountPercent: null, currency }
     }
 
-    return { pricePerSeat: null, discountPercent: null }
+    return { pricePerSeat: null, discountPercent: null, currency }
 }
 
 export function parseInternationalDurationDays(duration?: string): number | null {
@@ -60,7 +63,7 @@ export function toInternationalTourListItem(plan: InternationalTourRow): TourLis
             : 0
     const departureDate = plan.duration_dates?.departure_date?.trim() || null
     const bookingDeadline = plan.booking_info?.booking_deadline?.trim() || null
-    const { pricePerSeat, discountPercent } = getInternationalTourPricing(plan.pricing)
+    const { pricePerSeat, discountPercent, currency } = getInternationalTourPricing(plan.pricing)
 
     return {
         id: plan.id,
@@ -70,6 +73,7 @@ export function toInternationalTourListItem(plan: InternationalTourRow): TourLis
         discountLabel: formatTourDiscount(discountPercent),
         discountPercent,
         pricePerSeat,
+        currency,
         image: resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, 'international'),
         totalBooked,
         remainingSeats: availableSeats,

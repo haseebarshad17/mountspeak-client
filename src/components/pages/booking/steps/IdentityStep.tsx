@@ -933,6 +933,7 @@ export function IdentityStep({
                     kidsSeats={kidsSeats}
                     adultDiscountPercent={selectedTour?.discountPercent ?? 0}
                     kidsDiscountPercent={selectedTour?.kidsDiscountPercent ?? 0}
+                    currency={selectedTour?.currency}
                 />
             </div>
 

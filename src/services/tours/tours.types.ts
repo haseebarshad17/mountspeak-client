@@ -29,6 +29,8 @@ export type TourListItem = {
     discountLabel: string
     discountPercent: number | null
     pricePerSeat: number | null
+    /** ISO currency code from package pricing; domestic tours default to PKR. */
+    currency?: string | null
     image: string
     totalBooked: number
     remainingSeats: number | null

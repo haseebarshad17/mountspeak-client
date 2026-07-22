@@ -32,7 +32,12 @@ import { bookingFormPanelClassName, bookingPageTopPaddingClassName, bookingStepp
 import { OnboardIntro } from './OnboardIntro'
 import { OnboardStepper } from './OnboardStepper'
 import type { BookingDetailsForm, BookingTourOption } from './booking.types'
-import { isPackageBookingOption, resolveSelectedBookingTour, resolveSelectedSlotAvailableSeats } from './booking.types'
+import {
+    formatBookingTotalAmount,
+    isPackageBookingOption,
+    resolveSelectedBookingTour,
+    resolveSelectedSlotAvailableSeats,
+} from './booking.types'
 import {
     clearBookingDraft,
     loadBookingDraft,
@@ -486,7 +491,7 @@ export default function BookingPage({
                     {selectedTour ? ` ${selectedTour.title}` : ''}. Our team will verify your ID and
                     advance payment, then contact you shortly.
                     {balanceDue > 0
-                        ? ` The remaining balance of PKR ${balanceDue.toLocaleString('en-PK')} is due before departure.`
+                        ? ` The remaining balance of ${formatBookingTotalAmount(balanceDue, selectedTour?.currency)} is due before departure.`
                         : ''}
                 </p>
                 <Button
@@ -540,6 +545,7 @@ export default function BookingPage({
                             totalAmount={totalAmount}
                             advanceAmountDue={advanceAmountDue}
                             balanceDue={balanceDue}
+                            currency={selectedTour?.currency}
                             paymentAccounts={paymentAccounts}
                             paymentAccountsLoading={paymentAccountsLoading}
                             showFallbackPaymentMethods={isDemoMode}

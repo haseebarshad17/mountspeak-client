@@ -20,6 +20,8 @@ export const DEMO_BOOKING_TOUR_OPTION: BookingTourOption = {
     advanceAmountPerSeat: 5000,
     discountPercent: 10,
     kidsDiscountPercent: 5,
+    currency: 'PKR',
+    listingKind: 'tour',
     startDate: futureIsoDate(30),
     capacityTotal: 20,
     confirmedSeats: 0,

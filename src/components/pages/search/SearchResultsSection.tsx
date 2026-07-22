@@ -102,6 +102,7 @@ export function SearchResultsSection({
                             slug={tour.slug}
                             discountPercent={tour.discountPercent}
                             pricePerSeat={tour.pricePerSeat}
+                            currency={tour.currency}
                             title={tour.title}
                             category={isPackageSearch ? null : tour.category}
                             image={tour.image}

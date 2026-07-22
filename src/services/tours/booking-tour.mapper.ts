@@ -113,6 +113,8 @@ export function mapPublishedTourToBookingOption(row: PublishedTourRpc): BookingT
                 : null,
         discountPercent: Number(row.discount_percent ?? 0),
         kidsDiscountPercent: Number(row.kids_discount ?? 0),
+        currency: 'PKR',
+        listingKind: 'tour',
         startDate,
         capacityTotal: row.capacity_total ?? null,
         confirmedSeats,

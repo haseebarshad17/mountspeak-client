@@ -28,6 +28,8 @@ type TourExploreCardProps = {
     listingKind?: ListingKind
     discountPercent?: number | null
     pricePerSeat?: number | null
+    /** From package pricing.currency; domestic tours default to PKR. */
+    currency?: string | null
     title: string
     category?: TourCategory | null
     image: string
@@ -116,6 +118,7 @@ export function TourExploreCard({
     listingKind = 'tour',
     discountPercent,
     pricePerSeat = null,
+    currency = null,
     title,
     category = null,
     image,
@@ -211,13 +214,13 @@ export function TourExploreCard({
                                 {showOriginalPrice ? (
                                     <span
                                         className='text-[13px] font-medium text-[#9AA3A8] line-through decoration-[#9AA3A8] decoration-1'
-                                        aria-label={`Original price ${formatTourPrice(pricePerSeat)}`}
+                                        aria-label={`Original price ${formatTourPrice(pricePerSeat, currency, listingKind)}`}
                                     >
-                                        {formatTourPrice(pricePerSeat)}
+                                        {formatTourPrice(pricePerSeat, currency, listingKind)}
                                     </span>
                                 ) : null}
                                 <span className='font-jost text-lg font-bold leading-none tracking-tight text-[#012b32] tabular-nums sm:text-xl'>
-                                    {formatTourPrice(discountedPrice)}
+                                    {formatTourPrice(discountedPrice, currency, listingKind)}
                                 </span>
                                 <span className='text-[11px] text-[#707979]'>/ seat</span>
                             </div>
