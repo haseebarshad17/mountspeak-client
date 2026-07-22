@@ -3,7 +3,6 @@ import { buildBookingReturnPath } from '@/lib/auth/booking-auth'
 import { redirectWithAgencyPreview } from '@/lib/auth/preview-redirect'
 import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
-import { resolveBookingEmailBrandingFromHomepage } from '@/services/email/email-branding'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import {
     fetchBookingTourBySlug,
@@ -89,15 +88,12 @@ export default async function Page({ searchParams }: BookingRoutePageProps) {
         // Avoid 500 when Supabase is unavailable; client shows empty plan list.
     }
 
-    const emailBranding = resolveBookingEmailBrandingFromHomepage(agencyHomepage)
-
     return (
         <BookingPage
             tourOptions={tourOptions}
             lockedTour={lockedTour}
             initialSlotId={slotId?.trim() || null}
             isDemoMode={!isAgencySite}
-            emailBranding={emailBranding}
             bookingReturnPath={returnPath}
         />
     )

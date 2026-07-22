@@ -254,7 +254,7 @@ export function getMultiSpecListingCopy() {
         pastEmptyTitle: 'No past bookings',
         pastEmptyDescription:
             'Completed and cancelled bookings will appear here once you have booking history.',
-        viewBookingAction: 'View booking',
+        viewBookingAction: 'Download Itinerary',
         rebookAction: 'Book again',
         fallbackBookingTitle: 'Booking',
         pastBookingThanksNote: 'Thank you for traveling with us.',
@@ -447,14 +447,13 @@ export function getTourOrPackageCopy(isUmrahSite: boolean) {
             pastEmptyTitle: 'No past packages',
             pastEmptyDescription:
                 'Completed and cancelled package bookings will appear here once you have booking history.',
-            viewBookingAction: 'View Package',
+            viewBookingAction: 'Download Itinerary',
             rebookAction: 'Rebook Package',
             fallbackBookingTitle: 'Package booking',
             pastBookingThanksNote: 'Thank you for choosing us for your pilgrimage.',
             resolveBookingTitle: (title: string) =>
                 title === 'Expedition booking' ? 'Package booking' : title,
-            resolvePrimaryAction: (action: string) =>
-                action === 'View Itinerary' ? 'View Package' : action,
+            resolvePrimaryAction: (action: string) => action,
             resolveRebookAction: (action: string) =>
                 action === 'Rebook Tour' ? 'Rebook Package' : action,
             resolvePastNote: (note: string) =>
@@ -500,7 +499,7 @@ export function getTourOrPackageCopy(isUmrahSite: boolean) {
         pastEmptyTitle: 'No past expeditions',
         pastEmptyDescription:
             'Completed and cancelled trips will appear here once you have booking history.',
-        viewBookingAction: 'View Itinerary',
+        viewBookingAction: 'Download Itinerary',
         rebookAction: 'Rebook Tour',
         fallbackBookingTitle: 'Expedition booking',
         pastBookingThanksNote: 'Thank you for traveling with us.',

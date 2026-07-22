@@ -1,10 +1,12 @@
 'use client'
 
 import { Calendar } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { FormEvent, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { QuantityStepper } from '@/components/pages/booking/QuantityStepper'
+import { BookingEmailOtpGate } from '@/components/pages/booking/steps/BookingEmailOtpGate'
 import { BookingFormSelect } from '@/components/pages/marketing/home/BookingFormSelect'
 import {
     bookingRequestSchema,
@@ -23,12 +25,11 @@ import { getApiErrorMessage } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
 import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { cn } from '@/lib/utils/clsxUtils'
-import { useResolvedAgencyId } from '@/hooks/useResolvedAgencyId'
+import { useBookingRequestEmailGate } from '@/hooks/useBookingRequestEmailGate'
 import {
     INTERNATIONAL_INQUIRY_SECTION_INTRO,
     INTERNATIONAL_INQUIRY_SECTION_TITLE,
     PACKAGE_BOOKING_REQUEST_SECTION_ID,
-    buildInternationalInquiryMessage,
 } from '@/lib/tours/tour-inquiry-cta'
 import {
     BOOKING_REQUEST_CATEGORIES,
@@ -56,8 +57,23 @@ function resolveDefaultTravelDate(departureDate?: string | null): string {
 
 export function PackageBookingRequestSection({ page }: PackageBookingRequestSectionProps) {
     const packageInquiry = page.packageInquiry
+    const listingKind = page.listingKind
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
-    const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
+    const pathname = usePathname()
+    const returnPath = `${pathname || '/'}#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`
+    const {
+        resolvedAgencyId,
+        isAgencySite,
+        isReady,
+        requireEmailVerification,
+        emailVerified,
+        verifiedEmail,
+        userId,
+        emailRedirectTo,
+        handleEmailVerified,
+        requireUser,
+    } = useBookingRequestEmailGate({ returnPath })
+
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
     const [femaleSeats, setFemaleSeats] = useState(0)
@@ -69,6 +85,8 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
     const dateInputRef = useRef<HTMLInputElement>(null)
     const minTravelDate = getTodayDateInputValue()
     const destination = packageInquiry?.title?.trim() ?? page.heroSection.title
+    const showOtpGate =
+        requireEmailVerification && !emailVerified && !!resolvedAgencyId && !!emailRedirectTo
 
     const categoryOptions = useMemo(
         () =>
@@ -106,6 +124,7 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        const form = event.currentTarget
         setFieldErrors({})
 
         if (page.isBookingClosed) return
@@ -117,11 +136,27 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
             return
         }
 
-        const form = event.currentTarget
+        if (requireEmailVerification && !emailVerified) {
+            toast.error('Verify your email to continue')
+            return
+        }
+
         const formData = new FormData(form)
+        const sessionUser = await requireUser()
+        const submitUserId = sessionUser?.id ?? userId
+        if (resolvedAgencyId && !submitUserId) {
+            toast.error('Verify your email to continue')
+            return
+        }
+
+        const emailValue =
+            (verifiedEmail && emailVerified
+                ? verifiedEmail
+                : String(formData.get('email') ?? '')
+            ).trim().toLowerCase()
         const raw = {
             full_name: String(formData.get('full_name') ?? ''),
-            email: String(formData.get('email') ?? ''),
+            email: emailValue,
             phone: String(formData.get('phone') ?? ''),
             travel_date: travelDate,
             destination,
@@ -139,14 +174,18 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
             return
         }
 
+        const packageId = packageInquiry?.packageId
         const payload = {
             ...parsed.data,
-            request_message: buildInternationalInquiryMessage(
-                packageInquiry,
-                parsed.data.request_message,
-                page.listingKind,
-            ),
+            request_message: parsed.data.request_message || undefined,
             ...(resolvedAgencyId ? { agency_id: resolvedAgencyId } : {}),
+            ...(submitUserId ? { user_id: submitUserId } : {}),
+            ...(listingKind === 'umrah' && packageId
+                ? { listing_kind: 'umrah' as const, umrah_plan_id: packageId }
+                : {}),
+            ...(listingKind === 'international' && packageId
+                ? { listing_kind: 'international' as const, international_tour_id: packageId }
+                : {}),
         }
 
         try {
@@ -195,6 +234,17 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
                         onSubmit={handleSubmit}
                         noValidate
                     >
+                        {showOtpGate && resolvedAgencyId && emailRedirectTo ? (
+                            <BookingEmailOtpGate
+                                agencyId={resolvedAgencyId}
+                                agencySiteUrl={undefined}
+                                emailRedirectTo={emailRedirectTo}
+                                onVerified={(email) => {
+                                    void handleEmailVerified(email)
+                                }}
+                            />
+                        ) : null}
+
                         <MarketingFormField label="Tour" className="block w-full">
                             <input
                                 type="text"
@@ -221,7 +271,13 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
                                     name="email"
                                     placeholder="you@example.com"
                                     required
-                                    className={marketingFormInputClass}
+                                    readOnly={Boolean(emailVerified && verifiedEmail)}
+                                    defaultValue={verifiedEmail ?? undefined}
+                                    key={verifiedEmail ?? 'email-open'}
+                                    className={cn(
+                                        marketingFormInputClass,
+                                        emailVerified && verifiedEmail ? 'bg-neutral-50 text-neutral-700' : null,
+                                    )}
                                 />
                             </MarketingFormField>
                         </div>
@@ -348,6 +404,7 @@ export function PackageBookingRequestSection({ page }: PackageBookingRequestSect
                             loading={isPending}
                             loadingText="Submitting request..."
                             shouldScale
+                            disabled={Boolean(requireEmailVerification && !emailVerified)}
                             className="w-full"
                             style={{
                                 backgroundColor: page.theme.secondaryColor,

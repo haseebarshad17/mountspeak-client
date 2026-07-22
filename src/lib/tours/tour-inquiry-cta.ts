@@ -34,16 +34,12 @@ export function scrollToPackageBookingRequest() {
 }
 
 export function buildInternationalInquiryMessage(
-    packageInquiry: TourPage['packageInquiry'],
+    _packageInquiry: TourPage['packageInquiry'],
     userMessage?: string,
-    listingKind: TourPage['listingKind'] = 'international',
+    _listingKind: TourPage['listingKind'] = 'international',
 ): string | undefined {
-    if (!packageInquiry) return userMessage?.trim() || undefined
-
-    const label =
-        listingKind === 'umrah' ? 'Umrah package inquiry' : 'International tour inquiry'
-    const prefix = `[${label}: ${packageInquiry.title} · Ref ${packageInquiry.packageId}]`
-    const trimmed = userMessage?.trim()
-
-    return trimmed ? `${prefix}\n\n${trimmed}` : prefix
+    void _packageInquiry
+    void _listingKind
+    // Package identity is stored via listing_kind + umrah_plan_id / international_tour_id.
+    return userMessage?.trim() || undefined
 }

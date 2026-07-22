@@ -30,6 +30,11 @@ export type CreateBookingRequestDTO = {
     category: BookingRequestCategory
     request_message?: string
     agency_id?: string
+    user_id?: string
+    past_history?: string
+    listing_kind?: 'umrah' | 'international' | null
+    umrah_plan_id?: string
+    international_tour_id?: string
 }
 
 export type BookingRequestRecord = CreateBookingRequestDTO & {

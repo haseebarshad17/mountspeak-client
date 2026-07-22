@@ -61,6 +61,7 @@ export function bookingEmailBrandingToTemplateVariables(
 
     return {
         agency_logo: branding.logoUrl,
+        logo_url: branding.logoUrl,
         logo_alt: branding.logoAlt,
         agency_name: branding.agencyName,
         brand_name: branding.agencyName,
