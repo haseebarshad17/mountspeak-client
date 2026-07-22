@@ -7,6 +7,7 @@ import { useCountries, usePakistanCities } from "@/services/cities/cities.querie
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
 import {
     TOUR_CATEGORY_FILTER_OPTIONS,
+    normalizeTourCategory,
     type TourCategory,
 } from "@/services/tours/tours.category"
 import { buildTourSearchPath } from "@/services/tours/tours.search.utils"
@@ -199,7 +200,7 @@ export default function HeroStandardFilters({
                 to,
                 start_date: startDate || undefined,
                 end_date: endDate || undefined,
-                category: category === 'PUBLIC_TRIP' || category === 'HONEYMOON' ? category : undefined,
+                category: normalizeTourCategory(category),
             }
 
             if (listingType === 'international') {
