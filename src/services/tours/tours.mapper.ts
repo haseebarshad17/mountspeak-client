@@ -2,6 +2,7 @@ import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { resolveTourMediaUrlOrPlaceholder } from '@/lib/supabase/tour-media'
 import { resolveThemeButtons } from '@/lib/homepage/theme'
 import { isTourBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { formatMoneyAmount } from '@/lib/money/format-money'
 import type { Theme } from '@/services/homepage/homepage.page.types'
 
 import { buildBookingHref } from '@/components/pages/booking/booking.types'
@@ -93,7 +94,7 @@ export function mapTourRecordToPage(
             ? [
                 {
                     icon: 'price' as const,
-                    label: `FROM PKR ${Number(row.price_per_seat).toLocaleString()} / SEAT`,
+                    label: `FROM ${formatMoneyAmount(Number(row.price_per_seat), 'PKR', 'tour')} / SEAT`,
                 },
             ]
             : []),

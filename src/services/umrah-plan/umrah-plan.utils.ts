@@ -1,4 +1,5 @@
 import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
+import { normalizeCurrencyCode } from '@/lib/money/format-money'
 import { resolvePackageMediaUrlOrPlaceholder } from '@/lib/supabase/package-media'
 import { packageDetailPath } from '@/services/tours/tours.utils'
 import {
@@ -13,19 +14,21 @@ import type { UmrahPlanRow } from './umrah-plan.types'
 function getUmrahPlanPricing(pricing: UmrahPlanRow['pricing']) {
     const original = Number(pricing?.original_price ?? 0)
     const discounted = Number(pricing?.discount_price ?? 0)
+    const currency = normalizeCurrencyCode(pricing?.currency, 'umrah')
 
     if (original > 0 && discounted > 0 && discounted < original) {
         return {
             pricePerSeat: original,
             discountPercent: Math.round(((original - discounted) / original) * 100),
+            currency,
         }
     }
 
     if (original > 0) {
-        return { pricePerSeat: original, discountPercent: null }
+        return { pricePerSeat: original, discountPercent: null, currency }
     }
 
-    return { pricePerSeat: null, discountPercent: null }
+    return { pricePerSeat: null, discountPercent: null, currency }
 }
 
 export function parseUmrahDurationDays(duration?: string): number | null {
@@ -60,7 +63,7 @@ export function toUmrahPlanListItem(plan: UmrahPlanRow): TourListItem {
             : 0
     const departureDate = plan.duration_dates?.departure_date?.trim() || null
     const bookingDeadline = plan.booking_info?.booking_deadline?.trim() || null
-    const { pricePerSeat, discountPercent } = getUmrahPlanPricing(plan.pricing)
+    const { pricePerSeat, discountPercent, currency } = getUmrahPlanPricing(plan.pricing)
 
     return {
         id: plan.id,
@@ -70,6 +73,7 @@ export function toUmrahPlanListItem(plan: UmrahPlanRow): TourListItem {
         discountLabel: formatTourDiscount(discountPercent),
         discountPercent,
         pricePerSeat,
+        currency,
         image: resolvePackageMediaUrlOrPlaceholder(plan.images?.featured_image, 'umrah'),
         totalBooked,
         remainingSeats: availableSeats,

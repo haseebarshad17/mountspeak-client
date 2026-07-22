@@ -9,6 +9,7 @@ export type UmrahPlanRow = {
     pricing: {
         original_price?: number | null
         discount_price?: number | null
+        currency?: string | null
     } | null
     duration_dates: {
         departure_date?: string | null

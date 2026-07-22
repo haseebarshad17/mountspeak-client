@@ -117,6 +117,7 @@ const SavedToursPage = () => {
                                             slug={tour.slug}
                                             discountPercent={tour.discountPercent}
                                             pricePerSeat={tour.pricePerSeat}
+                                            currency={tour.currency}
                                             title={tour.title}
                                             category={tour.listingKind === 'tour' ? tour.category : null}
                                             image={tour.image}

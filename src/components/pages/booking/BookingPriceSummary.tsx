@@ -13,6 +13,7 @@ type BookingPriceSummaryProps = {
     kidsSeats: number
     adultDiscountPercent: number
     kidsDiscountPercent: number
+    currency?: string
 }
 
 function SummaryRow({
@@ -45,6 +46,7 @@ export function BookingPriceSummary({
     kidsSeats,
     adultDiscountPercent,
     kidsDiscountPercent,
+    currency = 'PKR',
 }: BookingPriceSummaryProps) {
     const hasTravelers = breakdown.subtotal > 0
     const hasPartialAdvance = breakdown.balanceDue > 0
@@ -62,14 +64,14 @@ export function BookingPriceSummary({
                                 ? `${adultSeats} adult${adultSeats === 1 ? '' : 's'}${kidsSeats > 0 ? `, ${kidsSeats} kid${kidsSeats === 1 ? '' : 's'}` : ''}`
                                 : undefined
                         }
-                        value={formatBookingTotalAmount(breakdown.subtotal)}
+                        value={formatBookingTotalAmount(breakdown.subtotal, currency)}
                     />
 
                     {breakdown.adultDiscount > 0 && adultSeats > 0 ? (
                         <SummaryRow
                             label='Adult discount'
                             hint={`${adultDiscountPercent}% off`}
-                            value={formatBookingDiscountAmount(breakdown.adultDiscount)}
+                            value={formatBookingDiscountAmount(breakdown.adultDiscount, currency)}
                             valueClassName='text-emerald-700'
                         />
                     ) : null}
@@ -78,7 +80,7 @@ export function BookingPriceSummary({
                         <SummaryRow
                             label='Kids discount'
                             hint={`${kidsDiscountPercent}% off kids seats (ages 4–8)`}
-                            value={formatBookingDiscountAmount(breakdown.kidsDiscount)}
+                            value={formatBookingDiscountAmount(breakdown.kidsDiscount, currency)}
                             valueClassName='text-emerald-700'
                         />
                     ) : null}
@@ -87,18 +89,18 @@ export function BookingPriceSummary({
                         <>
                             <SummaryRow
                                 label='Trip total'
-                                value={formatBookingTotalAmount(breakdown.total)}
+                                value={formatBookingTotalAmount(breakdown.total, currency)}
                             />
                             <SummaryRow
                                 label='Advance due now'
                                 hint='Pay this amount in the next step'
-                                value={formatBookingTotalAmount(breakdown.advanceDue)}
+                                value={formatBookingTotalAmount(breakdown.advanceDue, currency)}
                                 valueClassName={HP_THEME_TEXT_CLASS}
                             />
                             <SummaryRow
                                 label='Balance later'
                                 hint='Due before departure'
-                                value={formatBookingTotalAmount(breakdown.balanceDue)}
+                                value={formatBookingTotalAmount(breakdown.balanceDue, currency)}
                             />
                         </>
                     ) : null}
@@ -109,7 +111,10 @@ export function BookingPriceSummary({
                         {hasPartialAdvance ? 'Due now' : 'Total payable'}
                     </span>
                     <span className={cn('text-xl font-semibold tabular-nums', HP_THEME_TEXT_CLASS)}>
-                        {formatBookingTotalAmount(hasPartialAdvance ? breakdown.advanceDue : breakdown.total)}
+                        {formatBookingTotalAmount(
+                            hasPartialAdvance ? breakdown.advanceDue : breakdown.total,
+                            currency,
+                        )}
                     </span>
                 </div>
             </div>

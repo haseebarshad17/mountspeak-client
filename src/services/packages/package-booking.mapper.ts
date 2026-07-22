@@ -1,12 +1,14 @@
 import type { BookingTourOption } from '@/components/pages/booking/booking.types'
 import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
 import type { ListingKind } from '@/lib/homepage/specialization'
+import { normalizeCurrencyCode } from '@/lib/money/format-money'
 import type { InternationalTourRow } from '@/services/international-tour/international-tour.types'
 import type { UmrahPlanRow } from '@/services/umrah-plan/umrah-plan.types'
 
 type PackagePricing = {
     original_price?: number | null
     discount_price?: number | null
+    currency?: string | null
 } | null
 
 function resolvePackageBookingPrice(pricing: PackagePricing): {
@@ -60,6 +62,7 @@ function mapPackageRowToBookingOption(params: {
         advanceAmountPerSeat: null,
         discountPercent,
         kidsDiscountPercent: 0,
+        currency: normalizeCurrencyCode(params.pricing?.currency, params.listingKind),
         startDate: params.departureDate,
         capacityTotal: totalSeats > 0 ? totalSeats : null,
         confirmedSeats,

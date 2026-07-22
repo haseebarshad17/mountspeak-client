@@ -174,6 +174,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     slug={tour.slug}
                                     discountPercent={tour.discountPercent}
                                     pricePerSeat={tour.pricePerSeat}
+                                    currency={tour.currency}
                                     title={tour.title}
                                     category={isPackageListing ? null : tour.category}
                                     image={tour.image}

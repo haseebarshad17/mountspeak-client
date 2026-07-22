@@ -20,6 +20,7 @@ type FinalizeStepProps = {
     totalAmount: number
     advanceAmountDue: number
     balanceDue: number
+    currency?: string
     paymentAccounts: AgencyPaymentAccount[]
     paymentAccountsLoading?: boolean
     showFallbackPaymentMethods?: boolean
@@ -40,6 +41,7 @@ export function FinalizeStep({
     totalAmount,
     advanceAmountDue,
     balanceDue,
+    currency = 'PKR',
     paymentAccounts,
     paymentAccountsLoading = false,
     showFallbackPaymentMethods = false,
@@ -68,7 +70,7 @@ export function FinalizeStep({
                         ) : null}
                     </div>
                     <p className='text-xl font-semibold text-neutral-900'>
-                        {formatBookingTotalAmount(amountDueNow)}
+                        {formatBookingTotalAmount(amountDueNow, currency)}
                     </p>
                 </div>
 
@@ -76,11 +78,15 @@ export function FinalizeStep({
                     <div className='mt-3 space-y-1 border-t border-neutral-200 pt-3 text-sm text-neutral-600'>
                         <div className='flex justify-between gap-4'>
                             <span>Trip total</span>
-                            <span className='tabular-nums'>{formatBookingTotalAmount(totalAmount)}</span>
+                            <span className='tabular-nums'>
+                                {formatBookingTotalAmount(totalAmount, currency)}
+                            </span>
                         </div>
                         <div className='flex justify-between gap-4'>
                             <span>Balance due later</span>
-                            <span className='tabular-nums'>{formatBookingTotalAmount(balanceDue)}</span>
+                            <span className='tabular-nums'>
+                                {formatBookingTotalAmount(balanceDue, currency)}
+                            </span>
                         </div>
                     </div>
                 ) : null}
@@ -92,7 +98,7 @@ export function FinalizeStep({
                     <span className='text-right'>
                         <span className='block text-[10px] text-neutral-400'>inc. all local taxes</span>
                         <span className={cn('text-3xl font-semibold leading-none', HP_THEME_TEXT_CLASS)}>
-                            {formatBookingTotalAmount(amountDueNow)}
+                            {formatBookingTotalAmount(amountDueNow, currency)}
                         </span>
                     </span>
                 </div>
@@ -156,7 +162,7 @@ export function FinalizeStep({
                         Payment instruction
                     </p>
                     <p className='mt-1 text-xs leading-5'>
-                        Transfer {formatBookingTotalAmount(amountDueNow)}
+                        Transfer {formatBookingTotalAmount(amountDueNow, currency)}
                         {hasPartialAdvance ? ' as your advance payment' : ''}. After transferring,
                         attach a screenshot of the payment below.
                     </p>

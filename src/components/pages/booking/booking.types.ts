@@ -1,3 +1,5 @@
+import { formatMoneyAmount } from '@/lib/money/format-money'
+
 export type BookingTourPickupPoint = {
     id: string
     city: string
@@ -31,6 +33,8 @@ export type BookingTourOption = {
     discountPercent: number
     /** From `tours.kids_discount` — percent off kids seats only (ages 4–8). */
     kidsDiscountPercent: number
+    /** Display currency for amounts (package pricing.currency or PKR for domestic). */
+    currency: string
     startDate: string | null
     capacityTotal: number | null
     confirmedSeats: number
@@ -190,13 +194,13 @@ export function calculateBookingTotalAmount(
     return calculateBookingPriceBreakdown(params).total
 }
 
-export function formatBookingTotalAmount(amount: number): string {
-    return `PKR ${amount.toLocaleString('en-PK')}`
+export function formatBookingTotalAmount(amount: number, currency = 'PKR'): string {
+    return formatMoneyAmount(amount, currency)
 }
 
-export function formatBookingDiscountAmount(amount: number): string {
-    if (amount <= 0) return formatBookingTotalAmount(0)
-    return `-${formatBookingTotalAmount(amount)}`
+export function formatBookingDiscountAmount(amount: number, currency = 'PKR'): string {
+    if (amount <= 0) return formatBookingTotalAmount(0, currency)
+    return `-${formatBookingTotalAmount(amount, currency)}`
 }
 
 export function formatBookingSlotSeatSummary(

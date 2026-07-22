@@ -1,5 +1,6 @@
 import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { applyTourSectionFallbacks } from '@/lib/tours/tour-section-fallbacks'
+import { formatMoneyAmount, normalizeCurrencyCode } from '@/lib/money/format-money'
 import { resolvePackageMediaUrlOrPlaceholder, type PackageMediaKind } from '@/lib/supabase/package-media'
 import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
 import type { ListingKind } from '@/lib/homepage/specialization'
@@ -37,6 +38,7 @@ type PackagePlanRow = {
     pricing?: {
         original_price?: number | null
         discount_price?: number | null
+        currency?: string | null
     } | null
     duration_dates?: {
         departure_date?: string | null
@@ -118,6 +120,7 @@ export function mapPackagePlanToTourPage(
     const bookingDeadline = plan.booking_info?.booking_deadline?.trim() || null
     const durationDays = plan.duration_dates?.duration_days ?? null
     const { pricePerSeat, discountPercent } = resolvePackagePrice(plan.pricing)
+    const currency = normalizeCurrencyCode(plan.pricing?.currency, kind)
     const shortDescription = plan.descriptions?.short_description?.trim() || ''
     const detailedDescription = plan.descriptions?.detailed_description?.trim() || shortDescription
     const gallery = (plan.images?.gallery_images ?? [])
@@ -184,7 +187,7 @@ export function mapPackagePlanToTourPage(
                     ? [{ icon: 'calendar' as const, label: `${durationDays} DAYS` }]
                     : []),
                 ...(pricePerSeat != null
-                    ? [{ icon: 'price' as const, label: `FROM PKR ${pricePerSeat.toLocaleString()} / SEAT` }]
+                    ? [{ icon: 'price' as const, label: `FROM ${formatMoneyAmount(pricePerSeat, currency, kind)} / SEAT` }]
                     : []),
                 ...(discountPercent != null && discountPercent > 0
                     ? [{ icon: 'price' as const, label: `${discountPercent}% OFF` }]
