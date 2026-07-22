@@ -169,11 +169,8 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                             {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}
-                                    tourId={
-                                        isAgencySite === false || isPackageListing
-                                            ? undefined
-                                            : tour.id
-                                    }
+                                    tourId={isAgencySite === false ? undefined : tour.id}
+                                    listingKind={tour.listingKind}
                                     slug={tour.slug}
                                     discountPercent={tour.discountPercent}
                                     pricePerSeat={tour.pricePerSeat}

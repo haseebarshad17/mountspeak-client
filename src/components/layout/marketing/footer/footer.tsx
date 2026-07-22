@@ -45,6 +45,10 @@ function isFooterLinkActive(pathname: string, href: string | null | undefined): 
     return pathname === path || pathname.startsWith(`${path}/`)
 }
 
+function isExternalOrProtocolHref(href: string): boolean {
+    return /^(https?:|mailto:|tel:|sms:)/i.test(href) || href.startsWith('//')
+}
+
 function FooterLink({
     href,
     label,
@@ -56,34 +60,49 @@ function FooterLink({
 }) {
     const pathname = useInternalPathname()
     const resolvedHref = usePrefixedHref(href) ?? href
-    const isActive = isFooterLinkActive(pathname, href)
+    const isExternal = isExternalOrProtocolHref(href)
+    const isActive = !isExternal && isFooterLinkActive(pathname, href)
+    const linkClassName = cn(
+        'text-sm leading-6 text-white/85 transition-colors hover:text-white',
+        isActive && 'font-medium text-white underline underline-offset-4',
+        className,
+    )
+
+    if (isExternal) {
+        return (
+            <a href={href} className={linkClassName}>
+                {label}
+            </a>
+        )
+    }
 
     return (
-        <Link
-            href={resolvedHref}
-            className={cn(
-                'text-sm leading-6 text-white/85 transition-colors hover:text-white',
-                isActive && 'font-medium text-white underline underline-offset-4',
-                className,
-            )}
-        >
+        <Link href={resolvedHref} className={linkClassName}>
             {label}
         </Link>
     )
 }
 
 function FooterNavColumn({ column }: { column: FooterColumn }) {
-    const entries = 'links' in column && column.links ? column.links : (column.items ?? [])
+    const entries = column.links?.length ? column.links : (column.items ?? [])
 
     return (
         <div className='min-w-0'>
             <h3 className='mb-3 text-sm font-semibold text-white xs:mb-3.5 xs:text-base'>{column.title}</h3>
             <ul className='space-y-2'>
-                {entries.map((entry, index) => (
-                    <li key={`${entry.label}-${index}`}>
-                        <FooterLink href={entry.href ?? '/'} label={entry.label} />
-                    </li>
-                ))}
+                {entries.map((entry, index) => {
+                    const href = entry.href?.trim() || null
+
+                    return (
+                        <li key={`${entry.label}-${index}`}>
+                            {href ? (
+                                <FooterLink href={href} label={entry.label} />
+                            ) : (
+                                <span className='block text-sm leading-6 text-white/85'>{entry.label}</span>
+                            )}
+                        </li>
+                    )
+                })}
             </ul>
         </div>
     )
@@ -191,7 +210,7 @@ function FooterNewsletter() {
 const Footer = ({ page }: FooterProps) => {
     const { footer, branding, sections, seo } = page
     const themeUpdatedAt = useAppSelector(selectHomepageThemeUpdatedAt)
-    const columns = getFooterDisplayColumns()
+    const columns = getFooterDisplayColumns(footer)
     const socialLinks = getActiveFooterSocialLinks(footer.socialLinks)
     const description = sections.hero.paragraph
     const siteName = branding.name || seo.siteName
@@ -245,8 +264,10 @@ const Footer = ({ page }: FooterProps) => {
 
                             <div
                                 className={cn(
-                                    'grid min-w-0 grid-cols-2 gap-x-6 gap-y-6 md:max-w-md',
-                                    'lg:ml-0 lg:max-w-none lg:justify-self-start lg:gap-x-20',
+                                    'grid min-w-0 grid-cols-2 gap-x-6 gap-y-6',
+                                    columns.length >= 3
+                                        ? 'sm:grid-cols-3 md:max-w-none lg:ml-0 lg:justify-self-start lg:gap-x-12 xl:gap-x-16'
+                                        : 'md:max-w-md lg:ml-0 lg:max-w-none lg:justify-self-start lg:gap-x-20',
                                 )}
                             >
                                 {columns.map((column) => (

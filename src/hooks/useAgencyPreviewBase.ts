@@ -31,11 +31,18 @@ export function usePreviewPath(path: string): string {
     return useMemo(() => prefixHref(path, previewBase), [path, previewBase])
 }
 
-export function useBookingHref(tourSlug?: string | null, slotId?: string | null): string {
+export function useBookingHref(
+    tourSlug?: string | null,
+    slotId?: string | null,
+): string {
     const previewBase = useAgencyPreviewBase()
 
     return useMemo(() => {
-        return prefixHref(buildBookingHref(tourSlug ?? undefined, slotId ?? undefined), previewBase)
+        // Packages use inquiry CTAs; only domestic tours hit /booking.
+        return prefixHref(
+            buildBookingHref(tourSlug ?? undefined, slotId ?? undefined),
+            previewBase,
+        )
     }, [previewBase, slotId, tourSlug])
 }
 

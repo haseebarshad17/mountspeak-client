@@ -8,6 +8,10 @@ import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
 import { internationalTourService } from '@/services/international-tour/international-tour.service'
 import { mapInternationalTourRowsToListItems } from '@/services/international-tour/international-tour.utils'
+import {
+    mapInternationalTourToBookingOption,
+    mapUmrahPlanToBookingOption,
+} from '@/services/packages/package-booking.mapper'
 import { mapPackagePlanToTourPage } from '@/services/packages/package-plan.mapper'
 import { umrahPlanService } from '@/services/umrah-plan/umrah-plan.service'
 import { mapUmrahPlanRowsToListItems } from '@/services/umrah-plan/umrah-plan.utils'
@@ -24,6 +28,8 @@ import type { BookingTourOption } from '@/components/pages/booking/booking.types
 import { mapPublishedTourToBookingOption, type PublishedTourPickupPointRpc, type PublishedTourRpc, type PublishedTourSlotRpc } from './booking-tour.mapper'
 
 import { mapTourRowsToListItemsWithSlots } from './tour-seat-availability'
+import { fetchTourListDepartureSlotsByTourIds } from './tour-list-slots'
+import { resolveTourBookingClosed } from './tours.utils'
 
 import type { TourListItem, TourRow } from './tours.types'
 
@@ -306,11 +312,18 @@ export async function fetchTourPageBySlug(slug: string): Promise<TourPage | null
     const row = await fetchPublishedTourBySlug(slug)
     if (!row) return null
 
-    const pickupPointsByTourId = await fetchPublishedTourPickupPointsByTourIds([row.id])
+    const supabase = await getServerSupabase()
+    const [pickupPointsByTourId, slotsByTourId] = await Promise.all([
+        fetchPublishedTourPickupPointsByTourIds([row.id]),
+        fetchTourListDepartureSlotsByTourIds(supabase, [row.id]),
+    ])
     const pickupPoints = pickupPointsByTourId.get(row.id) ?? []
+    const departureSlots = slotsByTourId.get(row.id) ?? []
 
     const homepage = await fetchAgencyHomepage()
-    const page = mapTourRecordToPage(row, pickupPoints)
+    const page = mapTourRecordToPage(row, pickupPoints, {
+        isBookingClosed: resolveTourBookingClosed(row.start_date, departureSlots),
+    })
 
     return applyAgencyThemeToTourPage(page, homepage.page?.theme)
 }
@@ -392,6 +405,30 @@ export async function fetchBookingTourBySlug(
         }
 
         return option
+    } catch {
+        return null
+    }
+}
+
+export async function fetchBookingPackageById(
+    kind: 'umrah' | 'international',
+    id: string,
+): Promise<BookingTourOption | null> {
+    const scope = await getAgencyTourScope()
+    if (!scope.isAgencySite || !scope.agencyId) return null
+
+    try {
+        if (kind === 'umrah') {
+            const api = await getUmrahPlansApi(scope)
+            const row = await api.getPublishedPlanById(id)
+            const option = row ? mapUmrahPlanToBookingOption(row) : null
+            return option && isTourBookable(option) ? option : null
+        }
+
+        const api = await getInternationalToursApi(scope)
+        const row = await api.getPublishedPlanById(id)
+        const option = row ? mapInternationalTourToBookingOption(row) : null
+        return option && isTourBookable(option) ? option : null
     } catch {
         return null
     }

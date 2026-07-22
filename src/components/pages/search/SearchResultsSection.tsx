@@ -97,7 +97,8 @@ export function SearchResultsSection({
                     {visibleTours.map((tour) => (
                         <TourExploreCard
                             key={tour.id}
-                            tourId={isPackageSearch ? undefined : tour.id}
+                            tourId={tour.id}
+                            listingKind={tour.listingKind}
                             slug={tour.slug}
                             discountPercent={tour.discountPercent}
                             pricePerSeat={tour.pricePerSeat}

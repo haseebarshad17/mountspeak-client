@@ -9,6 +9,7 @@ import {
     fetchBookingTourBySlug,
     fetchPublishedToursForBooking,
 } from '@/services/tours/tours.server'
+import { packageDetailPath } from '@/services/tours/tours.utils'
 import type { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,11 +23,33 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type BookingRoutePageProps = {
-    searchParams: Promise<{ tour?: string; slot?: string }>
+    searchParams: Promise<{
+        tour?: string
+        slot?: string
+        kind?: string
+        id?: string
+    }>
+}
+
+function resolvePackageKind(kind: string | undefined): 'umrah' | 'international' | null {
+    if (kind === 'umrah' || kind === 'international') return kind
+    return null
 }
 
 export default async function Page({ searchParams }: BookingRoutePageProps) {
-    const { tour: tourSlug, slot: slotId } = await searchParams
+    const {
+        tour: tourSlug,
+        slot: slotId,
+        kind: kindParam,
+        id: packageId,
+    } = await searchParams
+    const packageKind = resolvePackageKind(kindParam?.trim())
+
+    // Umrah / International use booking requests — redirect old checkout links.
+    if (packageKind && packageId?.trim()) {
+        await redirectWithAgencyPreview(packageDetailPath(packageKind, packageId.trim()))
+    }
+
     const returnPath = buildBookingReturnPath(tourSlug, slotId)
     const agencyHomepage = await fetchAgencyHomepage()
     const isAgencySite = agencyHomepage.isAgencySite

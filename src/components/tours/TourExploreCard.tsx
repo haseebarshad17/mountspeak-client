@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils/clsxUtils'
 import Link from 'next/link'
 
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
+import type { ListingKind } from '@/lib/homepage/specialization'
 import { getTourCategoryLabel, type TourCategory } from '@/services/tours/tours.category'
 import type { TourListDepartureSlot } from '@/services/tours/tours.types'
 import {
@@ -15,7 +16,7 @@ import {
     formatTourListSlotLabel,
     formatTourPrice,
     getTourDiscountedPricePerSeat,
-    tourDetailPath,
+    listingDetailPath,
 } from '@/services/tours/tours.utils'
 
 import { TourDiscountBadge } from './TourDiscountBadge'
@@ -24,6 +25,7 @@ import { TourSaveShareActions } from './TourSaveShareActions'
 type TourExploreCardProps = {
     slug: string
     tourId?: string
+    listingKind?: ListingKind
     discountPercent?: number | null
     pricePerSeat?: number | null
     title: string
@@ -111,6 +113,7 @@ function TourCardAvailability({
 export function TourExploreCard({
     slug,
     tourId,
+    listingKind = 'tour',
     discountPercent,
     pricePerSeat = null,
     title,
@@ -125,7 +128,14 @@ export function TourExploreCard({
     bookLabel = 'Book Tour',
     isBookingClosed = false,
 }: TourExploreCardProps) {
-    const rawDetailPath = detailHref ?? tourDetailPath(slug)
+    const rawDetailPath =
+        detailHref ??
+        listingDetailPath({
+            id: tourId ?? slug,
+            slug,
+            listingKind,
+            detailHref,
+        })
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
     const prefixedDetailPath = usePrefixedHref(isDemoDetail ? undefined : rawDetailPath)
     const detailPath = isDemoDetail ? DEMO_TOUR_DETAIL_PATH : (prefixedDetailPath ?? rawDetailPath)
@@ -167,6 +177,7 @@ export function TourExploreCard({
                 {showSaveShare && tourId ? (
                     <TourSaveShareActions
                         tourId={tourId}
+                        listingKind={listingKind}
                         shareHref={detailPath}
                         className='absolute left-3 top-3'
                     />

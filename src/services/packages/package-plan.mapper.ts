@@ -2,10 +2,6 @@ import type { TourPage } from '@/components/pages/tour/sections/tour-page.types'
 import { applyTourSectionFallbacks } from '@/lib/tours/tour-section-fallbacks'
 import { resolvePackageMediaUrlOrPlaceholder, type PackageMediaKind } from '@/lib/supabase/package-media'
 import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
-import {
-    INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
-    PACKAGE_BOOKING_REQUEST_SECTION_ID,
-} from '@/lib/tours/tour-inquiry-cta'
 import type { ListingKind } from '@/lib/homepage/specialization'
 import {
     createEmptyPackageTourSections,
@@ -13,6 +9,10 @@ import {
     mapPackageIncludesToPerks,
     mapPackageZiyaratToRouteSection,
 } from '@/lib/tours/package-page-sections'
+import {
+    INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
+    PACKAGE_BOOKING_REQUEST_SECTION_ID,
+} from '@/lib/tours/tour-inquiry-cta'
 
 type PackageItemsList = {
     items?: string[] | null
@@ -127,7 +127,8 @@ export function mapPackagePlanToTourPage(
     const ziyarat = resolvePackageZiyarat(plan)
     const includeItems = plan.package_includes?.items ?? []
     const emptySections = createEmptyPackageTourSections()
-    const usesInquiryForm = kind === 'international' || kind === 'umrah'
+    const bookingHref = `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`
+    const primaryBookLabel = INTERNATIONAL_INQUIRY_PRIMARY_LABEL
 
     const page = applyTourSectionFallbacks({
         id: plan.id,
@@ -189,15 +190,13 @@ export function mapPackagePlanToTourPage(
                     ? [{ icon: 'price' as const, label: `${discountPercent}% OFF` }]
                     : []),
             ],
-            ctaGroup: usesInquiryForm
-                ? [
-                      {
-                          label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
-                          url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
-                          style: 'primary',
-                      },
-                  ]
-                : [],
+            ctaGroup: [
+                {
+                    label: primaryBookLabel,
+                    url: bookingHref,
+                    style: 'primary',
+                },
+            ],
         },
         overviewSection: {
             id: 'overview',
@@ -226,7 +225,7 @@ export function mapPackagePlanToTourPage(
             eyebrow: 'THE EXPERIENCE',
             title: 'Gallery',
             actionLabel: 'VIEW FULL GALLERY',
-            actionUrl: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
+            actionUrl: bookingHref,
             layout: 'masonry-grid',
             media: gallery.map((src, index) => ({
                 id: `gallery-${index + 1}`,
@@ -241,26 +240,18 @@ export function mapPackagePlanToTourPage(
                 kind === 'international'
                     ? 'Interested in this international tour?'
                     : 'Ready to plan your Umrah?',
-            buttons: usesInquiryForm
-                ? [
-                      {
-                          label: INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
-                          url: `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`,
-                          style: 'primary',
-                      },
-                      {
-                          label: 'Contact Us',
-                          url: '/contact-us',
-                          style: 'secondary',
-                      },
-                  ]
-                : [
-                      {
-                          label: 'Contact Us',
-                          url: '/contact-us',
-                          style: 'primary',
-                      },
-                  ],
+            buttons: [
+                {
+                    label: primaryBookLabel,
+                    url: bookingHref,
+                    style: 'primary',
+                },
+                {
+                    label: 'Contact Us',
+                    url: '/contact-us',
+                    style: 'secondary',
+                },
+            ],
         },
         isBookingClosed: isPackageBookingClosed({ departureDate, bookingDeadline }),
     } as unknown as TourPage)

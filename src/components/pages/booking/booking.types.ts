@@ -38,6 +38,8 @@ export type BookingTourOption = {
     isBookingClosed: boolean
     slots: BookingTourSlot[]
     pickupPoints: BookingTourPickupPoint[]
+    /** Domestic tours omit this or use `tour`; packages use umrah/international. */
+    listingKind?: 'tour' | 'umrah' | 'international'
 }
 
 /** Prefer `lockedTour` when it matches the selected id — it includes RPC slot data. */
@@ -90,6 +92,12 @@ export function buildBookingHref(tourSlug?: string, slotId?: string): string {
     }
 
     return `/booking?${params.toString()}`
+}
+
+export function isPackageBookingOption(
+    tour: Pick<BookingTourOption, 'listingKind'> | null | undefined,
+): boolean {
+    return tour?.listingKind === 'umrah' || tour?.listingKind === 'international'
 }
 
 export type BookingPriceBreakdown = {

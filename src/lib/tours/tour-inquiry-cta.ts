@@ -10,13 +10,19 @@ export const INTERNATIONAL_INQUIRY_SECTION_INTRO =
     'Submit your travel details and our team will contact you to confirm availability and next steps.'
 
 export function isInquiryOnlyTourPage(
-    page: Pick<TourPage, 'listingKind'>,
+    page?: Pick<TourPage, 'listingKind'>,
 ): boolean {
-    return page.listingKind === 'international' || page.listingKind === 'umrah'
+    return page?.listingKind === 'umrah' || page?.listingKind === 'international'
 }
 
 export function usesDomesticCheckout(listingKind: ListingKind | undefined): boolean {
     return !listingKind || listingKind === 'tour'
+}
+
+/** Reserved for a later checkout switch; packages use booking requests for now. */
+export function usesPackageCheckout(listingKind: ListingKind | undefined): boolean {
+    void listingKind
+    return false
 }
 
 export function scrollToPackageBookingRequest() {
