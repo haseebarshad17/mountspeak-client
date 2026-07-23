@@ -11,20 +11,17 @@ export const mountTemp2Styles: TemplateStyles = {
             shell: 'relative overflow-hidden rounded-2xl xs:rounded-[24px] sm:rounded-[28px] md:rounded-[32px]',
             pattern: 'hidden',
             content:
-                'relative z-[1] flex flex-col gap-8 px-5 py-8 xs:gap-9 xs:px-6 xs:py-9 sm:gap-10 sm:px-8 sm:py-10 md:px-10 lg:gap-11 lg:px-12 lg:py-12',
+                'relative z-[1] flex flex-col px-5 py-8 xs:px-6 xs:py-9 sm:px-8 sm:py-10 md:px-10 lg:px-12 lg:py-12',
             mainGrid:
-                'order-2 grid gap-8 xs:gap-9 sm:gap-10 xl:gap-14 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-10',
+                'order-1 grid gap-8 xs:gap-9 sm:gap-10 xl:gap-14 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-10',
             brandBlock: 'flex min-w-0 flex-col items-start gap-4 xs:gap-5 sm:gap-5',
             columnsGrid: 'grid min-w-0 grid-cols-2 gap-x-6 gap-y-6',
-            newsletterSection: 'order-1',
-            newsletterInner: [
-                'flex w-full flex-col gap-4 rounded-2xl bg-black/20 px-5 py-4',
-                'sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:rounded-full sm:px-8 sm:pl-10 sm:py-3.5',
-            ].join(' '),
-            newsletterCopy: 'min-w-0 flex-1 sm:pr-4',
+            newsletterSection: 'order-2 mt-8 border-t border-white/10 pt-6 xs:mt-9 xs:pt-7 sm:mt-10 sm:pt-8 lg:mt-11 lg:pt-9',
+            newsletterInner: 'w-full max-w-lg',
+            newsletterCopy: '',
             newsletterTitle: 'text-sm font-semibold text-white xs:text-base',
-            newsletterDesc: 'mt-1 max-w-sm text-sm leading-6 text-white/75',
-            newsletterForm: 'flex w-full max-w-md shrink-0 items-center gap-2 sm:max-w-lg',
+            newsletterDesc: 'mt-1.5 max-w-sm text-sm leading-6 text-white/75',
+            newsletterForm: 'mt-3.5 flex w-full max-w-md items-center gap-2 xs:mt-4',
             newsletterInput: [
                 'h-10 w-full min-w-0 flex-1 rounded-full border border-white/20 bg-black/35 px-3.5',
                 'text-sm text-white placeholder:text-white/50 outline-none',
