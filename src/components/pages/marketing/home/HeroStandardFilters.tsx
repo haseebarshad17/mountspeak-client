@@ -143,7 +143,8 @@ export default function HeroStandardFilters({
 }: HeroStandardFiltersProps) {
     const router = usePreviewRouter()
     const templateStyles = useTemplateStyles()
-    const heroTriggerButtonClass = buildHeroTriggerButtonClass(templateStyles.heroFilters.field)
+    const heroFilters = templateStyles.pages.home.heroFilters
+    const heroTriggerButtonClass = buildHeroTriggerButtonClass(heroFilters.field)
     const [isSearching, startSearchTransition] = useTransition()
     const useCountryLocations = locationKind === 'country'
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities(!useCountryLocations)
@@ -239,8 +240,8 @@ export default function HeroStandardFilters({
     return (
         <form
             className={cn(
-                "w-full max-w-full min-w-0 overflow-hidden border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:mx-auto xl:max-w-[900px] xl:border-[#D6D9DC] xl:p-0",
-                templateStyles.heroFilters.form,
+                "w-full max-w-full min-w-0 overflow-hidden border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:max-w-[900px] xl:border-[#D6D9DC] xl:p-0",
+                heroFilters.form,
             )}
             onSubmit={(event) => {
                 event.preventDefault()
@@ -337,7 +338,7 @@ export default function HeroStandardFilters({
                             setEndDate(nextStart)
                         }
                     }}
-                    fieldClassName={templateStyles.heroFilters.field}
+                    fieldClassName={heroFilters.field}
                 />
 
                 <DateField
@@ -347,7 +348,7 @@ export default function HeroStandardFilters({
                     value={endDate}
                     min={startDate || minTravelDate}
                     onChange={(event) => setEndDate(event.target.value)}
-                    fieldClassName={templateStyles.heroFilters.field}
+                    fieldClassName={heroFilters.field}
                 />
 
                 <div className="min-w-0 w-full xs:col-span-2 xl:col-span-1">
@@ -361,7 +362,7 @@ export default function HeroStandardFilters({
                             HP_THEME_BTN_CLASS,
                             '!h-12 w-full min-w-0 !font-medium !normal-case !tracking-normal !text-sm',
                             'xl:!h-full xl:!px-4',
-                            templateStyles.heroFilters.searchButton,
+                            heroFilters.searchButton,
                         )}
                     >
                         {isSearching ? (

@@ -45,22 +45,22 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
         <PageHeroBanner backgroundImage={backgroundImage}>
             <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
                 <div className='agency-container'>
-                    <div className={cn(templateStyles.hero.content)}>
+                    <div className={cn(templateStyles.pages.home.hero.content)}>
                         <h1
-                            className={cn(templateStyles.hero.heading)}
+                            className={cn(templateStyles.pages.home.hero.heading)}
                             style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {hero.title}
                         </h1>
                         <p
-                            className={cn(templateStyles.hero.paragraph)}
+                            className={cn(templateStyles.pages.home.hero.paragraph)}
                             style={{ color: STATIC_UI_COLORS.heroText, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {heroParagraph}
                         </p>
                     </div>
 
-                    <div className={cn(templateStyles.hero.filtersWrap)}>
+                    <div className={cn(templateStyles.pages.home.hero.filtersWrap)}>
                         <HeroFilters
                             page={page}
                             tourLocations={tourLocations}

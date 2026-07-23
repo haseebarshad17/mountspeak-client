@@ -3,6 +3,7 @@
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import {
@@ -12,6 +13,7 @@ import {
 } from '@/components/ui/swiper-side-navigation'
 import { filterDestinationCards, type DestinationCard } from '@/data/popular-destinations'
 import { buildTourSearchPath } from '@/services/tours/tours.search.utils'
+import { cn } from '@/lib/utils/clsxUtils'
 import { MapPin } from 'lucide-react'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useMemo } from 'react'
@@ -31,6 +33,7 @@ type DestinationsSwiperProps = {
 
 function DestinationsSwiper({ activeFilter, destinations, canSlide }: DestinationsSwiperProps) {
     const { prevRef, nextRef } = useSwiperNavigationRefs()
+    const destinationCard = useTemplateStyles().pages.home.destinationCard
 
     return (
         <Swiper
@@ -70,13 +73,13 @@ function DestinationsSwiper({ activeFilter, destinations, canSlide }: Destinatio
         >
             {destinations.map((destination) => (
                 <SwiperSlide key={destination.id} className='!h-auto'>
-                    <article className='my-2 h-auto w-full rounded-[20px] bg-white p-3 pb-3 shadow-[0_4px_30px_rgba(0,0,0,0.08)] sm:my-7 sm:p-3.5 sm:pb-4'>
+                    <article className={cn(destinationCard.shell)}>
                         <PrefixedLink
                             href={buildTourSearchPath({ to: destination.region })}
                             className='group block'
                             aria-label={`Search tours to ${destination.name}`}
                         >
-                            <div className='relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[240px] lg:h-[260px]'>
+                            <div className={cn('relative h-[190px] w-full overflow-hidden rounded-[16px] sm:h-[240px] lg:h-[260px]', destinationCard.image)}>
                                 <HomepageMediaImage
                                     src={destination.image}
                                     alt={destination.name}
@@ -86,7 +89,7 @@ function DestinationsSwiper({ activeFilter, destinations, canSlide }: Destinatio
                                 />
                             </div>
 
-                            <div className='px-1 pt-3 sm:pt-4'>
+                            <div className={cn(destinationCard.content)}>
                                 <h3
                                     className='font-jost text-[22px] font-medium leading-7 transition-colors group-hover:text-[var(--hp-color-primary)]/80'
                                     style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}

@@ -5,6 +5,7 @@ import React, { FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 
 import { SocialIconLinks } from '@/components/layout/marketing/SocialIconLink'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { Button } from '@/components/ui/button'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import type { HomepagePage } from '@/data/homepage'
@@ -17,6 +18,7 @@ import { getActiveFooterSocialLinks } from '@/lib/homepage/footer-social'
 import { getFooterDisplayColumns } from '@/lib/homepage/normalize-homepage'
 import { MessageCode } from '@/lib/messages/codes'
 import { getMessage } from '@/lib/messages/get-message'
+import type { TemplateStyles } from '@/lib/templates/types'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useSubscribeNewsletter } from '@/services/newsletter/newsletter.queries'
 import { selectHomepageThemeUpdatedAt } from '@/store/homepage/homepage.selectors'
@@ -27,6 +29,7 @@ type FooterProps = {
 }
 
 type FooterColumn = ReturnType<typeof getFooterDisplayColumns>[number]
+type FooterStyles = TemplateStyles['generic']['footer']
 
 const FOOTER_PATTERN_STYLE: React.CSSProperties = {
     backgroundImage: [
@@ -108,7 +111,7 @@ function FooterNavColumn({ column }: { column: FooterColumn }) {
     )
 }
 
-function FooterNewsletter() {
+function FooterNewsletter({ styles }: { styles: FooterStyles }) {
     const [email, setEmail] = useState('')
     const { resolvedAgencyId, isAgencySite, isReady } = useResolvedAgencyId()
     const { mutate: subscribeToNewsletter, isPending: isSubmitting } = useSubscribeNewsletter()
@@ -156,15 +159,17 @@ function FooterNewsletter() {
     }
 
     return (
-        <div className='w-full max-w-lg'>
-            <h3 className='text-sm font-semibold text-white xs:text-base'>Newsletter</h3>
-            <p className='mt-1.5 max-w-sm text-sm leading-6 text-white/75'>
-                Get travel tips, new packages, and exclusive offers in your inbox.
-            </p>
+        <div className={cn(styles.newsletterInner)}>
+            <div className={cn(styles.newsletterCopy)}>
+                <h3 className={cn(styles.newsletterTitle)}>Newsletter</h3>
+                <p className={cn(styles.newsletterDesc)}>
+                    Get travel tips, new packages, and exclusive offers in your inbox.
+                </p>
+            </div>
 
             <form
                 onSubmit={handleSubmit}
-                className='mt-3.5 flex w-full max-w-sm items-center gap-2 xs:mt-4'
+                className={cn(styles.newsletterForm)}
                 noValidate
             >
                 <label className='sr-only' htmlFor='footer-newsletter-email'>
@@ -179,14 +184,7 @@ function FooterNewsletter() {
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder='Enter your email'
                     autoComplete='email'
-                    className={cn(
-                        'h-10 w-full min-w-0 flex-1 rounded-full border border-white/25 bg-transparent px-3.5',
-                        'text-sm text-white placeholder:text-white/50 outline-none',
-                        'transition-[border-color,background-color,box-shadow] duration-200',
-                        'hover:border-white/40',
-                        'focus:border-white/50 focus:bg-white/5 focus:ring-2 focus:ring-white/15',
-                        'xs:h-11 xs:px-4',
-                    )}
+                    className={cn(styles.newsletterInput)}
                 />
                 <Button
                     type='submit'
@@ -194,11 +192,7 @@ function FooterNewsletter() {
                     size='sm'
                     loading={isSubmitting}
                     loadingText='...'
-                    className={cn(
-                        'h-10 shrink-0 rounded-full border-0 bg-white px-4 text-black',
-                        '!normal-case !tracking-normal hover:bg-white/90 focus-visible:bg-white/90',
-                        'xs:h-11 xs:px-5 font-medium',
-                    )}
+                    className={cn(styles.newsletterButton)}
                 >
                     Subscribe
                 </Button>
@@ -216,28 +210,24 @@ const Footer = ({ page }: FooterProps) => {
     const siteName = branding.name || seo.siteName
     const footerLogo = getBrandingLogo(branding, 'onDark', themeUpdatedAt)
     const year = new Date().getFullYear()
+    const styles = useTemplateStyles().generic.footer
 
     return (
-        <footer id='marketing-footer' className='bg-[#E8F3F2] px-3 py-8 xs:px-4 xs:py-10 sm:py-12 md:py-14'>
+        <footer id='marketing-footer' className={cn(styles.outer)}>
             <div className='agency-container'>
                 <div
-                    className='relative overflow-hidden rounded-2xl xs:rounded-[24px] sm:rounded-[28px] md:rounded-[32px]'
+                    className={cn(styles.shell)}
                     style={{ backgroundColor: footer.backgroundColor }}
                 >
                     <div
                         aria-hidden
-                        className='pointer-events-none absolute inset-0'
-                        style={FOOTER_PATTERN_STYLE}
+                        className={cn(styles.pattern)}
+                        style={styles.pattern.includes('hidden') ? undefined : FOOTER_PATTERN_STYLE}
                     />
 
-                    <div className='relative px-5 py-8 xs:px-6 xs:py-9 sm:px-8 sm:py-10 md:px-10 lg:px-12 lg:py-12'>
-                        <div
-                            className={cn(
-                                'grid gap-8 xs:gap-9 sm:gap-10 xl:gap-14',
-                                'lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-10',
-                            )}
-                        >
-                            <div className='flex min-w-0 flex-col items-start gap-4 xs:gap-5 sm:gap-5'>
+                    <div className={cn(styles.content)}>
+                        <div className={cn(styles.mainGrid)}>
+                            <div className={cn(styles.brandBlock)}>
                                 <Link href='/' className='inline-block shrink-0'>
                                     <HomepageMediaImage
                                         key={footerLogo.src}
@@ -264,7 +254,7 @@ const Footer = ({ page }: FooterProps) => {
 
                             <div
                                 className={cn(
-                                    'grid min-w-0 grid-cols-2 gap-x-6 gap-y-6',
+                                    styles.columnsGrid,
                                     columns.length >= 3
                                         ? 'sm:grid-cols-3 md:max-w-none lg:ml-0 lg:justify-self-start lg:gap-x-12 xl:gap-x-16'
                                         : 'md:max-w-md lg:ml-0 lg:max-w-none lg:justify-self-start lg:gap-x-20',
@@ -276,22 +266,26 @@ const Footer = ({ page }: FooterProps) => {
                             </div>
                         </div>
 
-                        <div className='mt-8 border-t border-white/10 pt-6 xs:mt-9 xs:pt-7 sm:mt-10 sm:pt-8 lg:mt-11 lg:pt-9'>
-                            <FooterNewsletter />
+                        <div className={cn(styles.newsletterSection)}>
+                            <FooterNewsletter styles={styles} />
                         </div>
                     </div>
 
-                    <div className='relative border-t border-white/10 px-5 py-3.5 text-center xs:px-6 xs:py-4 sm:px-8'>
-                        <p className='text-xs leading-5 text-white/75 sm:text-sm'>
+                    <div className={cn(styles.bottomBar)}>
+                        <p className={cn(styles.copyright)}>
                             Copyright &copy; {year}, {siteName}, All Rights Reserved.
                         </p>
                     </div>
 
                     <div
                         aria-hidden
-                        className='h-1.5 w-full sm:h-2'
-                        style={{ backgroundColor: STATIC_UI_COLORS.accent }}
+                        className={cn(styles.accentBar)}
+                        style={styles.accentBar.includes('hidden') ? undefined : { backgroundColor: STATIC_UI_COLORS.accent }}
                     />
+
+                    <div aria-hidden className={cn(styles.ghostBrand)}>
+                        {siteName}
+                    </div>
                 </div>
             </div>
         </footer>
