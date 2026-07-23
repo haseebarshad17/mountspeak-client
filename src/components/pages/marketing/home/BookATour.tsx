@@ -16,7 +16,7 @@ import { MessageCode } from '@/lib/messages/codes'
 import { useBookingRequestEmailGate } from '@/hooks/useBookingRequestEmailGate'
 import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { adaptTourCopyForUmrah } from '@/lib/homepage/specialization'
-import { usePakistanCities } from '@/services/cities/cities.queries'
+import { useCountries, usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
     BOOKING_REQUEST_CATEGORY_LABELS,
@@ -71,14 +71,18 @@ const BookATour = ({ page }: HomepagePageProps) => {
         handleEmailVerified,
         requireUser,
     } = useBookingRequestEmailGate({ returnPath: '/#book-a-tour-heading' })
-    const { isUmrahSite, isMultiSpec, copy: listingCopy } = useSiteListingCopy()
+    const { isUmrahSite, isMultiSpec, isInternationalSite, copy: listingCopy } = useSiteListingCopy()
     const usesUmrahBookingForm = isUmrahSite && !isMultiSpec
+    const useCountryDestinations = isInternationalSite && !isMultiSpec
     const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, usesUmrahBookingForm)
     const bookTitle = adaptTourCopyForUmrah(section.title, usesUmrahBookingForm)
     const bookParagraphs = section.paragraphs.map((paragraph) =>
         adaptTourCopyForUmrah(paragraph, usesUmrahBookingForm),
     )
-    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
+    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities(
+        !useCountryDestinations && !usesUmrahBookingForm,
+    )
+    const { data: countries = [], isLoading: isCountriesLoading } = useCountries(useCountryDestinations)
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
     const [femaleSeats, setFemaleSeats] = useState(0)
@@ -113,13 +117,35 @@ const BookATour = ({ page }: HomepagePageProps) => {
             }))
         }
 
+        if (useCountryDestinations) {
+            return [...countries]
+                .sort((a, b) => a.localeCompare(b))
+                .map((country) => ({
+                    value: country,
+                    label: country,
+                }))
+        }
+
         return pakistanCities.map((city) => ({
             value: city,
             label: city,
         }))
-    }, [usesUmrahBookingForm, pakistanCities])
+    }, [usesUmrahBookingForm, useCountryDestinations, countries, pakistanCities])
 
-    const isDestinationLoading = !usesUmrahBookingForm && isCitiesLoading
+    const isDestinationLoading = usesUmrahBookingForm
+        ? false
+        : useCountryDestinations
+          ? isCountriesLoading
+          : isCitiesLoading
+    const destinationLoadingPlaceholder = useCountryDestinations
+        ? 'Loading countries...'
+        : formCopy.placeholders.destinationLoading
+    const destinationSearchPlaceholder = useCountryDestinations
+        ? 'Search country...'
+        : 'Search destination...'
+    const destinationNoResultsMessage = useCountryDestinations
+        ? 'No countries found'
+        : 'No cities found'
 
     const clearFieldError = (key: string) => {
         setFieldErrors((prev) => {
@@ -405,14 +431,14 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         }}
                                         placeholder={
                                             isDestinationLoading
-                                                ? formCopy.placeholders.destinationLoading
+                                                ? destinationLoadingPlaceholder
                                                 : formCopy.placeholders.destination
                                         }
                                         options={destinationOptions}
                                         disabled={isDestinationLoading}
                                         searchable={!usesUmrahBookingForm}
-                                        searchPlaceholder='Search destination...'
-                                        noResultsMessage='No cities found'
+                                        searchPlaceholder={destinationSearchPlaceholder}
+                                        noResultsMessage={destinationNoResultsMessage}
                                         aria-label='Destination'
                                     />
                                 </MarketingFormField>
