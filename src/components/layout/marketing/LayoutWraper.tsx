@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useInternalPathname } from '@/hooks/useAgencyPreviewBase';
 import Header from './header/header';
 import TanstackQueryProvider from '@/lib/tanstack/query.provider';
@@ -8,6 +8,7 @@ import { AppToaster } from '@/components/ui/app-toaster';
 import MarketingFooter from '@/components/layout/marketing/MarketingFooter';
 import FloatingSocialIcons from '@/components/layout/marketing/FloatingSocialIcons';
 import SiteThemeFallbackIndicator from '@/components/layout/marketing/SiteThemeFallbackIndicator';
+import { TemplateStylesProvider } from '@/components/providers/TemplateStylesProvider';
 import { useHomepagePageWithFallback } from '@/hooks/useHomepagePageWithFallback';
 import { DUMMY_HOMEPAGE_PAGE } from '@/lib/homepage/default-homepage';
 
@@ -28,7 +29,7 @@ function isExcludedRoute(pathname: string, patterns: string[]): boolean {
     return patterns.some((pattern) => matchesExcludedRoute(pathname, pattern))
 }
 
-const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
+function LayoutChrome({ children }: LayoutWrapperProps) {
     const page = useHomepagePageWithFallback();
     const pathname = useInternalPathname();
     const HeaderExcludeRoutes = [
@@ -48,7 +49,7 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
     const toaster = <AppToaster />;
 
     return (
-        <TanstackQueryProvider>
+        <>
             {ShouldShowHeader ? <Header page={headerPage} /> : null}
             <div
                 id='app-scroll-container'
@@ -60,6 +61,18 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
                 <SiteThemeFallbackIndicator />
                 {toaster}
             </div>
+        </>
+    )
+}
+
+const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
+    return (
+        <TanstackQueryProvider>
+            <Suspense fallback={<LayoutChrome>{children}</LayoutChrome>}>
+                <TemplateStylesProvider>
+                    <LayoutChrome>{children}</LayoutChrome>
+                </TemplateStylesProvider>
+            </Suspense>
         </TanstackQueryProvider>
     )
 }

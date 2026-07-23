@@ -5,6 +5,7 @@
     "type": "marketing_home",
     "status": "published",
     "locale": "en",
+    "templateId": "jedw-cwe-cw",
     "seo": {
       "siteName": "Company name",
       "title": "Company name — Plan Your Perfect Trip",

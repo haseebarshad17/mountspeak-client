@@ -78,9 +78,15 @@ function normalizePopularTravelBlogs(
 }
 
 export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
+    const templateId =
+        typeof page.templateId === 'string' && page.templateId.trim()
+            ? page.templateId.trim()
+            : BASE_PAGE.templateId
+
     return {
         ...BASE_PAGE,
         ...page,
+        templateId,
         seo: { ...BASE_PAGE.seo, ...page.seo },
         theme: normalizeTheme(page.theme),
         branding: {
