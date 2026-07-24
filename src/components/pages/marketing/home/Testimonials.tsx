@@ -3,6 +3,7 @@
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Star } from 'lucide-react'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
@@ -86,10 +87,12 @@ function TestimonialCard({
     avatar: string
     clipId: string
 }) {
+    const testimonials = useTemplateStyles().pages.home.testimonials
+
     return (
         <div className='flex flex-col items-center px-2 pb-4 pt-2'>
             <div
-                className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
+                className={cn(testimonials.quote)}
                 style={{ backgroundColor: STATIC_UI_COLORS.quoteBackground, color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
             >
                 <p className='text-readable text-sm font-normal leading-6 sm:text-base'>{quote}</p>
@@ -104,7 +107,7 @@ function TestimonialCard({
                 </div>
             </div>
 
-            <div className='mt-14 text-center sm:mt-16'>
+            <div className={cn(testimonials.meta)}>
                 <h3
                     className='text-readable text-base font-semibold tracking-normal sm:text-xl'
                     style={{ color: STATIC_UI_COLORS.cardTitle, fontFamily: 'var(--hp-font-body)' }}
@@ -131,6 +134,8 @@ const Testimonials = ({ page }: HomepagePageProps) => {
     const section = page.sections.testimonials
     const items = section.items ?? []
     const canAutoplay = items.length > 1
+    const testimonials = useTemplateStyles().pages.home.testimonials
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
 
     const swiperRef = useRef<SwiperType | null>(null)
     const [activeIndex, setActiveIndex] = useState(0)
@@ -138,11 +143,14 @@ const Testimonials = ({ page }: HomepagePageProps) => {
     return (
         <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
             <div className='agency-container pb-12 sm:pb-20 lg:pb-[100px]'>
-                <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(testimonials.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='testimonials-heading'
-                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-3 text-[40px] font-medium leading-[48px] sm:pt-4',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
@@ -160,10 +168,10 @@ const Testimonials = ({ page }: HomepagePageProps) => {
                         autoplay={
                             canAutoplay
                                 ? {
-                                      delay: 4500,
-                                      disableOnInteraction: false,
-                                      pauseOnMouseEnter: true,
-                                  }
+                                    delay: 4500,
+                                    disableOnInteraction: false,
+                                    pauseOnMouseEnter: true,
+                                }
                                 : false
                         }
                         breakpoints={{

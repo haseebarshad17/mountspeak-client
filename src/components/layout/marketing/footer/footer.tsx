@@ -214,7 +214,7 @@ const Footer = ({ page }: FooterProps) => {
 
     return (
         <footer id='marketing-footer' className={cn(styles.outer)}>
-            <div className='agency-container'>
+            <div className={cn(styles.shellWrap)}>
                 <div
                     className={cn(styles.shell)}
                     style={{ backgroundColor: footer.backgroundColor }}

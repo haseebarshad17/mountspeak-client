@@ -11,11 +11,11 @@ export const DEFAULT_TEMPLATE_KEY: TemplateKey = 'mount-temp-1'
 
 /**
  * Frontend registry: agency template id → style module key.
- * Replace placeholder ids when the templates table/API exists.
+ * Keep ids in sync with dashboard `SITE_TEMPLATES`.
  */
 const TEMPLATE_KEY_BY_ID: Record<string, TemplateKey> = {
     'jedw-cwe-cw': 'mount-temp-1',
-    'ab12-cd34-ef': 'mount-temp-2',
+    'ab12-cd34-ef': 'mount-temp-2'
 }
 
 const STYLES_BY_KEY: Record<TemplateKey, TemplateStyles> = {

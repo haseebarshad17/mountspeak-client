@@ -107,6 +107,7 @@ function DestinationsSwiper({ activeFilter, destinations, canSlide }: Destinatio
 
 const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
     const section = page.sections.popularDestination.topDestinations
+    const popularDestination = useTemplateStyles().pages.home.popularDestination
 
     const destinations = useMemo(
         () => filterDestinationCards(page, activeFilter),
@@ -118,7 +119,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
     return (
         <section className='bg-white' aria-labelledby='top-destinations-heading'>
             <div className='agency-container'>
-                <div>
+                <div className={cn(popularDestination.listHeader)}>
                     <span
                         className='text-base font-normal leading-6'
                         style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-body)' }}
@@ -134,12 +135,13 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                     </h2>
                 </div>
 
-                <div className='overflow-x-hidden pt-4 sm:pt-6'>
+                <div className={cn(popularDestination.carouselWrap)}>
                     {destinations.length > 0 ? (
                         <SwiperSideNavigation
                             enabled={canSlide}
                             prevLabel='Previous destinations'
                             nextLabel='Next destinations'
+                            className='lg:pl-0 lg:pr-14'
                         >
                             <DestinationsSwiper
                                 activeFilter={activeFilter}

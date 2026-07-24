@@ -5,6 +5,7 @@ import { FilterPills } from '@/components/pages/marketing/home/filter-pills'
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import { Button } from '@/components/ui/button'
 import { GalleryImageZoomModal } from '@/components/ui/gallery-image-zoom-modal'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { cn } from '@/lib/utils/clsxUtils'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
@@ -32,11 +33,13 @@ function GalleryImageCard({
     eager = false,
     className,
     imageSizes = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 229px',
+    tileClassName,
 }: GalleryImage & {
     onOpen: () => void
     eager?: boolean
     className?: string
     imageSizes?: string
+    tileClassName: string
 }) {
     const [isLoaded, setIsLoaded] = useState(false)
 
@@ -48,10 +51,7 @@ function GalleryImageCard({
         <button
             type='button'
             onClick={onOpen}
-            className={cn(
-                'group relative aspect-[229.33/305.77] w-full overflow-hidden rounded-[10px] cursor-zoom-in bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-color-primary)] focus-visible:ring-offset-2',
-                className,
-            )}
+            className={cn(tileClassName, className)}
             aria-label={`View larger image: ${alt}`}
         >
             {!isLoaded ? (
@@ -119,6 +119,8 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
     }, [preloadRowImages, totalRows, visibleRows])
 
     const mobilePreviewImage = filteredImages[0] ?? null
+    const gallery = useTemplateStyles().pages.home.gallery
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
 
     useEffect(() => {
         if (selectedImageIndex !== null && selectedImageIndex >= filteredImages.length) {
@@ -153,17 +155,23 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
     return (
         <section className='bg-white' aria-labelledby='tourism-gallery-heading'>
             <div className='agency-container'>
-                <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(gallery.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='tourism-gallery-heading'
-                        className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
                     <p
-                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6'
+                        className={cn(
+                            'pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6',
+                            'mx-auto max-w-[861px] md:mx-0',
+                        )}
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.paragraph}
@@ -173,7 +181,7 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
                     labels={section.filters}
                     activeLabel={activeFilter}
                     onLabelChange={setActiveFilter}
-                    className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10'
+                    className='mx-auto max-w-[1290px] pt-6 sm:pt-8 lg:pt-10 md:mx-0'
                 />
 
                 {mobilePreviewImage ? (
@@ -184,18 +192,20 @@ const TourismTravelingGallery = ({ page }: HomepagePageProps) => {
                             alt={mobilePreviewImage.alt}
                             eager
                             imageSizes='100vw'
+                            tileClassName={gallery.tile}
                             className='aspect-[4/5] max-h-[420px]'
                             onOpen={() => openCategorySlider(0)}
                         />
                     </div>
                 ) : null}
 
-                <div className='mx-auto mt-6 hidden max-w-[1424px] sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-[12px] lg:mt-2 lg:grid-cols-6'>
+                <div className={cn(gallery.grid)}>
                     {visibleImages.map((image, index) => (
                         <GalleryImageCard
                             key={`${image.src}-${index}`}
                             src={image.src}
                             alt={image.alt}
+                            tileClassName={gallery.tile}
                             eager={index < IMAGES_PER_ROW || index >= firstLazyRowIndex}
                             onOpen={() => openCategorySlider(index)}
                         />
