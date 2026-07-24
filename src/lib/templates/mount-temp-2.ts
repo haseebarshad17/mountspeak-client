@@ -186,6 +186,9 @@ export const mountTemp2Styles: TemplateStyles = {
                 ].join(' '),
             },
             planPerfectTrip: {
+                variant: 'classic',
+                section: '',
+                container: '',
                 grid: [
                     'grid grid-cols-1 items-center gap-9',
                     'sm:gap-11 md:grid-cols-2 md:gap-12 lg:gap-16 xl:gap-24',
@@ -195,11 +198,16 @@ export const mountTemp2Styles: TemplateStyles = {
                     'ring-1 ring-black/5 shadow-[0_20px_56px_rgba(0,41,44,0.14)]',
                     'sm:max-w-[580px] sm:rounded-[30px] md:order-2 md:justify-self-end',
                 ].join(' '),
+                image: '',
                 copy: 'order-2 w-full max-w-[540px] md:order-1 md:pr-2',
+                eyebrow: '',
+                title: '',
+                paragraph: '',
                 stats: [
                     'grid w-full grid-cols-2 gap-x-5 gap-y-6 pt-7',
                     'sm:gap-x-10 sm:gap-y-8 sm:pt-9',
                 ].join(' '),
+                statCard: '',
             },
             services: {
                 section: 'py-12 sm:py-16 md:py-20 lg:py-[108px]',
@@ -310,6 +318,7 @@ export const mountTemp2Styles: TemplateStyles = {
                 cardContent: 'flex min-w-0 flex-1 flex-col p-5 sm:p-6',
             },
             testimonials: {
+                variant: 'classic',
                 header: [
                     'mx-auto max-w-3xl text-center',
                     'md:mx-0 md:max-w-[40rem] md:text-left',

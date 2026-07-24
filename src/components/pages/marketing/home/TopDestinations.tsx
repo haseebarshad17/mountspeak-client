@@ -141,7 +141,7 @@ const TopDestinations = ({ page, activeFilter }: TopDestinationsProps) => {
                             enabled={canSlide}
                             prevLabel='Previous destinations'
                             nextLabel='Next destinations'
-                            className='lg:pl-0 lg:pr-14'
+                            className='lg:px-14'
                         >
                             <DestinationsSwiper
                                 activeFilter={activeFilter}
