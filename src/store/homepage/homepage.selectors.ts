@@ -23,6 +23,9 @@ export const selectHomepageAgencySpecializationIds = (state: RootState): string[
 export const selectHomepagePage = (state: RootState): HomepagePage | null =>
     state.homepage.data?.page ?? null
 
+export const selectHomepageTemplateId = (state: RootState): string | null =>
+    state.homepage.data?.page?.templateId?.trim() || null
+
 export const selectHomepageThemeUpdatedAt = (state: RootState): string | null =>
     state.homepage.data?.themeUpdatedAt ?? null
 

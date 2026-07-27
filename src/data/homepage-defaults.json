@@ -5,6 +5,7 @@
     "type": "marketing_home",
     "status": "published",
     "locale": "en",
+    "templateId": "jedw-cwe-cw",
     "seo": {
       "siteName": "Company name",
       "title": "Company name — Plan Your Perfect Trip",
@@ -99,6 +100,9 @@
       "hero": {
         "id": "hero",
         "backgroundImage": "/images/pages/home/tour-list.png",
+        "backgroundImages": [
+          "/images/pages/home/tour-list.png"
+        ],
         "title": "Don't call it a dream. Call it a plan",
         "paragraph": "Travel the way you wish to go with Company name helping you discover, live and travel at your own pace.",
         "searchFilters": {

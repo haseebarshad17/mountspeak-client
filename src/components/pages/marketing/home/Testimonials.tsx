@@ -3,11 +3,17 @@
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
+import {
+    configureSwiperNavigation,
+    SwiperSideNavigation,
+    useSwiperNavigationRefs,
+} from '@/components/ui/swiper-side-navigation'
 import { cn } from '@/lib/utils/clsxUtils'
-import { Star } from 'lucide-react'
+import { Quote, Star, User } from 'lucide-react'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 import React, { useRef, useState } from 'react'
-import { Autoplay } from 'swiper/modules'
+import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper/types'
 import 'swiper/css'
@@ -15,6 +21,13 @@ import 'swiper/css'
 const DOT_COUNT = 32
 const DOT_RADIUS = 46
 const DOT_SIZE = 2.2
+
+type TestimonialItem = {
+    quote: string
+    name: string
+    location: string
+    avatar: string
+}
 
 function DottedAvatarFrame({
     src,
@@ -73,23 +86,19 @@ function DottedAvatarFrame({
     )
 }
 
-function TestimonialCard({
+function ClassicTestimonialCard({
     quote,
     name,
     location,
     avatar,
     clipId,
-}: {
-    quote: string
-    name: string
-    location: string
-    avatar: string
-    clipId: string
-}) {
+}: TestimonialItem & { clipId: string }) {
+    const testimonials = useTemplateStyles().pages.home.testimonials
+
     return (
         <div className='flex flex-col items-center px-2 pb-4 pt-2'>
             <div
-                className='testimonial-quote relative mx-auto w-full max-w-[400px] rounded-xl px-5 pb-16 pt-8 text-center transition-colors duration-300 sm:px-7 sm:pb-[72px] sm:pt-10'
+                className={cn(testimonials.quote)}
                 style={{ backgroundColor: STATIC_UI_COLORS.quoteBackground, color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
             >
                 <p className='text-readable text-sm font-normal leading-6 sm:text-base'>{quote}</p>
@@ -104,7 +113,7 @@ function TestimonialCard({
                 </div>
             </div>
 
-            <div className='mt-14 text-center sm:mt-16'>
+            <div className={cn(testimonials.meta)}>
                 <h3
                     className='text-readable text-base font-semibold tracking-normal sm:text-xl'
                     style={{ color: STATIC_UI_COLORS.cardTitle, fontFamily: 'var(--hp-font-body)' }}
@@ -127,90 +136,290 @@ function TestimonialCard({
     )
 }
 
+function PremiumTestimonialCard({
+    quote,
+    name,
+    location,
+    avatar,
+}: TestimonialItem) {
+    const testimonials = useTemplateStyles().pages.home.testimonials
+    const hasAvatar = Boolean(avatar?.trim())
+
+    return (
+        <article className={cn(testimonials.quote)}>
+            <div className='mb-5 flex items-start justify-between gap-3'>
+                <div className='relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#EEF2F3] sm:h-14 sm:w-14'>
+                    {hasAvatar ? (
+                        <HomepageMediaImage
+                            src={avatar}
+                            alt={name}
+                            fill
+                            className='object-cover'
+                            sizes='56px'
+                        />
+                    ) : (
+                        <span className='flex h-full w-full items-center justify-center text-[var(--hp-color-primary)]/45'>
+                            <User className='h-6 w-6' aria-hidden />
+                        </span>
+                    )}
+                </div>
+                <Quote
+                    className='h-6 w-6 shrink-0 text-[var(--hp-color-primary)] sm:h-7 sm:w-7'
+                    aria-hidden
+                />
+            </div>
+
+            <p
+                className='text-readable flex-1 text-sm font-normal leading-7 sm:text-[15px] sm:leading-7'
+                style={{ color: STATIC_UI_COLORS.textBody, fontFamily: 'var(--hp-font-body)' }}
+            >
+                {quote}
+            </p>
+
+            <div className={cn(testimonials.meta)}>
+                <h3
+                    className='text-readable text-base font-semibold tracking-normal sm:text-lg'
+                    style={{ color: HP_CSS_VARS.primary, fontFamily: 'var(--hp-font-heading)' }}
+                >
+                    {name}
+                </h3>
+                <p
+                    className='text-readable pt-0.5 text-sm font-normal capitalize sm:text-[15px]'
+                    style={{ color: STATIC_UI_COLORS.textNeutral, fontFamily: 'var(--hp-font-body)' }}
+                >
+                    {location}
+                </p>
+            </div>
+        </article>
+    )
+}
+
+type CarouselHandlers = {
+    onReady: (swiper: SwiperType) => void
+    onIndexChange: (index: number) => void
+}
+
+function ClassicTestimonialsCarousel({
+    items,
+    canSlide,
+    onReady,
+    onIndexChange,
+}: {
+    items: TestimonialItem[]
+    canSlide: boolean
+} & CarouselHandlers) {
+    return (
+        <Swiper
+            key={`classic-${items.length}-${items.map((item) => item.name).join('|')}`}
+            modules={[Autoplay]}
+            slidesPerView={1}
+            loop={false}
+            speed={500}
+            spaceBetween={20}
+            autoplay={
+                canSlide
+                    ? {
+                        delay: 4500,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                    }
+                    : false
+            }
+            breakpoints={{
+                640: { slidesPerView: 1.4, spaceBetween: 24 },
+                900: { slidesPerView: 2.2, spaceBetween: 28 },
+                1100: { slidesPerView: 3, spaceBetween: 32 },
+            }}
+            onBeforeInit={(swiper) => {
+                onReady(swiper)
+            }}
+            onSwiper={onReady}
+            onSlideChange={(swiper) => {
+                onIndexChange(swiper.activeIndex)
+            }}
+            className='testimonials-swiper !overflow-visible px-2'
+        >
+            {items.map((item, index) => (
+                <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
+                    <ClassicTestimonialCard
+                        {...item}
+                        clipId={`testimonial-arc-${index}`}
+                    />
+                </SwiperSlide>
+            ))}
+        </Swiper>
+    )
+}
+
+function PremiumTestimonialsCarousel({
+    items,
+    canSlide,
+    onReady,
+    onIndexChange,
+}: {
+    items: TestimonialItem[]
+    canSlide: boolean
+} & CarouselHandlers) {
+    const { prevRef, nextRef } = useSwiperNavigationRefs()
+
+    return (
+        <Swiper
+            key={`premium-${items.length}-${items.map((item) => item.name).join('|')}`}
+            modules={[Autoplay, Navigation]}
+            slidesPerView={1}
+            loop={false}
+            speed={500}
+            spaceBetween={16}
+            watchOverflow
+            autoplay={
+                canSlide
+                    ? {
+                        delay: 4500,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                    }
+                    : false
+            }
+            breakpoints={{
+                640: { slidesPerView: 1.35, spaceBetween: 18 },
+                900: { slidesPerView: 2.15, spaceBetween: 20 },
+                1100: { slidesPerView: 3, spaceBetween: 22 },
+            }}
+            navigation={{
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+            }}
+            onBeforeInit={(swiper) => {
+                onReady(swiper)
+                configureSwiperNavigation(swiper, prevRef.current, nextRef.current)
+            }}
+            onSwiper={(swiper) => {
+                onReady(swiper)
+                configureSwiperNavigation(swiper, prevRef.current, nextRef.current)
+                swiper.navigation.init()
+                swiper.navigation.update()
+            }}
+            onSlideChange={(swiper) => {
+                onIndexChange(swiper.activeIndex)
+            }}
+            className='testimonials-premium-swiper !overflow-hidden [&_.swiper-wrapper]:items-stretch'
+        >
+            {items.map((item, index) => (
+                <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
+                    <PremiumTestimonialCard {...item} />
+                </SwiperSlide>
+            ))}
+        </Swiper>
+    )
+}
+
+function PaginationDots({
+    count,
+    activeIndex,
+    onSelect,
+}: {
+    count: number
+    activeIndex: number
+    onSelect: (index: number) => void
+}) {
+    return (
+        <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
+            {Array.from({ length: count }).map((_, idx) => (
+                <button
+                    key={idx}
+                    type='button'
+                    aria-label={`Go to testimonial ${idx + 1}`}
+                    onClick={() => onSelect(idx)}
+                    className={cn(
+                        'transition-all duration-300',
+                        idx === activeIndex
+                            ? 'h-2 w-10 rounded-full'
+                            : 'h-2.5 w-2.5 rounded-full border-2 bg-transparent',
+                    )}
+                    style={
+                        idx === activeIndex
+                            ? { backgroundColor: HP_CSS_VARS.primary }
+                            : { borderColor: STATIC_UI_COLORS.textNeutral }
+                    }
+                />
+            ))}
+        </div>
+    )
+}
+
 const Testimonials = ({ page }: HomepagePageProps) => {
     const section = page.sections.testimonials
     const items = section.items ?? []
-    const canAutoplay = items.length > 1
+    const canSlide = items.length > 1
+    const testimonials = useTemplateStyles().pages.home.testimonials
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
+    const isPremium = testimonials.variant === 'premium'
 
     const swiperRef = useRef<SwiperType | null>(null)
     const [activeIndex, setActiveIndex] = useState(0)
 
+    const handlers: CarouselHandlers = {
+        onReady: (instance) => {
+            swiperRef.current = instance
+        },
+        onIndexChange: setActiveIndex,
+    }
+
     return (
-        <section className='overflow-hidden bg-white' aria-labelledby='testimonials-heading'>
+        <section
+            className={cn(
+                testimonials.section ?? 'overflow-hidden bg-white',
+                !testimonials.section && isPremium && 'bg-[#F7F9FA]',
+            )}
+            aria-labelledby='testimonials-heading'
+        >
             <div className='agency-container pb-12 sm:pb-20 lg:pb-[100px]'>
-                <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(testimonials.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='testimonials-heading'
-                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-3 text-[40px] font-medium leading-[48px] sm:pt-4',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
                 </header>
 
-                <div className='relative mx-auto mt-8 max-w-[1280px] sm:mt-10 lg:mt-12'>
-                    <Swiper
-                        key={`${items.length}-${items.map((item) => item.name).join('|')}`}
-                        modules={[Autoplay]}
-                        slidesPerView={1}
-                        loop={false}
-                        speed={500}
-                        spaceBetween={20}
-                        autoplay={
-                            canAutoplay
-                                ? {
-                                      delay: 4500,
-                                      disableOnInteraction: false,
-                                      pauseOnMouseEnter: true,
-                                  }
-                                : false
-                        }
-                        breakpoints={{
-                            640: { slidesPerView: 1.4, spaceBetween: 24 },
-                            900: { slidesPerView: 2.2, spaceBetween: 28 },
-                            1100: { slidesPerView: 3, spaceBetween: 32 },
-                        }}
-                        onBeforeInit={(swiper) => {
-                            swiperRef.current = swiper
-                        }}
-                        onSlideChange={(swiper) => {
-                            setActiveIndex(swiper.activeIndex)
-                        }}
-                        className='testimonials-swiper !overflow-visible px-2'
-                    >
-                        {items.map((item, index) => (
-                            <SwiperSlide key={`${item.name}-${index}`} className='!h-auto'>
-                                <TestimonialCard
-                                    {...item}
-                                    clipId={`testimonial-arc-${index}`}
-                                />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                <div
+                    className={cn(
+                        'relative mx-auto mt-8 max-w-[1280px] sm:mt-10 lg:mt-12',
+                        isPremium && testimonials.carouselWrap,
+                    )}
+                >
+                    {isPremium ? (
+                        <SwiperSideNavigation
+                            enabled={canSlide}
+                            prevLabel='Previous testimonials'
+                            nextLabel='Next testimonials'
+                        >
+                            <PremiumTestimonialsCarousel
+                                items={items}
+                                canSlide={canSlide}
+                                {...handlers}
+                            />
+                        </SwiperSideNavigation>
+                    ) : (
+                        <ClassicTestimonialsCarousel
+                            items={items}
+                            canSlide={canSlide}
+                            {...handlers}
+                        />
+                    )}
                 </div>
 
-                <div className='mx-auto mt-8 flex items-center justify-center gap-3 sm:mt-10'>
-                    {items.map((_, idx) => (
-                        <button
-                            key={idx}
-                            type='button'
-                            aria-label={`Go to testimonial ${idx + 1}`}
-                            onClick={() => swiperRef.current?.slideTo(idx)}
-                            className={cn(
-                                'transition-all duration-300',
-                                idx === activeIndex
-                                    ? 'h-2 w-10 rounded-full'
-                                    : 'h-2.5 w-2.5 rounded-full border-2 bg-transparent',
-                            )}
-                            style={
-                                idx === activeIndex
-                                    ? { backgroundColor: HP_CSS_VARS.primary }
-                                    : { borderColor: STATIC_UI_COLORS.textNeutral }
-                            }
-                        />
-                    ))}
-                </div>
+                <PaginationDots
+                    count={items.length}
+                    activeIndex={activeIndex}
+                    onSelect={(index) => swiperRef.current?.slideTo(index)}
+                />
             </div>
         </section>
     )

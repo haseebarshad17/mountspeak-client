@@ -9,6 +9,7 @@ import { SectionEmptyState } from '@/components/ui/section-empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PrefixedLink } from '@/components/ui/prefixed-link'
 import { TourExploreCard } from '@/components/tours/TourExploreCard'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import { useIsAgencySite } from '@/hooks/useIsAgencySite'
 import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
@@ -74,15 +75,15 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const isPackageListing = listingKind === 'umrah' || listingKind === 'international'
     const listingCopy = isMultiSpec
         ? {
-              ...defaultCopy,
-              viewAllLabel:
-                  listingKind === 'umrah'
-                      ? 'View all Umrah packages'
-                      : listingKind === 'international'
+            ...defaultCopy,
+            viewAllLabel:
+                listingKind === 'umrah'
+                    ? 'View all Umrah packages'
+                    : listingKind === 'international'
                         ? 'View all international tours'
                         : 'View all tours',
-              bookLabel: listingKind === 'tour' ? 'Book Tour' : 'View details',
-          }
+            bookLabel: listingKind === 'tour' ? 'Book Tour' : 'View details',
+        }
         : defaultCopy
 
     const eyebrow = isMultiSpec ? section.eyebrow : adaptTourCopyForUmrah(section.eyebrow, isUmrahSite)
@@ -100,6 +101,8 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
     const displayTours = isAgencySite === false ? [DEMO_TOUR_LIST_ITEM] : (homepageTours?.tours ?? [])
     const showLoading = isAgencySite === null || (isAgencySite === true && isLoading)
     const showViewAllButton = isAgencySite === false ? false : (homepageTours?.hasMore ?? false)
+    const explore = useTemplateStyles().pages.home.explore
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
 
     return (
         <section
@@ -107,17 +110,23 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
             aria-labelledby='explore-the-world-heading'
         >
             <div className='agency-container'>
-                <header className='mx-auto max-w-[900px] px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={eyebrow} />
+                <header className={cn(explore.header)}>
+                    <SectionEyebrow name={eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='explore-the-world-heading'
-                        className='agency-section-heading pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-2 text-[28px] font-medium leading-tight sm:pt-3 sm:text-[34px] sm:leading-[40px] lg:pt-4 lg:text-[40px] lg:leading-[48px]',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {title}
                     </h2>
                     <p
-                        className='mx-auto max-w-[861px] pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6'
+                        className={cn(
+                            'pt-3 text-sm font-normal leading-6 sm:pt-4 sm:text-base sm:leading-6 md:pt-5 md:text-lg md:leading-6',
+                            'mx-auto max-w-[861px] md:mx-0',
+                        )}
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {paragraph}
@@ -142,8 +151,8 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                                     {kind === 'tour'
                                         ? 'Tours'
                                         : kind === 'umrah'
-                                          ? 'Umrah'
-                                          : 'International'}
+                                            ? 'Umrah'
+                                            : 'International'}
                                 </button>
                             ))}
                         </div>
@@ -152,7 +161,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
 
                 {showLoading ? (
                     <div
-                        className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'
+                        className={cn(explore.grid)}
                         aria-busy='true'
                         aria-label={listingCopy.loadingLabel}
                     >
@@ -165,7 +174,7 @@ const ExploreTheWorld = ({ page }: HomepagePageProps) => {
                     </div>
                 ) : displayTours.length > 0 ? (
                     <>
-                        <div className='grid grid-cols-1 justify-items-center gap-4 pt-8 xs:gap-5 sm:grid-cols-2 sm:gap-6 sm:pt-10 md:pt-12 lg:grid-cols-3 lg:justify-items-stretch lg:gap-6 lg:pt-14'>
+                        <div className={cn(explore.grid)}>
                             {displayTours.map((tour) => (
                                 <TourExploreCard
                                     key={tour.id}

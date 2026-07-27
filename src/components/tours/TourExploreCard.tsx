@@ -1,6 +1,7 @@
 'use client'
 
 import { TourMediaImage } from '@/components/pages/tour/TourMediaImage'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE } from '@/data/homepage'
 import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -142,6 +143,7 @@ export function TourExploreCard({
     const isDemoDetail = rawDetailPath === DEMO_TOUR_DETAIL_PATH
     const prefixedDetailPath = usePrefixedHref(isDemoDetail ? undefined : rawDetailPath)
     const detailPath = isDemoDetail ? DEMO_TOUR_DETAIL_PATH : (prefixedDetailPath ?? rawDetailPath)
+    const tourCard = useTemplateStyles().pages.home.tourCard
 
     const hasPrice = pricePerSeat != null && pricePerSeat > 0
     const discountedPrice = hasPrice
@@ -159,16 +161,9 @@ export function TourExploreCard({
         <Link
             href={detailPath}
             aria-label={`View ${bookLabel.toLowerCase().includes('package') ? 'package' : 'tour'}: ${title}`}
-            className={cn(
-                'group relative mx-auto flex h-full w-full max-w-[416px] flex-col overflow-hidden',
-                'rounded-xl border border-[#E3E8EA] bg-white',
-                'shadow-[0_1px_8px_rgba(0,41,44,0.05)]',
-                'transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C0C8C9] hover:shadow-[0_8px_24px_rgba(0,41,44,0.1)]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-color-primary)]/30 focus-visible:ring-offset-2',
-                'lg:mx-0',
-            )}
+            className={cn(tourCard.shell)}
         >
-            <div className='relative aspect-[16/10] overflow-hidden bg-[#EEF2F3]'>
+            <div className={cn('relative aspect-[16/10] overflow-hidden bg-[#EEF2F3]', tourCard.imageWrap)}>
                 <TourMediaImage
                     src={image}
                     alt=''
@@ -182,19 +177,21 @@ export function TourExploreCard({
                         tourId={tourId}
                         listingKind={listingKind}
                         shareHref={detailPath}
-                        className='absolute left-3 top-3'
+                        className={tourCard.saveShare}
                     />
                 ) : null}
 
-                <TourDiscountBadge discountPercent={discountPercent} />
+                <TourDiscountBadge
+                    discountPercent={discountPercent}
+                    className={tourCard.discountBadge}
+                    pillClassName={tourCard.discountPill}
+                />
                 {categoryLabel ? (
-                    <span className='absolute bottom-3 right-3 rounded-full border border-white/30 bg-black/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm'>
-                        {categoryLabel}
-                    </span>
+                    <span className={cn(tourCard.categoryBadge)}>{categoryLabel}</span>
                 ) : null}
             </div>
 
-            <div className='flex flex-1 flex-col px-3.5 py-3 sm:px-4 sm:py-3.5'>
+            <div className={cn(tourCard.content)}>
                 <h3 className='truncate font-jost text-[15px] font-semibold leading-5 text-[#14141F] transition-colors group-hover:text-[var(--hp-color-primary)] sm:text-base'>
                     {title}
                 </h3>
@@ -231,9 +228,7 @@ export function TourExploreCard({
 
                     <span
                         className={cn(
-                            'mt-3 inline-flex h-10 w-full items-center justify-center rounded-md',
-                            'text-sm font-semibold text-white',
-                            'transition-opacity duration-300 group-hover:opacity-95',
+                            tourCard.cta,
                             isBookingClosed
                                 ? 'cursor-not-allowed bg-[#9AA3A8] opacity-80'
                                 : HP_THEME_BTN_CLASS,

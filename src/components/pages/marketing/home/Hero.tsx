@@ -3,14 +3,16 @@
 import React from 'react'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import HeroFilters from '@/components/pages/marketing/home/HeroFilters'
-import { PageHeroBanner } from '@/components/ui/page-hero-banner'
+import { HeroBackgroundSlider } from '@/components/pages/marketing/home/HeroBackgroundSlider'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
-import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage'
+import { useHeroBackgroundSlides } from '@/hooks/useHeroBackgroundSlides'
 import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import {
     adaptTourCopyForUmrah,
     resolveDefaultListingKind,
 } from '@/lib/homepage/specialization'
+import { cn } from '@/lib/utils/clsxUtils'
 import {
     selectHomepageAgencySpecializationIds,
     selectHomepageSpecializationId,
@@ -24,8 +26,9 @@ type HeroProps = HomepagePageProps & {
 
 const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
-    const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
+    const backgroundImages = useHeroBackgroundSlides(hero)
     const { isUmrahSite, isMultiSpec } = useSiteListingCopy()
+    const heroStyles = useTemplateStyles().pages.home.hero
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
@@ -39,25 +42,30 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
         : adaptTourCopyForUmrah(hero.paragraph, isUmrahSite)
 
     return (
-        <PageHeroBanner backgroundImage={backgroundImage}>
-            <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
+        <HeroBackgroundSlider
+            images={backgroundImages}
+            className={cn(heroStyles.section)}
+            bannerClassName={cn(heroStyles.banner)}
+            overlayClassName={cn(heroStyles.overlay)}
+        >
+            <main className={cn(heroStyles.main, 'select-none')}>
                 <div className='agency-container'>
-                    <div className='mx-auto w-full max-w-[828px] text-center'>
+                    <div className={cn(heroStyles.content, 'pointer-events-none select-none')}>
                         <h1
-                            className='text-[26px] font-semibold leading-[1.1] sm:text-3xl sm:leading-[0.95] md:text-4xl lg:text-5xl xl:text-[45px]'
+                            className={cn(heroStyles.heading, 'select-none')}
                             style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {hero.title}
                         </h1>
                         <p
-                            className='pt-3 text-sm font-normal sm:pt-4 sm:text-base xl:text-lg'
+                            className={cn(heroStyles.paragraph, 'select-none')}
                             style={{ color: STATIC_UI_COLORS.heroText, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {heroParagraph}
                         </p>
                     </div>
 
-                    <div className='mx-auto w-full max-w-[867px] pt-6 sm:pt-8 md:pt-10 lg:pt-12 xl:pt-14'>
+                    <div className={cn(heroStyles.filtersWrap, 'pointer-events-auto select-auto')}>
                         <HeroFilters
                             page={page}
                             tourLocations={tourLocations}
@@ -66,7 +74,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
                     </div>
                 </div>
             </main>
-        </PageHeroBanner>
+        </HeroBackgroundSlider>
     )
 }
 

@@ -5,6 +5,7 @@ import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 
 import { isFooterContactItemVisible } from './footer-contact'
 import { getActiveFooterSocialLinks } from './footer-social'
+import { syncHeroBackgroundFields } from './hero-backgrounds'
 import { STATIC_HEADER, getStaticFooterLinkColumns } from './static-site-content'
 
 const BASE_PAGE = homepageDefaultsDocument.page as HomepagePage
@@ -78,9 +79,15 @@ function normalizePopularTravelBlogs(
 }
 
 export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
+    const templateId =
+        typeof page.templateId === 'string' && page.templateId.trim()
+            ? page.templateId.trim()
+            : BASE_PAGE.templateId
+
     return {
         ...BASE_PAGE,
         ...page,
+        templateId,
         seo: { ...BASE_PAGE.seo, ...page.seo },
         theme: normalizeTheme(page.theme),
         branding: {
@@ -96,6 +103,26 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
         sections: {
             ...BASE_PAGE.sections,
             ...page.sections,
+            hero: (() => {
+                const incoming = page.sections?.hero
+                const base = BASE_PAGE.sections.hero
+                if (!incoming) return syncHeroBackgroundFields(base)
+
+                // Don't let defaults' stock `backgroundImages` mask CMS uploads that only
+                // set `backgroundImage`, or an explicit CMS slide array from the theme JSON.
+                const merged = {
+                    ...base,
+                    ...incoming,
+                    backgroundImages: Object.prototype.hasOwnProperty.call(
+                        incoming,
+                        'backgroundImages',
+                    )
+                        ? incoming.backgroundImages
+                        : undefined,
+                }
+
+                return syncHeroBackgroundFields(merged)
+            })(),
             trust: {
                 ...BASE_PAGE.sections.trust,
                 ...page.sections?.trust,

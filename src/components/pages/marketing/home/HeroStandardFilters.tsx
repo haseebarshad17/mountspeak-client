@@ -2,6 +2,7 @@
 
 import FilterDropdown from "@/components/generic/FilterDropdown"
 import { Button } from "@/components/ui/button"
+import { useTemplateStyles } from "@/components/providers/TemplateStylesProvider"
 import { cn } from "@/lib/utils/clsxUtils"
 import { useCountries, usePakistanCities } from "@/services/cities/cities.queries"
 import { usePreviewRouter } from "@/hooks/useAgencyPreviewBase"
@@ -75,9 +76,9 @@ function DateField({
                 type="button"
                 onClick={openDatePicker}
                 className={cn(
-                    'relative flex h-12 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-layout-separator bg-neutral-50 px-3 text-left transition hover:bg-neutral-100',
+                    'relative flex h-12 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden border border-layout-separator bg-neutral-50 px-3 text-left transition hover:bg-neutral-100',
                     'xs:gap-2.5 xs:px-4',
-                    'xl:h-full xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB]',
+                    'xl:h-full xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB]',
                     fieldClassName,
                 )}
             >
@@ -123,12 +124,15 @@ type HeroStandardFiltersProps = {
     listingType?: ListingKind
 }
 
-const heroTriggerButtonClass = cn(
-    "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal",
-    "xs:gap-2.5 xs:px-4 xs:!text-sm",
-    "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator",
-    "xl:rounded-none xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full",
-)
+function buildHeroTriggerButtonClass(fieldRadius: string) {
+    return cn(
+        "!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal",
+        "xs:gap-2.5 xs:px-4 xs:!text-sm",
+        "bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left border border-layout-separator",
+        "xl:border-0 xl:border-r xl:border-[#D6D9DC] xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full",
+        fieldRadius,
+    )
+}
 
 export default function HeroStandardFilters({
     page,
@@ -138,6 +142,9 @@ export default function HeroStandardFilters({
     listingType = 'tour',
 }: HeroStandardFiltersProps) {
     const router = usePreviewRouter()
+    const templateStyles = useTemplateStyles()
+    const heroFilters = templateStyles.pages.home.heroFilters
+    const heroTriggerButtonClass = buildHeroTriggerButtonClass(heroFilters.field)
     const [isSearching, startSearchTransition] = useTransition()
     const useCountryLocations = locationKind === 'country'
     const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities(!useCountryLocations)
@@ -232,7 +239,10 @@ export default function HeroStandardFilters({
 
     return (
         <form
-            className="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:mx-auto xl:max-w-[900px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0"
+            className={cn(
+                "w-full max-w-full min-w-0 overflow-hidden border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:max-w-[900px] xl:border-[#D6D9DC] xl:p-0",
+                heroFilters.form,
+            )}
             onSubmit={(event) => {
                 event.preventDefault()
                 handleSearch()
@@ -328,6 +338,7 @@ export default function HeroStandardFilters({
                             setEndDate(nextStart)
                         }
                     }}
+                    fieldClassName={heroFilters.field}
                 />
 
                 <DateField
@@ -337,6 +348,7 @@ export default function HeroStandardFilters({
                     value={endDate}
                     min={startDate || minTravelDate}
                     onChange={(event) => setEndDate(event.target.value)}
+                    fieldClassName={heroFilters.field}
                 />
 
                 <div className="min-w-0 w-full xs:col-span-2 xl:col-span-1">
@@ -348,8 +360,9 @@ export default function HeroStandardFilters({
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-12 w-full min-w-0 !rounded-xl !font-medium !normal-case !tracking-normal !text-sm',
-                            'xl:!h-full xl:!rounded-[3px] xl:!px-4',
+                            '!h-12 w-full min-w-0 !font-medium !normal-case !tracking-normal !text-sm',
+                            'xl:!h-full xl:!px-4',
+                            heroFilters.searchButton,
                         )}
                     >
                         {isSearching ? (

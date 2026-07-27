@@ -2,6 +2,7 @@
 
 import FilterDropdown from '@/components/generic/FilterDropdown'
 import { Button } from '@/components/ui/button'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { cn } from '@/lib/utils/clsxUtils'
 import { usePreviewRouter } from '@/hooks/useAgencyPreviewBase'
 import { buildUmrahSearchPath, type UmrahSearchFilters } from '@/services/tours/tours.umrah-search.utils'
@@ -22,18 +23,24 @@ type HeroUmrahFiltersProps = {
     listingType?: Exclude<ListingKind, 'tour'>
 }
 
-const heroTriggerButtonClass = cn(
-    '!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal',
-    'xs:gap-2.5 xs:px-4 xs:!text-sm',
-    'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left rounded-md border border-layout-separator',
-    'xl:rounded-none xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
-)
+function buildHeroTriggerButtonClass(fieldRadius: string) {
+    return cn(
+        '!justify-start flex !h-12 !w-full min-w-0 items-center gap-2 overflow-hidden px-3 !text-xs !font-medium !normal-case !tracking-normal',
+        'xs:gap-2.5 xs:px-4 xs:!text-sm',
+        'bg-neutral-50 text-neutral-700 transition hover:bg-neutral-100 text-left border border-layout-separator',
+        'xl:border-0 xl:bg-transparent xl:px-4 xl:hover:bg-[#F8FAFB] xl:!h-full',
+        fieldRadius,
+    )
+}
 
 export default function HeroUmrahFilters({
     initialValues,
     listingType = 'umrah',
 }: HeroUmrahFiltersProps) {
     const router = usePreviewRouter()
+    const templateStyles = useTemplateStyles()
+    const heroFilters = templateStyles.pages.home.heroFilters
+    const heroTriggerButtonClass = buildHeroTriggerButtonClass(heroFilters.field)
     const [isSearching, startSearchTransition] = useTransition()
     const [duration, setDuration] = useState(initialValues?.duration ?? '')
     const [passengers, setPassengers] = useState(initialValues?.passengers ?? '')
@@ -69,7 +76,10 @@ export default function HeroUmrahFilters({
 
     return (
         <form
-            className='w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:mx-auto xl:max-w-[867px] xl:rounded-[6px] xl:border-[#D6D9DC] xl:p-0'
+            className={cn(
+                'w-full max-w-full min-w-0 overflow-hidden border border-neutral-200 bg-white p-2 shadow-md xs:p-2.5 sm:p-3 xl:max-w-[867px] xl:border-[#D6D9DC] xl:p-0',
+                heroFilters.form,
+            )}
             onSubmit={(event) => {
                 event.preventDefault()
                 handleSearch()
@@ -139,7 +149,8 @@ export default function HeroUmrahFilters({
                         style={HP_THEME_BTN_STYLE}
                         className={cn(
                             HP_THEME_BTN_CLASS,
-                            '!h-12 w-full min-w-0 !rounded-xl !font-medium !normal-case !tracking-normal !text-sm xl:!h-full xl:!rounded-[3px] xl:!px-4',
+                            '!h-12 w-full min-w-0 !font-medium !normal-case !tracking-normal !text-sm xl:!h-full xl:!px-4',
+                            heroFilters.searchButton,
                         )}
                     >
                         {isSearching ? (

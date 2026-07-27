@@ -1,7 +1,9 @@
 import {
-    mapPackageHotelsToStaySection,
+    mapPackageHotelListToStaySection,
     mapPackageIncludesToPerks,
-    mapPackageZiyaratToRouteSection,
+    mapPackageRouteStopsToRouteSection,
+    type PackageHotelLike,
+    type PackageRouteStopLike,
 } from '@/lib/tours/package-page-sections'
 import type { ListingKind } from '@/lib/homepage/specialization'
 import type {
@@ -42,29 +44,24 @@ export const EMPTY_BOOKING_ITINERARY_CONTENT: BookingItineraryContent = {
     services: { sectionTitle: 'Services', items: [] },
 }
 
-type PackageHotelEmbed = {
-    hotel_name?: string | null
-    hotel_rating?: string | null
-    number_of_nights?: number | null
-    room_type?: string | null
-    distance_from_haram_meters?: number | null
-    distance_from_masjid_e_nabawi_meters?: number | null
-} | null
-
 type PackagePlanEmbed = {
-    makkah_hotel?: PackageHotelEmbed
-    madinah_hotel?: PackageHotelEmbed
+    makkah_hotel?: PackageHotelLike | null
+    madinah_hotel?: PackageHotelLike | null
     hotels?: {
-        makkah_hotel?: PackageHotelEmbed
-        madinah_hotel?: PackageHotelEmbed
+        makkah_hotel?: PackageHotelLike | null
+        madinah_hotel?: PackageHotelLike | null
+        items?: PackageHotelLike[] | null
     } | null
     ziyarat?: {
         makkah_ziyarat_details?: string | null
         madinah_ziyarat_details?: string | null
+        stops?: PackageRouteStopLike[] | null
+        hotels?: PackageHotelLike[] | null
     } | null
     itinerary?: {
         makkah_ziyarat_details?: string | null
         madinah_ziyarat_details?: string | null
+        stops?: PackageRouteStopLike[] | null
     } | null
     package_includes?: {
         items?: string[] | null
@@ -126,21 +123,51 @@ export function extractDomesticTourItineraryContent(input: {
     }
 }
 
+function resolveEmbeddedHotels(plan: PackagePlanEmbed): PackageHotelLike[] {
+    if (Array.isArray(plan.ziyarat?.hotels) && plan.ziyarat.hotels.length > 0) {
+        return plan.ziyarat.hotels
+    }
+    if (Array.isArray(plan.hotels?.items) && plan.hotels.items.length > 0) {
+        return plan.hotels.items
+    }
+    return [
+        plan.makkah_hotel ?? plan.hotels?.makkah_hotel ?? null,
+        plan.madinah_hotel ?? plan.hotels?.madinah_hotel ?? null,
+    ].filter((hotel): hotel is PackageHotelLike => Boolean(hotel?.hotel_name?.trim()))
+}
+
+function resolveEmbeddedRouteStops(
+    plan: PackagePlanEmbed,
+    kind: Exclude<ListingKind, 'tour'>,
+): PackageRouteStopLike[] {
+    const source = plan.ziyarat ?? plan.itinerary ?? null
+    if (Array.isArray(source?.stops) && source.stops.some((s) => s?.title?.trim() || s?.description?.trim())) {
+        return source.stops
+    }
+    const isUmrah = kind === 'umrah'
+    const legacy: PackageRouteStopLike[] = []
+    if (source?.makkah_ziyarat_details?.trim()) {
+        legacy.push({
+            title: isUmrah ? 'Makkah ziyarat' : 'Outbound highlights',
+            description: source.makkah_ziyarat_details,
+        })
+    }
+    if (source?.madinah_ziyarat_details?.trim()) {
+        legacy.push({
+            title: isUmrah ? 'Madinah ziyarat' : 'Return highlights',
+            description: source.madinah_ziyarat_details,
+        })
+    }
+    return legacy
+}
+
 export function extractPackageItineraryContent(
     plan: PackagePlanEmbed,
     kind: Exclude<ListingKind, 'tour'>,
 ): BookingItineraryContent {
     const mediaKind = kind === 'umrah' ? 'umrah' : 'international'
-    const makkahHotel = plan.makkah_hotel ?? plan.hotels?.makkah_hotel ?? null
-    const madinahHotel = plan.madinah_hotel ?? plan.hotels?.madinah_hotel ?? null
-    const ziyaratSource = plan.ziyarat ?? plan.itinerary ?? null
-
-    const routeSection = mapPackageZiyaratToRouteSection(
-        ziyaratSource?.makkah_ziyarat_details,
-        ziyaratSource?.madinah_ziyarat_details,
-        kind,
-    )
-    const staySection = mapPackageHotelsToStaySection(makkahHotel, madinahHotel, mediaKind, kind)
+    const routeSection = mapPackageRouteStopsToRouteSection(resolveEmbeddedRouteStops(plan, kind), kind)
+    const staySection = mapPackageHotelListToStaySection(resolveEmbeddedHotels(plan), mediaKind, kind)
     const serviceItems = mapPackageIncludesToPerks(plan.package_includes?.items)
 
     return {
@@ -161,11 +188,11 @@ export function extractPackageItineraryContent(
                     subtitle: nonEmptyText(property.type),
                     description: nonEmptyText(property.description),
                 }))
-                .filter((property) => property.title || property.description),
+                .filter((item) => item.title || item.description),
         },
         services: {
-            sectionTitle: kind === 'umrah' ? 'Package includes' : 'Services',
-            items: serviceItems.map((item) => nonEmptyText(item.title)).filter(Boolean),
+            sectionTitle: 'Services',
+            items: serviceItems.map((item) => item.title).filter(Boolean),
         },
     }
 }

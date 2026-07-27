@@ -6,9 +6,11 @@ import { isPackageBookingClosed } from '@/lib/booking/tour-booking-rules'
 import type { ListingKind } from '@/lib/homepage/specialization'
 import {
     createEmptyPackageTourSections,
-    mapPackageHotelsToStaySection,
+    mapPackageHotelListToStaySection,
     mapPackageIncludesToPerks,
-    mapPackageZiyaratToRouteSection,
+    mapPackageRouteStopsToRouteSection,
+    type PackageHotelLike,
+    type PackageRouteStopLike,
 } from '@/lib/tours/package-page-sections'
 import {
     INTERNATIONAL_INQUIRY_PRIMARY_LABEL,
@@ -17,16 +19,6 @@ import {
 
 type PackageItemsList = {
     items?: string[] | null
-} | null
-
-type PackageHotelLike = {
-    hotel_name?: string | null
-    hotel_rating?: string | null
-    number_of_nights?: number | null
-    room_type?: string | null
-    distance_from_haram_meters?: number | null
-    distance_from_masjid_e_nabawi_meters?: number | null
-    image?: string | null
 } | null
 
 type PackagePlanRow = {
@@ -62,19 +54,23 @@ type PackagePlanRow = {
         meta_description?: string | null
         meta_keywords?: string | null
     } | null
-    makkah_hotel?: PackageHotelLike
-    madinah_hotel?: PackageHotelLike
+    makkah_hotel?: PackageHotelLike | null
+    madinah_hotel?: PackageHotelLike | null
     hotels?: {
-        makkah_hotel?: PackageHotelLike
-        madinah_hotel?: PackageHotelLike
+        makkah_hotel?: PackageHotelLike | null
+        madinah_hotel?: PackageHotelLike | null
+        items?: PackageHotelLike[] | null
     } | null
     ziyarat?: {
         makkah_ziyarat_details?: string | null
         madinah_ziyarat_details?: string | null
+        stops?: PackageRouteStopLike[] | null
+        hotels?: PackageHotelLike[] | null
     } | null
     itinerary?: {
         makkah_ziyarat_details?: string | null
         madinah_ziyarat_details?: string | null
+        stops?: PackageRouteStopLike[] | null
     } | null
     package_includes?: PackageItemsList
 }
@@ -94,18 +90,43 @@ function resolvePackagePrice(pricing: PackagePlanRow['pricing']) {
     return { pricePerSeat: null, discountPercent: null }
 }
 
-function resolvePackageHotels(plan: PackagePlanRow) {
-    const makkah = plan.makkah_hotel ?? plan.hotels?.makkah_hotel ?? null
-    const madinah = plan.madinah_hotel ?? plan.hotels?.madinah_hotel ?? null
-    return { makkah, madinah }
+function resolvePackageHotels(plan: PackagePlanRow): PackageHotelLike[] {
+    const fromZiyarat = plan.ziyarat?.hotels
+    const fromItems = plan.hotels?.items
+    if (Array.isArray(fromZiyarat) && fromZiyarat.length > 0) return fromZiyarat
+    if (Array.isArray(fromItems) && fromItems.length > 0) return fromItems
+
+    return [
+        plan.makkah_hotel ?? plan.hotels?.makkah_hotel ?? null,
+        plan.madinah_hotel ?? plan.hotels?.madinah_hotel ?? null,
+    ].filter((hotel): hotel is PackageHotelLike => Boolean(hotel?.hotel_name?.trim()))
 }
 
-function resolvePackageZiyarat(plan: PackagePlanRow) {
+function resolvePackageRouteStops(
+    plan: PackagePlanRow,
+    kind: Exclude<ListingKind, 'tour'>,
+): PackageRouteStopLike[] {
     const source = plan.ziyarat ?? plan.itinerary ?? null
-    return {
-        makkah: source?.makkah_ziyarat_details ?? null,
-        madinah: source?.madinah_ziyarat_details ?? null,
+    const stops = source?.stops
+    if (Array.isArray(stops) && stops.some((stop) => stop?.title?.trim() || stop?.description?.trim())) {
+        return stops
     }
+
+    const isUmrah = kind === 'umrah'
+    const legacy: PackageRouteStopLike[] = []
+    if (source?.makkah_ziyarat_details?.trim()) {
+        legacy.push({
+            title: isUmrah ? 'Makkah ziyarat' : 'Outbound highlights',
+            description: source.makkah_ziyarat_details,
+        })
+    }
+    if (source?.madinah_ziyarat_details?.trim()) {
+        legacy.push({
+            title: isUmrah ? 'Madinah ziyarat' : 'Return highlights',
+            description: source.madinah_ziyarat_details,
+        })
+    }
+    return legacy
 }
 
 export function mapPackagePlanToTourPage(
@@ -126,8 +147,8 @@ export function mapPackagePlanToTourPage(
     const gallery = (plan.images?.gallery_images ?? [])
         .map((url) => resolvePackageMediaUrlOrPlaceholder(url, mediaKind))
         .filter(Boolean)
-    const { makkah, madinah } = resolvePackageHotels(plan)
-    const ziyarat = resolvePackageZiyarat(plan)
+    const hotels = resolvePackageHotels(plan)
+    const routeStops = resolvePackageRouteStops(plan, kind)
     const includeItems = plan.package_includes?.items ?? []
     const emptySections = createEmptyPackageTourSections()
     const bookingHref = `#${PACKAGE_BOOKING_REQUEST_SECTION_ID}`
@@ -215,8 +236,8 @@ export function mapPackagePlanToTourPage(
             highlightColumns: [],
         },
         ...emptySections,
-        technicalRouteSection: mapPackageZiyaratToRouteSection(ziyarat.makkah, ziyarat.madinah, kind),
-        stayAndDineSection: mapPackageHotelsToStaySection(makkah, madinah, mediaKind, kind),
+        technicalRouteSection: mapPackageRouteStopsToRouteSection(routeStops, kind),
+        stayAndDineSection: mapPackageHotelListToStaySection(hotels, mediaKind, kind),
         perksAndTechnicalsSection: {
             id: 'perks-technicals',
             title: 'Package highlights',

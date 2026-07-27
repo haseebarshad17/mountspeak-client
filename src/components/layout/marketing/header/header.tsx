@@ -17,6 +17,7 @@ import {
     getHeaderBrandingLogo,
 } from '@/lib/homepage/branding-logo'
 import { resolveListingsNavLabel } from '@/lib/homepage/specialization'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { cn } from '@/lib/utils/clsxUtils'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.queries'
 import {
@@ -50,11 +51,11 @@ function isNavLinkActive(pathname: string, href: string | null | undefined): boo
 const LIGHT_NAV_LINK_COLOR = '#00292C'
 
 const FLOATING_HEADER_POSITION_CLASS =
-    'fixed rounded-xl top-7 left-4 right-4 xs:left-7 xs:right-7 xs:top-7 sm:left-8 sm:right-8 sm:top-8 lg:left-12 lg:right-12 lg:top-12 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px]'
+    'fixed top-7 left-4 right-4 xs:left-7 xs:right-7 xs:top-7 sm:left-8 sm:right-8 sm:top-8 lg:left-12 lg:right-12 lg:top-12 2xl:left-[110px] 2xl:right-[110px] 2xl:top-[50px]'
 
 /** Tighter top inset on light pages (no hero) — dashboard, bookings, checkout. */
 const COMPACT_FLOATING_HEADER_POSITION_CLASS =
-    'fixed rounded-xl top-3 left-4 right-4 xs:left-6 xs:right-6 xs:top-4 sm:left-8 sm:right-8 sm:top-5 lg:left-12 lg:right-12 lg:top-6 2xl:left-[110px] 2xl:right-[110px] 2xl:top-8'
+    'fixed top-3 left-4 right-4 xs:left-6 xs:right-6 xs:top-4 sm:left-8 sm:right-8 sm:top-5 lg:left-12 lg:right-12 lg:top-6 2xl:left-[110px] 2xl:right-[110px] 2xl:top-8'
 
 const navLinkClassName = (isActive: boolean, useDarkChrome: boolean) =>
     cn(
@@ -124,6 +125,7 @@ function HeaderNavLink({
 const Header = ({ page }: HeaderProps) => {
     const internalPathname = useInternalPathname()
     const router = useRouter()
+    const templateStyles = useTemplateStyles()
     const isTermsPage = internalPathname === '/terms' || internalPathname.startsWith('/terms/')
     const isPrivacyPage = internalPathname === '/privacy' || internalPathname.startsWith('/privacy/')
     const isLegalPage = isTermsPage || isPrivacyPage
@@ -319,6 +321,7 @@ const Header = ({ page }: HeaderProps) => {
                     isCompactHeaderPage
                         ? COMPACT_FLOATING_HEADER_POSITION_CLASS
                         : FLOATING_HEADER_POSITION_CLASS,
+                    templateStyles.generic.header.shell,
                     isScrolled
                         ? [
                             'border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg',

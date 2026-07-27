@@ -11,6 +11,7 @@ import type { HomepagePageProps } from '@/components/pages/marketing/home/homepa
 import { useMarqueeShift } from '@/hooks/useMarqueeShift'
 import { useMobileViewport } from '@/hooks/useMobileViewport'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { resolveBrandingLogoUrlOrPlaceholder } from '@/lib/supabase/homepage-media'
 import { cn } from '@/lib/utils/clsxUtils'
 
@@ -73,12 +74,14 @@ function TrustBrandsCopy({
 function TrustBrandsStaticRow({
     brands,
     onMediaLoad,
+    rowClassName,
 }: {
     brands: readonly TrustBrand[]
     onMediaLoad?: () => void
+    rowClassName: string
 }) {
     return (
-        <div className='mt-6 flex flex-wrap items-center justify-center gap-6 px-4 sm:mt-8 sm:gap-10'>
+        <div className={cn(rowClassName)}>
             {brands.map((brand) => (
                 <TrustBrandLogo key={brand.id} brand={brand} onMediaLoad={onMediaLoad} />
             ))}
@@ -147,6 +150,8 @@ function TrustBrandsInfiniteMarquee({ brands }: { brands: readonly TrustBrand[] 
 const TrustSection = ({ page }: HomepagePageProps) => {
     const section = page.sections.trust
     const brands = section.brands ?? []
+    const trust = useTemplateStyles().pages.home.trust
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
     const isMobile = useMobileViewport()
     const prefersReducedMotion = usePrefersReducedMotion()
     const staticBrandLimit = isMobile ? MOBILE_STATIC_BRAND_LIMIT : DESKTOP_STATIC_BRAND_LIMIT
@@ -158,15 +163,15 @@ const TrustSection = ({ page }: HomepagePageProps) => {
 
     return (
         <section
-            className='-mt-4 overflow-hidden bg-white sm:-mt-6'
+            className={cn(trust.section)}
             aria-labelledby='trust-section-heading'
         >
             <div className='agency-container'>
-                <header className='mx-auto max-w-2xl px-1 text-center sm:px-0'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(trust.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='trust-section-heading'
-                        className='agency-section-heading pt-2 text-[22px] font-medium leading-tight sm:pt-3 sm:text-[28px] sm:leading-8 lg:text-[32px] lg:leading-9'
+                        className={cn(trust.title)}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
@@ -175,7 +180,7 @@ const TrustSection = ({ page }: HomepagePageProps) => {
             </div>
 
             {useStaticLayout ? (
-                <TrustBrandsStaticRow brands={brands} />
+                <TrustBrandsStaticRow brands={brands} rowClassName={trust.row} />
             ) : (
                 <TrustBrandsInfiniteMarquee brands={brands} />
             )}

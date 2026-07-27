@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { usePrefixedHref } from '@/hooks/useAgencyPreviewBase'
 import type { ListingKind } from '@/lib/homepage/specialization'
 import { cn } from '@/lib/utils/clsxUtils'
@@ -23,12 +24,20 @@ export default function HeroListingTypeTabs({
     ownedKinds,
     variant = 'hero',
 }: HeroListingTypeTabsProps) {
+    const templateStyles = useTemplateStyles()
+
     if (ownedKinds.length <= 1) {
         return null
     }
 
     return (
-        <div className='mx-auto mb-4 flex flex-wrap items-center justify-center gap-2'>
+        <div
+            className={cn(
+                variant === 'hero'
+                    ? templateStyles.pages.home.hero.tabsWrap
+                    : 'mx-auto mb-4 flex flex-wrap items-center justify-center gap-2',
+            )}
+        >
             {ownedKinds.map((kind) => (
                 <HeroListingTypeTabLink
                     key={kind}

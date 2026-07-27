@@ -3,6 +3,7 @@
 import { SectionEyebrow } from '@/components/ui/section-eyebrow'
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import type { Member } from '@/services/homepage/homepage.page.types'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { STATIC_UI_COLORS } from '@/data/homepage'
 import {
     configureSwiperNavigation,
@@ -10,14 +11,17 @@ import {
     useSwiperNavigationRefs,
 } from '@/components/ui/swiper-side-navigation'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
+import { cn } from '@/lib/utils/clsxUtils'
 import React from 'react'
 import { Autoplay, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 
 function TeamCard({ name, role, image }: Member) {
+    const team = useTemplateStyles().pages.home.team
+
     return (
-        <article className='h-auto w-full overflow-hidden rounded-xl bg-neutral-100 shadow-sm sm:max-w-[306px] sm:rounded-2xl sm:h-[424px]'>
+        <article className={cn(team.card)}>
             <div className='relative aspect-[3/4] w-full bg-neutral-200 sm:aspect-auto sm:h-[300px]'>
                 <HomepageMediaImage
                     src={image}
@@ -28,7 +32,7 @@ function TeamCard({ name, role, image }: Member) {
                 />
             </div>
             <div
-                className='h-auto px-2 py-3 text-center sm:h-[124px] sm:max-w-[306px] sm:px-5 sm:py-6'
+                className={cn(team.cardBody)}
                 style={{ backgroundColor: STATIC_UI_COLORS.backgroundMuted }}
             >
                 <h3
@@ -97,15 +101,20 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
     const section = page.sections.meetOurTeam
     const members = section.members ?? []
     const useCarousel = members.length > TEAM_CAROUSEL_THRESHOLD
+    const team = useTemplateStyles().pages.home.team
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
 
     return (
         <section className='bg-white' aria-labelledby='meet-our-team-heading'>
             <div className='agency-container'>
-                <header className='mx-auto max-w-3xl text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(team.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='meet-our-team-heading'
-                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-3 text-[40px] font-medium leading-[48px] sm:pt-4',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
@@ -113,7 +122,7 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
                 </header>
 
                 {useCarousel ? (
-                    <div className='mx-auto max-w-[1200px] overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
+                    <div className='w-full overflow-x-hidden pt-6 sm:pt-8 lg:pt-10'>
                         <SwiperSideNavigation
                             prevLabel='Previous team members'
                             nextLabel='Next team members'
@@ -122,7 +131,7 @@ const MeetOurTeam = ({ page }: HomepagePageProps) => {
                         </SwiperSideNavigation>
                     </div>
                 ) : (
-                    <div className='mx-auto grid max-w-[1200px] grid-cols-2 gap-3 pt-8 sm:gap-8 sm:pt-12 lg:grid-cols-4 lg:gap-8 lg:pt-14'>
+                    <div className={cn(team.grid)}>
                         {members.map((member) => (
                             <TeamCard key={member.name} {...member} />
                         ))}

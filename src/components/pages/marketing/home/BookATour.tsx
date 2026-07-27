@@ -16,7 +16,7 @@ import { MessageCode } from '@/lib/messages/codes'
 import { useBookingRequestEmailGate } from '@/hooks/useBookingRequestEmailGate'
 import { useSiteListingCopy } from '@/hooks/useTourOrPackageCopy'
 import { adaptTourCopyForUmrah } from '@/lib/homepage/specialization'
-import { usePakistanCities } from '@/services/cities/cities.queries'
+import { useCountries, usePakistanCities } from '@/services/cities/cities.queries'
 import {
     BOOKING_REQUEST_CATEGORIES,
     BOOKING_REQUEST_CATEGORY_LABELS,
@@ -38,10 +38,10 @@ import {
     MAX_BOOKING_REQUEST_SEATS,
 } from './booking-request.validation'
 import { BookingFormSelect } from './BookingFormSelect'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 
 import {
     marketingFormInputClass,
-    marketingFormPanelClassName,
     marketingFormRowClass,
     marketingFormTextareaClass,
     MarketingFormField,
@@ -57,6 +57,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
     const section = page.sections.bookATour
     const colors = STATIC_UI_COLORS
     const formCopy = section.form
+    const bookATour = useTemplateStyles().pages.home.bookATour
 
     const { mutateAsync: createBookingRequest, isPending } = useCreateBookingRequest()
     const {
@@ -71,14 +72,18 @@ const BookATour = ({ page }: HomepagePageProps) => {
         handleEmailVerified,
         requireUser,
     } = useBookingRequestEmailGate({ returnPath: '/#book-a-tour-heading' })
-    const { isUmrahSite, isMultiSpec, copy: listingCopy } = useSiteListingCopy()
+    const { isUmrahSite, isMultiSpec, isInternationalSite, copy: listingCopy } = useSiteListingCopy()
     const usesUmrahBookingForm = isUmrahSite && !isMultiSpec
+    const useCountryDestinations = isInternationalSite && !isMultiSpec
     const bookEyebrow = adaptTourCopyForUmrah(section.eyebrow, usesUmrahBookingForm)
     const bookTitle = adaptTourCopyForUmrah(section.title, usesUmrahBookingForm)
     const bookParagraphs = section.paragraphs.map((paragraph) =>
         adaptTourCopyForUmrah(paragraph, usesUmrahBookingForm),
     )
-    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities()
+    const { data: pakistanCities = [], isLoading: isCitiesLoading } = usePakistanCities(
+        !useCountryDestinations && !usesUmrahBookingForm,
+    )
+    const { data: countries = [], isLoading: isCountriesLoading } = useCountries(useCountryDestinations)
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
     const [maleSeats, setMaleSeats] = useState(0)
     const [femaleSeats, setFemaleSeats] = useState(0)
@@ -113,13 +118,35 @@ const BookATour = ({ page }: HomepagePageProps) => {
             }))
         }
 
+        if (useCountryDestinations) {
+            return [...countries]
+                .sort((a, b) => a.localeCompare(b))
+                .map((country) => ({
+                    value: country,
+                    label: country,
+                }))
+        }
+
         return pakistanCities.map((city) => ({
             value: city,
             label: city,
         }))
-    }, [usesUmrahBookingForm, pakistanCities])
+    }, [usesUmrahBookingForm, useCountryDestinations, countries, pakistanCities])
 
-    const isDestinationLoading = !usesUmrahBookingForm && isCitiesLoading
+    const isDestinationLoading = usesUmrahBookingForm
+        ? false
+        : useCountryDestinations
+          ? isCountriesLoading
+          : isCitiesLoading
+    const destinationLoadingPlaceholder = useCountryDestinations
+        ? 'Loading countries...'
+        : formCopy.placeholders.destinationLoading
+    const destinationSearchPlaceholder = useCountryDestinations
+        ? 'Search country...'
+        : 'Search destination...'
+    const destinationNoResultsMessage = useCountryDestinations
+        ? 'No countries found'
+        : 'No cities found'
 
     const clearFieldError = (key: string) => {
         setFieldErrors((prev) => {
@@ -232,12 +259,12 @@ const BookATour = ({ page }: HomepagePageProps) => {
             aria-labelledby='book-a-tour-heading'
         >
             <div
-                className='absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/40'
+                className={cn(bookATour.overlay)}
                 aria-hidden
             />
             <div className='agency-container relative z-10 py-10 sm:py-16 lg:py-20 xl:py-24'>
-                <div className='grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16'>
-                    <div className='text-white'>
+                <div className={cn(bookATour.grid)}>
+                    <div className={cn(bookATour.copy)}>
                         <div className='flex items-center gap-3'>
                             <span
                                 className='text-[20px] leading-6 font-semibold uppercase tracking-[0.2em]'
@@ -304,7 +331,7 @@ const BookATour = ({ page }: HomepagePageProps) => {
                             {formCopy.subtitle}
                         </p>
 
-                        <div className={cn('mt-5 sm:mt-8', marketingFormPanelClassName)}>
+                        <div className={cn('mt-5 sm:mt-8', bookATour.formPanel)}>
                         <form
                             className='flex w-full min-w-0 flex-col gap-3 sm:gap-4'
                             onSubmit={handleSubmit}
@@ -405,14 +432,14 @@ const BookATour = ({ page }: HomepagePageProps) => {
                                         }}
                                         placeholder={
                                             isDestinationLoading
-                                                ? formCopy.placeholders.destinationLoading
+                                                ? destinationLoadingPlaceholder
                                                 : formCopy.placeholders.destination
                                         }
                                         options={destinationOptions}
                                         disabled={isDestinationLoading}
                                         searchable={!usesUmrahBookingForm}
-                                        searchPlaceholder='Search destination...'
-                                        noResultsMessage='No cities found'
+                                        searchPlaceholder={destinationSearchPlaceholder}
+                                        noResultsMessage={destinationNoResultsMessage}
                                         aria-label='Destination'
                                     />
                                 </MarketingFormField>

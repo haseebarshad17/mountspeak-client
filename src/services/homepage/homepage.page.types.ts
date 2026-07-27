@@ -3,17 +3,19 @@ export interface HomepageDocument {
 }
 
 export interface Page {
-    id:       string;
-    slug:     string;
-    type:     string;
-    status:   string;
-    locale:   string;
-    seo:      Seo;
-    theme:    Theme;
-    branding: Branding;
-    header:   Header;
-    footer:   Footer;
-    sections: Sections;
+    id:         string;
+    slug:       string;
+    type:       string;
+    status:     string;
+    locale:     string;
+    /** Frontend template registry id (styling CMS). */
+    templateId: string;
+    seo:        Seo;
+    theme:      Theme;
+    branding:   Branding;
+    header:     Header;
+    footer:     Footer;
+    sections:   Sections;
 }
 
 export interface Branding {
@@ -139,6 +141,8 @@ export interface ExploreTheWorld {
 export interface Hero {
     id:              string;
     backgroundImage: string;
+    /** Homepage hero slider slides (storage paths or URLs). First item syncs to `backgroundImage`. */
+    backgroundImages: string[];
     title:           string;
     paragraph:       string;
     searchFilters:   SearchFilters;
