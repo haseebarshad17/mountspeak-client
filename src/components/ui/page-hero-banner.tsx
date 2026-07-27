@@ -38,16 +38,19 @@ export function PageHeroBanner({
               : undefined
 
     return (
-        <section className={cn('p-2 sm:p-3 md:p-4 lg:p-5', className)}>
+        <section className={cn(className ?? 'p-2 sm:p-3 md:p-4 lg:p-5')}>
             <div
                 className={cn(
-                    'relative overflow-hidden rounded-[16px] bg-cover bg-center bg-no-repeat',
+                    bannerClassName ??
+                        'relative overflow-hidden rounded-[16px] bg-cover bg-center bg-no-repeat',
                     heightClass,
-                    bannerClassName,
                 )}
                 style={{ backgroundImage: `url("${backgroundImage}")` }}
             >
-                <div className={cn(PAGE_HERO_OVERLAY_CLASS, overlayClassName)} aria-hidden />
+                <div
+                    className={overlayClassName ?? PAGE_HERO_OVERLAY_CLASS}
+                    aria-hidden
+                />
                 <div
                     className={cn(
                         'relative z-10',

@@ -1,5 +1,8 @@
+'use client'
+
 import { HP_CSS_VARS, STATIC_UI_COLORS } from '@/data/homepage'
 import type { OurServicesItem } from '@/services/homepage/homepage.page.types'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { cn } from '@/lib/utils/clsxUtils'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
 
@@ -12,6 +15,8 @@ export function ServiceCard({
     iconAlt,
     iconPosition,
 }: ServiceCardProps) {
+    const cardClassName = useTemplateStyles().pages.home.services.card
+
     const iconBlock = (
         <div
             className={cn(
@@ -53,7 +58,7 @@ export function ServiceCard({
 
     return (
         <article
-            className='mx-auto flex w-full max-w-[636px] min-h-0 items-center rounded-[10px] border bg-white px-4 py-3 shadow-sm sm:min-h-[162px] sm:px-[24px] sm:py-4'
+            className={cn(cardClassName)}
             style={{ borderColor: HP_CSS_VARS.primaryBorder }}
         >
             <div className='flex w-full items-center gap-3 sm:gap-6'>

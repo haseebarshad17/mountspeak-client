@@ -1,5 +1,6 @@
 import { mountTemp1Styles } from '@/lib/templates/mount-temp-1'
 import { mountTemp2Styles } from '@/lib/templates/mount-temp-2'
+import { mountTemp3Styles } from '@/lib/templates/mount-temp-3'
 import type { TemplateKey, TemplateStyles } from '@/lib/templates/types'
 
 export type { TemplateKey, TemplateStyles } from '@/lib/templates/types'
@@ -11,16 +12,18 @@ export const DEFAULT_TEMPLATE_KEY: TemplateKey = 'mount-temp-1'
 
 /**
  * Frontend registry: agency template id → style module key.
- * Replace placeholder ids when the templates table/API exists.
+ * Keep ids in sync with dashboard `SITE_TEMPLATES`.
  */
 const TEMPLATE_KEY_BY_ID: Record<string, TemplateKey> = {
     'jedw-cwe-cw': 'mount-temp-1',
     'ab12-cd34-ef': 'mount-temp-2',
+    'gh56-ij78-kl': 'mount-temp-3',
 }
 
 const STYLES_BY_KEY: Record<TemplateKey, TemplateStyles> = {
     'mount-temp-1': mountTemp1Styles,
     'mount-temp-2': mountTemp2Styles,
+    'mount-temp-3': mountTemp3Styles,
 }
 
 export function resolveTemplateKey(templateId?: string | null): TemplateKey {

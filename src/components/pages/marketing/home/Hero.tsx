@@ -28,7 +28,7 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
     const { hero } = page.sections
     const backgroundImage = useHeroBackgroundImage(hero.backgroundImage)
     const { isUmrahSite, isMultiSpec } = useSiteListingCopy()
-    const templateStyles = useTemplateStyles()
+    const heroStyles = useTemplateStyles().pages.home.hero
     const specializationId = useAppSelector(selectHomepageSpecializationId)
     const agencySpecializationIds = useAppSelector(selectHomepageAgencySpecializationIds)
     const specializations = useAppSelector(selectHomepageSpecializations)
@@ -42,25 +42,30 @@ const Hero = ({ page, tourLocations = [] }: HeroProps) => {
         : adaptTourCopyForUmrah(hero.paragraph, isUmrahSite)
 
     return (
-        <PageHeroBanner backgroundImage={backgroundImage}>
-            <main className='pb-8 pt-[150px] sm:pb-10 sm:pt-40 md:pb-12 md:pt-48 lg:pb-16 lg:pt-56 xl:pb-[100px] xl:pt-[257px]'>
+        <PageHeroBanner
+            backgroundImage={backgroundImage}
+            className={cn(heroStyles.section)}
+            bannerClassName={cn(heroStyles.banner)}
+            overlayClassName={cn(heroStyles.overlay)}
+        >
+            <main className={cn(heroStyles.main)}>
                 <div className='agency-container'>
-                    <div className={cn(templateStyles.hero.content)}>
+                    <div className={cn(heroStyles.content)}>
                         <h1
-                            className={cn(templateStyles.hero.heading)}
+                            className={cn(heroStyles.heading)}
                             style={{ color: STATIC_UI_COLORS.heroTitle, fontFamily: 'var(--hp-font-heading)' }}
                         >
                             {hero.title}
                         </h1>
                         <p
-                            className={cn(templateStyles.hero.paragraph)}
+                            className={cn(heroStyles.paragraph)}
                             style={{ color: STATIC_UI_COLORS.heroText, fontFamily: 'var(--hp-font-body)' }}
                         >
                             {heroParagraph}
                         </p>
                     </div>
 
-                    <div className={cn(templateStyles.hero.filtersWrap)}>
+                    <div className={cn(heroStyles.filtersWrap)}>
                         <HeroFilters
                             page={page}
                             tourLocations={tourLocations}

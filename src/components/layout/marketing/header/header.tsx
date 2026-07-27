@@ -321,7 +321,7 @@ const Header = ({ page }: HeaderProps) => {
                     isCompactHeaderPage
                         ? COMPACT_FLOATING_HEADER_POSITION_CLASS
                         : FLOATING_HEADER_POSITION_CLASS,
-                    templateStyles.header.shell,
+                    templateStyles.generic.header.shell,
                     isScrolled
                         ? [
                             'border border-white/15 bg-black/40 shadow-xl shadow-black/30 backdrop-blur-lg',

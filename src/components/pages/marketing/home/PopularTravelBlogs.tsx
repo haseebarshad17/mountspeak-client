@@ -10,6 +10,7 @@ import {
 import type { HomepagePageProps } from '@/components/pages/marketing/home/homepage-section.types'
 import type { HomepagePage } from '@/data/homepage'
 import { HP_THEME_BTN_CLASS, HP_THEME_BTN_STYLE, STATIC_UI_COLORS } from '@/data/homepage'
+import { useTemplateStyles } from '@/components/providers/TemplateStylesProvider'
 import { cn } from '@/lib/utils/clsxUtils'
 import { Calendar } from 'lucide-react'
 import { HomepageMediaImage } from '@/components/ui/homepage-media-image'
@@ -30,9 +31,11 @@ function BlogCard({
 }: HomepagePage['sections']['popularTravelBlogs']['posts'][number] & {
     section: HomepagePage['sections']['popularTravelBlogs']
 }) {
+    const blogs = useTemplateStyles().pages.home.blogs
+
     return (
         <article
-            className='flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]'
+            className={cn(blogs.card)}
             style={{ borderColor: STATIC_UI_COLORS.borderLight }}
         >
             <div className='relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-white/20'>
@@ -51,7 +54,7 @@ function BlogCard({
                 </div>
             </div>
 
-            <div className='flex min-w-0 flex-1 flex-col p-4 sm:p-6'>
+            <div className={cn(blogs.cardContent)}>
                 <p
                     className='pb-2 text-sm font-normal leading-5 sm:pb-3 sm:text-base sm:leading-6'
                     style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
@@ -141,21 +144,29 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
     const section = page.sections.popularTravelBlogs
     const posts = section.posts ?? []
     const useCarousel = posts.length > BLOG_CAROUSEL_THRESHOLD
+    const blogs = useTemplateStyles().pages.home.blogs
+    const sectionHeader = useTemplateStyles().pages.home.sectionHeader
 
     return (
         <section className='bg-white' aria-labelledby='popular-travel-blogs-heading'>
             <div className='agency-container'>
-                <header className='mx-auto max-w-[861px] text-center'>
-                    <SectionEyebrow name={section.eyebrow} />
+                <header className={cn(blogs.header)}>
+                    <SectionEyebrow name={section.eyebrow} className={sectionHeader.eyebrow} />
                     <h2
                         id='popular-travel-blogs-heading'
-                        className='agency-section-heading pt-3 text-[40px] font-medium leading-[48px] sm:pt-4'
+                        className={cn(
+                            sectionHeader.title,
+                            'pt-3 text-[40px] font-medium leading-[48px] sm:pt-4',
+                        )}
                         style={{ color: STATIC_UI_COLORS.title, fontFamily: 'var(--hp-font-heading)' }}
                     >
                         {section.title}
                     </h2>
                     <p
-                        className='mx-auto pt-4 text-base font-normal leading-6 sm:pt-5'
+                        className={cn(
+                            'pt-4 text-base font-normal leading-6 sm:pt-5',
+                            'mx-auto md:mx-0',
+                        )}
                         style={{ color: STATIC_UI_COLORS.textMuted, fontFamily: 'var(--hp-font-body)' }}
                     >
                         {section.paragraph}
@@ -172,7 +183,7 @@ const PopularTravelBlogs = ({ page }: HomepagePageProps) => {
                         </SwiperSideNavigation>
                     </div>
                 ) : (
-                    <div className='mx-auto grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2 sm:gap-6 sm:pt-12 lg:grid-cols-3 lg:gap-6 lg:pt-14'>
+                    <div className={cn(blogs.grid)}>
                         {posts.map((post) => (
                             <BlogCard key={post.title} {...post} section={section} />
                         ))}
