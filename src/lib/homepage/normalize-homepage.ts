@@ -5,6 +5,7 @@ import { resolveBlogPostHref } from '@/services/blog/blog.utils'
 
 import { isFooterContactItemVisible } from './footer-contact'
 import { getActiveFooterSocialLinks } from './footer-social'
+import { syncHeroBackgroundFields } from './hero-backgrounds'
 import { STATIC_HEADER, getStaticFooterLinkColumns } from './static-site-content'
 
 const BASE_PAGE = homepageDefaultsDocument.page as HomepagePage
@@ -102,6 +103,26 @@ export function normalizeHomepagePage(page: HomepagePage): HomepagePage {
         sections: {
             ...BASE_PAGE.sections,
             ...page.sections,
+            hero: (() => {
+                const incoming = page.sections?.hero
+                const base = BASE_PAGE.sections.hero
+                if (!incoming) return syncHeroBackgroundFields(base)
+
+                // Don't let defaults' stock `backgroundImages` mask CMS uploads that only
+                // set `backgroundImage`, or an explicit CMS slide array from the theme JSON.
+                const merged = {
+                    ...base,
+                    ...incoming,
+                    backgroundImages: Object.prototype.hasOwnProperty.call(
+                        incoming,
+                        'backgroundImages',
+                    )
+                        ? incoming.backgroundImages
+                        : undefined,
+                }
+
+                return syncHeroBackgroundFields(merged)
+            })(),
             trust: {
                 ...BASE_PAGE.sections.trust,
                 ...page.sections?.trust,
