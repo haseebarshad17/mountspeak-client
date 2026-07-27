@@ -141,6 +141,8 @@ export interface ExploreTheWorld {
 export interface Hero {
     id:              string;
     backgroundImage: string;
+    /** Homepage hero slider slides (storage paths or URLs). First item syncs to `backgroundImage`. */
+    backgroundImages: string[];
     title:           string;
     paragraph:       string;
     searchFilters:   SearchFilters;
