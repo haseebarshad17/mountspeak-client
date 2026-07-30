@@ -1,44 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-
-import { toApiError } from '@/lib/api/errors'
-import { MessageCode } from '@/lib/messages/codes'
-
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import { partitionBookings } from './user-bookings.utils'
-
-import type { UserBookingRow } from './user-bookings.types'
-
-const UMRAH_BOOKING_EMBED_SELECT = `
-    id,
-    agency_id,
-    basic_information,
-    pricing,
-    duration_dates,
-    booking_info,
-    images,
-    descriptions,
-    seo,
-    created_at,
-    makkah_hotel,
-    madinah_hotel,
-    ziyarat,
-    package_includes
-`
-
-const INTERNATIONAL_BOOKING_EMBED_SELECT = `
-    id,
-    agency_id,
-    basic_information,
-    pricing,
-    duration_dates,
-    booking_info,
-    images,
-    descriptions,
-    seo,
-    created_at,
-    hotels,
-    itinerary,
-    package_includes
-`
+import type { UserBookingRow, UserBookingsResult } from './user-bookings.types'
 
 const USER_BOOKINGS_SELECT = `
   id,
@@ -49,9 +12,6 @@ const USER_BOOKINGS_SELECT = `
   kids_seats,
   booking_payment_screenshot,
   payment_id,
-  listing_kind,
-  umrah_plan_id,
-  international_tour_id,
   payment:payments (
     status
   ),
@@ -65,55 +25,56 @@ const USER_BOOKINGS_SELECT = `
     end_date,
     header,
     overview,
-    visual_fragments,
-    route,
-    stay_and_dine,
-    expedition_perks
-  ),
-  umrah_plan:umrah_plan (${UMRAH_BOOKING_EMBED_SELECT}),
-  international_tour:international_tour (${INTERNATIONAL_BOOKING_EMBED_SELECT})
+    visual_fragments
+  )
 `
 
-type UserBookingsServiceProps = {
-    supabase: SupabaseClient
-}
-
-type FetchUserBookingsParams = {
-    email: string
-    agencyId?: string
-}
-
-export const userBookingsService = ({ supabase }: UserBookingsServiceProps) => {
+export function userBookingsService({ supabase }: { supabase: SupabaseClient }) {
     return {
-        fetchUserBookings: async ({ email, agencyId }: FetchUserBookingsParams) => {
+        async fetchUserBookings({
+            email,
+            agencyId,
+        }: {
+            email: string
+            agencyId?: string
+        }): Promise<UserBookingsResult> {
             const normalizedEmail = email.trim().toLowerCase()
-            if (!normalizedEmail) {
-                return { upcoming: [], past: [], hasLiveData: false }
-            }
+            if (!normalizedEmail) return { upcoming: [], past: [] }
 
             let query = supabase
                 .from('bookings')
                 .select(USER_BOOKINGS_SELECT)
                 .ilike('email', normalizedEmail)
 
-            if (agencyId) {
+            if (agencyId && isValidAgencyId(agencyId)) {
                 query = query.eq('agency_id', agencyId)
             }
 
-            const { data, error } = await query.order('created_at', { ascending: false })
+            const { data, error } = await query.order('created_at', {
+                ascending: false,
+            })
 
-            if (error) {
-                throw toApiError(error, MessageCode.API_BOOKINGS_LOAD_FAILED)
-            }
-
-            const rows = (data ?? []) as UserBookingRow[]
-            const { upcoming, past } = partitionBookings(rows)
-
-            return {
-                upcoming,
-                past,
-                hasLiveData: rows.length > 0,
-            }
+            if (error) throw error
+            return partitionBookings((data as UserBookingRow[] | null) ?? [])
         },
+    }
+}
+
+export async function getUserBookings({
+    supabase,
+    email,
+    agencyId,
+}: {
+    supabase: SupabaseClient
+    email: string
+    agencyId?: string
+}) {
+    try {
+        return await userBookingsService({ supabase }).fetchUserBookings({
+            email,
+            agencyId,
+        })
+    } catch {
+        return { upcoming: [], past: [] }
     }
 }

@@ -1,69 +1,63 @@
 import { Suspense } from 'react'
-import type { Metadata } from 'next'
-
-import SearchPage from '@/components/pages/search/SearchPage'
-import { SearchResultsLoader } from '@/components/pages/search/SearchResultsLoader'
-import { SearchResultsSkeleton } from '@/components/pages/search/SearchResultsSkeleton'
-import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import { SearchPageContent } from '@/components/pages/SearchPageContent'
+import { loadAgencyContext } from '@/lib/site/load-agency-context'
+import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import {
-    parseListingSearchType,
-    resolveListingSearchType,
-} from '@/lib/homepage/specialization'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import { parseTourSearchParams } from '@/services/tours/tours.search.utils'
-import { parseUmrahSearchParams } from '@/services/tours/tours.umrah-search.utils'
-import { fetchTourLocationOptions } from '@/services/tours/tours.server'
+    getDestinationOptions,
+    getListingsByKind,
+} from '@/services/listings/listings.service'
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
+import type { ListingItem } from '@/services/listings/listings.types'
+import type { SpecializationKind } from '@/services/specialization/specialization.types'
 
-export async function generateMetadata(): Promise<Metadata> {
-    const homepage = await fetchAgencyHomepage()
+async function loadFullListings(agencyId: string) {
+    const empty: Record<SpecializationKind, ListingItem[]> = {
+        tours: [],
+        packages: [],
+        international: [],
+    }
+    if (!isValidAgencyId(agencyId)) return empty
 
-    return await buildPageMetadata({
-        pageTitle: 'Search Trips',
-        description: 'Browse available trips and destinations.',
-        homepage,
-    })
+    const supabase = createServerSupabase()
+    const [tours, packages, international] = await Promise.all([
+        getListingsByKind({ supabase, agencyId, kind: 'tours' }),
+        getListingsByKind({ supabase, agencyId, kind: 'packages' }),
+        getListingsByKind({ supabase, agencyId, kind: 'international' }),
+    ])
+    return { tours, packages, international }
 }
 
-type SearchRouteProps = {
-    searchParams: Promise<Record<string, string | string[] | undefined>>
-}
+export default async function SearchPage() {
+    const { homepage, capabilities } = await loadAgencyContext()
+    const agencyId = homepage.agencyId
+    const supabase = createServerSupabase()
 
-function buildSearchSuspenseKey(
-    filters: ReturnType<typeof parseTourSearchParams>,
-    umrahFilters: ReturnType<typeof parseUmrahSearchParams>,
-    listingType: string,
-) {
-    return JSON.stringify({ filters, umrahFilters, listingType })
-}
-
-export default async function Page({ searchParams }: SearchRouteProps) {
-    const params = await searchParams
-    const homepage = await fetchAgencyHomepage()
-    const filters = parseTourSearchParams(params)
-    const umrahFilters = parseUmrahSearchParams(params)
-    const listingType = resolveListingSearchType(
-        parseListingSearchType(params.type),
-        homepage.specializationId,
-        homepage.agencySpecializationIds,
-        homepage.specializations,
-    )
-    const tourLocations = await fetchTourLocationOptions()
-    const suspenseKey = buildSearchSuspenseKey(filters, umrahFilters, listingType)
+    const listingsByKind = await loadFullListings(agencyId)
+    const destinationsByKind: Record<SpecializationKind, string[]> = {
+        tours: isValidAgencyId(agencyId)
+            ? await getDestinationOptions({ supabase, agencyId, kind: 'tours' })
+            : ['Hunza', 'Skardu', 'Swat', 'Naran', 'Murree'],
+        packages: isValidAgencyId(agencyId)
+            ? await getDestinationOptions({ supabase, agencyId, kind: 'packages' })
+            : ['Makkah', 'Madinah', 'Jeddah'],
+        international: isValidAgencyId(agencyId)
+            ? await getDestinationOptions({
+                  supabase,
+                  agencyId,
+                  kind: 'international',
+              })
+            : ['Dubai', 'Turkey', 'Thailand', 'Malaysia', 'Singapore', 'Maldives'],
+    }
 
     return (
-        <SearchPage
-            filters={filters}
-            umrahFilters={umrahFilters}
-            tourLocations={tourLocations}
-            listingType={listingType}
-        >
-            <Suspense key={suspenseKey} fallback={<SearchResultsSkeleton />}>
-                <SearchResultsLoader
-                    filters={filters}
-                    umrahFilters={umrahFilters}
-                    listingType={listingType}
-                />
-            </Suspense>
-        </SearchPage>
+        <Suspense fallback={<div className="site-bg min-h-screen" />}>
+            <SearchPageContent
+                page={homepage.page}
+                capabilities={capabilities}
+                listingsByKind={listingsByKind}
+                destinationsByKind={destinationsByKind}
+                agencyId={agencyId}
+            />
+        </Suspense>
     )
 }

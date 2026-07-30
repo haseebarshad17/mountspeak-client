@@ -1,84 +1,61 @@
+import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { notFound, redirect } from 'next/navigation'
+import { TourDetailContent } from '@/components/tours/TourDetailContent'
+import { loadAgencyContext } from '@/lib/site/load-agency-context'
+import { createServerSupabase } from '@/lib/supabase/supabase.server'
+import { getTourBySlugOrId } from '@/services/listings/listings.service'
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
 
-import TourPageContent from '@/components/pages/tour/TourPageContent'
-import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
-import {
-    getHostnameFromHostHeader,
-    isAgencyPreviewPlatformHost,
-} from '@/lib/homepage/agency-preview'
-import { getRequestSiteHost } from '@/lib/homepage/resolve-request-host'
-import { DEMO_TOUR_DETAIL_PATH } from '@/lib/tours/default-tour-page'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import { fetchPublishedTourBySlug, fetchTourPageBySlug } from '@/services/tours/tours.server'
-
-type TourDetailPageProps = {
-    params: Promise<{ slug: string }>
+type PageProps = {
+    params: { slug: string }
 }
 
-export async function generateMetadata({ params }: TourDetailPageProps): Promise<Metadata> {
-    const { slug } = await params
-    const homepage = await fetchAgencyHomepage()
-    const page = await fetchTourPageBySlug(slug)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { homepage } = await loadAgencyContext()
+    if (!isValidAgencyId(homepage.agencyId)) {
+        return { title: 'Tour' }
+    }
 
-    const pageTitle = page?.seo?.metaTitle ?? 'Tour Detail'
-    const description = page?.seo?.metaDescription
-
-    const base = await buildPageMetadata({
-        pageTitle,
-        description,
-        homepage,
+    const tour = await getTourBySlugOrId({
+        supabase: createServerSupabase(),
+        agencyId: homepage.agencyId,
+        slugOrId: params.slug,
     })
 
-    if (!page?.seo) {
-        return base
-    }
+    if (!tour) return { title: 'Tour not found' }
 
     return {
-        ...base,
-        keywords: page.seo.keywords,
-        openGraph: page.seo.ogImage
+        title: tour.title,
+        description: tour.overviewBody || tour.subtitle || tour.title,
+        openGraph: tour.heroImageUrl
             ? {
-                  ...base.openGraph,
-                  images: [{ url: page.seo.ogImage }],
+                  title: tour.title,
+                  description: tour.overviewBody || tour.subtitle || undefined,
+                  images: [{ url: tour.heroImageUrl, alt: tour.title }],
               }
-            : base.openGraph,
+            : undefined,
     }
 }
 
-export default async function TourDetailPage({ params }: TourDetailPageProps) {
-    const homepage = await fetchAgencyHomepage()
+export default async function TourDetailPage({ params }: PageProps) {
+    const { homepage, capabilities } = await loadAgencyContext()
 
-    if (!homepage.isAgencySite) {
-        redirect(DEMO_TOUR_DETAIL_PATH)
-    }
+    if (!isValidAgencyId(homepage.agencyId)) notFound()
 
-    const { slug } = await params
-    const row = await fetchPublishedTourBySlug(slug)
+    const tour = await getTourBySlugOrId({
+        supabase: createServerSupabase(),
+        agencyId: homepage.agencyId,
+        slugOrId: params.slug,
+    })
 
-    if (!row) {
-        const requestHost = await getRequestSiteHost()
-        const hostname = getHostnameFromHostHeader(requestHost)
+    if (!tour) notFound()
 
-        if (isAgencyPreviewPlatformHost(hostname)) {
-            redirect(DEMO_TOUR_DETAIL_PATH)
-        }
-
-        notFound()
-    }
-
-    const page = await fetchTourPageBySlug(slug)
-
-    if (!page) {
-        const requestHost = await getRequestSiteHost()
-        const hostname = getHostnameFromHostHeader(requestHost)
-
-        if (isAgencyPreviewPlatformHost(hostname)) {
-            redirect(DEMO_TOUR_DETAIL_PATH)
-        }
-
-        notFound()
-    }
-
-    return <TourPageContent page={page} />
+    return (
+        <TourDetailContent
+            page={homepage.page}
+            capabilities={capabilities}
+            tour={tour}
+            agencyId={homepage.agencyId}
+        />
+    )
 }

@@ -1,0 +1,560 @@
+{
+  "page": {
+    "id": "homepage",
+    "slug": "/",
+    "type": "marketing_home",
+    "status": "published",
+    "locale": "en",
+    "templateId": "jedw-cwe-cw",
+    "seo": {
+      "siteName": "Company name",
+      "title": "Company name — Plan Your Perfect Trip",
+      "titleTemplate": "%s | Company name",
+      "description": "Travel the way you wish to go with Company name. Discover national and international tour packages, hotel bookings, and complete travel solutions across Pakistan and beyond.",
+      "keywords": [
+        "Company name",
+        "Pakistan tours",
+        "Hunza Valley",
+        "Skardu",
+        "travel agency Pakistan",
+        "tour packages",
+        "hotel booking",
+        "adventure tours"
+      ],
+      "canonicalUrl": "/",
+      "ogImage": "/images/pages/home/tour-list.png",
+      "ogImageAlt": "Company name — mountain landscape tour",
+      "locale": "en_US",
+      "robots": {
+        "index": true,
+        "follow": true
+      },
+      "themeColor": "#276968",
+      "twitterCard": "summary_large_image"
+    },
+    "theme": {
+      "buttons": {
+        "primary": {
+          "background": "#276968",
+          "backgroundHover": "#1f5453",
+          "text": "#FFFFFF",
+          "border": "#276968"
+        }
+      }
+    },
+    "branding": {
+      "name": "Company name",
+      "tagline": "Don't call it a dream. Call it a plan",
+      "logo": {
+        "default": {
+          "src": "/images/generic/agency-logo.svg",
+          "alt": "Company name logo"
+        },
+        "onDark": {
+          "src": "/images/generic/agency-logo-white.svg",
+          "alt": "Company name logo"
+        }
+      }
+    },
+    "footer": {
+      "backgroundColor": "#276968",
+      "logo": {
+        "src": "/images/generic/agency-logo-white.svg",
+        "alt": "Company name logo"
+      },
+      "columns": [
+        {
+          "title": "Contact",
+          "items": [
+            {
+              "label": "Address: Pe.Holandia No.205A",
+              "href": null
+            },
+            {
+              "label": "Millennium City, PH17",
+              "href": null
+            },
+            {
+              "label": "Phone: 023 456 7890",
+              "href": "tel:0234567890"
+            },
+            {
+              "label": "Email: phnes.travels@gmail.com",
+              "href": "mailto:phnes.travels@gmail.com"
+            },
+            {
+              "label": "Maps: Millennium City, Accra",
+              "href": "https://maps.google.com"
+            }
+          ]
+        }
+      ],
+      "socialLinks": {
+        "twitter": "https://twitter.com",
+        "facebook": "https://facebook.com",
+        "linkedin": "https://linkedin.com",
+        "instagram": "https://instagram.com"
+      }
+    },
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "backgroundImage": "/images/pages/home/tour-list.png",
+        "backgroundImages": [
+          "/images/pages/home/tour-list.png"
+        ],
+        "title": "Don't call it a dream. Call it a plan",
+        "paragraph": "Travel the way you wish to go with Company name helping you discover, live and travel at your own pace.",
+        "searchFilters": {
+          "fromPlaceholder": "From",
+          "toPlaceholder": "To",
+          "datePlaceholder": "Travel dates",
+          "startDateLabel": "Start date",
+          "endDateLabel": "End date",
+          "searchButtonLabel": "Search",
+          "loadingCities": "Loading cities...",
+          "noCities": "No cities available",
+          "pickDepartureFirst": "Pick a departure first",
+          "clearDate": "Clear",
+          "doneDate": "Done"
+        }
+      },
+      "trust": {
+        "id": "trust",
+        "eyebrow": "Trusted Partners",
+        "title": "Brands travelers know and trust",
+        "logos": [
+          {
+            "src": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1530789256257-482a4c5d1b1e?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          }
+        ]
+      },
+      "planPerfectTrip": {
+        "id": "plan-perfect-trip",
+        "eyebrow": "about",
+        "title": "Plan your perfect trip",
+        "paragraph": "Are you looking for an adventurous travel, or just carrying your work alongside you while you travel and explore new places, then your perfect trip is one with us, Company name help you search flights & places, book your most convenient hotels/places at your comfort while we help you discover the world. Welcome to a new dispensation.",
+        "image": {
+          "src": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Traveler planning a trip"
+        },
+        "stats": [
+          {
+            "value": "150+",
+            "label": "Flight Destinations"
+          },
+          {
+            "value": "250+",
+            "label": "Hotels"
+          },
+          {
+            "value": "80",
+            "label": "Elite Transportation"
+          },
+          {
+            "value": "40+",
+            "label": "We help to find your dream place"
+          }
+        ]
+      },
+      "ourServices": {
+        "id": "our-services",
+        "eyebrow": "Services",
+        "title": "Our Services",
+        "backgroundColor": "#F2F2F2",
+        "cta": {
+          "label": "View All Services",
+          "href": "/discover"
+        },
+        "items": [
+          {
+            "title": "Honeymoon Packages",
+            "description": "Romantic destinations and luxurious stays for newlyweds creating peaceful and memorable getaways.",
+            "iconSrc": "/images/pages/home/heart.png",
+            "iconAlt": "Honeymoon packages",
+            "iconPosition": "end"
+          },
+          {
+            "title": "Corporate & Group Tours",
+            "description": "Perfectly planned tours for offices, organizations, and large groups ensuring smooth coordination and premium services.",
+            "iconSrc": "/images/pages/home/Symbol.png",
+            "iconAlt": "Corporate and group tours",
+            "iconPosition": "start"
+          },
+          {
+            "title": "Adventure & Trekking Tours",
+            "description": "Experience the thrill of mountains, lakes, and more with our adventure specialists and safety-first approach.",
+            "iconSrc": "/images/pages/home/Symbol (2).png",
+            "iconAlt": "Adventure and trekking tours",
+            "iconPosition": "end"
+          },
+          {
+            "title": "Transportation Services",
+            "description": "From luxury cars to jeeps, we provide reliable and comfortable vehicles for all terrains and group sizes.",
+            "iconSrc": "/images/pages/home/Symbol (3).png",
+            "iconAlt": "Transportation services",
+            "iconPosition": "start"
+          },
+          {
+            "title": "Hotel & Resort Booking",
+            "description": "Stay in luxurious hotels and resorts with the best comfort, views, and hospitality throughout your journey.",
+            "iconSrc": "/images/pages/home/Symbol (4).png",
+            "iconAlt": "Hotel and resort booking",
+            "iconPosition": "end"
+          },
+          {
+            "title": "Photography & Media Coverage",
+            "description": "Capture your memories with our professional photography and drone services during your trip.",
+            "iconSrc": "/images/pages/home/Symbol (5).png",
+            "iconAlt": "Photography and media coverage",
+            "iconPosition": "start"
+          },
+          {
+            "title": "Air Ticketing & Travel Assistance",
+            "description": "Hassle-free air ticket booking, itinerary planning, and complete travel guidance from start to end.",
+            "iconSrc": "/images/pages/home/Symbol (6).png",
+            "iconAlt": "Air ticketing and travel assistance",
+            "iconPosition": "end"
+          },
+          {
+            "title": "Destination Wedding Management",
+            "description": "Plan your dream wedding in Pakistan's most scenic destinations with full arrangements handled by our expert team.",
+            "iconSrc": "/images/pages/home/Symbol (7).png",
+            "iconAlt": "Destination wedding management",
+            "iconPosition": "start"
+          },
+          {
+            "title": "Pakistan Northern Tours",
+            "description": "Explore breathtaking destinations like Hunza, Skardu, and many more with our expertly guided tours tailored for unforgettable experiences.",
+            "iconSrc": "/images/pages/home/mountain.png",
+            "iconAlt": "Pakistan northern tours",
+            "iconPosition": "end"
+          },
+          {
+            "title": "Customized Family Trips",
+            "description": "Family-friendly packages with safe transport, comfortable stays, and activities designed for all age groups.",
+            "iconSrc": "/images/pages/home/people.png",
+            "iconAlt": "Customized family trips",
+            "iconPosition": "start"
+          }
+        ]
+      },
+      "popularDestination": {
+        "id": "popular-destination",
+        "eyebrow": "Destination",
+        "title": "Popular Destination",
+        "filters": [
+          "All",
+          "Skardu",
+          "Hunza",
+          "Khaplu",
+          "Kashmir",
+          "Swat Kalam",
+          "Naran Kaghan",
+          "Murree",
+          "Nathia Gali",
+          "Patriata",
+          "Babusar Top",
+          "Umbrella Waterfall",
+          "Khanpur Dam"
+        ],
+        "topDestinations": {
+          "subtitle": "Top Destinations",
+          "title": "Discover your love",
+          "seeAllLabel": "See all",
+          "seeAllHref": "/search",
+          "avatars": [
+            "https://i.pravatar.cc/100?img=12",
+            "https://i.pravatar.cc/100?img=20"
+          ],
+          "moreTravelersLabel": "+10",
+          "emptyMessage": "No destinations found for this filter."
+        },
+        "cards": [
+          {
+            "id": "skardu-1",
+            "name": "Skardu",
+            "region": "Skardu",
+            "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "skardu-2",
+            "name": "Shangrila Resort",
+            "region": "Skardu",
+            "image": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "hunza-1",
+            "name": "Hunza",
+            "region": "Hunza",
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "hunza-2",
+            "name": "Attabad Lake",
+            "region": "Hunza",
+            "image": "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "khaplu-1",
+            "name": "Khaplu Fort",
+            "region": "Khaplu",
+            "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "kashmir-1",
+            "name": "Kashmir",
+            "region": "Kashmir",
+            "image": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "kashmir-2",
+            "name": "Neelum Valley",
+            "region": "Kashmir",
+            "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "swat-1",
+            "name": "Swat Kalam",
+            "region": "Swat Kalam",
+            "image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "naran-1",
+            "name": "Naran Kaghan",
+            "region": "Naran Kaghan",
+            "image": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "naran-2",
+            "name": "Saif-ul-Malook",
+            "region": "Naran Kaghan",
+            "image": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "murree-1",
+            "name": "Murree",
+            "region": "Murree",
+            "image": "https://images.unsplash.com/photo-1448375244086-882707edb798?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "nathia-1",
+            "name": "Nathia Gali",
+            "region": "Nathia Gali",
+            "image": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "patriata-1",
+            "name": "Patriata",
+            "region": "Patriata",
+            "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "babusar-1",
+            "name": "Babusar Top",
+            "region": "Babusar Top",
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "umbrella-1",
+            "name": "Umbrella Waterfall",
+            "region": "Umbrella Waterfall",
+            "image": "https://images.unsplash.com/photo-1432405972618-c60b0225b8fc?auto=format&fit=crop&w=1200&q=80"
+          },
+          {
+            "id": "khanpur-1",
+            "name": "Khanpur Dam",
+            "region": "Khanpur Dam",
+            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"
+          }
+        ]
+      },
+      "exploreTheWorld": {
+        "id": "explore-the-world",
+        "eyebrow": "Explore Tour",
+        "title": "The World",
+        "paragraph": "Discover amazing national and international tour packages tailored to your travel preferences. From weekend getaways to international adventures, we have the perfect tour for every traveler.",
+        "emptyMessage": "Tours will appear here once they are published."
+      },
+      "tourismGallery": {
+        "id": "tourism-gallery",
+        "eyebrow": "Our Gallery",
+        "title": "Tourism & Traveling Gallery.",
+        "paragraph": "Explore our stunning collection of travel destinations and experiences from around the world. Discover breathtaking landscapes, cultural treasures, and unforgettable adventures.",
+        "filters": [
+          "All",
+          "Culture & Heritage",
+          "World tour",
+          "Mountains & Valleys",
+          "Lakes & Rivers",
+          "Advantureal Tour"
+        ],
+        "images": [
+          {
+            "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80",
+            "alt": "Mountain valley landscape",
+            "category": "Mountains & Valleys"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80",
+            "alt": "Travelers on a group tour",
+            "category": "World tour"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",
+            "alt": "Scenic mountain peaks",
+            "category": "Mountains & Valleys"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80",
+            "alt": "Mountain valley landscape",
+            "category": "Culture & Heritage"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80",
+            "alt": "Travelers on a group tour",
+            "category": "Advantureal Tour"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",
+            "alt": "Scenic mountain peaks",
+            "category": "Lakes & Rivers"
+          }
+        ]
+      },
+      "bookATour": {
+        "id": "book-a-tour",
+        "backgroundImage": "/images/pages/home/testimonial-background.png",
+        "eyebrow": "Booking",
+        "title": "Online Booking",
+        "paragraphs": [
+          "North Trips & Travel is a trusted travel agency in Pakistan, offering customized tour packages, hotel bookings, and complete travel solutions for families, groups, and corporate clients.",
+          "Get 50% Off on your first adventure trip with us. Submit your booking request today and enjoy unforgettable travel experiences at the best prices."
+        ],
+        "promoHighlight": "50% Off",
+        "cta": {
+          "label": "View All Packages",
+          "href": "/search"
+        },
+        "form": {
+          "title": "Booking Request",
+          "subtitle": "Share your travel details and our team will confirm availability for your trip.",
+          "submitLabel": "Submit Request",
+          "submittingLabel": "Submitting...",
+          "successToast": "Booking request submitted successfully. We will contact you soon.",
+          "errorToast": "Unable to submit booking request. Please try again.",
+          "validationToast": "Please fix the highlighted fields.",
+          "placeholders": {
+            "fullName": "Full Name",
+            "email": "example@gmail.com",
+            "phone": "Your Phone *",
+            "travelDate": "Select Travel Date",
+            "destination": "Select Destination",
+            "destinationLoading": "Loading cities...",
+            "category": "Select Category",
+            "message": "Special Request (optional)"
+          }
+        }
+      },
+      "meetOurTeam": {
+        "id": "meet-our-team",
+        "eyebrow": "Travel Guide",
+        "title": "Meet Our Team",
+        "members": [
+          {
+            "name": "Team Name",
+            "role": "CEO"
+          }
+        ]
+      },
+      "popularTravelBlogs": {
+        "id": "popular-travel-blogs",
+        "eyebrow": "Our Blog",
+        "title": "Popular Travel Blogs",
+        "paragraph": "Discover amazing travel stories, tips, and guides from our experienced travelers. Get inspired for your next adventure with our latest blog posts.",
+        "postedByPrefix": "Posted By:",
+        "readMoreLabel": "Read More",
+        "posts": [
+          {
+            "title": "Conquer the Heights — Trekking Across Hunza Valley",
+            "author": "tayyib",
+            "date": "01 Nov 2025",
+            "excerpt": "Discover the thrill of trekking through the stunning trails of Hunza Valley.",
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+            "href": "/blogs/detail"
+          },
+          {
+            "title": "The Living History of Baltistan — Traditions That Time Preserved",
+            "author": "tayyib",
+            "date": "01 Nov 2025",
+            "excerpt": "Experience the timeless culture and heritage of Baltistan with guided cultural tours.",
+            "image": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
+            "href": "/blogs/detail"
+          },
+          {
+            "title": "Taste of the North — Traditional Flavors of Gilgit-Baltistan",
+            "author": "North Trips Team",
+            "date": "01 Nov 2025",
+            "excerpt": "Savor the authentic flavors of Gilgit-Baltistan with our guided food tours.",
+            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
+            "href": "/blogs/detail"
+          }
+        ]
+      },
+      "testimonials": {
+        "id": "testimonials",
+        "eyebrow": "Testimonial",
+        "title": "Our Clients Say!!!",
+        "items": [
+          {
+            "name": "Eqrah Mir",
+            "location": "lahore",
+            "quote": "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
+            "avatar": "https://i.pravatar.cc/150?img=32"
+          },
+          {
+            "name": "Maher Awais",
+            "location": "Lahore",
+            "quote": "Asif bhi bht acha tour raha apky sath MashaAllah bht enjoy kia,, All the services were EXCELLENT!! HIGHLY Recommended ❤️❤️❤️",
+            "avatar": "https://i.pravatar.cc/150?img=11"
+          },
+          {
+            "name": "Eqrah Mir",
+            "location": "lahore",
+            "quote": "What an incredible experience! I'm so thankful to the amazing team behind this trip. Everything was so well-coordinated and handled with patience, care, and genuine positivity. And how can I forget the sweetest little gesture of the tour manager for the contemporary cherries 🍒, they really added a lovely personal touch. If anyone looking for a well-planned, heartwarming travel experience with great people – this is it. Highly recommended! 💫",
+            "avatar": "https://i.pravatar.cc/150?img=47"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,91 +1,35 @@
-import { serverEnv } from '@/env/server'
-import { prefixHref, stripAgencyPreviewBase } from '@/lib/homepage/agency-preview'
+import { clientEnv } from '@/env'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-type UpdateSessionOptions = {
-    previewBase?: string | null
-    browserRequest?: NextRequest
-}
-
-function buildRedirectUrl(
-    request: NextRequest,
-    browserRequest: NextRequest | undefined,
-    previewBase: string | null | undefined,
-    internalPathname: string,
-): URL {
-    const url = (browserRequest ?? request).nextUrl.clone()
-    url.pathname = prefixHref(internalPathname, previewBase)
-    url.search = ''
-    return url
-}
-
-export async function updateSession(request: NextRequest, options: UpdateSessionOptions = {}) {
-    const { previewBase = null, browserRequest } = options
+export async function updateSession(request: NextRequest) {
     let response = NextResponse.next({ request })
-    const browserPathname = browserRequest?.nextUrl.pathname ?? request.nextUrl.pathname
-    const browserSearch = browserRequest?.nextUrl.search ?? request.nextUrl.search
-    const pathname = stripAgencyPreviewBase(request.nextUrl.pathname)
-    const protectedPaths = ['/dashboard', '/bookings', '/saved-tours']
-    const guestOnlyPaths = ['/login', '/register']
-    const isProtectedPath = protectedPaths.some(
-        (path) => pathname === path || pathname.startsWith(`${path}/`),
-    )
-    const isGuestOnlyPath = guestOnlyPaths.some(
-        (path) => pathname === path || pathname.startsWith(`${path}/`),
-    )
 
-    const supabase = createServerClient(serverEnv.supabaseUrl, serverEnv.supabaseKey, {
-        cookies: {
-            getAll() {
-                return request.cookies.getAll()
+    const supabase = createServerClient(
+        clientEnv.SupabaseURL,
+        clientEnv.SupabaseKey,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll()
+                },
+
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) =>
+                        request.cookies.set(name, value)
+                    )
+
+                    response = NextResponse.next({ request })
+
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    )
+                },
             },
-
-            setAll(cookiesToSet) {
-                cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-
-                response = NextResponse.next({ request })
-
-                cookiesToSet.forEach(({ name, value, options: cookieOptions }) =>
-                    response.cookies.set(name, value, cookieOptions),
-                )
-            },
-        },
-    })
-
-    const { data: authData } = await supabase.auth.getUser()
-    const user = authData.user
-
-    const copyCookies = (target: NextResponse) => {
-        response.cookies.getAll().forEach(({ name, value, ...cookieOptions }) => {
-            target.cookies.set(name, value, cookieOptions)
-        })
-    }
-
-    if (isGuestOnlyPath && user) {
-        const redirectResponse = NextResponse.redirect(
-            buildRedirectUrl(request, browserRequest, previewBase, '/'),
-        )
-        copyCookies(redirectResponse)
-        return redirectResponse
-    }
-
-    if (isProtectedPath && !user) {
-        const loginUrl = buildRedirectUrl(request, browserRequest, previewBase, '/login')
-        loginUrl.searchParams.set('next', `${browserPathname}${browserSearch}`)
-        return NextResponse.redirect(loginUrl)
-    }
-
-    if (isProtectedPath && user) {
-        if (!user.email_confirmed_at) {
-            const loginUrl = buildRedirectUrl(request, browserRequest, previewBase, '/login')
-            loginUrl.searchParams.set('next', `${browserPathname}${browserSearch}`)
-            if (user.email) {
-                loginUrl.searchParams.set('email', user.email)
-            }
-            return NextResponse.redirect(loginUrl)
         }
-    }
+    )
+
+    await supabase.auth.getUser()
 
     return response
 }

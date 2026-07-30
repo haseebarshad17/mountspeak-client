@@ -28,8 +28,8 @@ export type CreateBookingRequestDTO = {
     female_seat: number
     child_seat: number
     category: BookingRequestCategory
+    agency_id: string
     request_message?: string
-    agency_id?: string
     user_id?: string
     past_history?: string
     listing_kind?: 'umrah' | 'international' | null
