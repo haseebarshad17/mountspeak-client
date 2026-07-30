@@ -1,32 +1,55 @@
-import HomePageContent from '@/components/pages/marketing/home/HomePageContent'
-import { buildPlatformMetadata } from '@/assests/meta'
-import { getHomepageMetadata } from '@/lib/homepage/homepage-meta'
-import { getRequestSiteUrl } from '@/lib/homepage/resolve-request-host'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import { fetchTourLocationOptions } from '@/services/tours/tours.server'
-import type { Metadata, Viewport } from 'next'
+import { HomePage } from '@/components/home/HomePage'
+import { loadAgencyContext } from '@/lib/site/load-agency-context'
+import { createServerSupabase } from '@/lib/supabase/supabase.server'
+import { getDestinationOptions } from '@/services/listings/listings.service'
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
+import type { SpecializationKind } from '@/services/specialization/specialization.types'
 
-export async function generateMetadata(): Promise<Metadata> {
-    const agencyHomepage = await fetchAgencyHomepage()
-
-    try {
-        return getHomepageMetadata(agencyHomepage)
-    } catch {
-        return buildPlatformMetadata(await getRequestSiteUrl())
-    }
-}
-
-export async function generateViewport(): Promise<Viewport> {
-
-    const agencyHomepage = await fetchAgencyHomepage()
-
-    return {
-        themeColor: agencyHomepage.page.seo.themeColor,
-    }
+function isLocalHost(host: string) {
+    return host.startsWith('localhost') || host.startsWith('127.0.0.1')
 }
 
 export default async function Page() {
-    const tourLocations = await fetchTourLocationOptions()
+    const { homepage, capabilities, listingsByKind, host } = await loadAgencyContext()
+    const supabase = createServerSupabase()
+    const agencyId = homepage.agencyId
 
-    return <HomePageContent tourLocations={tourLocations} />
+    const destinationsByKind: Record<SpecializationKind, string[]> = {
+        tours: [],
+        packages: [],
+        international: [],
+    }
+
+    if (isValidAgencyId(agencyId)) {
+        const [tours, packages, international] = await Promise.all([
+            getDestinationOptions({ supabase, agencyId, kind: 'tours' }),
+            getDestinationOptions({ supabase, agencyId, kind: 'packages' }),
+            getDestinationOptions({ supabase, agencyId, kind: 'international' }),
+        ])
+        destinationsByKind.tours = tours
+        destinationsByKind.packages = packages
+        destinationsByKind.international = international
+    } else {
+        destinationsByKind.tours = ['Hunza', 'Skardu', 'Swat', 'Naran', 'Murree']
+        destinationsByKind.packages = ['Makkah', 'Madinah', 'Jeddah']
+        destinationsByKind.international = [
+            'Dubai',
+            'Turkey',
+            'Thailand',
+            'Malaysia',
+            'Singapore',
+            'Maldives',
+        ]
+    }
+
+    return (
+        <HomePage
+            page={homepage.page}
+            capabilities={capabilities}
+            listingsByKind={listingsByKind}
+            destinationsByKind={destinationsByKind}
+            agencyId={agencyId}
+            previewHost={isLocalHost(host) ? null : host}
+        />
+    )
 }

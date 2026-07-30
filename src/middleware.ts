@@ -1,122 +1,88 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 import {
     AGENCY_PREVIEW_HOST_COOKIE,
-    getHostnameFromHostHeader,
-    isAgencyPreviewPlatformHost,
-    resolveAgencyPreviewForRequest,
-    type AgencyPreviewContext,
-} from '@/lib/homepage/agency-preview'
-import { updateSession } from '@/lib/supabase/middleware'
-import { NextResponse, NextRequest } from 'next/server'
+    AGENCY_PREVIEW_HOST_HEADER,
+} from '@/lib/host/preview-host'
+import { isAgencyHostSegment, normalizeAgencyHost } from '@/lib/host/site-url'
 
-function copyResponseCookies(from: NextResponse, to: NextResponse) {
+function withAgencyHostHeader(request: NextRequest, agencyHost: string) {
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set(AGENCY_PREVIEW_HOST_HEADER, agencyHost)
+    return requestHeaders
+}
+
+function copyCookies(from: NextResponse, to: NextResponse) {
     from.cookies.getAll().forEach(({ name, value, ...options }) => {
         to.cookies.set(name, value, options)
     })
 }
 
-function applyPreviewHostCookie(response: NextResponse, preview: AgencyPreviewContext | null) {
-    if (preview) {
-        response.cookies.set(AGENCY_PREVIEW_HOST_COOKIE, preview.agencyHost, {
-            path: '/',
-            sameSite: 'lax',
-        })
-        return
-    }
-
-    response.cookies.delete(AGENCY_PREVIEW_HOST_COOKIE)
+function setPreviewHostCookie(response: NextResponse, agencyHost: string) {
+    response.cookies.set(AGENCY_PREVIEW_HOST_COOKIE, agencyHost, {
+        path: '/',
+        sameSite: 'lax',
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7,
+    })
 }
 
-function withAgencyHostHeader(request: NextRequest, agencyHost: string): Headers {
-    const headers = new Headers(request.headers)
-    headers.set('x-agency-site-host', agencyHost)
-    return headers
-}
-
-function createPreviewRequestHeaders(
-    request: NextRequest,
-    preview: AgencyPreviewContext,
-): Headers {
-    const headers = new Headers(request.headers)
-    headers.set('x-agency-site-host', preview.agencyHost)
-    headers.set('x-agency-preview-base', preview.previewBase)
-    return headers
-}
-
-function redirectPrefixedAuthCallback(
-    request: NextRequest,
-    preview: AgencyPreviewContext,
-): NextResponse | null {
-    if (preview.internalPathname !== '/auth/callback') {
-        return null
-    }
-
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/callback'
-    const response = NextResponse.redirect(url)
-    applyPreviewHostCookie(response, preview)
+async function continueWithAgencyHost(request: NextRequest, agencyHost: string) {
+    const requestHeaders = withAgencyHostHeader(request, agencyHost)
+    const sessionRequest = new NextRequest(request.url, { headers: requestHeaders })
+    const sessionResponse = await updateSession(sessionRequest)
+    const response = NextResponse.next({ request: { headers: requestHeaders } })
+    copyCookies(sessionResponse, response)
+    setPreviewHostCookie(response, agencyHost)
     return response
 }
 
-async function handleAgencyPathPreview(request: NextRequest): Promise<NextResponse> {
-    const pathname = request.nextUrl.pathname
-    const requestHostname = getHostnameFromHostHeader(request.headers.get('host'))
-    const preview = resolveAgencyPreviewForRequest(pathname, requestHostname)
+/**
+ * Local / platform preview:
+ * - http://localhost:3000/?host=hamstours.mountspeak.com
+ * - http://localhost:3000/hamstours.mountspeak.com
+ * - http://localhost:3000/hamstours.mountspeak.com/about-us
+ *
+ * When `?host=` is present it is stored in a cookie. Later navigations
+ * without the query are redirected back with `?host=` so preview persists.
+ *
+ * Note: use http (not https) for local Next.js.
+ */
+export async function middleware(request: NextRequest) {
+    const { pathname, searchParams } = request.nextUrl
 
-    if (preview) {
-        const authCallbackRedirect = redirectPrefixedAuthCallback(request, preview)
-        if (authCallbackRedirect) {
-            return authCallbackRedirect
-        }
+    const queryHost = searchParams.get('host')?.trim()
+    if (queryHost && isAgencyHostSegment(queryHost)) {
+        return continueWithAgencyHost(request, normalizeAgencyHost(queryHost))
+    }
 
-        const requestHeaders = createPreviewRequestHeaders(request, preview)
-        const internalRequest = new NextRequest(request.url, { headers: requestHeaders })
+    const firstSegment = pathname.split('/').filter(Boolean)[0] ?? ''
+    if (isAgencyHostSegment(firstSegment)) {
+        const agencyHost = normalizeAgencyHost(firstSegment)
+        const rest = pathname.slice(`/${firstSegment}`.length) || '/'
+        const rewriteUrl = request.nextUrl.clone()
+        rewriteUrl.pathname = rest
 
-        const sessionResponse = await updateSession(internalRequest, {
-            previewBase: preview.previewBase,
-            browserRequest: request,
+        const requestHeaders = withAgencyHostHeader(request, agencyHost)
+        const sessionRequest = new NextRequest(request.url, { headers: requestHeaders })
+        const sessionResponse = await updateSession(sessionRequest)
+
+        const response = NextResponse.rewrite(rewriteUrl, {
+            request: { headers: requestHeaders },
         })
-
-        if (sessionResponse.status >= 300 && sessionResponse.status < 400) {
-            applyPreviewHostCookie(sessionResponse, preview)
-            return sessionResponse
-        }
-
-        const response = NextResponse.next({
-            request: {
-                headers: requestHeaders,
-            },
-        })
-
-        copyResponseCookies(sessionResponse, response)
-        applyPreviewHostCookie(response, preview)
+        copyCookies(sessionResponse, response)
+        setPreviewHostCookie(response, agencyHost)
         return response
     }
 
-    const cookiePreviewHost = request.cookies.get(AGENCY_PREVIEW_HOST_COOKIE)?.value
-
-    if (pathname.startsWith('/api/') && cookiePreviewHost) {
-        const apiHeaders = withAgencyHostHeader(request, cookiePreviewHost)
-        const apiRequest = new NextRequest(request.url, { headers: apiHeaders })
-        const sessionResponse = await updateSession(apiRequest)
-        const nextResponse = NextResponse.next({
-            request: {
-                headers: apiHeaders,
-            },
-        })
-        copyResponseCookies(sessionResponse, nextResponse)
-        return nextResponse
-    }
-
-    const sessionResponse = await updateSession(request)
-    applyPreviewHostCookie(sessionResponse, null)
-    return sessionResponse
-}
-
-export async function middleware(request: NextRequest) {
-    const hostname = getHostnameFromHostHeader(request.headers.get('host'))
-
-    if (isAgencyPreviewPlatformHost(hostname)) {
-        return handleAgencyPathPreview(request)
+    const cookieHost = request.cookies.get(AGENCY_PREVIEW_HOST_COOKIE)?.value?.trim()
+    if (cookieHost && isAgencyHostSegment(cookieHost)) {
+        const agencyHost = normalizeAgencyHost(cookieHost)
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.searchParams.set('host', agencyHost)
+        const response = NextResponse.redirect(redirectUrl)
+        setPreviewHostCookie(response, agencyHost)
+        return response
     }
 
     return updateSession(request)
@@ -124,15 +90,12 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        // Next.js skips middleware on dotted path segments by default (treated as static files).
-        '/(.*\\.vercel\\.app)',
-        '/(.*\\.vercel\\.app)/:path*',
+        /*
+         * Next skips middleware on dotted path segments by default (static files).
+         * Explicit dotted matchers restore /hamstours.mountspeak.com preview.
+         */
         '/([^/]+\\.[^/]+)',
         '/([^/]+\\.[^/]+)/:path*',
-        { source: '/:path*', has: [{ type: 'host', value: 'localhost:3000' }] },
-        { source: '/:path*', has: [{ type: 'host', value: 'localhost:3001' }] },
-        { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3000' }] },
-        { source: '/:path*', has: [{ type: 'host', value: '127.0.0.1:3001' }] },
-        { source: '/:path*', has: [{ type: 'host', value: 'mountspeak.com' }] },
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }
