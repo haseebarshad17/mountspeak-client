@@ -11,6 +11,8 @@ import { PhoneNumberInput } from '@/components/ui/PhoneNumberInput'
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
 import { mapZodIssuesToFieldErrors, getMessage } from '@/lib/messages/get-message'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
 import { useOptionalUser } from '@/services/auth/auth.query'
 import { useCreateBookingRequest } from '@/services/booking-requests/booking-requests.queries'
@@ -84,6 +86,8 @@ export function BookingRequestForm({
 }: BookingRequestFormProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const { data: user } = useOptionalUser()
     const { mutateAsync: createRequest, isPending } = useCreateBookingRequest()
 
@@ -219,7 +223,10 @@ export function BookingRequestForm({
             onSubmit={onSubmit}
             className={cn(
                 'min-w-0 space-y-4',
-                !compact && 'rounded-2xl bg-[#F1EBE3] p-5 md:p-7',
+                !compact &&
+                    (classic
+                        ? 'rounded-2xl border border-black/5 bg-white p-5 md:p-7'
+                        : 'rounded-2xl bg-[#F1EBE3] p-5 md:p-7'),
                 className
             )}
         >
@@ -357,7 +364,7 @@ export function BookingRequestForm({
             <button
                 type="submit"
                 disabled={isPending}
-                className="inline-flex h-11 items-center justify-center rounded-full bg-[#111] px-6 text-sm font-medium text-white transition hover:bg-[#333] disabled:opacity-60"
+                className="btn-brand inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium disabled:opacity-60"
             >
                 {isPending ? 'Sending…' : submitLabel}
             </button>

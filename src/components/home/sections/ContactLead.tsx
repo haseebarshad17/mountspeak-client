@@ -29,10 +29,10 @@ export function ContactLead({
                     style={{
                         backgroundImage: background
                             ? `url(${background})`
-                            : 'linear-gradient(135deg, #0B6E6A, #0B3D3A)',
+                            : 'linear-gradient(135deg, var(--color-brand), color-mix(in srgb, var(--color-brand) 55%, #000))',
                     }}
                 />
-                <div className="absolute inset-0 bg-[#0B6E6A]/30" />
+                <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-brand)_30%,transparent)]" />
 
                 <div className="site-container relative z-10">
                     <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">

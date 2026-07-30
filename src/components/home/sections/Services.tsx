@@ -27,7 +27,7 @@ export function Services({ data }: { data: OurServicesSection }) {
             <section className="section-spacing bg-white">
                 <div className="site-container">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
@@ -52,7 +52,7 @@ export function Services({ data }: { data: OurServicesSection }) {
                                         key={`${item.title}-${i}`}
                                         className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition hover:shadow-md"
                                     >
-                                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#0B6E6A]/10 text-[#0B6E6A]">
+                                        <div className="bg-brand-soft flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
                                             {iconSrc ? (
                                                 // eslint-disable-next-line @next/next/no-img-element
                                                 <img

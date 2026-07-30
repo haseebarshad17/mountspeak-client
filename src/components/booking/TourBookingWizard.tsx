@@ -7,6 +7,7 @@ import { SeatStepper } from '@/components/booking/SeatStepper'
 import type { BookingTourOption } from '@/components/booking/booking-tour.types'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
+import { ClassicPageHero } from '@/components/pages/ClassicPageHero'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { FileUploadField } from '@/components/ui/FileUploadField'
 import { PhoneNumberInput } from '@/components/ui/PhoneNumberInput'
@@ -23,6 +24,12 @@ import {
     isValidCnic,
     isValidE164Phone,
 } from '@/lib/validation/phone'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import {
+    isClassicTemplate,
+    primaryButtonClass,
+} from '@/lib/templates/chrome'
+import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { cn } from '@/lib/utils/cn'
 import { useOptionalUser } from '@/services/auth/auth.query'
 import { useAgencyPaymentAccounts } from '@/services/agency-payment/agency-payment.queries'
@@ -73,6 +80,8 @@ export function TourBookingWizard({
 }) {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const { data: user } = useOptionalUser()
     const { mutateAsync: submitBooking, isPending } = useSubmitTourBooking()
     const { data: paymentAccounts = [], isLoading: loadingAccounts } =
@@ -268,22 +277,61 @@ export function TourBookingWizard({
 
     return (
         <>
-            <SiteHeader page={page} capabilities={capabilities} />
-            <main className="site-bg min-h-screen py-10 md:py-14">
-                <div className="site-container grid gap-8 lg:grid-cols-[1fr_340px]">
-                    <div>
-                        <AgencyLink
-                            href={`/tours/${tour.slug}`}
-                            className="text-sm text-[#666] transition hover:text-[#111]"
-                        >
-                            ← Back to tour
-                        </AgencyLink>
-                        <h1 className="mt-3 text-3xl font-bold tracking-tight text-[#111]">
-                            Book {tour.title}
-                        </h1>
-                        <p className="mt-2 text-sm text-[#666]">
-                            Domestic tour checkout — traveler details, then advance payment.
-                        </p>
+            <SiteHeader
+                page={page}
+                capabilities={capabilities}
+                overlay={classic}
+            />
+            <main className="site-bg">
+                {classic ? (
+                    <ClassicPageHero
+                        eyebrow="Booking"
+                        title={`Book ${tour.title}`}
+                        subtitle="Domestic tour checkout — traveler details, then advance payment."
+                        align="left"
+                        size="default"
+                        imageSrc={
+                            resolveThemeAssetUrl(
+                                page.sections?.hero?.backgroundImages?.[0]
+                            ) ||
+                            resolveThemeAssetUrl(page.sections?.hero?.backgroundImage) ||
+                            tour.heroImageUrl
+                        }
+                    />
+                ) : null}
+                <div
+                    className={cn(
+                        classic
+                            ? 'section-spacing section-spacing-top bg-white'
+                            : 'min-h-screen py-10 md:py-14'
+                    )}
+                >
+                    <div className="site-container grid gap-8 lg:grid-cols-[1fr_340px]">
+                        <div>
+                            {!classic ? (
+                                <>
+                                    <AgencyLink
+                                        href={`/tours/${tour.slug}`}
+                                        className="text-sm text-[#666] transition hover:text-[#111]"
+                                    >
+                                        ← Back to tour
+                                    </AgencyLink>
+                                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-[#111]">
+                                        Book {tour.title}
+                                    </h1>
+                                    <p className="mt-2 text-sm text-[#666]">
+                                        Domestic tour checkout — traveler details, then
+                                        advance payment.
+                                    </p>
+                                </>
+                            ) : (
+                                <AgencyLink
+                                    href={`/tours/${tour.slug}`}
+                                    className="text-sm text-[#666] transition hover:text-[#111]"
+                                >
+                                    ← Back to tour
+                                </AgencyLink>
+                            )}
 
                         <div className="mt-6 flex gap-6 border-b border-black/10">
                             {(['Details', 'Payment'] as const).map((label, index) => (
@@ -480,7 +528,10 @@ export function TourBookingWizard({
 
                                 <button
                                     type="submit"
-                                    className="rounded-full bg-[#111] px-6 py-3 text-sm font-medium text-white"
+                                    className={primaryButtonClass(
+                                        variant,
+                                        'rounded-full px-6 py-3 text-sm font-medium'
+                                    )}
                                 >
                                     Continue to payment
                                 </button>
@@ -519,7 +570,12 @@ export function TourBookingWizard({
                                             {paymentAccounts.map((account) => (
                                                 <li
                                                     key={`${account.bank}-${account.value}`}
-                                                    className="rounded-xl border border-black/5 bg-[#FAF7F2] px-4 py-3 text-sm"
+                                                    className={cn(
+                                                        'rounded-xl border border-black/5 px-4 py-3 text-sm',
+                                                        classic
+                                                            ? 'bg-white'
+                                                            : 'bg-[#FAF7F2]'
+                                                    )}
                                                 >
                                                     <p className="font-semibold text-[#111]">
                                                         {account.bank}
@@ -560,7 +616,10 @@ export function TourBookingWizard({
                                     <button
                                         type="submit"
                                         disabled={isPending}
-                                        className="rounded-full bg-[#06403D] px-6 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+                                        className={primaryButtonClass(
+                                            variant,
+                                            'rounded-full px-6 py-2.5 text-sm font-medium disabled:opacity-60'
+                                        )}
                                     >
                                         {isPending ? 'Submitting…' : 'Submit booking'}
                                     </button>
@@ -608,6 +667,7 @@ export function TourBookingWizard({
                             </p>
                         ) : null}
                     </aside>
+                    </div>
                 </div>
             </main>
             <SiteFooter page={page} agencyId={tour.agencyId} />

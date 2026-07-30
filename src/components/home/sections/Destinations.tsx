@@ -23,7 +23,7 @@ export function Destinations({ data }: { data: PopularDestinationSection }) {
             <section className="section-spacing bg-white">
                 <div className="site-container">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
@@ -40,7 +40,7 @@ export function Destinations({ data }: { data: PopularDestinationSection }) {
                                 className={cn(
                                     'shrink-0 rounded-full px-4 py-2 text-sm transition',
                                     active === filter
-                                        ? 'bg-[#0B6E6A] text-white'
+                                        ? 'bg-brand'
                                         : 'border border-black/10 bg-white text-[#333] hover:bg-black/5'
                                 )}
                             >
@@ -77,7 +77,7 @@ export function Destinations({ data }: { data: PopularDestinationSection }) {
                                                     className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.06]"
                                                 />
                                             ) : (
-                                                <div className="h-full w-full bg-gradient-to-br from-[#0B6E6A] to-[#0B3D3A]" />
+                                                <div className="h-full w-full bg-gradient-to-br from-[var(--color-brand)] to-[color-mix(in_srgb,var(--color-brand)_55%,#000)]" />
                                             )}
                                         </div>
                                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />

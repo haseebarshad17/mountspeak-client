@@ -22,14 +22,14 @@ export function Intro({ data }: { data: PlanPerfectTripSection }) {
                         style={{
                             backgroundImage: image
                                 ? `url(${image})`
-                                : 'linear-gradient(135deg, #0B6E6A, #0B3D3A)',
+                                : 'linear-gradient(135deg, var(--color-brand), color-mix(in srgb, var(--color-brand) 55%, #000))',
                         }}
                         role="img"
                         aria-label={data.image?.alt || data.title}
                     />
 
                     <div>
-                        <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-[#111] md:text-4xl">
@@ -48,7 +48,7 @@ export function Intro({ data }: { data: PlanPerfectTripSection }) {
                                             key={stat.label}
                                             className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white px-4 py-4 shadow-sm flex-1 min-w-[200px]"
                                         >
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0B6E6A]/10 text-[#0B6E6A]">
+                                            <div className="bg-brand-soft flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
                                                 <Icon className="h-4 w-4" />
                                             </div>
                                             <div>

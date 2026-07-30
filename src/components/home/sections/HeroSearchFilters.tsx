@@ -124,7 +124,7 @@ export function HeroSearchFilters({
 
                 <button
                     type="submit"
-                    className="flex w-full shrink-0 items-center justify-center gap-2 bg-[#0B6E6A] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#095955] sm:py-4 lg:w-auto lg:min-w-[132px]"
+                    className="btn-brand flex w-full shrink-0 items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold sm:py-4 lg:w-auto lg:min-w-[132px]"
                 >
                     <span>Search</span>
                     <Search className="h-4 w-4 shrink-0" strokeWidth={2.25} />

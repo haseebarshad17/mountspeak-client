@@ -3,8 +3,25 @@
 import type { ReactNode } from 'react'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { SiteFooter } from '@/components/layout/SiteFooter'
+import {
+    ClassicPageHero,
+    type ClassicPageHeroAction,
+} from '@/components/pages/ClassicPageHero'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate } from '@/lib/templates/chrome'
+import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
+
+function resolvePageHeroImage(page: HomepagePage) {
+    return (
+        resolveThemeAssetUrl(page.sections?.hero?.backgroundImages?.[0]) ||
+        resolveThemeAssetUrl(page.sections?.hero?.backgroundImage) ||
+        resolveThemeAssetUrl(page.sections?.planPerfectTrip?.image?.src) ||
+        resolveThemeAssetUrl(page.sections?.bookATour?.backgroundImage) ||
+        ''
+    )
+}
 
 export function MarketingPageShell({
     page,
@@ -13,6 +30,8 @@ export function MarketingPageShell({
     children,
     capabilities,
     agencyId,
+    heroActions,
+    heroSize = 'default',
 }: {
     page: HomepagePage
     title: string
@@ -20,7 +39,33 @@ export function MarketingPageShell({
     children: ReactNode
     capabilities?: AgencySpecializationCapabilities
     agencyId?: string
+    heroActions?: ClassicPageHeroAction[]
+    heroSize?: 'default' | 'tall' | 'compact'
 }) {
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
+    const imageSrc = resolvePageHeroImage(page)
+
+    if (classic) {
+        return (
+            <>
+                <SiteHeader page={page} capabilities={capabilities} overlay />
+                <main className="site-bg">
+                    <ClassicPageHero
+                        eyebrow={page.branding.name}
+                        title={title}
+                        subtitle={subtitle}
+                        imageSrc={imageSrc}
+                        actions={heroActions}
+                        size={heroSize}
+                    />
+                    {children}
+                </main>
+                <SiteFooter page={page} agencyId={agencyId} />
+            </>
+        )
+    }
+
     return (
         <>
             <SiteHeader page={page} capabilities={capabilities} />

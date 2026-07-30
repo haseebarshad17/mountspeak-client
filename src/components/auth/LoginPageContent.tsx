@@ -4,11 +4,13 @@ import { FormEvent, Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { AuthSplitShell } from '@/components/auth/AuthSplitShell'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import {
     buildAuthCallbackUrl,
     getBrowserOrigin,
     normalizeAuthRedirectPath,
 } from '@/lib/auth/auth-urls'
+import { primaryButtonClass } from '@/lib/templates/chrome'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import {
     useGoogleLogin,
@@ -32,6 +34,7 @@ function LoginForm({
 }) {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const variant = useTemplateVariant()
     const { data: user } = useOptionalUser()
     const { mutateAsync: sendMagicLink, isPending } = useMagicLinkSignIn()
     const { mutateAsync: loginWithGoogle, isPending: isGooglePending } =
@@ -151,7 +154,10 @@ function LoginForm({
                         type="button"
                         disabled={isPending || cooldown > 0}
                         onClick={() => void sendLink(email)}
-                        className="w-full rounded-xl bg-[#111] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#333] disabled:opacity-60"
+                        className={primaryButtonClass(
+                            variant,
+                            'w-full rounded-xl px-4 py-3 text-sm font-medium disabled:opacity-60'
+                        )}
                     >
                         {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend magic link'}
                     </button>
@@ -188,7 +194,10 @@ function LoginForm({
                 <button
                     type="submit"
                     disabled={isPending || cooldown > 0}
-                    className="w-full rounded-xl bg-[#111] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#333] disabled:opacity-60"
+                    className={primaryButtonClass(
+                        variant,
+                        'w-full rounded-xl px-4 py-3 text-sm font-medium disabled:opacity-60'
+                    )}
                 >
                     {isPending ? 'Sending link…' : 'Continue with email'}
                 </button>
@@ -227,7 +236,7 @@ export function LoginPageContent(props: {
         <Suspense
             fallback={
                 <div className="site-bg flex min-h-screen items-center justify-center">
-                    <div className="h-8 w-8 animate-pulse rounded-full bg-[#06403D]/20" />
+                    <div className="h-8 w-8 animate-pulse rounded-full bg-[color-mix(in_srgb,var(--color-brand)_20%,transparent)]" />
                 </div>
             }
         >

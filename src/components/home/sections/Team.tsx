@@ -22,7 +22,7 @@ export function Team({ data }: { data: MeetOurTeamSection }) {
             <section className="section-spacing section-spacing-top bg-[#F7FAFA]">
                 <div className="site-container">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">

@@ -43,7 +43,7 @@ export function Trust({ data }: { data: TrustSection }) {
     return (
         <section className="section-spacing bg-white section-spacing-top">
             <div className="site-container text-center">
-                <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                <p className="text-brand text-sm font-medium uppercase">
                     {data.eyebrow}
                 </p>
                 <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#111] md:text-3xl">

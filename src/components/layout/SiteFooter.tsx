@@ -14,6 +14,7 @@ import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import { useCreateSubscription } from '@/services/subscribe/subscribe.query'
 import type { HomepagePage, NavItem } from '@/services/agency/agency.types'
+import { cn } from '@/lib/utils/cn'
 
 const FALLBACK_LINKS: NavItem[] = [
     { label: 'Packages', href: '/packages' },
@@ -177,7 +178,7 @@ export function SiteFooter({
 
     const bg =
         footer.backgroundColor ||
-        (variant === 'temp1' ? '#0B6E6A' : '#06403D')
+        'var(--color-brand)'
 
     if (variant === 'temp1') {
         return (
@@ -229,11 +230,11 @@ export function SiteFooter({
                             {columns.map((col) => (
                                 <div
                                     key={col.title}
-                                    className={
+                                    className={cn(
                                         col.title.trim().toLowerCase() === 'contact'
                                             ? 'sm:col-span-2 lg:col-span-1'
                                             : undefined
-                                    }
+                                    )}
                                 >
                                     <p className="mb-4 text-sm font-semibold">
                                         {col.title}
@@ -353,11 +354,12 @@ export function SiteFooter({
                     {columns.map((col) => (
                         <div
                             key={col.title}
-                            className={
+                            className={cn(
+                                "max-w-[260px]",
                                 col.title.trim().toLowerCase() === 'contact'
                                     ? 'col-span-2 sm:col-span-1'
                                     : undefined
-                            }
+                            )}
                         >
                             <p className="mb-4 text-sm font-semibold">{col.title}</p>
                             <ul className="space-y-2.5">

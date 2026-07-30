@@ -13,7 +13,7 @@ export default function NotFound() {
                 </p>
                 <Link
                     href="/"
-                    className="mt-6 inline-flex rounded-full bg-[#111] px-5 py-2.5 text-sm font-medium text-white"
+                    className="btn-brand mt-6 inline-flex rounded-full px-5 py-2.5 text-sm font-medium"
                 >
                     Back home
                 </Link>

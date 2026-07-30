@@ -2,6 +2,13 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import {
+    isClassicTemplate,
+    primaryButtonClass,
+    softFieldClass,
+} from '@/lib/templates/chrome'
+import { cn } from '@/lib/utils/cn'
 import {
     useUpdateUserProfile,
     useUserProfile,
@@ -9,6 +16,8 @@ import {
 import { useOptionalUser } from '@/services/auth/auth.query'
 
 export function ProfilePanel() {
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const { data: user } = useOptionalUser()
     const { data: profile, isLoading } = useUserProfile()
     const { mutateAsync: updateProfile, isPending } = useUpdateUserProfile()
@@ -42,7 +51,13 @@ export function ProfilePanel() {
                 <div className="h-8 w-40 animate-pulse rounded bg-[#EDE7DE]" />
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                     {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="h-12 animate-pulse rounded-xl bg-[#F4F0EA]" />
+                        <div
+                            key={i}
+                            className={cn(
+                                'h-12 animate-pulse rounded-xl',
+                                classic ? 'border border-black/10 bg-white' : 'bg-[#F4F0EA]'
+                            )}
+                        />
                     ))}
                 </div>
             </div>
@@ -55,7 +70,12 @@ export function ProfilePanel() {
             className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-7"
         >
             <div className="flex items-center gap-4 border-b border-black/5 pb-5">
-                <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[#111] text-lg font-semibold text-white">
+                <div
+                    className={cn(
+                        'flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-lg font-semibold text-white',
+                        classic ? 'bg-brand' : 'bg-[#111]'
+                    )}
+                >
                     {profile?.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -83,7 +103,7 @@ export function ProfilePanel() {
                     <input
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="mt-1.5 w-full rounded-xl border border-black/10 bg-[#FAF7F2] px-4 py-3 text-sm outline-none focus:border-[#111]/25"
+                        className={softFieldClass(variant, 'mt-1.5 w-full focus:border-[#111]/25')}
                         placeholder="Your name"
                         required
                         minLength={2}
@@ -96,7 +116,12 @@ export function ProfilePanel() {
                     <input
                         value={user?.email ?? ''}
                         disabled
-                        className="mt-1.5 w-full rounded-xl border border-black/5 bg-[#F4F0EA] px-4 py-3 text-sm text-[#666]"
+                        className={cn(
+                            'mt-1.5 w-full rounded-xl px-4 py-3 text-sm text-[#666]',
+                            classic
+                                ? 'border border-black/10 bg-white'
+                                : 'border border-black/5 bg-[#F4F0EA]'
+                        )}
                     />
                 </label>
                 <label className="block">
@@ -106,7 +131,7 @@ export function ProfilePanel() {
                     <input
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="mt-1.5 w-full rounded-xl border border-black/10 bg-[#FAF7F2] px-4 py-3 text-sm outline-none focus:border-[#111]/25"
+                        className={softFieldClass(variant, 'mt-1.5 w-full focus:border-[#111]/25')}
                         placeholder="+92 300 0000000"
                     />
                 </label>
@@ -117,7 +142,7 @@ export function ProfilePanel() {
                     <input
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="mt-1.5 w-full rounded-xl border border-black/10 bg-[#FAF7F2] px-4 py-3 text-sm outline-none focus:border-[#111]/25"
+                        className={softFieldClass(variant, 'mt-1.5 w-full focus:border-[#111]/25')}
                         placeholder="City, country"
                     />
                 </label>
@@ -127,7 +152,10 @@ export function ProfilePanel() {
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="rounded-full bg-[#111] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#333] disabled:opacity-60"
+                    className={primaryButtonClass(
+                        variant,
+                        'rounded-full px-6 py-2.5 text-sm font-medium disabled:opacity-60'
+                    )}
                 >
                     {isPending ? 'Saving…' : 'Save changes'}
                 </button>

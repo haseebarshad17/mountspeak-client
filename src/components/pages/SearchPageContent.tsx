@@ -2,14 +2,23 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search as SearchIcon } from 'lucide-react'
+import { MapPin, Search as SearchIcon, Users } from 'lucide-react'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { SiteFooter } from '@/components/layout/SiteFooter'
+import { ClassicPageHero } from '@/components/pages/ClassicPageHero'
+import { FeaturedListingCard } from '@/components/listings/FeaturedListingCard'
 import { ListingCard } from '@/components/listings/ListingCard'
 import { DateField } from '@/components/ui/DateField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Select } from '@/components/ui/Select'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import {
+    isClassicTemplate,
+    pillTabClass,
+    primaryButtonClass,
+    softFieldClass,
+} from '@/lib/templates/chrome'
+import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { ListingItem } from '@/services/listings/listings.types'
 import type {
@@ -38,6 +47,11 @@ export function SearchPageContent({
     const router = useRouter()
     const searchParams = useSearchParams()
     const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
+    const heroImage =
+        resolveThemeAssetUrl(page.sections?.hero?.backgroundImages?.[0]) ||
+        resolveThemeAssetUrl(page.sections?.hero?.backgroundImage) ||
+        resolveThemeAssetUrl(page.sections?.planPerfectTrip?.image?.src)
 
     const kindParam = searchParams.get('kind')
     const appliedKind: SpecializationKind = isKind(kindParam)
@@ -100,38 +114,156 @@ export function SearchPageContent({
         listingsByKind,
     ])
 
-    function applyFilters(next?: {
-        kind?: SpecializationKind
-        destination?: string
-        date?: string
-        travelers?: string
-    }) {
-        const kind = next?.kind ?? draftKind
-        const dest = next?.destination ?? destination
-        const date = next?.date ?? departureDate
-        const people = next?.travelers ?? travelers
+    function applyFilters() {
         const params = new URLSearchParams()
-        params.set('kind', kind)
-        if (dest) params.set('destination', dest)
-        if (date) params.set('date', date)
-        if (people) params.set('travelers', people)
+        params.set('kind', draftKind)
+        if (destination) params.set('destination', destination)
+        if (departureDate) params.set('date', departureDate)
+        if (travelers) params.set('travelers', travelers)
         const host = searchParams.get('host')
         if (host) params.set('host', host)
         router.push(`/search?${params.toString()}`)
+    }
+
+    const resultsTitle =
+        capabilities.tabs.find((t) => t.kind === appliedKind)?.label || 'Results'
+
+    if (classic) {
+        return (
+            <>
+                <SiteHeader page={page} capabilities={capabilities} overlay />
+                <main className="site-bg">
+                    <ClassicPageHero
+                        eyebrow="Search"
+                        title="Find your next trip"
+                        subtitle="Filter by destination, departure date, and party size."
+                        imageSrc={heroImage}
+                        size="default"
+                        contentClassName="pb-12 md:pb-14"
+                    >
+                        <div className="pointer-events-auto mx-auto mt-8 w-full max-w-5xl">
+                            {capabilities.showTabs ? (
+                                <div className="mb-3 flex flex-wrap justify-center gap-2">
+                                    {capabilities.tabs.map((tab) => (
+                                        <button
+                                            key={tab.kind}
+                                            type="button"
+                                            onClick={() => {
+                                                setDraftKind(tab.kind)
+                                                setDestination('')
+                                            }}
+                                            className={cn(
+                                                'rounded-full px-4 py-1.5 text-sm font-medium transition',
+                                                draftKind === tab.kind
+                                                    ? 'bg-white text-[var(--color-brand)]'
+                                                    : 'bg-white/15 text-white hover:bg-white/25'
+                                            )}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
+
+                            <form
+                                className="flex w-full min-w-0 flex-col overflow-hidden rounded-xl bg-white text-[#111] shadow-[0_18px_50px_rgba(0,0,0,0.22)] lg:flex-row lg:items-stretch"
+                                onSubmit={(e) => {
+                                    e.preventDefault()
+                                    applyFilters()
+                                }}
+                            >
+                                <div className="grid min-w-0 flex-1 grid-cols-1 divide-y divide-[#E6E8EB] sm:grid-cols-3 sm:divide-y-0 lg:divide-x lg:divide-[#E6E8EB]">
+                                    <div className="min-w-0 sm:border-b sm:border-[#E6E8EB] lg:border-b-0">
+                                        <Select
+                                            variant="bare"
+                                            value={destination}
+                                            onChange={setDestination}
+                                            options={destinationOptions}
+                                            placeholder="Anywhere"
+                                            leadingIcon={
+                                                <MapPin className="h-4 w-4" strokeWidth={1.75} />
+                                            }
+                                        />
+                                    </div>
+                                    <div className="min-w-0 sm:border-b sm:border-l sm:border-[#E6E8EB] lg:border-b-0 lg:border-l-0">
+                                        <DateField
+                                            variant="bare"
+                                            value={departureDate}
+                                            onChange={setDepartureDate}
+                                            placeholder="Any date"
+                                        />
+                                    </div>
+                                    <div className="min-w-0 sm:border-l sm:border-[#E6E8EB] lg:border-l-0">
+                                        <div className="flex h-full items-center gap-2 px-3.5 py-3.5">
+                                            <Users
+                                                className="h-4 w-4 shrink-0 text-[#8A9199]"
+                                                strokeWidth={1.75}
+                                            />
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={50}
+                                                value={travelers}
+                                                onChange={(e) => setTravelers(e.target.value)}
+                                                className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#9AA0A6]"
+                                                placeholder="Travelers"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="btn-brand flex w-full shrink-0 items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold sm:py-4 lg:w-auto lg:min-w-[132px]"
+                                >
+                                    <span>Search</span>
+                                    <SearchIcon className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                                </button>
+                            </form>
+                        </div>
+                    </ClassicPageHero>
+
+                    <section className="section-spacing section-spacing-top bg-white">
+                        <div className="site-container">
+                            <div className="mx-auto mb-8 max-w-2xl text-center">
+                                <p className="text-brand text-sm font-medium uppercase">
+                                    {filtered.length} result
+                                    {filtered.length === 1 ? '' : 's'}
+                                </p>
+                                <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
+                                    {resultsTitle}
+                                </h2>
+                            </div>
+
+                            {filtered.length === 0 ? (
+                                <EmptyState
+                                    title="No matching trips"
+                                    description="Try another destination, date, or traveler count — or clear filters and browse all published listings."
+                                />
+                            ) : (
+                                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                    {filtered.map((item, i) => (
+                                        <FeaturedListingCard
+                                            key={item.id}
+                                            item={item}
+                                            index={i}
+                                            agencyId={agencyId}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                </main>
+                <SiteFooter page={page} agencyId={agencyId} />
+            </>
+        )
     }
 
     return (
         <>
             <SiteHeader page={page} capabilities={capabilities} />
             <main className="site-bg">
-                <section
-                    className={cn(
-                        'border-b border-black/5 pb-10 pt-14 md:pb-12 md:pt-20',
-                        variant === 'temp2'
-                            ? 'bg-[linear-gradient(180deg,#F7F1E8_0%,#FCF8F3_100%)]'
-                            : 'bg-white'
-                    )}
-                >
+                <section className="border-b border-black/5 bg-[linear-gradient(180deg,#F7F1E8_0%,#FCF8F3_100%)] pb-10 pt-14 md:pb-12 md:pt-20">
                     <div className="site-container">
                         <p className="text-sm capitalize text-[#777]">Search</p>
                         <h1 className="mt-2 max-w-3xl text-4xl font-bold tracking-tight text-[#111] md:text-5xl">
@@ -153,11 +285,9 @@ export function SearchPageContent({
                                                 setDraftKind(tab.kind)
                                                 setDestination('')
                                             }}
-                                            className={cn(
-                                                'rounded-full px-4 py-2 text-sm',
-                                                draftKind === tab.kind
-                                                    ? 'bg-[#111] text-white'
-                                                    : 'bg-[#F2EEE8] text-[#333]'
+                                            className={pillTabClass(
+                                                draftKind === tab.kind,
+                                                variant
                                             )}
                                         >
                                             {tab.label}
@@ -204,14 +334,17 @@ export function SearchPageContent({
                                         max={50}
                                         value={travelers}
                                         onChange={(e) => setTravelers(e.target.value)}
-                                        className="w-full rounded-xl bg-[#F7F3EE] px-4 py-3 text-sm outline-none"
+                                        className={softFieldClass(variant, 'w-full')}
                                         placeholder="2"
                                     />
                                 </label>
                                 <div className="flex items-end">
                                     <button
                                         type="submit"
-                                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111] px-5 py-3 text-sm font-medium text-white"
+                                        className={primaryButtonClass(
+                                            variant,
+                                            'flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium'
+                                        )}
                                     >
                                         <SearchIcon className="h-4 w-4" />
                                         Search
@@ -230,8 +363,7 @@ export function SearchPageContent({
                                     {filtered.length} result{filtered.length === 1 ? '' : 's'}
                                 </p>
                                 <h2 className="mt-1 text-2xl font-bold text-[#111]">
-                                    {capabilities.tabs.find((t) => t.kind === appliedKind)
-                                        ?.label || 'Results'}
+                                    {resultsTitle}
                                 </h2>
                             </div>
                         </div>

@@ -15,7 +15,7 @@ export function Blog({ data }: { data: PopularTravelBlogsSection }) {
             <section className="section-spacing section-spacing-top bg-white">
                 <div className="site-container">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
@@ -45,7 +45,7 @@ export function Blog({ data }: { data: PopularTravelBlogsSection }) {
                                             style={{
                                                 backgroundImage: image
                                                     ? `url(${image})`
-                                                    : 'linear-gradient(135deg, #0B6E6A, #0B3D3A)',
+                                                    : 'linear-gradient(135deg, var(--color-brand), color-mix(in srgb, var(--color-brand) 55%, #000))',
                                             }}
                                         />
                                         <div className="flex flex-1 flex-col p-5">
@@ -60,7 +60,7 @@ export function Blog({ data }: { data: PopularTravelBlogsSection }) {
                                             ) : null}
                                             <AgencyLink
                                                 href={post.href || '#'}
-                                                className="mt-4 inline-flex w-fit rounded-full bg-[#0B6E6A] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#095956]"
+                                                className="btn-brand mt-4 inline-flex w-fit rounded-full px-4 py-2 text-sm font-medium"
                                             >
                                                 {data.readMoreLabel}
                                             </AgencyLink>

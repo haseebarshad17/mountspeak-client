@@ -8,6 +8,8 @@ import {
     getCountryCallingCode,
     type CountryCode,
 } from 'libphonenumber-js'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
 
 const FLAG_URL =
@@ -48,6 +50,8 @@ export function PhoneNumberInput({
     disabled?: boolean
     defaultCountry?: CountryCode
 }) {
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const [country, setCountry] = useState<CountryCode>(defaultCountry)
     const [open, setOpen] = useState(false)
     const [query, setQuery] = useState('')
@@ -169,8 +173,12 @@ export function PhoneNumberInput({
                                                 className={cn(
                                                     'flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition',
                                                     active
-                                                        ? 'bg-[#111] text-white'
-                                                        : 'text-[#222] hover:bg-[#F7F3EE]'
+                                                        ? classic
+                                                            ? 'bg-brand'
+                                                            : 'bg-[#111] text-white'
+                                                        : classic
+                                                          ? 'text-[#222] hover:bg-black/[0.04]'
+                                                          : 'text-[#222] hover:bg-[#F7F3EE]'
                                                 )}
                                             >
                                                 <CountryFlag code={option.value} />

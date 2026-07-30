@@ -32,7 +32,7 @@ export function Gallery({ data }: { data: TourismGallerySection }) {
             <section className="section-spacing bg-white">
                 <div className="site-container">
                     <div className="mx-auto max-w-2xl text-center">
-                        <p className="text-sm font-medium uppercase text-[#0B6E6A]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             {data.eyebrow}
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
@@ -52,7 +52,7 @@ export function Gallery({ data }: { data: TourismGallerySection }) {
                                 className={cn(
                                     'shrink-0 rounded-full px-4 py-2 text-sm transition',
                                     active === filter
-                                        ? 'bg-[#0B6E6A] text-white'
+                                        ? 'bg-brand'
                                         : 'border border-black/10 bg-white text-[#333] hover:bg-black/5'
                                 )}
                             >

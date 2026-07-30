@@ -3,6 +3,11 @@
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { SaveListingButton } from '@/components/listings/SaveListingButton'
 import { bookingHrefForListing } from '@/lib/booking/booking-href'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import {
+    isClassicTemplate,
+    primaryButtonClass,
+} from '@/lib/templates/chrome'
 import { CalendarDays, MapPin } from 'lucide-react'
 import type { ListingItem } from '@/services/listings/listings.types'
 import { cn } from '@/lib/utils/cn'
@@ -22,6 +27,8 @@ export function ListingCard({
     index?: number
     agencyId?: string
 }) {
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const price = item.priceLabel.replace(/^from\s+/i, '')
     const bookHref = bookingHrefForListing({
         kind: item.kind,
@@ -29,8 +36,7 @@ export function ListingCard({
         slugOrHref: item.href,
         title: item.title,
     })
-    const bookLabel =
-        item.kind === 'tours' ? 'Book' : 'Request'
+    const bookLabel = item.kind === 'tours' ? 'Book' : 'Request'
     const departureLabel = item.departureDate
         ? new Date(`${item.departureDate}T00:00:00`).toLocaleDateString('en-GB', {
               day: 'numeric',
@@ -41,7 +47,12 @@ export function ListingCard({
 
     return (
         <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm transition hover:border-black/10 hover:shadow-md">
-            <div className="relative aspect-[5/3] overflow-hidden bg-[#EDE7DE]">
+            <div
+                className={cn(
+                    'relative aspect-[5/3] overflow-hidden',
+                    classic ? 'bg-[#E8EEF0]' : 'bg-[#EDE7DE]'
+                )}
+            >
                 {item.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -53,12 +64,14 @@ export function ListingCard({
                     <div
                         className={cn(
                             'h-full w-full bg-gradient-to-br',
-                            FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length]
+                            classic
+                                ? 'from-[var(--color-brand)] to-[color-mix(in_srgb,var(--color-brand)_55%,#000)]'
+                                : FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length]
                         )}
                     />
                 )}
                 {item.durationLabel ? (
-                    <span className="absolute left-2.5 top-2.5 rounded-md bg-[#111]/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur-sm">
+                    <span className="absolute left-2.5 top-2.5 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur-sm">
                         {item.durationLabel}
                     </span>
                 ) : null}
@@ -114,13 +127,21 @@ export function ListingCard({
                     <div className="mt-3 flex gap-2">
                         <AgencyLink
                             href={item.href}
-                            className="inline-flex flex-1 items-center justify-center rounded-lg border border-[#111]/12 bg-white px-3 py-2 text-xs font-medium text-[#111] transition hover:bg-[#FAF7F2]"
+                            className={cn(
+                                'inline-flex flex-1 items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition',
+                                classic
+                                    ? 'border-black/10 bg-white text-[#111] hover:bg-black/[0.03]'
+                                    : 'border-[#111]/12 bg-white text-[#111] hover:bg-[#FAF7F2]'
+                            )}
                         >
                             Details
                         </AgencyLink>
                         <AgencyLink
                             href={bookHref}
-                            className="inline-flex flex-1 items-center justify-center rounded-lg bg-[#111] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#333]"
+                            className={primaryButtonClass(
+                                variant,
+                                'inline-flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-xs font-medium'
+                            )}
                         >
                             {bookLabel}
                         </AgencyLink>

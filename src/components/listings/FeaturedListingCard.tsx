@@ -81,7 +81,7 @@ export function FeaturedListingCard({
                         className={cn(
                             'h-full w-full bg-gradient-to-br',
                             index % 2 === 0
-                                ? 'from-[#0B6E6A] to-[#0B3D3A]'
+                                ? 'from-[var(--color-brand)] to-[color-mix(in_srgb,var(--color-brand)_55%,#000)]'
                                 : 'from-[#1D3557] to-[#2A9D8F]'
                         )}
                     />
@@ -100,7 +100,7 @@ export function FeaturedListingCard({
                 </div>
 
                 {discount ? (
-                    <span className="absolute right-3 top-3 rounded-full bg-[#0B6E6A] px-2.5 py-1 text-[11px] font-semibold text-white">
+                    <span className="bg-brand absolute right-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-semibold">
                         {discount}% off
                     </span>
                 ) : null}
@@ -166,7 +166,7 @@ export function FeaturedListingCard({
                     ) : (
                         <AgencyLink
                             href={bookHref}
-                            className="mt-4 flex w-full items-center justify-center rounded-xl bg-[#0B6E6A] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#095955]"
+                            className="btn-brand mt-4 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold"
                         >
                             {bookLabel}
                         </AgencyLink>

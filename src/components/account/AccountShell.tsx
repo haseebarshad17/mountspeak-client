@@ -3,8 +3,12 @@
 import { useEffect, type ReactNode } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { AccountSidebar } from '@/components/account/AccountSidebar'
+import { ClassicPageHero } from '@/components/pages/ClassicPageHero'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate } from '@/lib/templates/chrome'
+import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { useOptionalUser } from '@/services/auth/auth.query'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
@@ -27,6 +31,8 @@ export function AccountShell({
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const { data: user, isLoading } = useOptionalUser()
 
     useEffect(() => {
@@ -42,9 +48,44 @@ export function AccountShell({
     if (isLoading || !user) {
         return (
             <>
-                <SiteHeader page={page} capabilities={capabilities} />
+                <SiteHeader page={page} capabilities={capabilities} overlay={classic} />
                 <main className="site-bg flex min-h-[60vh] items-center justify-center">
-                    <div className="h-9 w-9 animate-pulse rounded-full bg-[#06403D]/20" />
+                    <div className="h-9 w-9 animate-pulse rounded-full bg-[color-mix(in_srgb,var(--color-brand)_20%,transparent)]" />
+                </main>
+                <SiteFooter page={page} agencyId={agencyId} />
+            </>
+        )
+    }
+
+    if (classic) {
+        return (
+            <>
+                <SiteHeader page={page} capabilities={capabilities} overlay />
+                <main className="site-bg">
+                    <ClassicPageHero
+                        eyebrow="Account"
+                        title={title}
+                        subtitle={subtitle}
+                        align="left"
+                        size="default"
+                        imageSrc={
+                            resolveThemeAssetUrl(
+                                page.sections?.hero?.backgroundImages?.[0]
+                            ) ||
+                            resolveThemeAssetUrl(page.sections?.hero?.backgroundImage)
+                        }
+                    />
+                    <section className="section-spacing section-spacing-top bg-white">
+                        <div className="site-container flex flex-col gap-8 md:flex-row md:gap-10">
+                            <AccountSidebar />
+                            <div
+                                className="min-w-0 flex-1 rounded-2xl border border-black/5 bg-white p-5 shadow-sm sm:p-6"
+                                data-agency-id={agencyId}
+                            >
+                                {children}
+                            </div>
+                        </div>
+                    </section>
                 </main>
                 <SiteFooter page={page} agencyId={agencyId} />
             </>

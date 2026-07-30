@@ -3,6 +3,8 @@
 import * as Popover from '@radix-ui/react-popover'
 import { Check, ChevronDown } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate, softFieldClass } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
 
 export type SelectOption = {
@@ -29,6 +31,8 @@ export function Select({
     leadingIcon?: ReactNode
     variant?: 'default' | 'bare'
 }) {
+    const template = useTemplateVariant()
+    const classic = isClassicTemplate(template)
     const [open, setOpen] = useState(false)
     const selected = useMemo(
         () => options.find((option) => option.value === value) ?? null,
@@ -45,7 +49,7 @@ export function Select({
                         'flex w-full min-w-0 items-center gap-2 text-left text-sm outline-none transition',
                         isBare
                             ? 'h-full rounded-none bg-transparent px-3.5 py-3.5 hover:bg-black/[0.02]'
-                            : 'justify-between rounded-xl bg-[#F7F3EE] px-4 py-3 hover:bg-[#F1EBE3]',
+                            : softFieldClass(template, 'justify-between'),
                         'disabled:cursor-not-allowed disabled:opacity-60',
                         className
                     )}
@@ -86,13 +90,13 @@ export function Select({
                                     }}
                                     className={cn(
                                         'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition',
-                                        isBare ?
-                                            active
-                                                ? 'bg-[#111] text-white'
-                                                : 'text-[#222] hover:bg-black/[0.06]'
-                                            : active
-                                                ? 'bg-[#111] text-white'
-                                                : 'text-[#222] hover:bg-[#F7F3EE]'
+                                        active
+                                            ? classic
+                                                ? 'bg-brand'
+                                                : 'bg-[#111] text-white'
+                                            : classic
+                                              ? 'text-[#222] hover:bg-black/[0.04]'
+                                              : 'text-[#222] hover:bg-[#F7F3EE]'
                                     )}
                                 >
                                     {option.label}

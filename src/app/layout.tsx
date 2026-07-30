@@ -103,7 +103,9 @@ export default async function RootLayout({
     children: React.ReactNode
 }) {
     let templateId: string | null = null
-    let primary = '#276968'
+    let brand = '#276968'
+    let brandHover = '#1f5453'
+    let brandFg = '#FFFFFF'
 
     try {
         const host = await getRequestHost()
@@ -112,11 +114,23 @@ export default async function RootLayout({
             host,
         })
         templateId = homepage.page.templateId
-        primary = homepage.page.theme.buttons.primary.background
+        const primary = homepage.page.theme.buttons.primary
+        brand =
+            homepage.page.footer?.backgroundColor ||
+            primary.background ||
+            brand
+        brandHover = primary.backgroundHover || brandHover
+        brandFg = primary.text || brandFg
     } catch {
         const fallback = getDefaultHomepage()
         templateId = fallback.page.templateId
-        primary = fallback.page.theme.buttons.primary.background
+        const primary = fallback.page.theme.buttons.primary
+        brand =
+            fallback.page.footer?.backgroundColor ||
+            primary.background ||
+            brand
+        brandHover = primary.backgroundHover || brandHover
+        brandFg = primary.text || brandFg
     }
 
     const variant = resolveTemplateVariant(templateId)
@@ -134,7 +148,9 @@ export default async function RootLayout({
                 )}
                 style={
                     {
-                        ['--color-brand' as string]: primary,
+                        ['--color-brand' as string]: brand,
+                        ['--color-brand-hover' as string]: brandHover,
+                        ['--color-brand-fg' as string]: brandFg,
                     } as React.CSSProperties
                 }
             >

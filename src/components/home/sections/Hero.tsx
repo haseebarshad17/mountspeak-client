@@ -350,7 +350,7 @@ export function Hero({
                                 ))}
                             </div>
                         ) : (
-                            <div className="h-full w-full bg-gradient-to-br from-[#0B6E6A] via-[#0B3D3A] to-[#071E1C]" />
+                            <div className="h-full w-full bg-gradient-to-br from-[var(--color-brand)] via-[color-mix(in_srgb,var(--color-brand)_55%,#000)] to-[#071E1C]" />
                         )}
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
                     </div>
@@ -364,9 +364,9 @@ export function Hero({
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label={label}
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+                                    className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
                                 >
-                                    <Icon className="h-4 w-4" />
+                                    <Icon className="h-5 w-5" />
                                 </a>
                             ))}
                         </div>
@@ -402,7 +402,7 @@ export function Hero({
                                                 className={cn(
                                                     'rounded-full px-4 py-1.5 text-sm font-medium transition',
                                                     activeKind === tab.kind
-                                                        ? 'bg-white text-[#0B3D3A]'
+                                                        ? 'bg-white text-[var(--color-brand)]'
                                                         : 'bg-white/15 text-white hover:bg-white/25'
                                                 )}
                                             >
