@@ -1,20 +1,19 @@
-import ContactUsPage from '@/components/pages/contact/ContactUsPage'
-import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import type { Metadata } from 'next'
+import { MarketingPageShell } from '@/components/pages/MarketingPageShell'
+import { ContactPageContent } from '@/components/pages/ContactPageContent'
+import { loadAgencyContext } from '@/lib/site/load-agency-context'
 
-export async function generateMetadata(): Promise<Metadata> {
-    const homepage = await fetchAgencyHomepage()
+export default async function ContactUsPage() {
+    const { homepage, capabilities } = await loadAgencyContext()
 
-    return await buildPageMetadata({
-        pageTitle: 'Get in Touch',
-        description:
-            'Get in touch with our travel experts for tour packages, custom itineraries, and consultation requests.',
-        homepage,
-    })
-}
-
-export default async function Page() {
-    const homepage = await fetchAgencyHomepage()
-    return <ContactUsPage page={homepage.page} />
+    return (
+        <MarketingPageShell
+            page={homepage.page}
+            capabilities={capabilities}
+            agencyId={homepage.agencyId}
+            title="Contact Us"
+            subtitle="Minimal contact flow for inquiries and booking assistance."
+        >
+            <ContactPageContent />
+        </MarketingPageShell>
+    )
 }

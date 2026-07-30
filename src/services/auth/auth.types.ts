@@ -1,10 +1,3 @@
-// Google OAuth DTO
-export type GoogleLoginDTO = {
-    redirectTo: string
-    agency_id?: string
-}
-
-// Magic link DTO (agency customer sites)
 export type MagicLinkDTO = {
     email: string
     emailRedirectTo: string
@@ -12,11 +5,7 @@ export type MagicLinkDTO = {
     agency_site_url?: string
 }
 
-export type BookingEmailOtpDTO = MagicLinkDTO
-
-export type VerifyBookingEmailOtpDTO = {
-    email: string
-    token: string
+export type GoogleLoginDTO = {
+    redirectTo: string
     agency_id?: string
 }
-

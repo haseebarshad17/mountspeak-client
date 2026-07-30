@@ -1,100 +1,79 @@
-import BookingPage from '@/components/pages/booking/BookingPage'
-import { buildBookingReturnPath } from '@/lib/auth/booking-auth'
-import { redirectWithAgencyPreview } from '@/lib/auth/preview-redirect'
-import { buildPageMetadata } from '@/lib/homepage/build-page-metadata'
+import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { TourBookingWizard } from '@/components/booking/TourBookingWizard'
+import type { BookingTourOption } from '@/components/booking/booking-tour.types'
+import { loadAgencyContext } from '@/lib/site/load-agency-context'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
-import { fetchAgencyHomepage } from '@/services/homepage/homepage.server'
-import {
-    fetchBookingTourBySlug,
-    fetchPublishedToursForBooking,
-} from '@/services/tours/tours.server'
-import { packageDetailPath } from '@/services/tours/tours.utils'
-import type { Metadata } from 'next'
+import { getTourBySlugOrId } from '@/services/listings/listings.service'
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
 
-export async function generateMetadata(): Promise<Metadata> {
-    const homepage = await fetchAgencyHomepage()
-
-    return await buildPageMetadata({
-        pageTitle: 'Booking',
-        description: 'Begin your journey with us — partner booking and registration.',
-        homepage,
-    })
-}
-
-type BookingRoutePageProps = {
+type PageProps = {
     searchParams: Promise<{
         tour?: string
-        slot?: string
+        adults?: string
+        children?: string
         kind?: string
         id?: string
     }>
 }
 
-function resolvePackageKind(kind: string | undefined): 'umrah' | 'international' | null {
-    if (kind === 'umrah' || kind === 'international') return kind
-    return null
-}
+export default async function BookingPage({ searchParams }: PageProps) {
+    const params = await searchParams
 
-export default async function Page({ searchParams }: BookingRoutePageProps) {
-    const {
-        tour: tourSlug,
-        slot: slotId,
-        kind: kindParam,
-        id: packageId,
-    } = await searchParams
-    const packageKind = resolvePackageKind(kindParam?.trim())
-
-    // Umrah / International use booking requests — redirect old checkout links.
-    if (packageKind && packageId?.trim()) {
-        await redirectWithAgencyPreview(packageDetailPath(packageKind, packageId.trim()))
+    // Packages / international use booking requests — never domestic checkout.
+    if (
+        (params.kind === 'umrah' ||
+            params.kind === 'international' ||
+            params.kind === 'packages') &&
+        params.id
+    ) {
+        const { redirect } = await import('next/navigation')
+        const kind = params.kind === 'packages' ? 'umrah' : params.kind
+        redirect(`/booking/request?kind=${kind}&id=${encodeURIComponent(params.id)}`)
     }
 
-    const returnPath = buildBookingReturnPath(tourSlug, slotId)
-    const agencyHomepage = await fetchAgencyHomepage()
-    const isAgencySite = agencyHomepage.isAgencySite
+    const { homepage, capabilities } = await loadAgencyContext()
+    if (!isValidAgencyId(homepage.agencyId)) notFound()
 
-    if (isAgencySite) {
-        const supabase = await createServerSupabase()
-        const { data: authData } = await supabase.auth.getUser()
+    const slug = params.tour?.trim()
+    if (!slug) notFound()
 
-        // Guests may book after email OTP on the form. Logged-in staff of this
-        // agency are still blocked from the customer booking flow.
-        if (authData.user) {
-            const { data: canAccess, error: accessError } = await supabase.rpc(
-                'can_access_agency_customer_site',
-                { p_agency_id: agencyHomepage.agencyId },
-            )
+    const tour = await getTourBySlugOrId({
+        supabase: createServerSupabase(),
+        agencyId: homepage.agencyId,
+        slugOrId: slug,
+    })
+    if (!tour || tour.pricePerSeat <= 0) notFound()
 
-            if (accessError || !canAccess) {
-                const next = encodeURIComponent(returnPath)
-                await redirectWithAgencyPreview(
-                    `/login?error=customer_site_access_denied&next=${next}`,
-                )
-            }
-        }
+    const option: BookingTourOption = {
+        id: tour.id,
+        slug: tour.slug,
+        title: tour.title,
+        agencyId: tour.agencyId,
+        pricePerSeat: tour.pricePerSeat,
+        advanceAmountPerSeat: tour.advanceAmountPerSeat,
+        discountPercent: tour.discountPercent,
+        kidsDiscountPercent: tour.kidsDiscountPercent,
+        currency: 'PKR',
+        startDate: tour.startDate,
+        capacityTotal: tour.capacityTotal,
+        confirmedSeats: tour.confirmedSeats ?? 0,
     }
 
-    let tourOptions: Awaited<ReturnType<typeof fetchPublishedToursForBooking>> = []
-    let lockedTour: Awaited<ReturnType<typeof fetchBookingTourBySlug>> = null
-
-    try {
-        ;[tourOptions, lockedTour] = await Promise.all([
-            fetchPublishedToursForBooking(),
-            tourSlug?.trim()
-                ? fetchBookingTourBySlug(tourSlug.trim(), slotId?.trim() || null)
-                : Promise.resolve(null),
-        ])
-    } catch {
-        // Avoid 500 when Supabase is unavailable; client shows empty plan list.
-    }
+    const adults = Number(params.adults)
+    const children = Number(params.children)
 
     return (
-        <BookingPage
-            tourOptions={tourOptions}
-            lockedTour={lockedTour}
-            initialSlotId={slotId?.trim() || null}
-            isDemoMode={!isAgencySite}
-            bookingReturnPath={returnPath}
-        />
+        <Suspense fallback={<div className="min-h-screen bg-[#FCF8F3]" />}>
+            <TourBookingWizard
+                page={homepage.page}
+                capabilities={capabilities}
+                tour={option}
+                initialAdults={Number.isFinite(adults) && adults > 0 ? adults : 2}
+                initialChildren={
+                    Number.isFinite(children) && children >= 0 ? children : 0
+                }
+            />
+        </Suspense>
     )
 }

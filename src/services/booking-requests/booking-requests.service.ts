@@ -1,24 +1,17 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-
-import { supabaseRestPost } from '@/lib/api/rest'
 import { toApiError } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
-
-import type { BookingRequestRecord, CreateBookingRequestDTO } from './booking-requests.types'
+import type {
+    BookingRequestRecord,
+    CreateBookingRequestDTO,
+} from './booking-requests.types'
 
 const BOOKING_REQUESTS_TABLE = 'booking_requests'
 
-type BookingRequestsServiceProps = {
-    supabase: SupabaseClient
-}
-
-export const bookingRequestsService = ({ supabase }: BookingRequestsServiceProps) => {
+export function bookingRequestsService({ supabase }: { supabase: SupabaseClient }) {
     return {
-        /**
-         * POST /rest/v1/booking_requests
-         */
         createBookingRequest: async (
-            payload: CreateBookingRequestDTO,
+            payload: CreateBookingRequestDTO
         ): Promise<BookingRequestRecord> => {
             const { data, error } = await supabase
                 .from(BOOKING_REQUESTS_TABLE)
@@ -26,38 +19,12 @@ export const bookingRequestsService = ({ supabase }: BookingRequestsServiceProps
                 .select()
                 .maybeSingle()
 
-            if (error) throw toApiError(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED)
-
-            // Insert can succeed even when SELECT is blocked by RLS (data comes back null).
-            if (data) return data as BookingRequestRecord
-
-            return {
-                ...payload,
-                id: '',
-            }
-        },
-
-        /**
-         * Same endpoint via raw REST helper (for future server-side or custom auth flows).
-         */
-        createBookingRequestViaRest: async (
-            payload: CreateBookingRequestDTO,
-            accessToken?: string,
-        ): Promise<BookingRequestRecord> => {
-            try {
-                const rows = await supabaseRestPost<BookingRequestRecord[]>(
-                    BOOKING_REQUESTS_TABLE,
-                    payload,
-                    accessToken,
-                )
-                const record = Array.isArray(rows) ? rows[0] : rows
-                if (!record) {
-                    throw new Error('Booking request was created but no record was returned.')
-                }
-                return record
-            } catch (error) {
+            if (error) {
                 throw toApiError(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED)
             }
+
+            if (data) return data as BookingRequestRecord
+            return { ...payload, id: '' }
         },
     }
 }

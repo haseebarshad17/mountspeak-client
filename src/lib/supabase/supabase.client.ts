@@ -1,9 +1,9 @@
-import { clientEnv } from '@/env/client'
+import { clientEnv } from '@/env'
 import { createBrowserClient } from '@supabase/ssr'
 
-export const createClientSupabase = createBrowserClient(
-    clientEnv.supabaseUrl,
-    clientEnv.supabaseKey!
-)
+export function createClientSupabase() {
+    return createBrowserClient(clientEnv.SupabaseURL, clientEnv.SupabaseKey)
+}
 
-export const supabase = createClientSupabase
+/** Shared browser client — cookie-backed for SSR session refresh. */
+export const supabase = createClientSupabase()
