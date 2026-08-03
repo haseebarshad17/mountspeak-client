@@ -60,7 +60,7 @@ export function mapTourToListing(row: TourRow): ListingItem {
         imageUrl: resolveTourAssetUrl(row.header?.hero_image_url) || null,
         href: `/tours/${row.slug || row.id}`,
         summary: row.header?.subtitle || row.title,
-        badge: row.header?.tag || 'Tour',
+        badge: row.overview?.difficulty || row.header?.tag || 'Tour',
         meta,
         durationLabel,
         ratingLabel: '5.0',

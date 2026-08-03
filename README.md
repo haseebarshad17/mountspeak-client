@@ -265,13 +265,14 @@ Dashboard `SITE_TEMPLATES` → site UI:
 |---|---|---|---|
 | **Classic** (`mount-temp-1`) | `jedw-cwe-cw` | `temp1` | Full-bleed hero slider + teal marketing (mockup) |
 | **Studio** (`mount-temp-2`) | `ab12-cd34-ef` | `temp2` | Cream asymmetric / pill chrome |
-| (reserved) | `gh56-ij78-kl` | `temp3` | Falls back to Classic (`temp1`) |
+| **Modern** (`mount-temp-3`) | `gh56-ij78-kl` | `temp3` | Full-width hero, destination thumbs, floating search, Modern trust |
 
 - Resolved in `src/lib/templates/resolve-variant.ts` from `page.templateId`.
 - Bare `http://localhost:3000` (no `?host=`) always uses **Classic / temp1** defaults.
 - Agency preview: `http://localhost:3000/?host=youragency.mountspeak.com` (keep `?host=` in the URL; cookie no longer auto-restores preview).
-- Section branches: `if (variant === 'temp1')` … `if (variant === 'temp2')` … `return null`.
-- Hero filters (both): category, from, to, start date, end date.
+- Section branches: `if (variant === 'temp1')` … `if (variant === 'temp2')` … `if (variant === 'temp3')` … `return null`.
+- Modern currently ships dedicated Hero (no search bar; fade/zoom slides), Trust, and About (Intro); other homepage sections reuse Classic UI until dedicated layouts ship.
+- Hero filters (Classic + Studio): category, from, to, start date, end date.
 
 ---
 

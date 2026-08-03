@@ -145,7 +145,7 @@ export function SiteHeader({
                                     <AgencyLink
                                         key={item.label}
                                         href={item.href}
-                                        className="transition hover:text-white"
+                                        className="nav-underline transition hover:text-white"
                                     >
                                         {item.label}
                                     </AgencyLink>
@@ -251,14 +251,24 @@ export function SiteHeader({
         )
     }
 
-    if (variant === 'temp2') {
+    if (variant === 'temp2' || variant === 'temp3') {
         const logoSrc =
             resolveThemeAssetUrl(page.branding.logo?.default?.src) ||
             resolveThemeAssetUrl(page.branding.logo?.onDark?.src)
+        const isModern = variant === 'temp3'
+        const shellBg = isModern ? 'bg-white' : 'bg-[#FCF8F3]/95'
+        const bookClass = isModern
+            ? 'rounded-sm bg-[#E89C5D] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#d8894a] sm:px-5'
+            : 'rounded-full bg-[#111] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#333] sm:px-5'
 
         return (
             <>
-                <header className="sticky top-0 z-50 border-b border-black/5 bg-[#FCF8F3]/95 backdrop-blur">
+                <header
+                    className={cn(
+                        'sticky top-0 z-50 border-b border-black/5 backdrop-blur',
+                        shellBg
+                    )}
+                >
                     <div className="site-container flex h-[72px] items-center justify-between gap-4">
                         <div className="flex min-w-0 items-center gap-2">
                             <button
@@ -285,7 +295,12 @@ export function SiteHeader({
                                 <AgencyLink
                                     key={item.label}
                                     href={item.href}
-                                    className="transition hover:text-[#111]"
+                                    className={cn(
+                                        'nav-underline transition',
+                                        isModern
+                                            ? 'hover:text-[#C9A15A]'
+                                            : 'hover:text-[#111]'
+                                    )}
                                 >
                                     {item.label}
                                 </AgencyLink>
@@ -301,13 +316,7 @@ export function SiteHeader({
                                     Log in
                                 </AgencyLink>
                             ) : null}
-                            <AgencyLink
-                                href={ctaHref}
-                                className={cn(
-                                    'rounded-full bg-[#111] px-4 py-2.5 text-sm font-medium text-white sm:px-5',
-                                    'transition hover:bg-[#333]'
-                                )}
-                            >
+                            <AgencyLink href={ctaHref} className={bookClass}>
                                 Book Now
                             </AgencyLink>
                             {user ? <ProfileMenu /> : null}
@@ -334,7 +343,8 @@ export function SiteHeader({
                     />
                     <aside
                         className={cn(
-                            'absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col bg-[#FCF8F3] shadow-2xl transition-transform duration-300 ease-out',
+                            'absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col shadow-2xl transition-transform duration-300 ease-out',
+                            isModern ? 'bg-white' : 'bg-[#FCF8F3]',
                             menuOpen ? 'translate-x-0' : '-translate-x-full'
                         )}
                     >
@@ -383,7 +393,12 @@ export function SiteHeader({
                             <AgencyLink
                                 href={ctaHref}
                                 onClick={() => setMenuOpen(false)}
-                                className="flex w-full items-center justify-center rounded-full bg-[#111] px-5 py-2.5 text-sm font-medium text-white"
+                                className={cn(
+                                    'flex w-full items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium text-white',
+                                    isModern
+                                        ? 'bg-[#E89C5D] hover:bg-[#d8894a]'
+                                        : 'bg-[#111]'
+                                )}
                             >
                                 Book Now
                             </AgencyLink>

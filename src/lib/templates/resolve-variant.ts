@@ -7,7 +7,7 @@ export type TemplateVariant = 'temp1' | 'temp2' | 'temp3'
  * |---------------|---------------|---------|---------|-----------------------------------------|
  * | jedw-cwe-cw   | mount-temp-1  | Classic | temp1   | Full-bleed hero slider + teal marketing |
  * | ab12-cd34-ef  | mount-temp-2  | Studio  | temp2   | Cream asymmetric / pill chrome          |
- * | gh56-ij78-kl  | mount-temp-3  | Bold    | temp3   | Falls back to temp1 until built         |
+ * | gh56-ij78-kl  | mount-temp-3  | Modern  | temp3   | Full-width hero, thumbs, floating search|
  */
 const VARIANT_BY_TEMPLATE_ID: Record<string, TemplateVariant> = {
     'jedw-cwe-cw': 'temp1',
@@ -15,7 +15,11 @@ const VARIANT_BY_TEMPLATE_ID: Record<string, TemplateVariant> = {
     'gh56-ij78-kl': 'temp3',
 }
 
-const IMPLEMENTED_VARIANTS = new Set<TemplateVariant>(['temp1', 'temp2'])
+const IMPLEMENTED_VARIANTS = new Set<TemplateVariant>([
+    'temp1',
+    'temp2',
+    'temp3',
+])
 
 /** Dashboard Classic / mount-temp-1 — full-bleed hero mockup */
 export const DEFAULT_TEMPLATE_ID = 'jedw-cwe-cw'

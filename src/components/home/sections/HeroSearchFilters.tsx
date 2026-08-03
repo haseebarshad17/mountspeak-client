@@ -49,7 +49,7 @@ type HeroSearchFiltersProps = {
         startPlaceholder?: string
         endPlaceholder?: string
     }
-    appearance?: 'temp1' | 'temp2'
+    appearance?: 'temp1' | 'temp2' | 'temp3'
     className?: string
 }
 
@@ -62,11 +62,14 @@ export function HeroSearchFilters({
     appearance = 'temp1',
     className,
 }: HeroSearchFiltersProps) {
-    if (appearance === 'temp1') {
+    if (appearance === 'temp1' || appearance === 'temp3') {
         return (
             <form
                 className={cn(
-                    'flex w-full min-w-0 flex-col overflow-hidden rounded-xl bg-white text-[#111] shadow-[0_18px_50px_rgba(0,0,0,0.22)] lg:flex-row lg:items-stretch',
+                    'flex w-full min-w-0 flex-col overflow-hidden bg-white text-[#111] shadow-[0_18px_50px_rgba(0,0,0,0.22)] lg:flex-row lg:items-stretch',
+                    appearance === 'temp3'
+                        ? 'rounded-2xl shadow-[0_22px_60px_rgba(0,0,0,0.28)]'
+                        : 'rounded-xl',
                     className
                 )}
                 onSubmit={handlers.onSubmit}

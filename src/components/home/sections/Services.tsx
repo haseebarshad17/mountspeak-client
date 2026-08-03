@@ -6,17 +6,68 @@ import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { OurServicesSection } from '@/services/agency/agency.types'
 import {
-    Compass,
-    Plane,
+    Briefcase,
     Building2,
-    MapPinned,
-    Car,
     Camera,
-    Ticket,
+    Car,
+    Compass,
+    Heart,
     Mountain,
+    Plane,
+    Ticket,
+    Users,
+    MapPinned,
 } from 'lucide-react'
 
-const FALLBACK_ICONS = [Compass, Plane, Building2, MapPinned, Car, Camera, Ticket, Mountain]
+const FALLBACK_ICONS = [
+    Heart,
+    Users,
+    Mountain,
+    Building2,
+    Camera,
+    Plane,
+    Briefcase,
+    Users,
+    Compass,
+    Car,
+    Ticket,
+    MapPinned,
+]
+
+const CODE_BY_KEYWORD: Array<{ match: RegExp; code: string; tag: string }> = [
+    { match: /honeymoon/i, code: 'HNY', tag: '+ MOON' },
+    { match: /corporate|group/i, code: 'GRP', tag: '+ TOUR' },
+    { match: /adventure|trekking/i, code: 'TRK', tag: '+ PEAK' },
+    { match: /hotel|resort/i, code: 'HTL', tag: '+ STAY' },
+    { match: /photo|media/i, code: 'PHO', tag: '+ SHOT' },
+    { match: /air|ticket/i, code: 'AIR', tag: '+ FLY' },
+    { match: /wedding/i, code: 'WED', tag: '+ RING' },
+    { match: /family/i, code: 'FAM', tag: '+ TRIP' },
+    { match: /transport/i, code: 'TRN', tag: '+ RIDE' },
+    { match: /northern|pakistan/i, code: 'NTH', tag: '+ VIEW' },
+]
+
+function serviceMeta(title: string, index: number) {
+    const hit = CODE_BY_KEYWORD.find((entry) => entry.match.test(title))
+    if (hit) return { code: hit.code, tag: hit.tag }
+
+    const words = title
+        .replace(/[^a-zA-Z\s&]/g, '')
+        .split(/\s+/)
+        .filter(Boolean)
+    const skip = new Set(['and', 'or', 'the', 'a', '&', 'of', 'for'])
+    const meaningful = words.filter((w) => !skip.has(w.toLowerCase()))
+    const code = (
+        meaningful.map((w) => w[0]).join('').slice(0, 3) || `S${index + 1}`
+    )
+        .toUpperCase()
+        .padEnd(3, 'X')
+        .slice(0, 3)
+    const tagWord = (meaningful[meaningful.length - 1] || 'SVC')
+        .slice(0, 4)
+        .toUpperCase()
+    return { code, tag: `+ ${tagWord}` }
+}
 
 export function Services({ data }: { data: OurServicesSection }) {
     const variant = useTemplateVariant()
@@ -82,6 +133,91 @@ export function Services({ data }: { data: OurServicesSection }) {
         )
     }
 
+    /* ── Template 3 (Modern): navy ticket cards ── */
+    if (variant === 'temp3') {
+        return (
+            <section className="services-temp3">
+                <div className="services-temp3-wrap">
+                    <div className="services-temp3-head">
+                        <p className="services-temp3-eyebrow">{data.eyebrow}</p>
+                        <h2 className="services-temp3-title">{data.title}</h2>
+                        <p className="services-temp3-sub">
+                            Every journey, ticketed and taken care of.
+                        </p>
+                    </div>
+
+                    {items.length === 0 ? (
+                        <EmptyState
+                            className="border-white/10 bg-white/5 text-left text-[#F7F3E8]"
+                            title="Services coming soon"
+                            description="Service items from the site theme will appear in this grid."
+                        />
+                    ) : (
+                        <div className="services-temp3-grid">
+                            {items.map((item, i) => {
+                                const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                                const meta = serviceMeta(item.title, i)
+                                const indexLabel = String(i + 1).padStart(2, '0')
+
+                                return (
+                                    <article
+                                        key={`${item.title}-${i}`}
+                                        className="services-temp3-card"
+                                    >
+                                        <div className="services-temp3-code">
+                                            <span>{meta.code}</span>
+                                            <span>{meta.tag}</span>
+                                        </div>
+
+                                        <div className="services-temp3-icon">
+                                            {iconSrc ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    src={iconSrc}
+                                                    alt={item.iconAlt || item.title}
+                                                />
+                                            ) : (
+                                                <Icon
+                                                    strokeWidth={1.5}
+                                                    aria-hidden
+                                                />
+                                            )}
+                                        </div>
+
+                                        <h3>{item.title}</h3>
+                                        {item.description ? (
+                                            <p>{item.description}</p>
+                                        ) : null}
+
+                                        <span
+                                            className="services-temp3-perf"
+                                            aria-hidden
+                                        />
+                                        <span className="services-temp3-tag">
+                                            {indexLabel} / DEP
+                                        </span>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    )}
+
+                    {data.cta?.href ? (
+                        <div className="mt-10 flex justify-center md:mt-12">
+                            <AgencyLink
+                                href={data.cta.href}
+                                className="t3-btn t3-btn-gold"
+                            >
+                                {data.cta.label}
+                            </AgencyLink>
+                        </div>
+                    ) : null}
+                </div>
+            </section>
+        )
+    }
+
     if (variant === 'temp2') {
         return (
             <section className="px-4 py-16 md:px-6 md:py-20">
@@ -120,19 +256,25 @@ export function Services({ data }: { data: OurServicesSection }) {
                         ) : (
                             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                 {items.map((item, i) => {
-                                    const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
-                                    const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                                    const Icon =
+                                        FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                    const iconSrc = resolveThemeAssetUrl(
+                                        item.iconSrc
+                                    )
                                     return (
                                         <div
                                             key={`${item.title}-${i}`}
-                                            className="rounded-2xl bg-white/5 p-5 transition hover:bg-white/10 border border-black/10"
+                                            className="rounded-2xl border border-black/10 bg-white/5 p-5 transition hover:bg-white/10"
                                         >
                                             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/30">
                                                 {iconSrc ? (
                                                     // eslint-disable-next-line @next/next/no-img-element
                                                     <img
                                                         src={iconSrc}
-                                                        alt={item.iconAlt || item.title}
+                                                        alt={
+                                                            item.iconAlt ||
+                                                            item.title
+                                                        }
                                                         className="h-6 w-6 object-contain"
                                                     />
                                                 ) : (
