@@ -2,15 +2,18 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { SpecializationKind } from '@/services/specialization/specialization.types'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import {
+    mapInternationalTourToDetail,
     mapInternationalTourToListing,
     mapTourToDetail,
     mapTourToListing,
+    mapUmrahPlanToDetail,
     mapUmrahPlanToListing,
 } from './listings.mappers'
 import type {
     InternationalTourRow,
     ListingItem,
     ListingSearchFilters,
+    PackageDetail,
     TourDetail,
     TourRow,
     UmrahPlanRow,
@@ -18,6 +21,12 @@ import type {
 
 const TOUR_DETAIL_COLUMNS =
     'id, agency_id, title, start_date, end_date, price_per_seat, capacity_total, publication_status, from_location, to_location, discount_percent, slug, header, overview, highlights, route, places_visited, journey, stay_and_dine, expedition_perks, visual_fragments, kids_discount, confirmed_seats, category, advance_amount_per_seat'
+
+const UMRAH_DETAIL_COLUMNS =
+    'id, agency_id, basic_information, pricing, duration_dates, flight_information, makkah_hotel, madinah_hotel, transportation, package_includes, package_excludes, ziyarat, descriptions, images, booking_info, terms_notes'
+
+const INTERNATIONAL_DETAIL_COLUMNS =
+    'id, agency_id, basic_information, pricing, duration_dates, flight_information, hotels, itinerary, transportation, package_includes, package_excludes, descriptions, images, booking_info, terms_notes, makkah_hotel, madinah_hotel'
 
 const UMRAH_DESTINATIONS = ['Makkah', 'Madinah', 'Jeddah'] as const
 
@@ -85,7 +94,7 @@ export function getListingsService({ supabase }: { supabase: SupabaseClient }) {
             const { data, error } = await supabase
                 .from('tours')
                 .select(
-                    'id, agency_id, title, start_date, end_date, price_per_seat, capacity_total, publication_status, from_location, to_location, discount_percent, slug, header, category'
+                    'id, agency_id, title, start_date, end_date, price_per_seat, capacity_total, publication_status, from_location, to_location, discount_percent, slug, header, category, confirmed_seats'
                 )
                 .eq('agency_id', agencyId)
                 .eq('publication_status', 'PUBLISHED')
@@ -196,6 +205,50 @@ export function getListingsService({ supabase }: { supabase: SupabaseClient }) {
             if (byId.error) throw byId.error
             if (!byId.data) return null
             return mapTourToDetail(byId.data as TourRow)
+        },
+
+        async getUmrahPlanById(
+            agencyId: string,
+            id: string
+        ): Promise<PackageDetail | null> {
+            if (!isValidAgencyId(agencyId) || !id.trim()) return null
+
+            const { data, error } = await supabase
+                .from('umrah_plan')
+                .select(UMRAH_DETAIL_COLUMNS)
+                .eq('agency_id', agencyId)
+                .eq('id', id)
+                .maybeSingle()
+
+            if (error) throw error
+            if (!data) return null
+
+            const row = data as UmrahPlanRow
+            const status = (row.basic_information?.package_status ?? 'ACTIVE').toUpperCase()
+            if (status !== 'ACTIVE') return null
+            return mapUmrahPlanToDetail(row)
+        },
+
+        async getInternationalTourById(
+            agencyId: string,
+            id: string
+        ): Promise<PackageDetail | null> {
+            if (!isValidAgencyId(agencyId) || !id.trim()) return null
+
+            const { data, error } = await supabase
+                .from('international_tour')
+                .select(INTERNATIONAL_DETAIL_COLUMNS)
+                .eq('agency_id', agencyId)
+                .eq('id', id)
+                .maybeSingle()
+
+            if (error) throw error
+            if (!data) return null
+
+            const row = data as InternationalTourRow
+            const status = (row.basic_information?.package_status ?? 'ACTIVE').toUpperCase()
+            if (status !== 'ACTIVE') return null
+            return mapInternationalTourToDetail(row)
         },
 
         async getDestinationOptions(
@@ -322,6 +375,41 @@ export async function getTourBySlugOrId({
         return await getListingsService({ supabase }).getTourBySlugOrId(
             agencyId,
             slugOrId
+        )
+    } catch {
+        return null
+    }
+}
+
+export async function getUmrahPlanById({
+    supabase,
+    agencyId,
+    id,
+}: {
+    supabase: SupabaseClient
+    agencyId: string
+    id: string
+}): Promise<PackageDetail | null> {
+    try {
+        return await getListingsService({ supabase }).getUmrahPlanById(agencyId, id)
+    } catch {
+        return null
+    }
+}
+
+export async function getInternationalTourById({
+    supabase,
+    agencyId,
+    id,
+}: {
+    supabase: SupabaseClient
+    agencyId: string
+    id: string
+}): Promise<PackageDetail | null> {
+    try {
+        return await getListingsService({ supabase }).getInternationalTourById(
+            agencyId,
+            id
         )
     } catch {
         return null

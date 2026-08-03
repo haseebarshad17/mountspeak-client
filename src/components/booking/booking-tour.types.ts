@@ -11,4 +11,5 @@ export type BookingTourOption = {
     startDate: string | null
     capacityTotal: number | null
     confirmedSeats: number
+    heroImageUrl: string | null
 }

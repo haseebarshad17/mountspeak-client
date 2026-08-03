@@ -2,10 +2,11 @@ import '@/assets/globals.css'
 import '@/env/client'
 
 import type { Metadata, Viewport } from 'next'
-import { jost, roboto } from '@/assets/fonts'
+import { fraunces, ibmPlexMono, jost, roboto, spaceGrotesk } from '@/assets/fonts'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { getRequestHost } from '@/lib/host/request-host'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
+import { resolveTemplateVariant } from '@/lib/templates/resolve-variant'
 import { cn } from '@/lib/utils/cn'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { getAgencyContent, getDefaultHomepage } from '@/services/agency/agency.service'
@@ -46,21 +47,21 @@ export async function generateMetadata(): Promise<Metadata> {
             keywords: seo.keywords,
             icons: iconUrl
                 ? {
-                      icon: [{ url: iconUrl }],
-                      shortcut: [{ url: iconUrl }],
-                      apple: [{ url: iconUrl }],
-                  }
+                    icon: [{ url: iconUrl }],
+                    shortcut: [{ url: iconUrl }],
+                    apple: [{ url: iconUrl }],
+                }
                 : undefined,
             openGraph: {
                 title: seo.title,
                 description: seo.description,
                 images: seo.ogImage
                     ? [
-                          {
-                              url: resolveThemeAssetUrl(seo.ogImage) || seo.ogImage,
-                              alt: seo.ogImageAlt,
-                          },
-                      ]
+                        {
+                            url: resolveThemeAssetUrl(seo.ogImage) || seo.ogImage,
+                            alt: seo.ogImageAlt,
+                        },
+                    ]
                     : undefined,
             },
         }
@@ -72,9 +73,9 @@ export async function generateMetadata(): Promise<Metadata> {
             description: fallback.page.seo.description,
             icons: iconUrl
                 ? {
-                      icon: [{ url: iconUrl }],
-                      apple: [{ url: iconUrl }],
-                  }
+                    icon: [{ url: iconUrl }],
+                    apple: [{ url: iconUrl }],
+                }
                 : undefined,
         }
     }
@@ -102,7 +103,9 @@ export default async function RootLayout({
     children: React.ReactNode
 }) {
     let templateId: string | null = null
-    let primary = '#276968'
+    let brand = '#276968'
+    let brandHover = '#1f5453'
+    let brandFg = '#FFFFFF'
 
     try {
         const host = await getRequestHost()
@@ -111,20 +114,49 @@ export default async function RootLayout({
             host,
         })
         templateId = homepage.page.templateId
-        primary = homepage.page.theme.buttons.primary.background
+        const primary = homepage.page.theme.buttons.primary
+        brand =
+            homepage.page.footer?.backgroundColor ||
+            primary.background ||
+            brand
+        brandHover = primary.backgroundHover || brandHover
+        brandFg = primary.text || brandFg
     } catch {
         const fallback = getDefaultHomepage()
         templateId = fallback.page.templateId
-        primary = fallback.page.theme.buttons.primary.background
+        const primary = fallback.page.theme.buttons.primary
+        brand =
+            fallback.page.footer?.backgroundColor ||
+            primary.background ||
+            brand
+        brandHover = primary.backgroundHover || brandHover
+        brandFg = primary.text || brandFg
     }
 
+    const variant = resolveTemplateVariant(templateId)
+
     return (
-        <html lang="en" className={cn(jost.variable, roboto.variable)}>
+        <html
+            lang="en"
+            data-template={variant}
+            className={cn(
+                jost.variable,
+                roboto.variable,
+                fraunces.variable,
+                spaceGrotesk.variable,
+                ibmPlexMono.variable
+            )}
+        >
             <body
-                className={cn('min-h-screen bg-[#FCF8F3] font-sans antialiased', roboto.className)}
+                className={cn(
+                    'site-bg min-h-screen font-sans antialiased',
+                    roboto.className
+                )}
                 style={
                     {
-                        ['--color-brand' as string]: primary,
+                        ['--color-brand' as string]: brand,
+                        ['--color-brand-hover' as string]: brandHover,
+                        ['--color-brand-fg' as string]: brandFg,
                     } as React.CSSProperties
                 }
             >

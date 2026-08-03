@@ -50,7 +50,7 @@ export default async function SearchPage() {
     }
 
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#FCF8F3]" />}>
+        <Suspense fallback={<div className="site-bg min-h-screen" />}>
             <SearchPageContent
                 page={homepage.page}
                 capabilities={capabilities}

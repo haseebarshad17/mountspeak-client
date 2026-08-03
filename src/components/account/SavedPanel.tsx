@@ -2,10 +2,13 @@
 
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { primaryButtonClass } from '@/lib/templates/chrome'
 import { useSavedListings } from '@/services/saved-listings/saved-listings.query'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 
 export function SavedPanel({ agencyId }: { agencyId: string }) {
+    const variant = useTemplateVariant()
     const scopedId = isValidAgencyId(agencyId) ? agencyId : 'default'
     const { items, remove } = useSavedListings(scopedId)
 
@@ -19,7 +22,10 @@ export function SavedPanel({ agencyId }: { agencyId: string }) {
                 <div className="mt-4">
                     <AgencyLink
                         href="/tours"
-                        className="inline-flex rounded-full bg-[#111] px-5 py-2.5 text-sm font-medium text-white"
+                        className={primaryButtonClass(
+                            variant,
+                            'inline-flex rounded-full px-5 py-2.5 text-sm font-medium'
+                        )}
                     >
                         Explore tours
                     </AgencyLink>
@@ -59,7 +65,10 @@ export function SavedPanel({ agencyId }: { agencyId: string }) {
                         <div className="mt-3 flex gap-2">
                             <AgencyLink
                                 href={item.href}
-                                className="inline-flex flex-1 items-center justify-center rounded-lg bg-[#111] px-3 py-2 text-xs font-medium text-white"
+                                className={primaryButtonClass(
+                                    variant,
+                                    'inline-flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-xs font-medium'
+                                )}
                             >
                                 View
                             </AgencyLink>

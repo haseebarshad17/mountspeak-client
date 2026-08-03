@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate, primaryButtonClass } from '@/lib/templates/chrome'
+import { cn } from '@/lib/utils/cn'
 import { useOptionalUser } from '@/services/auth/auth.query'
 import { useUserBookings } from '@/services/user-bookings/user-bookings.query'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
-import { cn } from '@/lib/utils/cn'
 
 function statusClass(tone: string) {
     if (tone === 'confirmed') return 'bg-[#D1FAE5] text-[#065F46]'
@@ -18,6 +20,8 @@ function statusClass(tone: string) {
 
 export function BookingsPanel({ agencyId }: { agencyId: string }) {
     const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming')
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
     const { data: user } = useOptionalUser()
     const { data, isLoading } = useUserBookings(
         user?.email,
@@ -26,6 +30,7 @@ export function BookingsPanel({ agencyId }: { agencyId: string }) {
 
     const upcoming = data?.upcoming ?? []
     const past = data?.past ?? []
+    const linkAccent = classic ? 'text-brand' : 'text-[#06403D]'
 
     return (
         <div>
@@ -71,7 +76,10 @@ export function BookingsPanel({ agencyId }: { agencyId: string }) {
                         <div className="mt-4">
                             <AgencyLink
                                 href="/tours"
-                                className="inline-flex rounded-full bg-[#111] px-5 py-2.5 text-sm font-medium text-white"
+                                className={primaryButtonClass(
+                                    variant,
+                                    'inline-flex rounded-full px-5 py-2.5 text-sm font-medium'
+                                )}
                             >
                                 Browse tours
                             </AgencyLink>
@@ -169,7 +177,10 @@ export function BookingsPanel({ agencyId }: { agencyId: string }) {
                             {booking.slug ? (
                                 <AgencyLink
                                     href={`/tours/${booking.slug}`}
-                                    className="mt-4 inline-flex text-xs font-medium text-[#06403D]"
+                                    className={cn(
+                                        'mt-4 inline-flex text-xs font-medium',
+                                        linkAccent
+                                    )}
                                 >
                                     View tour →
                                 </AgencyLink>

@@ -11,7 +11,11 @@ export default async function ContactUsPage() {
             capabilities={capabilities}
             agencyId={homepage.agencyId}
             title="Contact Us"
-            subtitle="Minimal contact flow for inquiries and booking assistance."
+            subtitle="Reach the team for inquiries, custom plans, and booking assistance."
+            heroSize="default"
+            heroActions={[
+                { label: 'View tours', href: '/tours', variant: 'ghost' },
+            ]}
         >
             <ContactPageContent />
         </MarketingPageShell>

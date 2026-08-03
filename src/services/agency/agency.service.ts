@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import defaults from '@/content/homepage-defaults.json'
 import { buildSiteUrlCandidates } from '@/lib/host/site-url'
+import { DEFAULT_TEMPLATE_ID } from '@/lib/templates/resolve-variant'
 import type {
     AgencyHomepage,
     AgencySiteThemeRow,
@@ -23,7 +24,7 @@ function normalizeHomepagePage(page: Record<string, unknown>): HomepagePage {
         templateId:
             typeof page.templateId === 'string' && page.templateId.trim()
                 ? page.templateId
-                : defaultsPage.templateId || 'classic',
+                : defaultsPage.templateId || 'jedw-cwe-cw',
         sections: {
             ...defaultsPage.sections,
             ...((page.sections as HomepagePage['sections']) ?? {}),
@@ -69,12 +70,15 @@ function extractPage(theme: unknown): HomepagePage | null {
 
 export function getDefaultHomepage(requestHost?: string): AgencyHomepage {
     const doc = defaults as HomepageDocument
+    const page = structuredClone(doc.page)
+    // Always ship Template 1 (Classic / full-bleed) when no agency theme is bound.
+    page.templateId = DEFAULT_TEMPLATE_ID
 
     return {
         agencyId: 'default',
         siteUrl: requestHost ? `http://${requestHost}` : null,
         isAgencySite: false,
-        page: structuredClone(doc.page),
+        page,
     }
 }
 

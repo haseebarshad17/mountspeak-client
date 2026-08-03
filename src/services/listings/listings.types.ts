@@ -17,6 +17,11 @@ export type ListingItem = {
     featured?: boolean
     departureDate?: string | null
     travelersCapacity?: number | null
+    /** 0–100; when set with originalPriceLabel, card shows strikethrough + % off */
+    discountPercent?: number | null
+    originalPriceLabel?: string | null
+    seatsLeft?: number | null
+    tripTypeLabel?: string | null
 }
 
 export type ListingSearchFilters = {
@@ -181,8 +186,53 @@ export type UmrahPlanRow = {
         available_seats?: number
         booking_deadline?: string
     } | null
-    makkah_hotel?: { hotel_name?: string } | null
-    madinah_hotel?: { hotel_name?: string } | null
+    flight_information?: {
+        airline_name?: string
+        flight_type?: string
+        baggage_allowance?: string
+    } | null
+    makkah_hotel?: {
+        hotel_name?: string
+        hotel_rating?: string
+        distance_from_haram_meters?: number
+        number_of_nights?: number
+        room_type?: string
+        image?: string
+    } | null
+    madinah_hotel?: {
+        hotel_name?: string
+        hotel_rating?: string
+        distance_from_masjid_e_nabawi_meters?: number
+        number_of_nights?: number
+        room_type?: string
+        image?: string
+    } | null
+    transportation?: {
+        airport_transfer?: boolean
+        makkah_to_madinah_transfer?: boolean
+        hotel_to_airport_transfer?: boolean
+        transport_type?: string
+    } | null
+    package_includes?: { items?: string[] } | null
+    package_excludes?: { items?: string[] } | null
+    ziyarat?: {
+        makkah_ziyarat_details?: string
+        madinah_ziyarat_details?: string
+        stops?: Array<{ title?: string; description?: string }>
+        hotels?: Array<{
+            label?: string
+            hotel_name?: string
+            hotel_rating?: string
+            distance_meters?: number
+            number_of_nights?: number
+            room_type?: string
+            image?: string
+        }>
+    } | null
+    terms_notes?: {
+        important_notes?: string
+        terms_and_conditions?: string
+    } | null
 }
 
 export type InternationalTourRow = {
@@ -218,4 +268,104 @@ export type InternationalTourRow = {
         available_seats?: number
         booking_deadline?: string
     } | null
+    flight_information?: {
+        airline_name?: string
+        flight_type?: string
+        baggage_allowance?: string
+    } | null
+    hotels?: {
+        makkah_hotel?: InternationalTourRow['makkah_hotel']
+        madinah_hotel?: InternationalTourRow['madinah_hotel']
+        items?: Array<{
+            label?: string
+            hotel_name?: string
+            hotel_rating?: string
+            distance_meters?: number
+            number_of_nights?: number
+            room_type?: string
+            image?: string
+        }>
+    } | null
+    itinerary?: {
+        makkah_ziyarat_details?: string
+        madinah_ziyarat_details?: string
+        stops?: Array<{ title?: string; description?: string }>
+    } | null
+    transportation?: {
+        airport_transfer?: boolean
+        makkah_to_madinah_transfer?: boolean
+        hotel_to_airport_transfer?: boolean
+        transport_type?: string
+    } | null
+    package_includes?: { items?: string[] } | null
+    package_excludes?: { items?: string[] } | null
+    makkah_hotel?: {
+        hotel_name?: string
+        hotel_rating?: string
+        distance_from_haram_meters?: number
+        number_of_nights?: number
+        room_type?: string
+        image?: string
+    } | null
+    madinah_hotel?: {
+        hotel_name?: string
+        hotel_rating?: string
+        distance_from_masjid_e_nabawi_meters?: number
+        number_of_nights?: number
+        room_type?: string
+        image?: string
+    } | null
+    terms_notes?: {
+        important_notes?: string
+        terms_and_conditions?: string
+    } | null
+}
+
+export type PackageDetailKind = 'umrah' | 'international'
+
+export type PackageDetailHotel = {
+    label: string
+    name: string
+    rating: string | null
+    nights: number | null
+    roomType: string | null
+    distanceMeters: number | null
+    imageUrl: string | null
+}
+
+export type PackageDetailStop = {
+    title: string
+    description: string | null
+}
+
+export type PackageDetail = {
+    id: string
+    agencyId: string
+    kind: PackageDetailKind
+    title: string
+    badge: string | null
+    location: string
+    priceLabel: string
+    originalPriceLabel: string | null
+    discountPercent: number | null
+    heroImageUrl: string | null
+    gallery: string[]
+    shortDescription: string | null
+    detailedDescription: string | null
+    durationDays: number | null
+    departureDate: string | null
+    returnDate: string | null
+    seatsAvailable: number | null
+    seatsTotal: number | null
+    bookingDeadline: string | null
+    includes: string[]
+    excludes: string[]
+    hotels: PackageDetailHotel[]
+    stops: PackageDetailStop[]
+    airline: string | null
+    flightType: string | null
+    baggage: string | null
+    notes: string | null
+    terms: string | null
+    requestHref: string
 }

@@ -78,7 +78,7 @@ export function SaveListingButton({
             onClick={onToggle}
             className={cn(
                 'inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#111] shadow-sm backdrop-blur transition hover:bg-white',
-                saved && 'text-[#06403D]',
+                saved && 'text-brand',
                 className
             )}
         >

@@ -75,17 +75,16 @@ export async function middleware(request: NextRequest) {
         return response
     }
 
-    const cookieHost = request.cookies.get(AGENCY_PREVIEW_HOST_COOKIE)?.value?.trim()
-    if (cookieHost && isAgencyHostSegment(cookieHost)) {
-        const agencyHost = normalizeAgencyHost(cookieHost)
-        const redirectUrl = request.nextUrl.clone()
-        redirectUrl.searchParams.set('host', agencyHost)
-        const response = NextResponse.redirect(redirectUrl)
-        setPreviewHostCookie(response, agencyHost)
-        return response
+    // Do not auto-restore agency preview from cookie. Bare localhost must show
+    // the default Template 1 (Classic). Preview only via ?host= or /agency.host/.
+    const sessionResponse = await updateSession(request)
+    if (request.cookies.has(AGENCY_PREVIEW_HOST_COOKIE)) {
+        sessionResponse.cookies.set(AGENCY_PREVIEW_HOST_COOKIE, '', {
+            path: '/',
+            maxAge: 0,
+        })
     }
-
-    return updateSession(request)
+    return sessionResponse
 }
 
 export const config = {

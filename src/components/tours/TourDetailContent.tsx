@@ -20,10 +20,12 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { buildTourBookingHref } from '@/lib/booking/booking-href'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate } from '@/lib/templates/chrome'
+import { cn } from '@/lib/utils/cn'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { TourDetail } from '@/services/listings/listings.types'
 import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
-import { cn } from '@/lib/utils/cn'
 
 function formatDate(value: string | null) {
     if (!value) return null
@@ -63,6 +65,8 @@ export function TourDetailContent({
     const [adults, setAdults] = useState(2)
     const [children, setChildren] = useState(0)
     const [galleryOpen, setGalleryOpen] = useState(false)
+    const variant = useTemplateVariant()
+    const classic = isClassicTemplate(variant)
 
     const start = formatDate(tour.startDate)
     const durationLabel = [
@@ -105,12 +109,17 @@ export function TourDetailContent({
 
     return (
         <>
-            <SiteHeader page={page} capabilities={capabilities} />
-            <main className="overflow-x-hidden bg-[#FCF8F3] pb-24 lg:pb-0">
+            <SiteHeader page={page} capabilities={capabilities} overlay={classic} />
+            <main className="site-bg overflow-x-hidden pb-24 lg:pb-0">
                 {/* Rounded hero card */}
-                <section className="pt-6 md:pt-8">
-                    <div className="site-container">
-                        <div className="relative overflow-hidden rounded-[28px]">
+                <section className={cn(classic ? 'px-3 pt-3 sm:px-5 sm:pt-5' : 'pt-6 md:pt-8')}>
+                    <div className={classic ? undefined : 'site-container'}>
+                        <div
+                            className={cn(
+                                'relative overflow-hidden',
+                                classic ? 'rounded-2xl' : 'rounded-[28px]'
+                            )}
+                        >
                             <div className="relative aspect-[16/9] min-h-[280px] md:aspect-[21/9] md:min-h-[360px]">
                             {activeHero ? (
                                 // eslint-disable-next-line @next/next/no-img-element
@@ -289,7 +298,12 @@ export function TourDetailContent({
                                                     key={item.title}
                                                     className="flex gap-2.5 text-sm text-[#3D4450]"
                                                 >
-                                                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#06403D] text-white">
+                                                    <span
+                                                        className={cn(
+                                                            'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-white',
+                                                            classic ? 'bg-brand' : 'bg-[#06403D]'
+                                                        )}
+                                                    >
                                                         <Check className="h-3 w-3" strokeWidth={3} />
                                                     </span>
                                                     <span>
@@ -379,7 +393,12 @@ export function TourDetailContent({
                                                 className="relative flex gap-4 pb-8 last:pb-0"
                                             >
                                                 <div className="relative flex w-8 shrink-0 flex-col items-center">
-                                                    <span className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[#06403D] text-xs font-semibold text-white">
+                                                    <span
+                                                        className={cn(
+                                                            'z-10 flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white',
+                                                            classic ? 'bg-brand' : 'bg-[#06403D]'
+                                                        )}
+                                                    >
                                                         {day.day}
                                                     </span>
                                                     {index < tour.journey.length - 1 ? (
@@ -387,7 +406,14 @@ export function TourDetailContent({
                                                     ) : null}
                                                 </div>
                                                 <div className="min-w-0 flex-1 rounded-2xl border border-black/[0.06] bg-white p-4 md:p-5">
-                                                    <span className="inline-flex rounded-full bg-[#EEF4F2] px-2.5 py-0.5 text-[11px] font-medium text-[#06403D]">
+                                                    <span
+                                                        className={cn(
+                                                            'inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium',
+                                                            classic
+                                                                ? 'bg-brand-soft'
+                                                                : 'bg-[#EEF4F2] text-[#06403D]'
+                                                        )}
+                                                    >
                                                         Day {String(day.day).padStart(2, '0')}
                                                     </span>
                                                     <h3 className="mt-2 text-lg font-semibold text-[#1A1F2C]">
@@ -561,7 +587,12 @@ export function TourDetailContent({
                                                 key={perk.title}
                                                 className="flex gap-2.5 text-sm text-[#3D4450]"
                                             >
-                                                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#06403D] text-white">
+                                                <span
+                                                    className={cn(
+                                                        'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-white',
+                                                        classic ? 'bg-brand' : 'bg-[#06403D]'
+                                                    )}
+                                                >
                                                     <Check className="h-3 w-3" strokeWidth={3} />
                                                 </span>
                                                 <span>
@@ -620,7 +651,12 @@ export function TourDetailContent({
                                     <span className="text-xs font-medium uppercase tracking-wide text-[#8A8F98]">
                                         Departure
                                     </span>
-                                    <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-black/10 bg-[#FAF7F2] px-3 py-2.5 text-sm text-[#1A1F2C]">
+                                    <div
+                                        className={cn(
+                                            'mt-1.5 flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C]',
+                                            classic ? 'bg-white' : 'bg-[#FAF7F2]'
+                                        )}
+                                    >
                                         <CalendarDays className="h-4 w-4 text-[#6B7280]" />
                                         {start || 'Dates on request'}
                                     </div>
@@ -693,12 +729,22 @@ export function TourDetailContent({
 
                                 <AgencyLink
                                     href={bookingHref}
-                                    className="mt-5 flex w-full items-center justify-center rounded-xl bg-[#06403D] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#053532]"
+                                    className={cn(
+                                        'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-white transition',
+                                        classic
+                                            ? 'btn-brand'
+                                            : 'bg-[#06403D] hover:bg-[#053532]'
+                                    )}
                                 >
                                     Book now
                                 </AgencyLink>
 
-                                <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-[#06403D] px-3 py-3 text-center text-white">
+                                <div
+                                    className={cn(
+                                        'mt-4 grid grid-cols-3 gap-2 rounded-xl px-3 py-3 text-center text-white',
+                                        classic ? 'bg-brand' : 'bg-[#06403D]'
+                                    )}
+                                >
                                     <div>
                                         <p className="text-sm font-semibold">
                                             {tour.confirmedSeats ?? 0}
@@ -763,7 +809,10 @@ export function TourDetailContent({
                         </div>
                         <AgencyLink
                             href={bookingHref}
-                            className="rounded-xl bg-[#06403D] px-5 py-2.5 text-sm font-semibold text-white"
+                            className={cn(
+                                'rounded-xl px-5 py-2.5 text-sm font-semibold text-white',
+                                classic ? 'btn-brand' : 'bg-[#06403D]'
+                            )}
                         >
                             Book now
                         </AgencyLink>

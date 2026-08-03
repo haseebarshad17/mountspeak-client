@@ -122,7 +122,41 @@
       "trust": {
         "id": "trust",
         "eyebrow": "Trusted Partners",
-        "title": "Brands travelers know and trust"
+        "title": "Brands travelers know and trust",
+        "logos": [
+          {
+            "src": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1530789256257-482a4c5d1b1e?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          },
+          {
+            "src": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=200&q=80",
+            "alt": "Partner brand"
+          }
+        ]
       },
       "planPerfectTrip": {
         "id": "plan-perfect-trip",

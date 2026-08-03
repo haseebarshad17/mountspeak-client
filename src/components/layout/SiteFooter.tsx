@@ -14,6 +14,7 @@ import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import { useCreateSubscription } from '@/services/subscribe/subscribe.query'
 import type { HomepagePage, NavItem } from '@/services/agency/agency.types'
+import { cn } from '@/lib/utils/cn'
 
 const FALLBACK_LINKS: NavItem[] = [
     { label: 'Packages', href: '/packages' },
@@ -84,11 +85,10 @@ export function SiteFooter({
 }) {
     const variant = useTemplateVariant()
     const { footer, branding } = page
-    const bg = footer.backgroundColor || '#06403D'
     const logoSrc =
+        resolveThemeAssetUrl(branding.logo?.onDark?.src) ||
         resolveThemeAssetUrl(footer.logo?.src) ||
-        resolveThemeAssetUrl(branding.logo?.default?.src) ||
-        resolveThemeAssetUrl(branding.logo?.onDark?.src)
+        resolveThemeAssetUrl(branding.logo?.default?.src)
 
     const [email, setEmail] = useState('')
     const { mutateAsync: subscribe, isPending } = useCreateSubscription()
@@ -174,7 +174,232 @@ export function SiteFooter({
         }
     }
 
-    if (variant !== 'classic') return null
+    if (variant !== 'temp1' && variant !== 'temp2' && variant !== 'temp3')
+        return null
+
+    const bg =
+        footer.backgroundColor ||
+        'var(--color-brand)'
+
+    if (variant === 'temp1') {
+        return (
+            <footer className="text-white" style={{ backgroundColor: bg }}>
+                <div className="site-container py-14">
+                    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)] lg:gap-16">
+                        <div className="space-y-4">
+                            <AgencyLink
+                                href="/"
+                                aria-label={branding.name}
+                                className="inline-flex"
+                            >
+                                {logoSrc ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={logoSrc}
+                                        alt={footer.logo?.alt || branding.name}
+                                        className="h-9 w-auto max-w-[200px] object-contain"
+                                    />
+                                ) : (
+                                    <p className="text-xl font-semibold tracking-tight">
+                                        {branding.name}
+                                    </p>
+                                )}
+                            </AgencyLink>
+                            <p className="max-w-sm text-sm leading-relaxed text-white/70">
+                                {branding.tagline}. Discover national and international
+                                tours with complete travel solutions.
+                            </p>
+                            {socialItems.length > 0 ? (
+                                <div className="flex items-center gap-2.5 pt-1">
+                                    {socialItems.map(({ label, href, Icon }) => (
+                                        <a
+                                            key={label}
+                                            href={href}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            aria-label={label}
+                                            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                                        >
+                                            <Icon className="h-[18px] w-[18px]" />
+                                        </a>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+
+                        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                            {columns.map((col) => (
+                                <div
+                                    key={col.title}
+                                    className={cn(
+                                        col.title.trim().toLowerCase() === 'contact'
+                                            ? 'sm:col-span-2 lg:col-span-1'
+                                            : undefined
+                                    )}
+                                >
+                                    <p className="mb-4 text-sm font-semibold">
+                                        {col.title}
+                                    </p>
+                                    <ul className="space-y-2.5">
+                                        {col.items.map((item) => (
+                                            <li key={`${col.title}-${item.label}`}>
+                                                <FooterLink item={item} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-12 border-t border-white/10 pt-10">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <p className="text-sm font-medium text-white/90">
+                                Subscribe to our newsletter
+                            </p>
+                            <form
+                                className="flex w-full max-w-sm overflow-hidden rounded-full bg-white/10 p-1"
+                                onSubmit={onSubscribe}
+                            >
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Your email"
+                                    required
+                                    className="min-w-0 flex-1 rounded-full bg-transparent px-4 py-2 text-sm text-white outline-none placeholder:text-white/50"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="shrink-0 rounded-full bg-white px-4 py-2 text-sm font-medium text-[#0B6E6A] disabled:opacity-60"
+                                >
+                                    {isPending ? 'Subscribing' : 'Subscribe'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-white/10">
+                    <p className="site-container py-5 text-xs text-white/50">
+                        © {new Date().getFullYear()} {branding.name}. All rights
+                        reserved.
+                    </p>
+                </div>
+            </footer>
+        )
+    }
+
+    if (variant === 'temp3') {
+        return (
+            <footer className="t3-section-navy border-t border-t3-border text-t3-cream">
+                <div className="t3-wrap py-14 md:py-16">
+                    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)] lg:gap-16">
+                        <div className="space-y-4">
+                            <AgencyLink
+                                href="/"
+                                aria-label={branding.name}
+                                className="inline-flex"
+                            >
+                                {logoSrc ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={logoSrc}
+                                        alt={footer.logo?.alt || branding.name}
+                                        className="h-10 w-auto max-w-[200px] object-contain"
+                                    />
+                                ) : (
+                                    <p className="font-display text-xl font-semibold tracking-tight text-t3-cream">
+                                        {branding.name}
+                                    </p>
+                                )}
+                            </AgencyLink>
+                            <p className="max-w-sm font-ui text-sm leading-relaxed text-t3-muted">
+                                {branding.tagline}. Discover national and international
+                                tours with complete travel solutions.
+                            </p>
+                            {socialItems.length > 0 ? (
+                                <div className="flex items-center gap-2.5 pt-1">
+                                    {socialItems.map(({ label, href, Icon }) => (
+                                        <a
+                                            key={label}
+                                            href={href}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            aria-label={label}
+                                            className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-t3-border text-t3-cream transition hover:border-t3-gold hover:text-t3-gold"
+                                        >
+                                            <Icon className="h-[18px] w-[18px]" />
+                                        </a>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+
+                        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                            {columns.map((col) => (
+                                <div
+                                    key={col.title}
+                                    className={cn(
+                                        col.title.trim().toLowerCase() === 'contact'
+                                            ? 'sm:col-span-2 lg:col-span-1'
+                                            : undefined
+                                    )}
+                                >
+                                    <p className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-t3-gold">
+                                        {col.title}
+                                    </p>
+                                    <ul className="space-y-2.5">
+                                        {col.items.map((item) => (
+                                            <li key={`${col.title}-${item.label}`}>
+                                                <FooterLink item={item} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-12 border-t border-t3-border pt-10">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <p className="font-ui text-sm font-medium text-t3-cream/90">
+                                Subscribe to our newsletter
+                            </p>
+                            <form
+                                className="flex w-full max-w-sm overflow-hidden rounded-sm border border-t3-border bg-t3-panel p-1"
+                                onSubmit={onSubscribe}
+                            >
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Your email"
+                                    required
+                                    className="min-w-0 flex-1 rounded-sm bg-transparent px-4 py-2 font-ui text-sm text-t3-cream outline-none placeholder:text-t3-dim"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="t3-btn-solid shrink-0 rounded-sm px-4 py-2 text-sm disabled:opacity-60"
+                                >
+                                    {isPending ? 'Subscribing' : 'Subscribe'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-t3-border">
+                    <p className="t3-wrap py-5 font-mono text-[11px] tracking-[0.08em] text-t3-dim">
+                        © {new Date().getFullYear()} {branding.name}. All rights
+                        reserved.
+                    </p>
+                </div>
+            </footer>
+        )
+    }
 
     return (
         <footer className="mt-20 text-white" style={{ backgroundColor: bg }}>
@@ -240,11 +465,12 @@ export function SiteFooter({
                     {columns.map((col) => (
                         <div
                             key={col.title}
-                            className={
+                            className={cn(
+                                "max-w-[260px]",
                                 col.title.trim().toLowerCase() === 'contact'
                                     ? 'col-span-2 sm:col-span-1'
                                     : undefined
-                            }
+                            )}
                         >
                             <p className="mb-4 text-sm font-semibold">{col.title}</p>
                             <ul className="space-y-2.5">

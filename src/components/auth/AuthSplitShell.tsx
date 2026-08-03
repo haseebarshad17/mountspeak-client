@@ -31,7 +31,7 @@ export function AuthSplitShell({
         FALLBACK_AUTH_IMAGE
 
     return (
-        <div className="flex min-h-screen bg-[#FCF8F3]">
+        <div className="site-bg flex min-h-screen">
             {/* Left panel */}
             <aside className="relative hidden w-1/2 overflow-hidden lg:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -92,7 +92,7 @@ export function AuthSplitShell({
 
                 <div className="flex flex-1 items-center justify-center px-5 py-10 sm:px-10">
                     <div className="w-full max-w-[420px]">
-                        <p className="text-sm uppercase tracking-[0.16em] text-[#888]">
+                        <p className="text-brand text-sm font-medium uppercase">
                             Account
                         </p>
                         <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111]">

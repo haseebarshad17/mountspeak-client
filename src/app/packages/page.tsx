@@ -1,5 +1,9 @@
 import { MarketingPageShell } from '@/components/pages/MarketingPageShell'
 import { ListingPageContent } from '@/components/pages/ListingPageContent'
+import {
+    ListingPageCta,
+    ListingPageExtras,
+} from '@/components/pages/ListingPageExtras'
 import { loadAgencyContext } from '@/lib/site/load-agency-context'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { getListingsByKind } from '@/services/listings/listings.service'
@@ -35,13 +39,20 @@ export default async function PackagesPage() {
             subtitle="View package offers based on your agency specialization profile."
             capabilities={capabilities}
             agencyId={homepage.agencyId}
+            heroSize="default"
+            heroActions={[
+                { label: 'Search packages', href: '/search?kind=packages' },
+                { label: 'Contact us', href: '/contact-us', variant: 'ghost' },
+            ]}
         >
+            <ListingPageExtras kindLabel="Packages" />
             <ListingPageContent
                 capabilities={capabilities}
                 allowedKinds={['packages', 'international']}
                 listingsByKind={listingsByKind}
                 agencyId={homepage.agencyId}
             />
+            <ListingPageCta />
         </MarketingPageShell>
     )
 }

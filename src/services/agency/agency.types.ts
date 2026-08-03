@@ -230,6 +230,7 @@ export type TrustSection = {
     id: string
     eyebrow: string
     title: string
+    logos?: Array<{ src: string; alt: string }>
 }
 
 export type HomepageSections = {

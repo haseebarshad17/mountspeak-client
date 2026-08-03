@@ -50,7 +50,12 @@ export function BrandMark({
     }
 
     return (
-        <span className="text-[1.15rem] font-bold tracking-tight text-[#111]">
+        <span
+            className={cn(
+                'text-[1.15rem] font-bold tracking-tight text-[#111]',
+                className
+            )}
+        >
             {brand.toLowerCase().includes('company') ? 'postcard.ai' : brand}
         </span>
     )
@@ -59,18 +64,19 @@ export function BrandMark({
 export function SiteHeader({
     page,
     capabilities,
+    overlay = false,
 }: {
     page: HomepagePage
     capabilities?: AgencySpecializationCapabilities
+    /** When true (homepage hero), modern header sits transparent over the hero. */
+    overlay?: boolean
 }) {
     const variant = useTemplateVariant()
     const brand = page.branding.name
-    const logoSrc =
-        resolveThemeAssetUrl(page.branding.logo?.default?.src) ||
-        resolveThemeAssetUrl(page.branding.logo?.onDark?.src)
     const ctaHref = bookNowHref(capabilities)
     const { data: user } = useOptionalUser()
     const [menuOpen, setMenuOpen] = useState(false)
+    const [scrolled, setScrolled] = useState(false)
 
     useEffect(() => {
         if (!menuOpen) return
@@ -85,10 +91,184 @@ export function SiteHeader({
         }
     }, [menuOpen])
 
-    if (variant === 'classic') {
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 10)
+        onScroll()
+        window.addEventListener('scroll', onScroll, { passive: true })
+        return () => window.removeEventListener('scroll', onScroll)
+    }, [])
+
+    if (variant === 'temp1') {
+        const logoSrc =
+            resolveThemeAssetUrl(page.branding.logo?.onDark?.src) ||
+            resolveThemeAssetUrl(page.branding.logo?.default?.src)
+        const elevated = scrolled || !overlay
+
         return (
             <>
-                <header className="sticky top-0 z-50 border-b border-black/5 bg-[#FCF8F3]/95 backdrop-blur">
+                <header className="fixed inset-x-0 top-6 z-50 pt-3 md:pt-4">
+                    <div className="site-container">
+                        <div
+                            className={cn(
+                                'flex h-[64px] items-center justify-between gap-4 px-3 transition-all duration-300 ease-out sm:h-[72px] sm:px-4',
+                                elevated
+                                    ? 'rounded-xl border border-white/10 bg-black/55 shadow-[0_12px_40px_rgba(0,0,0,0.28)] backdrop-blur-md'
+                                    : 'rounded-2xl border border-transparent bg-transparent'
+                            )}
+                        >
+                            <div className="flex min-w-0 items-center gap-2">
+                                <button
+                                    type="button"
+                                    aria-label="Open menu"
+                                    aria-expanded={menuOpen}
+                                    onClick={() => setMenuOpen(true)}
+                                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition hover:bg-white/10 lg:hidden"
+                                >
+                                    <TwoLineMenu />
+                                </button>
+
+                                <AgencyLink
+                                    href="/"
+                                    aria-label={brand}
+                                    className="inline-flex max-w-[160px] items-center shrink-0 sm:max-w-[200px]"
+                                >
+                                    <BrandMark
+                                        brand={brand}
+                                        logoSrc={logoSrc}
+                                        className="text-white"
+                                    />
+                                </AgencyLink>
+                            </div>
+
+                            <nav className="hidden items-center gap-7 text-[0.92rem] text-white/80 lg:flex">
+                                {NAV.map((item) => (
+                                    <AgencyLink
+                                        key={item.label}
+                                        href={item.href}
+                                        className="nav-underline transition hover:text-white"
+                                    >
+                                        {item.label}
+                                    </AgencyLink>
+                                ))}
+                            </nav>
+
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                {!user ? (
+                                    <AgencyLink
+                                        href="/login"
+                                        className="rounded-full border border-white/35 px-4 py-2 text-sm text-white transition hover:border-white/60 hover:bg-white/10"
+                                    >
+                                        Log in
+                                    </AgencyLink>
+                                ) : null}
+                                {user ? <ProfileMenu /> : null}
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                {!overlay ? (
+                    <div className="h-[88px] md:h-[96px]" aria-hidden />
+                ) : null}
+
+                <div
+                    className={cn(
+                        'fixed inset-0 z-[60] lg:hidden',
+                        menuOpen ? 'pointer-events-auto' : 'pointer-events-none'
+                    )}
+                    aria-hidden={!menuOpen}
+                >
+                    <button
+                        type="button"
+                        aria-label="Close menu"
+                        onClick={() => setMenuOpen(false)}
+                        className={cn(
+                            'absolute inset-0 bg-black/40 transition-opacity duration-300',
+                            menuOpen ? 'opacity-100' : 'opacity-0'
+                        )}
+                    />
+                    <aside
+                        className={cn(
+                            'absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out',
+                            menuOpen ? 'translate-x-0' : '-translate-x-full'
+                        )}
+                    >
+                        <div className="flex h-[72px] items-center justify-between gap-3 border-b border-black/5 px-4">
+                            <AgencyLink
+                                href="/"
+                                aria-label={brand}
+                                onClick={() => setMenuOpen(false)}
+                                className="inline-flex max-w-[180px] items-center"
+                            >
+                                <BrandMark
+                                    brand={brand}
+                                    logoSrc={
+                                        resolveThemeAssetUrl(
+                                            page.branding.logo?.default?.src
+                                        ) ||
+                                        resolveThemeAssetUrl(
+                                            page.branding.logo?.onDark?.src
+                                        )
+                                    }
+                                />
+                            </AgencyLink>
+                            <button
+                                type="button"
+                                aria-label="Close menu"
+                                onClick={() => setMenuOpen(false)}
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#111] transition hover:bg-black/5"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+                            {NAV.map((item) => (
+                                <AgencyLink
+                                    key={item.label}
+                                    href={item.href}
+                                    onClick={() => setMenuOpen(false)}
+                                    className="rounded-xl px-3.5 py-3 text-[0.95rem] font-medium text-[#222] transition hover:bg-black/[0.04]"
+                                >
+                                    {item.label}
+                                </AgencyLink>
+                            ))}
+                        </nav>
+
+                        {!user ? (
+                            <div className="border-t border-black/5 p-4">
+                                <AgencyLink
+                                    href="/login"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex w-full items-center justify-center rounded-full border border-black/10 px-5 py-2.5 text-sm font-medium text-[#111] transition hover:bg-black/[0.03]"
+                                >
+                                    Log in
+                                </AgencyLink>
+                            </div>
+                        ) : null}
+                    </aside>
+                </div>
+            </>
+        )
+    }
+
+    if (variant === 'temp2' || variant === 'temp3') {
+        const logoSrc =
+            resolveThemeAssetUrl(page.branding.logo?.default?.src) ||
+            resolveThemeAssetUrl(page.branding.logo?.onDark?.src)
+        const isModern = variant === 'temp3'
+        const shellBg = isModern ? 'bg-white' : 'bg-[#FCF8F3]/95'
+        const bookClass = isModern
+            ? 'rounded-sm bg-[#E89C5D] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#d8894a] sm:px-5'
+            : 'rounded-full bg-[#111] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#333] sm:px-5'
+
+        return (
+            <>
+                <header
+                    className={cn(
+                        'sticky top-0 z-50 border-b border-black/5 backdrop-blur',
+                        shellBg
+                    )}
+                >
                     <div className="site-container flex h-[72px] items-center justify-between gap-4">
                         <div className="flex min-w-0 items-center gap-2">
                             <button
@@ -115,7 +295,12 @@ export function SiteHeader({
                                 <AgencyLink
                                     key={item.label}
                                     href={item.href}
-                                    className="transition hover:text-[#111]"
+                                    className={cn(
+                                        'nav-underline transition',
+                                        isModern
+                                            ? 'hover:text-[#C9A15A]'
+                                            : 'hover:text-[#111]'
+                                    )}
                                 >
                                     {item.label}
                                 </AgencyLink>
@@ -131,13 +316,7 @@ export function SiteHeader({
                                     Log in
                                 </AgencyLink>
                             ) : null}
-                            <AgencyLink
-                                href={ctaHref}
-                                className={cn(
-                                    'rounded-full bg-[#111] px-4 py-2.5 text-sm font-medium text-white sm:px-5',
-                                    'transition hover:bg-[#333]'
-                                )}
-                            >
+                            <AgencyLink href={ctaHref} className={bookClass}>
                                 Book Now
                             </AgencyLink>
                             {user ? <ProfileMenu /> : null}
@@ -164,7 +343,8 @@ export function SiteHeader({
                     />
                     <aside
                         className={cn(
-                            'absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col bg-[#FCF8F3] shadow-2xl transition-transform duration-300 ease-out',
+                            'absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col shadow-2xl transition-transform duration-300 ease-out',
+                            isModern ? 'bg-white' : 'bg-[#FCF8F3]',
                             menuOpen ? 'translate-x-0' : '-translate-x-full'
                         )}
                     >
@@ -213,7 +393,12 @@ export function SiteHeader({
                             <AgencyLink
                                 href={ctaHref}
                                 onClick={() => setMenuOpen(false)}
-                                className="flex w-full items-center justify-center rounded-full bg-[#111] px-5 py-2.5 text-sm font-medium text-white"
+                                className={cn(
+                                    'flex w-full items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium text-white',
+                                    isModern
+                                        ? 'bg-[#E89C5D] hover:bg-[#d8894a]'
+                                        : 'bg-[#111]'
+                                )}
                             >
                                 Book Now
                             </AgencyLink>

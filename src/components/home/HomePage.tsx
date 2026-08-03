@@ -3,6 +3,7 @@
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { Hero } from '@/components/home/sections/Hero'
+import { Trust } from '@/components/home/sections/Trust'
 import { Intro } from '@/components/home/sections/Intro'
 import { Services } from '@/components/home/sections/Services'
 import { Destinations } from '@/components/home/sections/Destinations'
@@ -43,18 +44,27 @@ export function HomePage({
         ...(sections.tourismGallery?.images?.map((image) => image.src) ?? []),
         sections.planPerfectTrip?.image?.src,
     ])
+    const destinationCards =
+        sections.popularDestination?.cards?.map((card) => ({
+            name: card.name,
+            region: card.region,
+            image: card.image,
+        })) ?? []
 
     return (
         <>
-            <SiteHeader page={page} capabilities={capabilities} />
+            <SiteHeader page={page} capabilities={capabilities} overlay />
             <main>
                 <Hero
                     data={sections.hero}
                     capabilities={capabilities}
                     cardImages={heroCardImages}
                     destinationsByKind={destinationsByKind}
+                    destinationCards={destinationCards}
                     previewHost={previewHost}
+                    socialLinks={page.footer?.socialLinks}
                 />
+                {sections.trust ? <Trust data={sections.trust} /> : null}
                 {sections.planPerfectTrip ? (
                     <Intro data={sections.planPerfectTrip} />
                 ) : null}

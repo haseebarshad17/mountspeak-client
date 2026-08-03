@@ -58,13 +58,14 @@ export default async function BookingPage({ searchParams }: PageProps) {
         startDate: tour.startDate,
         capacityTotal: tour.capacityTotal,
         confirmedSeats: tour.confirmedSeats ?? 0,
+        heroImageUrl: tour.heroImageUrl,
     }
 
     const adults = Number(params.adults)
     const children = Number(params.children)
 
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#FCF8F3]" />}>
+        <Suspense fallback={<div className="site-bg min-h-screen" />}>
             <TourBookingWizard
                 page={homepage.page}
                 capabilities={capabilities}

@@ -1,5 +1,9 @@
 import { MarketingPageShell } from '@/components/pages/MarketingPageShell'
 import { ListingPageContent } from '@/components/pages/ListingPageContent'
+import {
+    ListingPageCta,
+    ListingPageExtras,
+} from '@/components/pages/ListingPageExtras'
 import { loadAgencyContext } from '@/lib/site/load-agency-context'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
 import { getListingsByKind } from '@/services/listings/listings.service'
@@ -35,13 +39,20 @@ export default async function ToursPage() {
             subtitle="Discover curated local and international journeys tailored to your agency plan."
             capabilities={capabilities}
             agencyId={homepage.agencyId}
+            heroSize="default"
+            heroActions={[
+                { label: 'Search trips', href: '/search' },
+                { label: 'Contact us', href: '/contact-us', variant: 'ghost' },
+            ]}
         >
+            <ListingPageExtras kindLabel="Tours" />
             <ListingPageContent
                 capabilities={capabilities}
                 allowedKinds={['tours', 'international']}
                 listingsByKind={listingsByKind}
                 agencyId={homepage.agencyId}
             />
+            <ListingPageCta />
         </MarketingPageShell>
     )
 }

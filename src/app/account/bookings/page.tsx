@@ -7,7 +7,7 @@ export default async function AccountBookingsPage() {
     const { homepage, capabilities } = await loadAgencyContext()
 
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#FCF8F3]" />}>
+        <Suspense fallback={<div className="site-bg min-h-screen" />}>
             <AccountShell
                 page={homepage.page}
                 capabilities={capabilities}

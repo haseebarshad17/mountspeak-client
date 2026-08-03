@@ -2,7 +2,9 @@
 
 import * as Popover from '@radix-ui/react-popover'
 import { Check, ChevronDown } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
+import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { isClassicTemplate, softFieldClass } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
 
 export type SelectOption = {
@@ -17,6 +19,8 @@ export function Select({
     placeholder = 'Select',
     className,
     disabled,
+    leadingIcon,
+    variant = 'default',
 }: {
     value: string
     onChange: (value: string) => void
@@ -24,12 +28,17 @@ export function Select({
     placeholder?: string
     className?: string
     disabled?: boolean
+    leadingIcon?: ReactNode
+    variant?: 'default' | 'bare'
 }) {
+    const template = useTemplateVariant()
+    const classic = isClassicTemplate(template)
     const [open, setOpen] = useState(false)
     const selected = useMemo(
         () => options.find((option) => option.value === value) ?? null,
         [options, value]
     )
+    const isBare = variant === 'bare'
 
     return (
         <Popover.Root open={open} onOpenChange={setOpen}>
@@ -37,22 +46,34 @@ export function Select({
                 <button
                     type="button"
                     className={cn(
-                        'flex w-full min-w-0 items-center justify-between gap-2 rounded-xl bg-[#F7F3EE] px-4 py-3 text-left text-sm outline-none transition',
-                        'hover:bg-[#F1EBE3] disabled:cursor-not-allowed disabled:opacity-60',
+                        'flex w-full min-w-0 items-center gap-2 text-left text-sm outline-none transition',
+                        isBare
+                            ? 'h-full rounded-none bg-transparent px-3.5 py-3.5 hover:bg-black/[0.02]'
+                            : softFieldClass(template, 'justify-between'),
+                        'disabled:cursor-not-allowed disabled:opacity-60',
                         className
                     )}
                 >
-                    <span className={cn('min-w-0 truncate', !selected && 'text-[#888]')}>
+                    {leadingIcon ? (
+                        <span className="shrink-0 text-[#8A9199]">{leadingIcon}</span>
+                    ) : null}
+                    <span
+                        className={cn(
+                            'min-w-0 flex-1 truncate',
+                            !selected && 'text-[#9AA0A6]'
+                        )}
+                    >
                         {selected?.label ?? placeholder}
                     </span>
-                    <ChevronDown className="h-4 w-4 shrink-0 text-[#666]" />
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#9AA0A6]" />
                 </button>
             </Popover.Trigger>
             <Popover.Portal>
                 <Popover.Content
                     align="start"
                     sideOffset={8}
-                    className="z-50 max-h-64 w-[var(--radix-popover-trigger-width)] overflow-auto rounded-xl border border-black/5 bg-white p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.12)]"
+                    className="z-50 max-h-64 w-[var(--radix-popover-trigger-width)] min-w-[180px] scrollbar-thin
+                    overflow-auto rounded-xl border border-black/5 bg-white p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.12)]"
                 >
                     {options.length === 0 ? (
                         <p className="px-3 py-2 text-sm text-[#666]">No options</p>
@@ -70,8 +91,12 @@ export function Select({
                                     className={cn(
                                         'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition',
                                         active
-                                            ? 'bg-[#111] text-white'
-                                            : 'text-[#222] hover:bg-[#F7F3EE]'
+                                            ? classic
+                                                ? 'bg-brand'
+                                                : 'bg-[#111] text-white'
+                                            : classic
+                                              ? 'text-[#222] hover:bg-black/[0.04]'
+                                              : 'text-[#222] hover:bg-[#F7F3EE]'
                                     )}
                                 >
                                     {option.label}
