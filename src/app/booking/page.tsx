@@ -58,6 +58,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
         startDate: tour.startDate,
         capacityTotal: tour.capacityTotal,
         confirmedSeats: tour.confirmedSeats ?? 0,
+        heroImageUrl: tour.heroImageUrl,
     }
 
     const adults = Number(params.adults)

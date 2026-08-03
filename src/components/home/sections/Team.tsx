@@ -1,6 +1,7 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { MeetOurTeamSection } from '@/services/agency/agency.types'
@@ -63,6 +64,65 @@ export function Team({ data }: { data: MeetOurTeamSection }) {
                                             {member.name}
                                         </p>
                                         <p className="mt-1 text-sm text-[#666]">{member.role}</p>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    )}
+                </div>
+            </section>
+        )
+    }
+
+    if (variant === 'temp3') {
+        return (
+            <section className="t3-section t3-section-cream">
+                <div className="t3-wrap">
+                    <Temp3SectionHeader
+                        eyebrow={data.eyebrow}
+                        title={data.title}
+                        tone="cream"
+                    />
+
+                    {members.length === 0 ? (
+                        <EmptyState
+                            title="Team coming soon"
+                            description="Add team members in the site theme to introduce your guides and planners."
+                        />
+                    ) : (
+                        <div className="grid gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+                            {members.map((member, i) => {
+                                const image = resolveThemeAssetUrl(member.image)
+                                return (
+                                    <article
+                                        key={`${member.name}-${i}`}
+                                        className="group relative aspect-[3/4] overflow-hidden rounded-[16px] bg-t3-navy shadow-[0_16px_40px_rgba(14,27,51,0.1)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(14,27,51,0.14)]"
+                                    >
+                                        <div
+                                            className={cn(
+                                                'absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.04]',
+                                                !image &&
+                                                    `bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}`
+                                            )}
+                                            style={
+                                                image
+                                                    ? { backgroundImage: `url(${image})` }
+                                                    : undefined
+                                            }
+                                            role="img"
+                                            aria-label={member.name}
+                                        />
+
+                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0E1B33]/90 via-[#0E1B33]/25 to-transparent" />
+
+                                        <div className="absolute inset-x-0 bottom-0 p-5">
+                                            <p className="font-display text-lg font-semibold text-white">
+                                                {member.name}
+                                            </p>
+                                            <p className="mt-1 font-ui text-sm text-white/80">
+                                                {member.role}
+                                            </p>
+                                        </div>
                                     </article>
                                 )
                             })}

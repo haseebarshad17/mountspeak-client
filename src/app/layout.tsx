@@ -2,7 +2,7 @@ import '@/assets/globals.css'
 import '@/env/client'
 
 import type { Metadata, Viewport } from 'next'
-import { jost, roboto } from '@/assets/fonts'
+import { fraunces, ibmPlexMono, jost, roboto, spaceGrotesk } from '@/assets/fonts'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { getRequestHost } from '@/lib/host/request-host'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
@@ -139,7 +139,13 @@ export default async function RootLayout({
         <html
             lang="en"
             data-template={variant}
-            className={cn(jost.variable, roboto.variable)}
+            className={cn(
+                jost.variable,
+                roboto.variable,
+                fraunces.variable,
+                spaceGrotesk.variable,
+                ibmPlexMono.variable
+            )}
         >
             <body
                 className={cn(

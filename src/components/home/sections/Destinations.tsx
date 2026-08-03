@@ -1,7 +1,12 @@
 'use client'
 
+'use client'
+
 import { useMemo, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
+import { AgencyLink } from '@/components/links/AgencyLink'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { PopularDestinationSection } from '@/services/agency/agency.types'
@@ -93,6 +98,107 @@ export function Destinations({ data }: { data: PopularDestinationSection }) {
                                 )
                             })}
                         </div>
+                    )}
+                </div>
+            </section>
+        )
+    }
+
+    if (variant === 'temp3') {
+        const seeAll = data.topDestinations
+        const seeAllLabel = seeAll?.seeAllLabel
+            ? seeAll.seeAllLabel.toLowerCase().includes('destination')
+                ? seeAll.seeAllLabel
+                : `${seeAll.seeAllLabel} destinations`
+            : 'See all destinations'
+
+        return (
+            <section className="t3-section t3-section-cream">
+                <div className="t3-wrap">
+                    <Temp3SectionHeader
+                        eyebrow={data.eyebrow}
+                        title={data.title}
+                        tone="cream"
+                    />
+
+                    {filters.length > 1 ? (
+                        <div className="mb-8 flex flex-wrap justify-center gap-2">
+                            {filters.slice(0, 12).map((filter) => (
+                                <button
+                                    key={filter}
+                                    type="button"
+                                    onClick={() => setActive(filter)}
+                                    className={cn(
+                                        't3-chip',
+                                        active === filter
+                                            ? 't3-chip-on-cream-active'
+                                            : 't3-chip-on-cream hover:border-t3-navy/25'
+                                    )}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
+
+                    {cards.length === 0 ? (
+                        <EmptyState
+                            title={
+                                data.topDestinations?.emptyMessage ||
+                                'No destinations found'
+                            }
+                            description="Destination cards from this agency theme will appear here."
+                        />
+                    ) : (
+                        <>
+                            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-5 xs:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                                {cards.slice(0, 6).map((card) => {
+                                    const image = resolveThemeAssetUrl(card.image)
+                                    return (
+                                        <article
+                                            key={card.id}
+                                            className="group relative aspect-[4/3] overflow-hidden rounded-[20px] bg-t3-navy shadow-[0_16px_40px_rgba(14,27,51,0.1)]"
+                                        >
+                                            {image ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    src={image}
+                                                    alt={card.name}
+                                                    className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.05]"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-t3-navy to-t3-panel" />
+                                            )}
+
+                                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0E1B33]/85 via-[#0E1B33]/35 to-transparent" />
+
+                                            <div className="absolute inset-x-0 bottom-0 p-5 text-left sm:p-6">
+                                                <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
+                                                    {card.name}
+                                                </h3>
+                                                {card.region ? (
+                                                    <p className="mt-1 font-ui text-sm text-white/85">
+                                                        {card.region}
+                                                    </p>
+                                                ) : null}
+                                            </div>
+                                        </article>
+                                    )
+                                })}
+                            </div>
+
+                            {seeAll?.seeAllHref ? (
+                                <div className="mt-10 flex justify-center md:mt-12">
+                                    <AgencyLink
+                                        href={seeAll.seeAllHref}
+                                        className="inline-flex items-center gap-2 rounded-full bg-t3-navy px-6 py-3 font-ui text-sm font-semibold text-t3-cream transition hover:bg-[#152844]"
+                                    >
+                                        {seeAllLabel}
+                                        <ArrowRight className="h-4 w-4" />
+                                    </AgencyLink>
+                                </div>
+                            ) : null}
+                        </>
                     )}
                 </div>
             </section>

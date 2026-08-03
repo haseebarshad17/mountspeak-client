@@ -7,8 +7,8 @@ import {
     ClassicPageHero,
     type ClassicPageHeroAction,
 } from '@/components/pages/ClassicPageHero'
+import { Temp3PageHero } from '@/components/pages/Temp3PageHero'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
-import { isClassicTemplate } from '@/lib/templates/chrome'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
@@ -43,10 +43,29 @@ export function MarketingPageShell({
     heroSize?: 'default' | 'tall' | 'compact'
 }) {
     const variant = useTemplateVariant()
-    const classic = isClassicTemplate(variant)
     const imageSrc = resolvePageHeroImage(page)
 
-    if (classic) {
+    if (variant === 'temp3') {
+        return (
+            <>
+                <SiteHeader page={page} capabilities={capabilities} />
+                <main className="site-bg">
+                    <Temp3PageHero
+                        eyebrow={page.branding.name}
+                        title={title}
+                        subtitle={subtitle}
+                        imageSrc={imageSrc}
+                        actions={heroActions}
+                        size={heroSize}
+                    />
+                    {children}
+                </main>
+                <SiteFooter page={page} agencyId={agencyId} />
+            </>
+        )
+    }
+
+    if (variant === 'temp1') {
         return (
             <>
                 <SiteHeader page={page} capabilities={capabilities} overlay />
