@@ -325,12 +325,20 @@ export function FeaturedListingCard({
                             {bookLabel}
                         </span>
                     ) : (
-                        <AgencyLink
-                            href={bookHref}
-                            className="btn-brand mt-4 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold"
-                        >
-                            {bookLabel}
-                        </AgencyLink>
+                        <div className="mt-4 flex gap-2">
+                            <AgencyLink
+                                href={item.href}
+                                className="inline-flex flex-1 items-center justify-center rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-[#111] transition hover:bg-black/[0.03]"
+                            >
+                                Details
+                            </AgencyLink>
+                            <AgencyLink
+                                href={bookHref}
+                                className="btn-brand inline-flex flex-1 items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold"
+                            >
+                                {bookLabel}
+                            </AgencyLink>
+                        </div>
                     )}
                 </div>
             </div>

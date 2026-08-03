@@ -3,6 +3,10 @@
 import { FormEvent, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import {
+    EmailOtpChallenge,
+    isBookingEmailVerified,
+} from '@/components/auth/EmailOtpChallenge'
 import { SeatStepper } from '@/components/booking/SeatStepper'
 import type { BookingTourOption } from '@/components/booking/booking-tour.types'
 import { SiteFooter } from '@/components/layout/SiteFooter'
@@ -53,6 +57,7 @@ type DetailsErrors = Partial<
     Record<
         | 'firstName'
         | 'lastName'
+        | 'email'
         | 'phone'
         | 'emergencyPhone'
         | 'cnic'
@@ -101,6 +106,7 @@ export function TourBookingWizard({
     const [details, setDetails] = useState({
         firstName: '',
         lastName: '',
+        email: '',
         phone: '',
         emergencyPhone: '',
         cnic: '',
@@ -123,15 +129,12 @@ export function TourBookingWizard({
         [tour, maleSeats, femaleSeats, kidsSeats]
     )
 
-    function requireAuth() {
-        if (user) return true
-        if (!isValidAgencyId(tour.agencyId)) return true
-        const host = searchParams.get('host')
-        const params = new URLSearchParams()
-        params.set('next', `${window.location.pathname}${window.location.search}`)
-        if (host) params.set('host', host)
+    const bookingEmail = (user?.email || details.email).trim()
+    const emailVerified = isBookingEmailVerified(user?.email, bookingEmail)
+
+    function requireVerifiedEmail() {
+        if (emailVerified) return true
         toast.message(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
-        router.push(`/login?${params.toString()}`)
         return false
     }
 
@@ -143,6 +146,9 @@ export function TourBookingWizard({
         }
         if (details.lastName.trim().length < 2) {
             next.lastName = getMessage(MessageCode.BOOKING_LAST_NAME_MIN)
+        }
+        if (!emailVerified) {
+            next.email = getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED)
         }
         if (!details.phone.trim()) {
             next.phone = 'Phone number is required.'
@@ -185,7 +191,7 @@ export function TourBookingWizard({
 
     function onContinueDetails(event: FormEvent) {
         event.preventDefault()
-        if (!requireAuth()) return
+        if (!requireVerifiedEmail()) return
         const nextErrors = validateDetails()
         setErrors(nextErrors)
         if (Object.keys(nextErrors).length > 0) {
@@ -197,7 +203,7 @@ export function TourBookingWizard({
 
     async function onSubmitPayment(event: FormEvent) {
         event.preventDefault()
-        if (!requireAuth()) return
+        if (!requireVerifiedEmail()) return
 
         const detailErrors = validateDetails()
         if (Object.keys(detailErrors).length > 0) {
@@ -227,7 +233,7 @@ export function TourBookingWizard({
             toast.error(getMessage(MessageCode.BOOKING_MISSING_AGENCY))
             return
         }
-        if (!user?.email) {
+        if (!bookingEmail) {
             toast.error(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
             return
         }
@@ -250,7 +256,7 @@ export function TourBookingWizard({
                     bookingId,
                     tourId: tour.id,
                     name: `${details.firstName} ${details.lastName}`.trim(),
-                    email: user.email,
+                    email: bookingEmail,
                     phone: details.phone,
                     emergencyPhone: details.emergencyPhone,
                     cnic: details.cnic,
@@ -408,6 +414,21 @@ export function TourBookingWizard({
                                             </p>
                                         ) : null}
                                     </label>
+
+                                    <div className="md:col-span-2">
+                                        <EmailOtpChallenge
+                                            agencyId={tour.agencyId}
+                                            email={details.email}
+                                            onEmailChange={(email) =>
+                                                setDetails((prev) => ({ ...prev, email }))
+                                            }
+                                        />
+                                        {errors.email ? (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {errors.email}
+                                            </p>
+                                        ) : null}
+                                    </div>
 
                                     <PhoneNumberInput
                                         label="Phone"

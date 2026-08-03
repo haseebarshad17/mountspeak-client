@@ -1,8 +1,11 @@
 'use client'
 
-import { FormEvent, useMemo, useState, type ReactNode } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { FormEvent, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
+import {
+    EmailOtpChallenge,
+    isBookingEmailVerified,
+} from '@/components/auth/EmailOtpChallenge'
 import { SeatStepper } from '@/components/booking/SeatStepper'
 import { bookingRequestSchema } from '@/components/booking/booking-request.validation'
 import { Select } from '@/components/ui/Select'
@@ -84,8 +87,6 @@ export function BookingRequestForm({
     className,
     compact,
 }: BookingRequestFormProps) {
-    const router = useRouter()
-    const searchParams = useSearchParams()
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
     const { data: user } = useOptionalUser()
@@ -134,24 +135,12 @@ export function BookingRequestForm({
     const [destination, setDestination] = useState(lockedDestination || '')
     const [category, setCategory] = useState<BookingRequestCategory | ''>('')
     const [phone, setPhone] = useState('')
+    const [email, setEmail] = useState('')
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
-    async function ensureSignedIn(email: string) {
-        if (user) return true
-        if (!isValidAgencyId(agencyId)) return true
-
-        const host = searchParams.get('host')
-        const next = `${window.location.pathname}${window.location.search}`
-        const params = new URLSearchParams()
-        params.set('next', next)
-        params.set('email', email)
-        if (host) params.set('host', host)
-        toast.message('Sign in to send your request', {
-            description: 'We will email you a magic link to verify your email.',
-        })
-        router.push(`/login?${params.toString()}`)
-        return false
-    }
+    useEffect(() => {
+        if (user?.email) setEmail(user.email)
+    }, [user?.email])
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -160,7 +149,7 @@ export function BookingRequestForm({
 
         const parsed = bookingRequestSchema.safeParse({
             full_name: form.get('full_name'),
-            email: form.get('email') || user?.email || '',
+            email: email || user?.email || '',
             phone,
             travel_date: travelDate || form.get('travel_date'),
             destination: lockedDestination || destination,
@@ -185,8 +174,13 @@ export function BookingRequestForm({
             return
         }
 
-        const ok = await ensureSignedIn(parsed.data.email)
-        if (!ok) return
+        if (!isBookingEmailVerified(user?.email, parsed.data.email)) {
+            setFieldErrors({
+                email: getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED),
+            })
+            toast.message(getMessage(MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED))
+            return
+        }
 
         try {
             await createRequest({
@@ -211,6 +205,7 @@ export function BookingRequestForm({
             setDestination(lockedDestination || '')
             setCategory('')
             setPhone('')
+            if (!user?.email) setEmail('')
         } catch (error) {
             toast.error(
                 getApiErrorMessage(error, MessageCode.API_BOOKING_REQUEST_SUBMIT_FAILED)
@@ -249,17 +244,17 @@ export function BookingRequestForm({
                     />
                 </Field>
 
-                <Field label="Email" error={fieldErrors.email}>
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                        defaultValue={user?.email ?? ''}
-                        readOnly={Boolean(user?.email)}
-                        className={cn(FIELD, user?.email && 'text-[#555]')}
-                        placeholder="you@email.com"
+                <div className="sm:col-span-2">
+                    <EmailOtpChallenge
+                        agencyId={agencyId}
+                        email={email}
+                        onEmailChange={setEmail}
+                        inputClassName={FIELD}
                     />
-                </Field>
+                    {fieldErrors.email ? (
+                        <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+                    ) : null}
+                </div>
 
                 <PhoneNumberInput
                     label="Phone"

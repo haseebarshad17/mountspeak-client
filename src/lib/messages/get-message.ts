@@ -11,7 +11,13 @@ const LABELS: Partial<Record<MessageCodeValue, string>> = {
     [MessageCode.API_NEWSLETTER_SUBSCRIBE_FAILED]:
         'Could not subscribe. Please try again.',
     [MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS]: 'Please fix the highlighted fields.',
-    [MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED]: 'Sign in to continue with your booking.',
+    [MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED]:
+        'Verify your email with the OTP code before submitting.',
+    [MessageCode.BOOKING_OTP_SENT]: 'Verification code sent to your email.',
+    [MessageCode.BOOKING_OTP_VERIFIED]: 'Email verified. You are signed in.',
+    [MessageCode.BOOKING_OTP_INVALID]: 'Enter the 6-digit code from your email.',
+    [MessageCode.BOOKING_OTP_SEND_FAILED]: 'Could not send verification code. Please try again.',
+    [MessageCode.BOOKING_OTP_VERIFY_FAILED]: 'Could not verify code. Please try again.',
     [MessageCode.BOOKING_FIRST_NAME_MIN]: 'Enter a valid first name.',
     [MessageCode.BOOKING_LAST_NAME_MIN]: 'Enter a valid last name.',
     [MessageCode.BOOKING_PHONE_INVALID]: 'Enter a valid phone number.',

@@ -1,7 +1,11 @@
 import { resolveTourAssetUrl } from '@/lib/media/resolve-theme-asset'
+import { buildBookingRequestHref } from '@/lib/booking/booking-href'
 import type {
     InternationalTourRow,
     ListingItem,
+    PackageDetail,
+    PackageDetailHotel,
+    PackageDetailStop,
     TourDetail,
     TourRow,
     UmrahPlanRow,
@@ -102,7 +106,7 @@ export function mapUmrahPlanToListing(row: UmrahPlanRow): ListingItem {
         location: 'Makkah & Madinah',
         priceLabel: `from ${formatMoney(amount, currency)}`,
         imageUrl: resolveTourAssetUrl(row.images?.featured_image) || null,
-        href: `/packages?id=${row.id}`,
+        href: `/packages/umrah/${row.id}`,
         summary: row.descriptions?.short_description || 'Thoughtfully planned Umrah experience.',
         badge: info?.package_category || info?.package_type || 'Package',
         meta: days ? `${days} days` : null,
@@ -147,7 +151,7 @@ export function mapInternationalTourToListing(row: InternationalTourRow): Listin
         location: guessInternationalLocation(title, row.descriptions?.short_description),
         priceLabel: `from ${formatMoney(amount, currency)}`,
         imageUrl: resolveTourAssetUrl(row.images?.featured_image) || null,
-        href: `/tours?kind=international&id=${row.id}`,
+        href: `/packages/international/${row.id}`,
         summary:
             row.descriptions?.short_description ||
             'A premium international getaway designed for smooth travel.',
@@ -257,4 +261,256 @@ function guessInternationalLocation(title: string, description?: string | null):
         }
     }
     return 'International'
+}
+
+function packagePriceFields(pricing: UmrahPlanRow['pricing'] | InternationalTourRow['pricing']) {
+    const original = pricing?.original_price ?? null
+    const discounted =
+        pricing?.discount_price && pricing.discount_price > 0
+            ? pricing.discount_price
+            : null
+    const amount = discounted ?? original
+    const currency = pricing?.currency || 'USD'
+    const discountPercent =
+        original && discounted && discounted < original
+            ? Math.round(((original - discounted) / original) * 100)
+            : null
+
+    return {
+        priceLabel: `from ${formatMoney(amount, currency)}`,
+        originalPriceLabel:
+            discountPercent && original != null ? formatMoney(original, currency) : null,
+        discountPercent,
+    }
+}
+
+function mapPackageHotel(input: {
+    label: string
+    hotel_name?: string
+    hotel_rating?: string
+    distance_meters?: number
+    number_of_nights?: number
+    room_type?: string
+    image?: string
+}): PackageDetailHotel | null {
+    const name = input.hotel_name?.trim()
+    if (!name) return null
+    return {
+        label: input.label,
+        name,
+        rating: input.hotel_rating?.trim() || null,
+        nights: input.number_of_nights ?? null,
+        roomType: input.room_type?.trim() || null,
+        distanceMeters: input.distance_meters ?? null,
+        imageUrl: resolveTourAssetUrl(input.image) || null,
+    }
+}
+
+function mapPackageStops(
+    stops?: Array<{ title?: string; description?: string }> | null
+): PackageDetailStop[] {
+    if (!Array.isArray(stops)) return []
+    return stops
+        .map((stop) => ({
+            title: stop.title?.trim() || '',
+            description: stop.description?.trim() || null,
+        }))
+        .filter((stop) => stop.title.length > 0)
+}
+
+export function mapUmrahPlanToDetail(row: UmrahPlanRow): PackageDetail {
+    const info = row.basic_information
+    const title = info?.package_title || 'Umrah Package'
+    const prices = packagePriceFields(row.pricing)
+    const gallery = (row.images?.gallery_images ?? [])
+        .map((src) => resolveTourAssetUrl(src))
+        .filter(Boolean)
+
+    const hotelsFromZiyarat = (row.ziyarat?.hotels ?? [])
+        .map((hotel) =>
+            mapPackageHotel({
+                label: hotel.label || 'Hotel',
+                hotel_name: hotel.hotel_name,
+                hotel_rating: hotel.hotel_rating,
+                distance_meters: hotel.distance_meters,
+                number_of_nights: hotel.number_of_nights,
+                room_type: hotel.room_type,
+                image: hotel.image,
+            })
+        )
+        .filter((hotel): hotel is PackageDetailHotel => Boolean(hotel))
+
+    const legacyHotels = [
+        mapPackageHotel({
+            label: 'Makkah',
+            hotel_name: row.makkah_hotel?.hotel_name,
+            hotel_rating: row.makkah_hotel?.hotel_rating,
+            distance_meters: row.makkah_hotel?.distance_from_haram_meters,
+            number_of_nights: row.makkah_hotel?.number_of_nights,
+            room_type: row.makkah_hotel?.room_type,
+            image: row.makkah_hotel?.image,
+        }),
+        mapPackageHotel({
+            label: 'Madinah',
+            hotel_name: row.madinah_hotel?.hotel_name,
+            hotel_rating: row.madinah_hotel?.hotel_rating,
+            distance_meters: row.madinah_hotel?.distance_from_masjid_e_nabawi_meters,
+            number_of_nights: row.madinah_hotel?.number_of_nights,
+            room_type: row.madinah_hotel?.room_type,
+            image: row.madinah_hotel?.image,
+        }),
+    ].filter((hotel): hotel is PackageDetailHotel => Boolean(hotel))
+
+    const stops = mapPackageStops(row.ziyarat?.stops)
+    if (stops.length === 0) {
+        if (row.ziyarat?.makkah_ziyarat_details?.trim()) {
+            stops.push({
+                title: 'Makkah ziyarat',
+                description: row.ziyarat.makkah_ziyarat_details.trim(),
+            })
+        }
+        if (row.ziyarat?.madinah_ziyarat_details?.trim()) {
+            stops.push({
+                title: 'Madinah ziyarat',
+                description: row.ziyarat.madinah_ziyarat_details.trim(),
+            })
+        }
+    }
+
+    return {
+        id: row.id,
+        agencyId: row.agency_id,
+        kind: 'umrah',
+        title,
+        badge: info?.package_category || info?.package_type || 'Package',
+        location: 'Makkah & Madinah',
+        ...prices,
+        heroImageUrl: resolveTourAssetUrl(row.images?.featured_image) || null,
+        gallery,
+        shortDescription: row.descriptions?.short_description || null,
+        detailedDescription: row.descriptions?.detailed_description || null,
+        durationDays: row.duration_dates?.duration_days ?? null,
+        departureDate: row.duration_dates?.departure_date ?? null,
+        returnDate: row.duration_dates?.return_date ?? null,
+        seatsAvailable: row.booking_info?.available_seats ?? null,
+        seatsTotal: row.booking_info?.total_seats ?? null,
+        bookingDeadline: row.booking_info?.booking_deadline ?? null,
+        includes: row.package_includes?.items ?? [],
+        excludes: row.package_excludes?.items ?? [],
+        hotels: hotelsFromZiyarat.length > 0 ? hotelsFromZiyarat : legacyHotels,
+        stops,
+        airline: row.flight_information?.airline_name || null,
+        flightType: row.flight_information?.flight_type || null,
+        baggage: row.flight_information?.baggage_allowance || null,
+        notes: row.terms_notes?.important_notes || null,
+        terms: row.terms_notes?.terms_and_conditions || null,
+        requestHref: buildBookingRequestHref({
+            kind: 'umrah',
+            id: row.id,
+            title,
+        }),
+    }
+}
+
+export function mapInternationalTourToDetail(row: InternationalTourRow): PackageDetail {
+    const info = row.basic_information
+    const title = info?.package_title || 'International Tour'
+    const prices = packagePriceFields(row.pricing)
+    const gallery = (row.images?.gallery_images ?? [])
+        .map((src) => resolveTourAssetUrl(src))
+        .filter(Boolean)
+
+    const hotelsFromItems = (row.hotels?.items ?? [])
+        .map((hotel) =>
+            mapPackageHotel({
+                label: hotel.label || 'Hotel',
+                hotel_name: hotel.hotel_name,
+                hotel_rating: hotel.hotel_rating,
+                distance_meters: hotel.distance_meters,
+                number_of_nights: hotel.number_of_nights,
+                room_type: hotel.room_type,
+                image: hotel.image,
+            })
+        )
+        .filter((hotel): hotel is PackageDetailHotel => Boolean(hotel))
+
+    const legacyHotels = [
+        mapPackageHotel({
+            label: 'Primary hotel',
+            hotel_name: row.makkah_hotel?.hotel_name || row.hotels?.makkah_hotel?.hotel_name,
+            hotel_rating:
+                row.makkah_hotel?.hotel_rating || row.hotels?.makkah_hotel?.hotel_rating,
+            distance_meters:
+                row.makkah_hotel?.distance_from_haram_meters ||
+                row.hotels?.makkah_hotel?.distance_from_haram_meters,
+            number_of_nights:
+                row.makkah_hotel?.number_of_nights || row.hotels?.makkah_hotel?.number_of_nights,
+            room_type: row.makkah_hotel?.room_type || row.hotels?.makkah_hotel?.room_type,
+            image: row.makkah_hotel?.image || row.hotels?.makkah_hotel?.image,
+        }),
+        mapPackageHotel({
+            label: 'Secondary hotel',
+            hotel_name: row.madinah_hotel?.hotel_name || row.hotels?.madinah_hotel?.hotel_name,
+            hotel_rating:
+                row.madinah_hotel?.hotel_rating || row.hotels?.madinah_hotel?.hotel_rating,
+            distance_meters:
+                row.madinah_hotel?.distance_from_masjid_e_nabawi_meters ||
+                row.hotels?.madinah_hotel?.distance_from_masjid_e_nabawi_meters,
+            number_of_nights:
+                row.madinah_hotel?.number_of_nights ||
+                row.hotels?.madinah_hotel?.number_of_nights,
+            room_type: row.madinah_hotel?.room_type || row.hotels?.madinah_hotel?.room_type,
+            image: row.madinah_hotel?.image || row.hotels?.madinah_hotel?.image,
+        }),
+    ].filter((hotel): hotel is PackageDetailHotel => Boolean(hotel))
+
+    const stops = mapPackageStops(row.itinerary?.stops)
+    if (stops.length === 0) {
+        if (row.itinerary?.makkah_ziyarat_details?.trim()) {
+            stops.push({
+                title: 'Itinerary highlight',
+                description: row.itinerary.makkah_ziyarat_details.trim(),
+            })
+        }
+        if (row.itinerary?.madinah_ziyarat_details?.trim()) {
+            stops.push({
+                title: 'Additional notes',
+                description: row.itinerary.madinah_ziyarat_details.trim(),
+            })
+        }
+    }
+
+    return {
+        id: row.id,
+        agencyId: row.agency_id,
+        kind: 'international',
+        title,
+        badge: info?.package_category || info?.package_type || 'International',
+        location: guessInternationalLocation(title, row.descriptions?.short_description),
+        ...prices,
+        heroImageUrl: resolveTourAssetUrl(row.images?.featured_image) || null,
+        gallery,
+        shortDescription: row.descriptions?.short_description || null,
+        detailedDescription: row.descriptions?.detailed_description || null,
+        durationDays: row.duration_dates?.duration_days ?? null,
+        departureDate: row.duration_dates?.departure_date ?? null,
+        returnDate: row.duration_dates?.return_date ?? null,
+        seatsAvailable: row.booking_info?.available_seats ?? null,
+        seatsTotal: row.booking_info?.total_seats ?? null,
+        bookingDeadline: row.booking_info?.booking_deadline ?? null,
+        includes: row.package_includes?.items ?? [],
+        excludes: row.package_excludes?.items ?? [],
+        hotels: hotelsFromItems.length > 0 ? hotelsFromItems : legacyHotels,
+        stops,
+        airline: row.flight_information?.airline_name || null,
+        flightType: row.flight_information?.flight_type || null,
+        baggage: row.flight_information?.baggage_allowance || null,
+        notes: row.terms_notes?.important_notes || null,
+        terms: row.terms_notes?.terms_and_conditions || null,
+        requestHref: buildBookingRequestHref({
+            kind: 'international',
+            id: row.id,
+            title,
+        }),
+    }
 }

@@ -16,6 +16,22 @@ export function useMagicLinkSignIn() {
     })
 }
 
+export function useSendEmailOtp() {
+    return useMutation({
+        mutationFn: auth.sendEmailOtp,
+    })
+}
+
+export function useVerifyEmailOtp() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: auth.verifyEmailOtp,
+        onSuccess: (user) => {
+            queryClient.setQueryData(authQueryKeys.user, user)
+        },
+    })
+}
+
 export function useGoogleLogin() {
     return useMutation({
         mutationFn: auth.loginWithGoogle,
