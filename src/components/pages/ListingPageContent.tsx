@@ -5,7 +5,8 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { FeaturedListingCard } from '@/components/listings/FeaturedListingCard'
 import { ListingCard } from '@/components/listings/ListingCard'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
-import { isClassicTemplate, pillTabClass } from '@/lib/templates/chrome'
+import { pillTabClass } from '@/lib/templates/chrome'
+import { cn } from '@/lib/utils/cn'
 import type { ListingItem } from '@/services/listings/listings.types'
 import type {
     AgencySpecializationCapabilities,
@@ -30,7 +31,6 @@ export function ListingPageContent({
     agencyId: string
 }) {
     const variant = useTemplateVariant()
-    const classic = isClassicTemplate(variant)
     const availableTabs = useMemo(
         () => capabilities.tabs.filter((tab) => allowedKinds.includes(tab.kind)),
         [allowedKinds, capabilities.tabs]
@@ -51,7 +51,59 @@ export function ListingPageContent({
         )
     }
 
-    if (classic) {
+    if (variant === 'temp3') {
+        return (
+            <section className="t3-section t3-section-soft">
+                <div className="t3-wrap">
+                    {availableTabs.length > 1 ? (
+                        <div className="mb-8 flex flex-wrap justify-center gap-2">
+                            {availableTabs.map((tab) => (
+                                <button
+                                    key={tab.kind}
+                                    type="button"
+                                    onClick={() => setActiveKind(tab.kind)}
+                                    className={cn(
+                                        't3-chip',
+                                        activeKind === tab.kind
+                                            ? 't3-chip-on-cream-active'
+                                            : 't3-chip-on-cream hover:border-t3-navy/25'
+                                    )}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
+
+                    <p className="mb-8 text-center font-ui text-sm text-t3-dim">
+                        Showing {KIND_TITLES[activeKind]}
+                        {items.length ? ` · ${items.length}` : ''}
+                    </p>
+
+                    {items.length === 0 ? (
+                        <EmptyState
+                            title={`No ${KIND_TITLES[activeKind].toLowerCase()} yet`}
+                            description="Published listings for this category will appear here."
+                        />
+                    ) : (
+                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                            {items.map((item, i) => (
+                                <FeaturedListingCard
+                                    key={item.id}
+                                    item={item}
+                                    index={i}
+                                    agencyId={agencyId}
+                                    appearance="temp3"
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
+        )
+    }
+
+    if (variant === 'temp1') {
         return (
             <section className="section-spacing section-spacing-top bg-white">
                 <div className="site-container">

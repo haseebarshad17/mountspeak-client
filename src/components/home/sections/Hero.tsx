@@ -9,6 +9,7 @@ import {
     type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useRouter } from 'next/navigation'
+import { ArrowRight } from 'lucide-react'
 import FacebookIcon from '@/assets/svg/social/facebook'
 import InstagramIcon from '@/assets/svg/social/instagram'
 import TwitterIcon from '@/assets/svg/social/twitter'
@@ -44,6 +45,8 @@ const HERO_TAB_LABEL: Record<SpecializationKind, string> = {
     international: 'International',
     packages: 'Umrah',
 }
+
+const HERO_AUTOPLAY_MS = 7000
 
 function HeroImageStack({ images }: { images: string[] }) {
     return (
@@ -95,6 +98,7 @@ export function Hero({
     capabilities,
     cardImages = [],
     destinationsByKind,
+    destinationCards = [],
     previewHost = null,
     socialLinks,
 }: {
@@ -102,6 +106,7 @@ export function Hero({
     capabilities: AgencySpecializationCapabilities
     cardImages?: string[]
     destinationsByKind: Record<SpecializationKind, string[]>
+    destinationCards?: Array<{ name: string; region: string; image: string }>
     previewHost?: string | null
     socialLinks?: {
         facebook?: string | null
@@ -126,6 +131,11 @@ export function Hero({
     })
 
     const slides = useMemo(() => {
+        if (variant === 'temp3' && destinationCards.length > 0) {
+            return destinationCards
+                .map((card) => resolveThemeAssetUrl(card.image) || card.image)
+                .filter(Boolean) as string[]
+        }
         const raw = [
             ...(data.backgroundImages ?? []),
             data.backgroundImage,
@@ -134,7 +144,27 @@ export function Hero({
             .map((src) => resolveThemeAssetUrl(src) || src)
             .filter(Boolean) as string[]
         return [...new Set(raw)]
-    }, [cardImages, data.backgroundImage, data.backgroundImages])
+    }, [
+        cardImages,
+        data.backgroundImage,
+        data.backgroundImages,
+        destinationCards,
+        variant,
+    ])
+
+    const slideMeta = useMemo(() => {
+        if (destinationCards.length > 0) {
+            return destinationCards.map((card) => ({
+                label: card.name,
+                region: card.region,
+            }))
+        }
+        return slides.map((_, index) => ({
+            label: '',
+            region: '',
+            index,
+        }))
+    }, [destinationCards, slides])
 
     const viewportRef = useRef<HTMLDivElement>(null)
     const [viewportWidth, setViewportWidth] = useState(0)
@@ -168,7 +198,7 @@ export function Hero({
         const id = window.setInterval(() => {
             if (autoplayPaused.current) return
             setSlideIndex((i) => (i + 1) % slides.length)
-        }, 7000)
+        }, HERO_AUTOPLAY_MS)
         return () => window.clearInterval(id)
     }, [slides.length])
 
@@ -455,6 +485,204 @@ export function Hero({
                     </div>
                 </section>
             </div>
+        )
+    }
+
+    /* ── Template 3 (Modern): full-bleed left copy + thumb switcher ── */
+    if (variant === 'temp3') {
+        const exploreHref = previewHost
+            ? `/search?host=${encodeURIComponent(previewHost)}`
+            : '/search'
+        const activeMeta = slideMeta[slideIndex]
+
+        return (
+            <section className="relative min-h-[min(92vh,920px)] overflow-hidden bg-[#0A2F53] text-white">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    {slides.length > 0 ? (
+                        slides.map((src, i) => {
+                            const active = i === slideIndex
+                            return (
+                                <div
+                                    key={`${src}-${i}`}
+                                    className={cn(
+                                        'absolute inset-0 transition-opacity duration-700 ease-out',
+                                        active
+                                            ? 'opacity-100'
+                                            : 'opacity-0 pointer-events-none'
+                                    )}
+                                    aria-hidden={!active}
+                                >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        key={active ? `zoom-${slideIndex}` : `idle-${i}`}
+                                        src={src}
+                                        alt=""
+                                        className={cn(
+                                            'pointer-events-none h-full w-full object-cover select-none',
+                                            active && 'hero-temp3-bg-zoom'
+                                        )}
+                                        draggable={false}
+                                    />
+                                </div>
+                            )
+                        })
+                    ) : (
+                        <div className="h-full w-full bg-[#0A2F53]" />
+                    )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0A2F53]/95 via-[#0A2F53]/65 to-[#0A2F53]/20" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A2F53]/75 via-transparent to-[#0A2F53]/30" />
+                </div>
+
+                <div className="pointer-events-none relative z-10 flex min-h-[min(92vh,920px)] flex-col">
+                    <div className="site-container flex w-full flex-1 flex-col justify-center py-16 md:py-20">
+                        <div className="max-w-xl select-none lg:max-w-2xl">
+                            {activeMeta?.label ? (
+                                <div
+                                    key={`meta-${slideIndex}`}
+                                    className="hero-temp3-slide-fade mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold uppercase leading-none tracking-[0.18em] text-white"
+                                >
+                                    <span className="translate-y-px">
+                                        {activeMeta.label}
+                                    </span>
+                                    {activeMeta.region ? (
+                                        <>
+                                            <span
+                                                className="hidden h-px w-8 shrink-0 bg-white/35 sm:block"
+                                                aria-hidden
+                                            />
+                                            <span className="translate-y-px font-medium tracking-[0.14em] text-white/55">
+                                                {activeMeta.region}
+                                            </span>
+                                        </>
+                                    ) : null}
+                                </div>
+                            ) : null}
+
+                            <h1 className="hero-temp3-text-in hero-temp3-text-in-delay-1 max-w-[18ch] text-[2.35rem] font-bold leading-[1.08] tracking-tight md:text-5xl lg:text-[3.35rem]">
+                                {data.title}
+                            </h1>
+                            <p className="hero-temp3-text-in hero-temp3-text-in-delay-2 mt-4 max-w-md text-base leading-relaxed text-white/75 md:text-lg">
+                                {data.paragraph}
+                            </p>
+
+                            <div className="pointer-events-auto hero-temp3-text-in hero-temp3-text-in-delay-3 mt-8">
+                                <AgencyLink
+                                    href={exploreHref}
+                                    className="inline-flex items-center gap-2 rounded-full bg-[#E89C5D] py-2 pl-4 pr-1.5 text-[13px] font-semibold text-white transition hover:bg-[#d8894a]"
+                                >
+                                    Explore Tours
+                                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
+                                        <ArrowRight
+                                            className="h-3.5 w-3.5"
+                                            strokeWidth={2.25}
+                                        />
+                                    </span>
+                                </AgencyLink>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pointer-events-auto site-container w-full pb-6 pt-2 md:pb-8">
+                        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+                            {slides.length > 1 ? (
+                                <p className="shrink-0 font-mono text-sm tracking-widest text-white/80">
+                                    {String(slideIndex + 1).padStart(2, '0')}
+                                    <span className="text-white/40"> / </span>
+                                    {String(slides.length).padStart(2, '0')}
+                                </p>
+                            ) : (
+                                <span />
+                            )}
+
+                            {slides.length > 1 ? (
+                                <div className="flex max-w-full gap-3 overflow-x-auto pb-1 scrollbar-thin sm:gap-4">
+                                    {slides.map((src, i) => {
+                                        const active = i === slideIndex
+                                        const label =
+                                            slideMeta[i]?.label || `0${i + 1}`
+                                        return (
+                                            <button
+                                                key={`${src}-${i}`}
+                                                type="button"
+                                                aria-label={label}
+                                                aria-current={active}
+                                                onClick={() => {
+                                                    autoplayPaused.current = true
+                                                    goTo(i)
+                                                    window.setTimeout(() => {
+                                                        autoplayPaused.current = false
+                                                    }, 800)
+                                                }}
+                                                className="group flex w-[calc(4.75rem+2px)] shrink-0 flex-col items-center gap-2 sm:w-[calc(5.25rem+2px)]"
+                                            >
+                                                <span
+                                                    className="relative flex h-[2px] w-full items-center justify-center"
+                                                    aria-hidden
+                                                >
+                                                    <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/30" />
+                                                    {active ? (
+                                                        <span
+                                                            key={`line-${slideIndex}`}
+                                                            className="hero-temp3-line-fill relative z-[1] h-[2px] w-[70%] origin-left rounded-full bg-[#E89C5D]"
+                                                            style={{
+                                                                animationDuration: `${HERO_AUTOPLAY_MS}ms`,
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                </span>
+
+                                                <span
+                                                    key={
+                                                        active
+                                                            ? `label-${slideIndex}`
+                                                            : undefined
+                                                    }
+                                                    className={cn(
+                                                        'w-full truncate text-center text-[9px] font-semibold uppercase tracking-[0.12em] transition-colors duration-300 sm:text-[10px]',
+                                                        active
+                                                            ? 'hero-temp3-label-in text-white'
+                                                            : 'text-white/55 group-hover:text-white/80'
+                                                    )}
+                                                >
+                                                    {label}
+                                                </span>
+
+                                                <span
+                                                    className={cn(
+                                                        'relative block h-[46px] w-full rounded transition duration-300 sm:h-[54px]',
+                                                        active
+                                                            ? 'hero-temp3-thumb-active'
+                                                            : 'overflow-hidden opacity-90 group-hover:opacity-100'
+                                                    )}
+                                                >
+                                                    {active ? (
+                                                        <span
+                                                            className="hero-temp3-thumb-border"
+                                                            aria-hidden
+                                                        />
+                                                    ) : null}
+                                                    <span className="relative z-[1] block h-full w-full overflow-hidden rounded-[3px]">
+                                                        {src ? (
+                                                            // eslint-disable-next-line @next/next/no-img-element
+                                                            <img
+                                                                src={src}
+                                                                alt=""
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <span className="block h-full w-full border border-white/25" />
+                                                        )}
+                                                    </span>
+                                                </span>
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                </div>
+            </section>
         )
     }
 

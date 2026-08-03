@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
@@ -7,6 +8,102 @@ import type { PlanPerfectTripSection } from '@/services/agency/agency.types'
 import { Award, Calendar, MapPin, Users } from 'lucide-react'
 
 const STAT_ICONS = [MapPin, Users, Award, Calendar]
+
+function parseStatValue(raw: string) {
+    const match = raw.trim().match(/^([^\d]*)([\d,]+)(.*)$/)
+    if (!match) {
+        return {
+            prefix: '',
+            number: null as number | null,
+            suffix: raw,
+            hasComma: false,
+        }
+    }
+    const number = Number(match[2].replace(/,/g, ''))
+    if (!Number.isFinite(number)) {
+        return {
+            prefix: '',
+            number: null as number | null,
+            suffix: raw,
+            hasComma: false,
+        }
+    }
+    return {
+        prefix: match[1],
+        number,
+        suffix: match[3],
+        hasComma: match[2].includes(','),
+    }
+}
+
+function AnimatedStatValue({
+    value,
+    className,
+}: {
+    value: string
+    className?: string
+}) {
+    const ref = useRef<HTMLParagraphElement>(null)
+    const [display, setDisplay] = useState(value)
+    const started = useRef(false)
+    const parsed = parseStatValue(value)
+
+    useEffect(() => {
+        if (parsed.number == null) {
+            setDisplay(value)
+            return
+        }
+
+        const el = ref.current
+        if (!el) return
+
+        const reduceMotion =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+        if (reduceMotion) {
+            setDisplay(value)
+            return
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry?.isIntersecting || started.current) return
+                started.current = true
+
+                const target = parsed.number!
+                const duration = 1400
+                const start = performance.now()
+
+                const tick = (now: number) => {
+                    const t = Math.min(1, (now - start) / duration)
+                    const eased = 1 - Math.pow(1 - t, 3)
+                    const current = Math.round(target * eased)
+                    const formatted = parsed.hasComma
+                        ? current.toLocaleString('en-US')
+                        : String(current)
+                    setDisplay(`${parsed.prefix}${formatted}${parsed.suffix}`)
+                    if (t < 1) requestAnimationFrame(tick)
+                    else setDisplay(value)
+                }
+
+                setDisplay(`${parsed.prefix}0${parsed.suffix}`)
+                requestAnimationFrame(tick)
+                observer.disconnect()
+            },
+            { threshold: 0.35 }
+        )
+
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [parsed.hasComma, parsed.number, parsed.prefix, parsed.suffix, value])
+
+    return (
+        <p ref={ref} className={className}>
+            {display}
+        </p>
+    )
+}
 
 export function Intro({ data }: { data: PlanPerfectTripSection }) {
     const variant = useTemplateVariant()
@@ -40,13 +137,13 @@ export function Intro({ data }: { data: PlanPerfectTripSection }) {
                         </p>
 
                         {stats.length > 0 ? (
-                            <div className="mt-10 sm:grid grid-cols-2 gap-4 flex flex-wrap">
+                            <div className="mt-10 flex flex-wrap gap-4 sm:grid sm:grid-cols-2">
                                 {stats.map((stat, i) => {
                                     const Icon = STAT_ICONS[i % STAT_ICONS.length]
                                     return (
                                         <div
                                             key={stat.label}
-                                            className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white px-4 py-4 shadow-sm flex-1 min-w-[200px]"
+                                            className="flex min-w-[200px] flex-1 items-start gap-3 rounded-2xl border border-black/5 bg-white px-4 py-4 shadow-sm"
                                         >
                                             <div className="bg-brand-soft flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
                                                 <Icon className="h-4 w-4" />
@@ -65,6 +162,58 @@ export function Intro({ data }: { data: PlanPerfectTripSection }) {
                             </div>
                         ) : null}
                     </div>
+                </div>
+            </section>
+        )
+    }
+
+    /* ── Template 3: cream about band, ticket stats, tall aligned media ── */
+    if (variant === 'temp3') {
+        return (
+            <section className="t3-section t3-section-cream">
+                <div className="t3-wrap grid items-stretch gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
+                    <div className="flex flex-col">
+                        <p className="t3-eyebrow">{data.eyebrow}</p>
+                        <h2 className="t3-title t3-title-on-cream text-left">
+                            {data.title}
+                        </h2>
+                        <p className="t3-sub t3-sub-on-cream max-w-xl text-left">
+                            {data.paragraph}
+                        </p>
+
+                        {stats.length > 0 ? (
+                            <div className="mt-9 grid flex-1 grid-cols-2 content-start gap-3 sm:gap-4 md:mt-10">
+                                {stats.map((stat, i) => (
+                                    <div
+                                        key={stat.label}
+                                        className="rounded-[14px] border border-t3-navy/10 bg-white px-4 py-5 text-center shadow-[0_10px_30px_rgba(14,27,51,0.05)] sm:px-5 sm:py-6"
+                                    >
+                                        <p className="font-mono text-[10px] tracking-[0.16em] text-t3-gold">
+                                            {String(i + 1).padStart(2, '0')} / STAT
+                                        </p>
+                                        <AnimatedStatValue
+                                            value={stat.value}
+                                            className="mt-2 font-display text-2xl font-semibold tracking-tight text-t3-navy md:text-[1.75rem]"
+                                        />
+                                        <p className="mt-1.5 font-ui text-xs leading-snug text-t3-dim sm:text-[13px]">
+                                            {stat.label}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div
+                        className="min-h-[320px] overflow-hidden rounded-[16px] bg-cover bg-center shadow-[0_16px_40px_rgba(14,27,51,0.1)] lg:min-h-full"
+                        style={{
+                            backgroundImage: image
+                                ? `url(${image})`
+                                : 'linear-gradient(135deg, #0E1B33, #24365C)',
+                        }}
+                        role="img"
+                        aria-label={data.image?.alt || data.title}
+                    />
                 </div>
             </section>
         )

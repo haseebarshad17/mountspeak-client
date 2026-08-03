@@ -44,6 +44,12 @@ export function HomePage({
         ...(sections.tourismGallery?.images?.map((image) => image.src) ?? []),
         sections.planPerfectTrip?.image?.src,
     ])
+    const destinationCards =
+        sections.popularDestination?.cards?.map((card) => ({
+            name: card.name,
+            region: card.region,
+            image: card.image,
+        })) ?? []
 
     return (
         <>
@@ -54,6 +60,7 @@ export function HomePage({
                     capabilities={capabilities}
                     cardImages={heroCardImages}
                     destinationsByKind={destinationsByKind}
+                    destinationCards={destinationCards}
                     previewHost={previewHost}
                     socialLinks={page.footer?.socialLinks}
                 />
