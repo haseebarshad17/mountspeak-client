@@ -1,9 +1,14 @@
 import type { TemplateVariant } from '@/lib/templates/resolve-variant'
 import { cn } from '@/lib/utils/cn'
 
-/** Classic / default template (temp1) and unimplemented fallbacks. */
+/** Classic / default template (temp1) only. */
 export function isClassicTemplate(variant: TemplateVariant) {
-    return variant !== 'temp2'
+    return variant === 'temp1'
+}
+
+/** Modern template (temp3 / mount-temp-3). */
+export function isModernTemplate(variant: TemplateVariant) {
+    return variant === 'temp3'
 }
 
 export function pillTabClass(
@@ -11,6 +16,16 @@ export function pillTabClass(
     variant: TemplateVariant,
     className?: string
 ) {
+    if (variant === 'temp3') {
+        return cn(
+            'rounded-sm px-4 py-2 text-sm font-ui transition',
+            active
+                ? 'bg-t3-navy text-t3-cream'
+                : 'border border-t3-navy/10 bg-white text-t3-navy hover:bg-t3-navy/5',
+            className
+        )
+    }
+
     const classic = isClassicTemplate(variant)
     return cn(
         'rounded-full px-4 py-2 text-sm transition',
@@ -29,6 +44,10 @@ export function primaryButtonClass(
     variant: TemplateVariant,
     className?: string
 ) {
+    if (variant === 'temp3') {
+        return cn('t3-btn t3-btn-solid', className)
+    }
+
     return cn(
         isClassicTemplate(variant)
             ? 'btn-brand'
@@ -38,6 +57,13 @@ export function primaryButtonClass(
 }
 
 export function softFieldClass(variant: TemplateVariant, className?: string) {
+    if (variant === 'temp3') {
+        return cn(
+            'rounded-[10px] border border-t3-navy/10 bg-white px-4 py-3 text-sm font-ui text-t3-navy outline-none transition hover:bg-t3-cream/60 focus:border-t3-gold/50',
+            className
+        )
+    }
+
     return cn(
         'rounded-xl px-4 py-3 text-sm outline-none transition',
         isClassicTemplate(variant)
@@ -48,6 +74,10 @@ export function softFieldClass(variant: TemplateVariant, className?: string) {
 }
 
 export function accentSolidClass(variant: TemplateVariant, className?: string) {
+    if (variant === 'temp3') {
+        return cn('bg-t3-navy text-t3-cream', className)
+    }
+
     return cn(
         isClassicTemplate(variant) ? 'bg-brand' : 'bg-[#06403D] text-white',
         className
@@ -55,6 +85,10 @@ export function accentSolidClass(variant: TemplateVariant, className?: string) {
 }
 
 export function accentSoftClass(variant: TemplateVariant, className?: string) {
+    if (variant === 'temp3') {
+        return cn('bg-t3-navy/5 text-t3-navy', className)
+    }
+
     return cn(
         isClassicTemplate(variant)
             ? 'bg-brand-soft'
@@ -64,6 +98,15 @@ export function accentSoftClass(variant: TemplateVariant, className?: string) {
 }
 
 export function activeNavClass(active: boolean, variant: TemplateVariant) {
+    if (variant === 'temp3') {
+        return cn(
+            'rounded-[10px] px-3.5 py-2.5 text-sm font-ui transition',
+            active
+                ? 'bg-t3-navy font-medium text-t3-cream'
+                : 'bg-white text-t3-navy hover:bg-t3-navy/5 md:bg-transparent'
+        )
+    }
+
     const classic = isClassicTemplate(variant)
     return cn(
         'rounded-xl px-3.5 py-2.5 text-sm transition',

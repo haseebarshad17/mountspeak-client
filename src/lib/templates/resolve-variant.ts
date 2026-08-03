@@ -11,8 +11,14 @@ export type TemplateVariant = 'temp1' | 'temp2' | 'temp3'
  */
 const VARIANT_BY_TEMPLATE_ID: Record<string, TemplateVariant> = {
     'jedw-cwe-cw': 'temp1',
+    'mount-temp-1': 'temp1',
+    temp1: 'temp1',
     'ab12-cd34-ef': 'temp2',
+    'mount-temp-2': 'temp2',
+    temp2: 'temp2',
     'gh56-ij78-kl': 'temp3',
+    'mount-temp-3': 'temp3',
+    temp3: 'temp3',
 }
 
 const IMPLEMENTED_VARIANTS = new Set<TemplateVariant>([

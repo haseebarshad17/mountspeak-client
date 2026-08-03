@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
-import { isClassicTemplate } from '@/lib/templates/chrome'
+import { accentSolidClass, isClassicTemplate } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.query'
 import { useUserProfile } from '@/services/user-profile/user-profile.query'
@@ -29,6 +29,7 @@ export function ProfileMenu() {
     const [open, setOpen] = useState(false)
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
+    const modern = variant === 'temp3'
     const { data: user } = useOptionalUser()
     const { data: profile } = useUserProfile()
     const { mutateAsync: logout, isPending } = useLogout()
@@ -37,7 +38,11 @@ export function ProfileMenu() {
 
     const label = profile?.fullName || user.email || 'Account'
     const initials = initialsFrom(label)
-    const menuHover = classic ? 'hover:bg-black/[0.04]' : 'hover:bg-[#F7F3EE]'
+    const menuHover = modern
+        ? 'hover:bg-t3-navy/5'
+        : classic
+          ? 'hover:bg-black/[0.04]'
+          : 'hover:bg-[#F7F3EE]'
 
     async function onLogout() {
         try {
@@ -60,8 +65,15 @@ export function ProfileMenu() {
                     aria-label="Account menu"
                     className={cn(
                         'inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full',
-                        'border border-black/10 text-sm font-semibold text-white',
-                        classic ? 'bg-brand transition hover:opacity-90' : 'bg-[#111] transition hover:bg-[#333]'
+                        'border border-black/10 text-sm font-semibold text-white transition',
+                        accentSolidClass(
+                            variant,
+                            classic
+                                ? 'hover:opacity-90'
+                                : modern
+                                  ? 'hover:brightness-110'
+                                  : 'hover:bg-[#333]'
+                        )
                     )}
                 >
                     {profile?.avatarUrl ? (
