@@ -733,7 +733,9 @@ export function TourDetailContent({
                                         'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-white transition',
                                         classic
                                             ? 'btn-brand'
-                                            : 'bg-[#06403D] hover:bg-[#053532]'
+                                            : variant === 'temp3'
+                                              ? 'bg-[#0A2F53] hover:bg-[#0c3a66]'
+                                              : 'bg-[#06403D] hover:bg-[#053532]'
                                     )}
                                 >
                                     Book now
@@ -811,7 +813,11 @@ export function TourDetailContent({
                             href={bookingHref}
                             className={cn(
                                 'rounded-xl px-5 py-2.5 text-sm font-semibold text-white',
-                                classic ? 'btn-brand' : 'bg-[#06403D]'
+                                classic
+                                    ? 'btn-brand'
+                                    : variant === 'temp3'
+                                      ? 'bg-[#0A2F53]'
+                                      : 'bg-[#06403D]'
                             )}
                         >
                             Book now

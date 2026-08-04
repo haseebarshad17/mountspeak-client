@@ -394,10 +394,14 @@ export function PackageDetailContent({
 
                             <AgencyLink
                                 href={packageDetail.requestHref}
-                                className={primaryButtonClass(
-                                    variant,
-                                    'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
-                                )}
+                                className={
+                                    variant === 'temp3'
+                                        ? 'mt-5 flex w-full items-center justify-center rounded-xl bg-[#0A2F53] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0c3a66]'
+                                        : primaryButtonClass(
+                                              variant,
+                                              'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
+                                          )
+                                }
                             >
                                 Request booking
                             </AgencyLink>

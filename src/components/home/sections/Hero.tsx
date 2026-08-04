@@ -382,7 +382,7 @@ export function Hero({
                         ) : (
                             <div className="h-full w-full bg-gradient-to-br from-[var(--color-brand)] via-[color-mix(in_srgb,var(--color-brand)_55%,#000)] to-[#071E1C]" />
                         )}
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/45" />
                     </div>
 
                     {socialItems.length > 0 ? (
@@ -595,88 +595,90 @@ export function Hero({
                             )}
 
                             {slides.length > 1 ? (
-                                <div className="flex max-w-full gap-3 overflow-x-auto pb-1 scrollbar-thin sm:gap-4">
-                                    {slides.map((src, i) => {
-                                        const active = i === slideIndex
-                                        const label =
-                                            slideMeta[i]?.label || `0${i + 1}`
-                                        return (
-                                            <button
-                                                key={`${src}-${i}`}
-                                                type="button"
-                                                aria-label={label}
-                                                aria-current={active}
-                                                onClick={() => {
-                                                    autoplayPaused.current = true
-                                                    goTo(i)
-                                                    window.setTimeout(() => {
-                                                        autoplayPaused.current = false
-                                                    }, 800)
-                                                }}
-                                                className="group flex w-[calc(4.75rem+2px)] shrink-0 flex-col items-center gap-2 sm:w-[calc(5.25rem+2px)]"
-                                            >
-                                                <span
-                                                    className="relative flex h-[2px] w-full items-center justify-center"
-                                                    aria-hidden
+                                <div className="max-w-[calc(5*(4.75rem+2px)+4*0.75rem)] overflow-x-auto overflow-y-hidden scrollbar-hide sm:max-w-[calc(5*(5.25rem+2px)+4*1rem)]">
+                                    <div className="flex w-max gap-3 sm:gap-4">
+                                        {slides.map((src, i) => {
+                                            const active = i === slideIndex
+                                            const label =
+                                                slideMeta[i]?.label || `0${i + 1}`
+                                            return (
+                                                <button
+                                                    key={`${src}-${i}`}
+                                                    type="button"
+                                                    aria-label={label}
+                                                    aria-current={active}
+                                                    onClick={() => {
+                                                        autoplayPaused.current = true
+                                                        goTo(i)
+                                                        window.setTimeout(() => {
+                                                            autoplayPaused.current = false
+                                                        }, 800)
+                                                    }}
+                                                    className="group flex w-[calc(4.75rem+2px)] shrink-0 flex-col items-center gap-2 overflow-hidden sm:w-[calc(5.25rem+2px)]"
                                                 >
-                                                    <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/30" />
-                                                    {active ? (
-                                                        <span
-                                                            key={`line-${slideIndex}`}
-                                                            className="hero-temp3-line-fill relative z-[1] h-[2px] w-[70%] origin-left rounded-full bg-[#E89C5D]"
-                                                            style={{
-                                                                animationDuration: `${HERO_AUTOPLAY_MS}ms`,
-                                                            }}
-                                                        />
-                                                    ) : null}
-                                                </span>
-
-                                                <span
-                                                    key={
-                                                        active
-                                                            ? `label-${slideIndex}`
-                                                            : undefined
-                                                    }
-                                                    className={cn(
-                                                        'w-full truncate text-center text-[9px] font-semibold uppercase tracking-[0.12em] transition-colors duration-300 sm:text-[10px]',
-                                                        active
-                                                            ? 'hero-temp3-label-in text-white'
-                                                            : 'text-white/55 group-hover:text-white/80'
-                                                    )}
-                                                >
-                                                    {label}
-                                                </span>
-
-                                                <span
-                                                    className={cn(
-                                                        'relative block h-[46px] w-full rounded transition duration-300 sm:h-[54px]',
-                                                        active
-                                                            ? 'hero-temp3-thumb-active'
-                                                            : 'overflow-hidden opacity-90 group-hover:opacity-100'
-                                                    )}
-                                                >
-                                                    {active ? (
-                                                        <span
-                                                            className="hero-temp3-thumb-border"
-                                                            aria-hidden
-                                                        />
-                                                    ) : null}
-                                                    <span className="relative z-[1] block h-full w-full overflow-hidden rounded-[3px]">
-                                                        {src ? (
-                                                            // eslint-disable-next-line @next/next/no-img-element
-                                                            <img
-                                                                src={src}
-                                                                alt=""
-                                                                className="h-full w-full object-cover"
+                                                    <span
+                                                        className="relative flex h-[2px] w-full items-center justify-center"
+                                                        aria-hidden
+                                                    >
+                                                        <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/30" />
+                                                        {active ? (
+                                                            <span
+                                                                key={`line-${slideIndex}`}
+                                                                className="hero-temp3-line-fill relative z-[1] h-[2px] w-[70%] origin-left rounded-full bg-[#E89C5D]"
+                                                                style={{
+                                                                    animationDuration: `${HERO_AUTOPLAY_MS}ms`,
+                                                                }}
                                                             />
-                                                        ) : (
-                                                            <span className="block h-full w-full border border-white/25" />
-                                                        )}
+                                                        ) : null}
                                                     </span>
-                                                </span>
-                                            </button>
-                                        )
-                                    })}
+
+                                                    <span
+                                                        key={
+                                                            active
+                                                                ? `label-${slideIndex}`
+                                                                : undefined
+                                                        }
+                                                        className={cn(
+                                                            'w-full truncate text-center text-[9px] font-semibold uppercase tracking-[0.12em] transition-colors duration-300 sm:text-[10px]',
+                                                            active
+                                                                ? 'hero-temp3-label-in text-white'
+                                                                : 'text-white/55 group-hover:text-white/80'
+                                                        )}
+                                                    >
+                                                        {label}
+                                                    </span>
+
+                                                    <span
+                                                        className={cn(
+                                                            'relative block h-[46px] w-full overflow-hidden rounded transition duration-300 sm:h-[54px]',
+                                                            active
+                                                                ? 'hero-temp3-thumb-active'
+                                                                : 'opacity-90 group-hover:opacity-100'
+                                                        )}
+                                                    >
+                                                        {active ? (
+                                                            <span
+                                                                className="hero-temp3-thumb-border"
+                                                                aria-hidden
+                                                            />
+                                                        ) : null}
+                                                        <span className="relative z-[1] block h-full w-full overflow-hidden rounded-[3px]">
+                                                            {src ? (
+                                                                // eslint-disable-next-line @next/next/no-img-element
+                                                                <img
+                                                                    src={src}
+                                                                    alt=""
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <span className="block h-full w-full border border-white/25" />
+                                                            )}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
                             ) : null}
                         </div>
