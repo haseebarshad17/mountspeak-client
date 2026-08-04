@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { accentSolidClass, isClassicTemplate } from '@/lib/templates/chrome'
+import { withAgencyPreviewQuery } from '@/lib/templates/preview-template'
 import { cn } from '@/lib/utils/cn'
 import { useLogout, useOptionalUser } from '@/services/auth/auth.query'
 import { useUserProfile } from '@/services/user-profile/user-profile.query'
@@ -48,10 +49,11 @@ export function ProfileMenu() {
         try {
             await logout()
             toast.success('Signed out')
-            const host = new URLSearchParams(window.location.search).get('host')
-            window.location.href = host
-                ? `/?host=${encodeURIComponent(host)}`
-                : '/'
+            const params = new URLSearchParams(window.location.search)
+            window.location.href = withAgencyPreviewQuery('/', {
+                host: params.get('host'),
+                templateId: params.get('templateId'),
+            })
         } catch {
             toast.error('Could not sign out')
         }
