@@ -12,21 +12,32 @@ import type { AgencySpecializationCapabilities } from '@/services/specialization
 import { cn } from '@/lib/utils/cn'
 import TwoLineMenu from '@/assets/svg/menu/TwoLineMenu'
 
-const NAV = [
-    { label: 'Home', href: '/' },
-    { label: 'Packages', href: '/packages' },
-    { label: 'Tours', href: '/tours' },
-    { label: 'Services', href: '/services' },
-    { label: 'About Us', href: '/about-us' },
-    { label: 'Contact', href: '/contact-us' },
-]
-
 function bookNowHref(capabilities?: AgencySpecializationCapabilities) {
     if (!capabilities) return '/tours'
     if (capabilities.hasTours) return '/tours'
     if (capabilities.hasPackages) return '/packages'
     if (capabilities.hasInternational) return '/tours'
     return '/search'
+}
+
+/** Listing nav items gated by agency specializations (hero tabs use the same flags). */
+function headerNavItems(capabilities?: AgencySpecializationCapabilities) {
+    const items: Array<{ label: string; href: string }> = [{ label: 'Home', href: '/' }]
+
+    if (!capabilities || capabilities.hasPackages) {
+        items.push({ label: 'Packages', href: '/packages' })
+    }
+    if (!capabilities || capabilities.hasTours || capabilities.hasInternational) {
+        items.push({ label: 'Tours', href: '/tours' })
+    }
+
+    items.push(
+        { label: 'Services', href: '/services' },
+        { label: 'About Us', href: '/about-us' },
+        { label: 'Contact', href: '/contact-us' }
+    )
+
+    return items
 }
 
 export function BrandMark({
@@ -74,6 +85,7 @@ export function SiteHeader({
     const variant = useTemplateVariant()
     const brand = page.branding.name
     const ctaHref = bookNowHref(capabilities)
+    const navItems = headerNavItems(capabilities)
     const { data: user } = useOptionalUser()
     const [menuOpen, setMenuOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
@@ -141,7 +153,7 @@ export function SiteHeader({
                             </div>
 
                             <nav className="hidden items-center gap-7 text-[0.92rem] text-white/80 lg:flex">
-                                {NAV.map((item) => (
+                                {navItems.map((item) => (
                                     <AgencyLink
                                         key={item.label}
                                         href={item.href}
@@ -222,7 +234,7 @@ export function SiteHeader({
                         </div>
 
                         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
-                            {NAV.map((item) => (
+                            {navItems.map((item) => (
                                 <AgencyLink
                                     key={item.label}
                                     href={item.href}
@@ -291,7 +303,7 @@ export function SiteHeader({
                         </div>
 
                         <nav className="hidden items-center gap-7 text-[0.92rem] text-[#222]/80 lg:flex">
-                            {NAV.map((item) => (
+                            {navItems.map((item) => (
                                 <AgencyLink
                                     key={item.label}
                                     href={item.href}
@@ -368,7 +380,7 @@ export function SiteHeader({
                         </div>
 
                         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
-                            {NAV.map((item) => (
+                            {navItems.map((item) => (
                                 <AgencyLink
                                     key={item.label}
                                     href={item.href}

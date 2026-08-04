@@ -10,6 +10,7 @@ import {
 } from '@/services/saved-listings/saved-listings.store'
 import type { ListingItem } from '@/services/listings/listings.types'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
+import { copyAgencyPreviewParams } from '@/lib/templates/preview-template'
 import { cn } from '@/lib/utils/cn'
 
 export function SaveListingButton({
@@ -48,10 +49,10 @@ export function SaveListingButton({
                     onClick: () => {
                         const params = new URLSearchParams()
                         params.set('next', '/account/saved')
-                        const host = new URLSearchParams(window.location.search).get(
-                            'host'
+                        copyAgencyPreviewParams(
+                            params,
+                            new URLSearchParams(window.location.search)
                         )
-                        if (host) params.set('host', host)
                         window.location.href = `/login?${params.toString()}`
                     },
                 },

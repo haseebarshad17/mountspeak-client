@@ -11,6 +11,7 @@ import {
     normalizeAuthRedirectPath,
 } from '@/lib/auth/auth-urls'
 import { primaryButtonClass } from '@/lib/templates/chrome'
+import { copyAgencyPreviewParams } from '@/lib/templates/preview-template'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import {
     useGoogleLogin,
@@ -69,11 +70,12 @@ function LoginForm({
     useEffect(() => {
         if (!user) return
         const params = new URLSearchParams()
-        if (previewHost) params.set('host', previewHost)
+        copyAgencyPreviewParams(params, searchParams)
+        if (previewHost && !params.has('host')) params.set('host', previewHost)
         const q = params.toString()
         router.replace(q ? `${nextPath}?${q}` : nextPath)
         router.refresh()
-    }, [user, router, nextPath, previewHost])
+    }, [user, router, nextPath, previewHost, searchParams])
 
     useEffect(() => {
         if (cooldown <= 0) return

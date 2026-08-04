@@ -6,6 +6,7 @@ import { fraunces, ibmPlexMono, jost, roboto, spaceGrotesk } from '@/assets/font
 import { AppProviders } from '@/components/providers/AppProviders'
 import { getRequestHost } from '@/lib/host/request-host'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
+import { getRequestPreviewTemplateId } from '@/lib/templates/request-template'
 import { resolveTemplateVariant } from '@/lib/templates/resolve-variant'
 import { cn } from '@/lib/utils/cn'
 import { createServerSupabase } from '@/lib/supabase/supabase.server'
@@ -107,13 +108,16 @@ export default async function RootLayout({
     let brandHover = '#1f5453'
     let brandFg = '#FFFFFF'
 
+    const previewTemplateId = await getRequestPreviewTemplateId()
+
     try {
         const host = await getRequestHost()
         const homepage = await getAgencyContent({
             supabase: createServerSupabase(),
             host,
         })
-        templateId = homepage.page.templateId
+        // Dashboard live preview (`?templateId=`) overrides the saved site theme.
+        templateId = previewTemplateId ?? homepage.page.templateId
         const primary = homepage.page.theme.buttons.primary
         brand =
             homepage.page.footer?.backgroundColor ||
@@ -123,7 +127,7 @@ export default async function RootLayout({
         brandFg = primary.text || brandFg
     } catch {
         const fallback = getDefaultHomepage()
-        templateId = fallback.page.templateId
+        templateId = previewTemplateId ?? fallback.page.templateId
         const primary = fallback.page.theme.buttons.primary
         brand =
             fallback.page.footer?.backgroundColor ||

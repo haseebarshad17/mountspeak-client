@@ -23,6 +23,7 @@ import {
 import { getApiErrorMessage } from '@/lib/api/errors'
 import { MessageCode } from '@/lib/messages/codes'
 import { getMessage } from '@/lib/messages/get-message'
+import { copyAgencyPreviewParams } from '@/lib/templates/preview-template'
 import {
     formatCnicInput,
     isValidCnic,
@@ -271,9 +272,8 @@ export function TourBookingWizard({
             )
 
             toast.success('Booking submitted for review')
-            const host = searchParams.get('host')
             const params = new URLSearchParams()
-            if (host) params.set('host', host)
+            copyAgencyPreviewParams(params, searchParams)
             const q = params.toString()
             router.push(q ? `/account/bookings?${q}` : '/account/bookings')
         } catch (error) {

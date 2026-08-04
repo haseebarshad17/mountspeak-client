@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
+import { copyAgencyPreviewParams } from '@/lib/templates/preview-template'
 import { useOptionalUser } from '@/services/auth/auth.query'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
@@ -47,10 +48,9 @@ export function AccountShell({
     useEffect(() => {
         if (isLoading) return
         if (user) return
-        const host = searchParams.get('host')
         const params = new URLSearchParams()
         params.set('next', pathname)
-        if (host) params.set('host', host)
+        copyAgencyPreviewParams(params, searchParams)
         router.replace(`/login?${params.toString()}`)
     }, [isLoading, user, router, pathname, searchParams])
 
