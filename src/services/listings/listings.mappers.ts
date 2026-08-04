@@ -11,18 +11,20 @@ import type {
     UmrahPlanRow,
 } from './listings.types'
 
-export function formatMoney(amount: number | null | undefined, currency = 'USD'): string {
+export function formatMoney(amount: number | null | undefined, currency = 'PKR'): string {
     if (amount == null || Number.isNaN(Number(amount)) || Number(amount) <= 0) {
         return 'Price on request'
     }
+    const code = (currency || 'PKR').trim().toUpperCase() || 'PKR'
     try {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: currency || 'USD',
+            currency: code,
+            currencyDisplay: 'code',
             maximumFractionDigits: 0,
         }).format(Number(amount))
     } catch {
-        return `${currency} ${Math.round(Number(amount)).toLocaleString()}`
+        return `${code} ${Math.round(Number(amount)).toLocaleString()}`
     }
 }
 
@@ -38,14 +40,15 @@ function discountedPrice(
 export function mapTourToListing(row: TourRow): ListingItem {
     const discountPercent = Number(row.discount_percent ?? 0)
     const price = discountedPrice(row.price_per_seat, row.discount_percent)
+    const currency = 'PKR'
     const days = row.header?.day_count
     const nights = row.header?.night_count
     const durationLabel = days ? `${days} Day${days > 1 ? 's' : ''}` : null
     const meta =
         days || nights
             ? [days ? `${days} days` : null, nights ? `${nights} nights` : null]
-                  .filter(Boolean)
-                  .join(' · ')
+                .filter(Boolean)
+                .join(' · ')
             : null
     const capacity = row.capacity_total
     const confirmed = row.confirmed_seats ?? 0
@@ -60,7 +63,7 @@ export function mapTourToListing(row: TourRow): ListingItem {
             row.to_location ||
             row.from_location ||
             'Pakistan',
-        priceLabel: `from ${formatMoney(price, 'USD')}`,
+        priceLabel: `from ${formatMoney(price, currency)}`,
         imageUrl: resolveTourAssetUrl(row.header?.hero_image_url) || null,
         href: `/tours/${row.slug || row.id}`,
         summary: row.header?.subtitle || row.title,
@@ -75,7 +78,7 @@ export function mapTourToListing(row: TourRow): ListingItem {
         discountPercent: discountPercent > 0 ? discountPercent : null,
         originalPriceLabel:
             discountPercent > 0 && row.price_per_seat != null
-                ? formatMoney(row.price_per_seat, 'USD')
+                ? formatMoney(row.price_per_seat, currency)
                 : null,
         seatsLeft,
         tripTypeLabel: row.category || 'Public Trip',
@@ -142,7 +145,7 @@ export function mapInternationalTourToListing(row: InternationalTourRow): Listin
     const days = row.duration_dates?.duration_days
     const durationLabel = days ? `${days} Day${days > 1 ? 's' : ''}` : null
     const title = info?.package_title || 'International Tour'
-    const currency = pricing?.currency || 'USD'
+    const currency = pricing?.currency || 'PKR'
 
     return {
         id: row.id,
@@ -176,6 +179,7 @@ export function mapInternationalTourToListing(row: InternationalTourRow): Listin
 export function mapTourToDetail(row: TourRow): TourDetail {
     const price = discountedPrice(row.price_per_seat, row.discount_percent)
     const title = row.header?.title || row.title
+    const currency = 'PKR'
 
     return {
         id: row.id,
@@ -199,9 +203,10 @@ export function mapTourToDetail(row: TourRow): TourDetail {
             'Pakistan',
         fromLocation: row.from_location,
         toLocation: row.to_location,
-        priceLabel: formatMoney(price, 'USD'),
+        priceLabel: formatMoney(price, currency),
         priceAmount: price,
         pricePerSeat: row.price_per_seat ?? 0,
+        currency,
         discountPercent: Number(row.discount_percent ?? 0),
         kidsDiscountPercent: Number(row.kids_discount ?? 0),
         advanceAmountPerSeat:
@@ -270,7 +275,7 @@ function packagePriceFields(pricing: UmrahPlanRow['pricing'] | InternationalTour
             ? pricing.discount_price
             : null
     const amount = discounted ?? original
-    const currency = pricing?.currency || 'USD'
+    const currency = pricing?.currency || 'PKR'
     const discountPercent =
         original && discounted && discounted < original
             ? Math.round(((original - discounted) / original) * 100)

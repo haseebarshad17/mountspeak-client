@@ -81,7 +81,7 @@ export function PackageDetailContent({
     return (
         <>
             <SiteHeader page={page} capabilities={capabilities} overlay={classic} />
-            <main className="site-bg overflow-x-hidden pb-24 lg:pb-0">
+            <main className="site-bg overflow-x-hidden pb-24 md:pb-28">
                 <section className={cn(classic ? 'px-3 pt-3 sm:px-5 sm:pt-5' : 'pt-6 md:pt-8')}>
                     <div className={classic ? undefined : 'site-container'}>
                         <div
