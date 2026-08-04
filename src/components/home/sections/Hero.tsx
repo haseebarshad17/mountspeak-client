@@ -8,7 +8,7 @@ import {
     useState,
     type PointerEvent as ReactPointerEvent,
 } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import FacebookIcon from '@/assets/svg/social/facebook'
 import InstagramIcon from '@/assets/svg/social/instagram'
@@ -21,6 +21,10 @@ import {
 } from '@/components/home/sections/HeroSearchFilters'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
+import {
+    copyAgencyPreviewParams,
+    withAgencyPreviewQuery,
+} from '@/lib/templates/preview-template'
 import type { HeroSection } from '@/services/agency/agency.types'
 import type {
     AgencySpecializationCapabilities,
@@ -117,6 +121,7 @@ export function Hero({
 }) {
     const variant = useTemplateVariant()
     const router = useRouter()
+    const searchParams = useSearchParams()
     const filters = data.searchFilters
 
     const [activeKind, setActiveKind] = useState<SpecializationKind>(
@@ -260,7 +265,8 @@ export function Hero({
         if (values.to) params.set('destination', values.to)
         if (values.startDate) params.set('date', values.startDate)
         if (values.endDate) params.set('endDate', values.endDate)
-        if (previewHost) params.set('host', previewHost)
+        copyAgencyPreviewParams(params, searchParams)
+        if (previewHost && !params.has('host')) params.set('host', previewHost)
         router.push(`/search?${params.toString()}`)
     }
 
@@ -490,9 +496,10 @@ export function Hero({
 
     /* ── Template 3 (Modern): full-bleed left copy + thumb switcher ── */
     if (variant === 'temp3') {
-        const exploreHref = previewHost
-            ? `/search?host=${encodeURIComponent(previewHost)}`
-            : '/search'
+        const exploreHref = withAgencyPreviewQuery('/search', {
+            host: previewHost,
+            templateId: searchParams.get('templateId'),
+        })
         const activeMeta = slideMeta[slideIndex]
 
         return (
@@ -702,11 +709,7 @@ export function Hero({
                         </p>
                         <div className="mt-8 flex flex-wrap gap-3">
                             <AgencyLink
-                                href={
-                                    previewHost
-                                        ? `/search?host=${encodeURIComponent(previewHost)}`
-                                        : '/search'
-                                }
+                                href="/search"
                                 className="rounded-full bg-[#111] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#333]"
                             >
                                 Start exploring

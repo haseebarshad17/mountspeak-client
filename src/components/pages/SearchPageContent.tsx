@@ -19,6 +19,7 @@ import {
     softFieldClass,
 } from '@/lib/templates/chrome'
 import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
+import { copyAgencyPreviewParams } from '@/lib/templates/preview-template'
 import type { HomepagePage } from '@/services/agency/agency.types'
 import type { ListingItem } from '@/services/listings/listings.types'
 import type {
@@ -120,8 +121,7 @@ export function SearchPageContent({
         if (destination) params.set('destination', destination)
         if (departureDate) params.set('date', departureDate)
         if (travelers) params.set('travelers', travelers)
-        const host = searchParams.get('host')
-        if (host) params.set('host', host)
+        copyAgencyPreviewParams(params, searchParams)
         router.push(`/search?${params.toString()}`)
     }
 

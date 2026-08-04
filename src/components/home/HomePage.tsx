@@ -36,6 +36,7 @@ export function HomePage({
     agencyId: string
     previewHost?: string | null
 }) {
+
     const { sections } = page
     const heroCardImages = collectHeroCardImages([
         ...(sections.hero.backgroundImages ?? []),
