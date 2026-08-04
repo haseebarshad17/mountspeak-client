@@ -41,15 +41,6 @@ function setPreviewHostCookie(response: NextResponse, agencyHost: string) {
     })
 }
 
-function setPreviewTemplateCookie(response: NextResponse, templateId: string) {
-    // Session cookie — preview override ends when the browser session ends.
-    response.cookies.set(AGENCY_PREVIEW_TEMPLATE_COOKIE, templateId, {
-        path: '/',
-        sameSite: 'lax',
-        httpOnly: false,
-    })
-}
-
 function clearPreviewTemplateCookie(response: NextResponse) {
     response.cookies.set(AGENCY_PREVIEW_TEMPLATE_COOKIE, '', {
         path: '/',
@@ -67,7 +58,8 @@ async function continueWithPreview(
     const response = NextResponse.next({ request: { headers: requestHeaders } })
     copyCookies(sessionResponse, response)
     if (opts.agencyHost) setPreviewHostCookie(response, opts.agencyHost)
-    if (opts.templateId) setPreviewTemplateCookie(response, opts.templateId)
+    // Never persist templateId in a cookie — only the URL query drives preview.
+    clearPreviewTemplateCookie(response)
     return response
 }
 
@@ -76,10 +68,9 @@ async function continueWithPreview(
  * - http://localhost:3000/?host=hamstours.mountspeak.com
  * - http://localhost:3000/?templateId=ab12-cd34-ef
  * - http://localhost:3000/hamstours.mountspeak.com
- * - http://localhost:3000/hamstours.mountspeak.com/about-us
  *
- * `?host=` and `?templateId=` are stored in cookies. Later navigations without
- * those query params are redirected so preview stays in the URL.
+ * `?templateId=` is URL-only. AgencyLink keeps it on in-app navigations.
+ * Hitting a URL without `templateId` must not restore it from history/cookies.
  *
  * Note: use http (not https) for local Next.js.
  */
@@ -89,23 +80,6 @@ export async function middleware(request: NextRequest) {
     const queryTemplateId = normalizePreviewTemplateId(
         searchParams.get(TEMPLATE_ID_QUERY_PARAM)
     )
-    const cookieTemplateId = normalizePreviewTemplateId(
-        request.cookies.get(AGENCY_PREVIEW_TEMPLATE_COOKIE)?.value
-    )
-
-    // Persist template preview in the URL across route changes (pages only).
-    if (
-        !queryTemplateId &&
-        cookieTemplateId &&
-        !pathname.startsWith('/api/') &&
-        !pathname.startsWith('/auth/')
-    ) {
-        const redirectUrl = request.nextUrl.clone()
-        redirectUrl.searchParams.set(TEMPLATE_ID_QUERY_PARAM, cookieTemplateId)
-        const response = NextResponse.redirect(redirectUrl)
-        setPreviewTemplateCookie(response, cookieTemplateId)
-        return response
-    }
 
     const queryHost = searchParams.get('host')?.trim()
     if (queryHost && isAgencyHostSegment(queryHost)) {
@@ -134,7 +108,7 @@ export async function middleware(request: NextRequest) {
         })
         copyCookies(sessionResponse, response)
         setPreviewHostCookie(response, agencyHost)
-        if (queryTemplateId) setPreviewTemplateCookie(response, queryTemplateId)
+        clearPreviewTemplateCookie(response)
         return response
     }
 
@@ -144,11 +118,6 @@ export async function middleware(request: NextRequest) {
 
     const sessionResponse = await updateSession(request)
 
-    // API / auth routes should not wipe an active template preview session.
-    if (pathname.startsWith('/api/') || pathname.startsWith('/auth/')) {
-        return sessionResponse
-    }
-
     // Do not auto-restore agency host preview from cookie. Bare localhost must show
     // the default Template 1 (Classic). Preview only via ?host= or /agency.host/.
     if (request.cookies.has(AGENCY_PREVIEW_HOST_COOKIE)) {
@@ -157,9 +126,8 @@ export async function middleware(request: NextRequest) {
             maxAge: 0,
         })
     }
-    if (request.cookies.has(AGENCY_PREVIEW_TEMPLATE_COOKIE)) {
-        clearPreviewTemplateCookie(sessionResponse)
-    }
+    // Drop any leftover template preview cookie from earlier builds.
+    clearPreviewTemplateCookie(sessionResponse)
     return sessionResponse
 }
 

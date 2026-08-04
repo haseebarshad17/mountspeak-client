@@ -3,7 +3,6 @@ import { AGENCY_PREVIEW_HOST_COOKIE } from '@/lib/host/preview-host'
 import { isAgencyHostSegment, normalizeAgencyHost } from '@/lib/host/site-url'
 import { normalizeAuthRedirectPath } from '@/lib/auth/auth-urls'
 import {
-    AGENCY_PREVIEW_TEMPLATE_COOKIE,
     TEMPLATE_ID_QUERY_PARAM,
     normalizePreviewTemplateId,
 } from '@/lib/templates/preview-template'
@@ -34,11 +33,9 @@ export async function GET(request: NextRequest) {
     const queryHost = requestUrl.searchParams.get('host')
     const cookieHost = request.cookies.get(AGENCY_PREVIEW_HOST_COOKIE)?.value ?? null
     const host = queryHost || cookieHost
-    const templateId =
-        normalizePreviewTemplateId(requestUrl.searchParams.get(TEMPLATE_ID_QUERY_PARAM)) ||
-        normalizePreviewTemplateId(
-            request.cookies.get(AGENCY_PREVIEW_TEMPLATE_COOKIE)?.value
-        )
+    const templateId = normalizePreviewTemplateId(
+        requestUrl.searchParams.get(TEMPLATE_ID_QUERY_PARAM)
+    )
 
     const loginPath = withPreviewParams('/login', { host, templateId })
 
