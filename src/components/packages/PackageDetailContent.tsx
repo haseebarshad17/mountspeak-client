@@ -81,7 +81,7 @@ export function PackageDetailContent({
     return (
         <>
             <SiteHeader page={page} capabilities={capabilities} overlay={classic} />
-            <main className="site-bg overflow-x-hidden pb-24 lg:pb-0">
+            <main className="site-bg overflow-x-hidden pb-24 md:pb-28">
                 <section className={cn(classic ? 'px-3 pt-3 sm:px-5 sm:pt-5' : 'pt-6 md:pt-8')}>
                     <div className={classic ? undefined : 'site-container'}>
                         <div
@@ -394,10 +394,14 @@ export function PackageDetailContent({
 
                             <AgencyLink
                                 href={packageDetail.requestHref}
-                                className={primaryButtonClass(
-                                    variant,
-                                    'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
-                                )}
+                                className={
+                                    variant === 'temp3'
+                                        ? 'mt-5 flex w-full items-center justify-center rounded-xl bg-[#0A2F53] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0c3a66]'
+                                        : primaryButtonClass(
+                                              variant,
+                                              'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
+                                          )
+                                }
                             >
                                 Request booking
                             </AgencyLink>

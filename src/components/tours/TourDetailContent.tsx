@@ -110,7 +110,7 @@ export function TourDetailContent({
     return (
         <>
             <SiteHeader page={page} capabilities={capabilities} overlay={classic} />
-            <main className="site-bg overflow-x-hidden pb-24 lg:pb-0">
+            <main className="site-bg overflow-x-hidden pb-24 md:pb-28">
                 {/* Rounded hero card */}
                 <section className={cn(classic ? 'px-3 pt-3 sm:px-5 sm:pt-5' : 'pt-6 md:pt-8')}>
                     <div className={classic ? undefined : 'site-container'}>
@@ -733,7 +733,9 @@ export function TourDetailContent({
                                         'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-white transition',
                                         classic
                                             ? 'btn-brand'
-                                            : 'bg-[#06403D] hover:bg-[#053532]'
+                                            : variant === 'temp3'
+                                              ? 'bg-[#0A2F53] hover:bg-[#0c3a66]'
+                                              : 'bg-[#06403D] hover:bg-[#053532]'
                                     )}
                                 >
                                     Book now
@@ -811,7 +813,11 @@ export function TourDetailContent({
                             href={bookingHref}
                             className={cn(
                                 'rounded-xl px-5 py-2.5 text-sm font-semibold text-white',
-                                classic ? 'btn-brand' : 'bg-[#06403D]'
+                                classic
+                                    ? 'btn-brand'
+                                    : variant === 'temp3'
+                                      ? 'bg-[#0A2F53]'
+                                      : 'bg-[#06403D]'
                             )}
                         >
                             Book now

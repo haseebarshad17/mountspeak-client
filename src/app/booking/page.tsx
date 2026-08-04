@@ -54,7 +54,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
         advanceAmountPerSeat: tour.advanceAmountPerSeat,
         discountPercent: tour.discountPercent,
         kidsDiscountPercent: tour.kidsDiscountPercent,
-        currency: 'PKR',
+        currency: tour.currency || 'PKR',
         startDate: tour.startDate,
         capacityTotal: tour.capacityTotal,
         confirmedSeats: tour.confirmedSeats ?? 0,

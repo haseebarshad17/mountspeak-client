@@ -136,6 +136,7 @@ export type TourDetail = {
     priceLabel: string
     priceAmount: number | null
     pricePerSeat: number
+    currency: string
     discountPercent: number
     kidsDiscountPercent: number
     advanceAmountPerSeat: number | null

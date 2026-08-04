@@ -359,7 +359,12 @@ export function BookingRequestForm({
             <button
                 type="submit"
                 disabled={isPending}
-                className="btn-brand inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium disabled:opacity-60"
+                className={cn(
+                    'inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium disabled:opacity-60',
+                    variant === 'temp3'
+                        ? 'bg-[#0A2F53] text-white transition hover:bg-[#0c3a66]'
+                        : 'btn-brand'
+                )}
             >
                 {isPending ? 'Sending…' : submitLabel}
             </button>
