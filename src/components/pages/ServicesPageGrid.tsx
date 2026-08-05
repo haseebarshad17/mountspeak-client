@@ -75,7 +75,7 @@ export function ServicesPageGrid() {
     if (variant === 'temp3') {
         return (
             <>
-                <section className="t3-section t3-section-cream">
+                <section id="our-services" className="t3-section t3-section-cream">
                     <div className="t3-wrap">
                         <Temp3SectionHeader
                             eyebrow="What we offer"

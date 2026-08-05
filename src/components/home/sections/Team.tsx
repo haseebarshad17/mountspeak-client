@@ -102,7 +102,7 @@ export function Team({ data }: { data: MeetOurTeamSection }) {
                                             className={cn(
                                                 'absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.04]',
                                                 !image &&
-                                                    `bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}`
+                                                `bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}`
                                             )}
                                             style={
                                                 image

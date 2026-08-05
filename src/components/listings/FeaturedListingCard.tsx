@@ -55,8 +55,8 @@ function Temp3FeaturedCard({
                 ? 'Booking Closed'
                 : 'Book Now'
             : closed
-              ? 'Booking Closed'
-              : 'Request'
+                ? 'Booking Closed'
+                : 'Request'
     const departure = formatDeparture(item.departureDate)
     const duration = item.durationLabel
     const rating = item.ratingLabel
@@ -204,8 +204,8 @@ export function FeaturedListingCard({
                 ? 'Booking Closed'
                 : 'Book Tour'
             : closed
-              ? 'Booking Closed'
-              : 'Request'
+                ? 'Booking Closed'
+                : 'Request'
     const departure = formatDeparture(item.departureDate)
     const tripType = (item.tripTypeLabel || 'Public Trip').toUpperCase()
     const discount =
@@ -285,8 +285,8 @@ export function FeaturedListingCard({
                                 {seatsLeft == null
                                     ? 'Seats on request'
                                     : seatsLeft > 0
-                                      ? `${seatsLeft} seats left`
-                                      : 'Unavailable'}
+                                        ? `${seatsLeft} seats left`
+                                        : 'Unavailable'}
                             </span>
                         </p>
                     ) : (
@@ -294,8 +294,8 @@ export function FeaturedListingCard({
                             {seatsLeft == null
                                 ? 'Dates on request'
                                 : seatsLeft > 0
-                                  ? `${seatsLeft} seats left`
-                                  : 'Unavailable'}
+                                    ? `${seatsLeft} seats left`
+                                    : 'Unavailable'}
                         </p>
                     )}
                     {item.location ? (

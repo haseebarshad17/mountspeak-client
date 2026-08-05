@@ -136,7 +136,7 @@ export function Services({ data }: { data: OurServicesSection }) {
     /* ── Template 3 (Modern): navy ticket cards ── */
     if (variant === 'temp3') {
         return (
-            <section className="services-temp3">
+            <section id={data.id} className="services-temp3">
                 <div className="services-temp3-wrap">
                     <div className="services-temp3-head">
                         <p className="services-temp3-eyebrow">{data.eyebrow}</p>
@@ -203,16 +203,14 @@ export function Services({ data }: { data: OurServicesSection }) {
                         </div>
                     )}
 
-                    {data.cta?.href ? (
-                        <div className="mt-10 flex justify-center md:mt-12">
-                            <AgencyLink
-                                href={data.cta.href}
-                                className="t3-btn t3-btn-gold"
-                            >
-                                {data.cta.label}
-                            </AgencyLink>
-                        </div>
-                    ) : null}
+                    <div className="mt-10 flex justify-center md:mt-12">
+                        <AgencyLink
+                            href={`/services#${data.id}`}
+                            className="t3-btn t3-btn-gold"
+                        >
+                            {data.cta?.label || 'View All Services'}
+                        </AgencyLink>
+                    </div>
                 </div>
             </section>
         )

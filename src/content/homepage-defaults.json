@@ -193,7 +193,7 @@
         "backgroundColor": "#F2F2F2",
         "cta": {
           "label": "View All Services",
-          "href": "/discover"
+          "href": "/services"
         },
         "items": [
           {
