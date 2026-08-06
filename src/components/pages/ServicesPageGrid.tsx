@@ -1,50 +1,40 @@
 'use client'
 
 import {
+    Briefcase,
     Building2,
     Camera,
     Car,
     CheckCircle2,
     Compass,
+    Heart,
     MapPinned,
+    Mountain,
     Plane,
+    Ticket,
+    Users,
 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { MarketingCtaBand } from '@/components/pages/MarketingCtaBand'
 import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
+import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { accentSoftClass } from '@/lib/templates/chrome'
+import type { OurServicesSection } from '@/services/agency/agency.types'
 
-const SERVICE_ITEMS = [
-    {
-        title: 'Travel Planning',
-        icon: Compass,
-        description: 'Custom itineraries built around your pace, budget, and interests.',
-    },
-    {
-        title: 'Flight Support',
-        icon: Plane,
-        description: 'Route advice and booking help for domestic and international trips.',
-    },
-    {
-        title: 'Hotel Booking',
-        icon: Building2,
-        description: 'Curated stays from boutique hotels to family-friendly resorts.',
-    },
-    {
-        title: 'Route Consultation',
-        icon: MapPinned,
-        description: 'Local expertise for destinations, seasons, and travel windows.',
-    },
-    {
-        title: 'Transport Management',
-        icon: Car,
-        description: 'Transfers, private cars, and group logistics handled end to end.',
-    },
-    {
-        title: 'Trip Media Coverage',
-        icon: Camera,
-        description: 'Optional photo and content support for special journeys.',
-    },
+const FALLBACK_ICONS = [
+    Heart,
+    Users,
+    Mountain,
+    Building2,
+    Camera,
+    Plane,
+    Briefcase,
+    Users,
+    Compass,
+    Car,
+    Ticket,
+    MapPinned,
 ]
 
 const PROCESS = [
@@ -69,8 +59,13 @@ const INCLUDED = [
     'Help before and during travel',
 ]
 
-export function ServicesPageGrid() {
+export function ServicesPageGrid({ data }: { data?: OurServicesSection | null }) {
     const variant = useTemplateVariant()
+    const items = data?.items ?? []
+    const eyebrow = data?.eyebrow || 'What we offer'
+    const title = data?.title || 'Our Services'
+    const subtitle =
+        'From planning to on-ground logistics, every service is designed to keep your trip clear and well supported.'
 
     if (variant === 'temp3') {
         return (
@@ -78,32 +73,51 @@ export function ServicesPageGrid() {
                 <section id="our-services" className="t3-section t3-section-cream">
                     <div className="t3-wrap">
                         <Temp3SectionHeader
-                            eyebrow="What we offer"
-                            title="Services built for real travel"
-                            subtitle="From planning to on-ground logistics, every service is designed to keep your trip clear and well supported."
+                            eyebrow={eyebrow}
+                            title={title}
+                            subtitle={subtitle}
                             tone="cream"
                         />
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                            {SERVICE_ITEMS.map((item) => {
-                                const Icon = item.icon
-                                return (
-                                    <article
-                                        key={item.title}
-                                        className="rounded-[14px] border border-t3-navy/10 bg-white p-6 shadow-[0_10px_30px_rgba(14,27,51,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(14,27,51,0.08)]"
-                                    >
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-t3-navy/5 text-t3-navy">
-                                            <Icon className="h-5 w-5" />
-                                        </div>
-                                        <h3 className="mt-4 font-display text-lg font-semibold text-t3-navy">
-                                            {item.title}
-                                        </h3>
-                                        <p className="mt-2 font-ui text-sm leading-relaxed text-t3-dim">
-                                            {item.description}
-                                        </p>
-                                    </article>
-                                )
-                            })}
-                        </div>
+                        {items.length === 0 ? (
+                            <EmptyState
+                                title="Services coming soon"
+                                description="Service items from the site theme will appear in this grid."
+                            />
+                        ) : (
+                            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                {items.map((item, i) => {
+                                    const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                    const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                                    return (
+                                        <article
+                                            key={`${item.title}-${i}`}
+                                            className="rounded-[14px] border border-t3-navy/10 bg-white p-6 shadow-[0_10px_30px_rgba(14,27,51,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(14,27,51,0.08)]"
+                                        >
+                                            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-t3-navy/5 text-t3-navy">
+                                                {iconSrc ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img
+                                                        src={iconSrc}
+                                                        alt={item.iconAlt || item.title}
+                                                        className="h-6 w-6 object-contain"
+                                                    />
+                                                ) : (
+                                                    <Icon className="h-5 w-5" />
+                                                )}
+                                            </div>
+                                            <h3 className="mt-4 font-display text-lg font-semibold text-t3-navy">
+                                                {item.title}
+                                            </h3>
+                                            {item.description ? (
+                                                <p className="mt-2 font-ui text-sm leading-relaxed text-t3-dim">
+                                                    {item.description}
+                                                </p>
+                                            ) : null}
+                                        </article>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                 </section>
 
@@ -184,37 +198,55 @@ export function ServicesPageGrid() {
                     <div className="site-container">
                         <div className="mx-auto mb-10 max-w-2xl text-center">
                             <p className="text-brand text-sm font-medium uppercase">
-                                What we offer
+                                {eyebrow}
                             </p>
                             <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
-                                Services built for real travel
+                                {title}
                             </h2>
                             <p className="mt-3 text-sm leading-relaxed text-[#666] md:text-base">
-                                From planning to on-ground logistics, every service is designed to
-                                keep your trip clear and well supported.
+                                {subtitle}
                             </p>
                         </div>
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                            {SERVICE_ITEMS.map((item) => {
-                                const Icon = item.icon
-                                return (
-                                    <article
-                                        key={item.title}
-                                        className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition hover:shadow-md"
-                                    >
-                                        <div className="bg-brand-soft flex h-12 w-12 items-center justify-center rounded-full">
-                                            <Icon className="h-5 w-5" />
-                                        </div>
-                                        <h3 className="mt-4 text-lg font-semibold text-[#111]">
-                                            {item.title}
-                                        </h3>
-                                        <p className="mt-2 text-sm leading-relaxed text-[#666]">
-                                            {item.description}
-                                        </p>
-                                    </article>
-                                )
-                            })}
-                        </div>
+                        {items.length === 0 ? (
+                            <EmptyState
+                                title="Services coming soon"
+                                description="Service items from the site theme will appear in this grid."
+                            />
+                        ) : (
+                            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                {items.map((item, i) => {
+                                    const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                    const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                                    return (
+                                        <article
+                                            key={`${item.title}-${i}`}
+                                            className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition hover:shadow-md"
+                                        >
+                                            <div className="bg-brand-soft flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
+                                                {iconSrc ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img
+                                                        src={iconSrc}
+                                                        alt={item.iconAlt || item.title}
+                                                        className="h-6 w-6 object-contain"
+                                                    />
+                                                ) : (
+                                                    <Icon className="h-5 w-5" />
+                                                )}
+                                            </div>
+                                            <h3 className="mt-4 text-lg font-semibold text-[#111]">
+                                                {item.title}
+                                            </h3>
+                                            {item.description ? (
+                                                <p className="mt-2 text-sm leading-relaxed text-[#666]">
+                                                    {item.description}
+                                                </p>
+                                            ) : null}
+                                        </article>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
                 </section>
 
@@ -290,25 +322,49 @@ export function ServicesPageGrid() {
 
     return (
         <section className="pb-20">
-            <div className="site-container grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {SERVICE_ITEMS.map((item) => {
-                    const Icon = item.icon
-                    return (
-                        <article
-                            key={item.title}
-                            className="rounded-2xl bg-white p-6 shadow-sm"
-                        >
-                            <div
-                                className={`flex h-10 w-10 items-center justify-center rounded-full ${accentSoftClass(variant)}`}
-                            >
-                                <Icon className="h-5 w-5" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[#111]">
-                                {item.title}
-                            </h3>
-                        </article>
-                    )
-                })}
+            <div className="site-container">
+                {items.length === 0 ? (
+                    <EmptyState
+                        title="Services coming soon"
+                        description="Service items from the site theme will appear in this grid."
+                    />
+                ) : (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {items.map((item, i) => {
+                            const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                            const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                            return (
+                                <article
+                                    key={`${item.title}-${i}`}
+                                    className="rounded-2xl bg-white p-6 shadow-sm"
+                                >
+                                    <div
+                                        className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full ${accentSoftClass(variant)}`}
+                                    >
+                                        {iconSrc ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src={iconSrc}
+                                                alt={item.iconAlt || item.title}
+                                                className="h-5 w-5 object-contain"
+                                            />
+                                        ) : (
+                                            <Icon className="h-5 w-5" />
+                                        )}
+                                    </div>
+                                    <h3 className="mt-4 text-lg font-semibold text-[#111]">
+                                        {item.title}
+                                    </h3>
+                                    {item.description ? (
+                                        <p className="mt-2 text-sm leading-relaxed text-[#666]">
+                                            {item.description}
+                                        </p>
+                                    ) : null}
+                                </article>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </section>
     )

@@ -69,9 +69,17 @@ function serviceMeta(title: string, index: number) {
     return { code, tag: `+ ${tagWord}` }
 }
 
+function getServicesCta(data: OurServicesSection) {
+    return {
+        href: '/services',
+        label: data.cta?.label?.trim() || 'See all Services',
+    }
+}
+
 export function Services({ data }: { data: OurServicesSection }) {
     const variant = useTemplateVariant()
     const items = data.items ?? []
+    const cta = getServicesCta(data)
 
     if (variant === 'temp1') {
         return (
@@ -94,39 +102,49 @@ export function Services({ data }: { data: OurServicesSection }) {
                             />
                         </div>
                     ) : (
-                        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                            {items.map((item, i) => {
-                                const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
-                                const iconSrc = resolveThemeAssetUrl(item.iconSrc)
-                                return (
-                                    <div
-                                        key={`${item.title}-${i}`}
-                                        className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition hover:shadow-md"
-                                    >
-                                        <div className="bg-brand-soft flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
-                                            {iconSrc ? (
-                                                // eslint-disable-next-line @next/next/no-img-element
-                                                <img
-                                                    src={iconSrc}
-                                                    alt={item.iconAlt || item.title}
-                                                    className="h-6 w-6 object-contain"
-                                                />
-                                            ) : (
-                                                <Icon className="h-5 w-5" />
-                                            )}
-                                        </div>
-                                        <p className="mt-4 text-base font-semibold leading-snug text-[#111]">
-                                            {item.title}
-                                        </p>
-                                        {item.description ? (
-                                            <p className="mt-2 text-sm leading-relaxed text-[#666]">
-                                                {item.description}
+                        <>
+                            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                                {items.map((item, i) => {
+                                    const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                    const iconSrc = resolveThemeAssetUrl(item.iconSrc)
+                                    return (
+                                        <div
+                                            key={`${item.title}-${i}`}
+                                            className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm transition hover:shadow-md"
+                                        >
+                                            <div className="bg-brand-soft flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
+                                                {iconSrc ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img
+                                                        src={iconSrc}
+                                                        alt={item.iconAlt || item.title}
+                                                        className="h-6 w-6 object-contain"
+                                                    />
+                                                ) : (
+                                                    <Icon className="h-5 w-5" />
+                                                )}
+                                            </div>
+                                            <p className="mt-4 text-base font-semibold leading-snug text-[#111]">
+                                                {item.title}
                                             </p>
-                                        ) : null}
-                                    </div>
-                                )
-                            })}
-                        </div>
+                                            {item.description ? (
+                                                <p className="mt-2 text-sm leading-relaxed text-[#666]">
+                                                    {item.description}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            <div className="mt-10 flex justify-center md:mt-12">
+                                <AgencyLink
+                                    href={cta.href}
+                                    className="btn-brand inline-flex rounded-full px-6 py-3 text-sm font-semibold"
+                                >
+                                    {cta.label}
+                                </AgencyLink>
+                            </div>
+                        </>
                     )}
                 </div>
             </section>
@@ -136,7 +154,7 @@ export function Services({ data }: { data: OurServicesSection }) {
     /* ── Template 3 (Modern): navy ticket cards ── */
     if (variant === 'temp3') {
         return (
-            <section id={data.id} className="services-temp3">
+            <section className="services-temp3">
                 <div className="services-temp3-wrap">
                     <div className="services-temp3-head">
                         <p className="services-temp3-eyebrow">{data.eyebrow}</p>
@@ -203,14 +221,16 @@ export function Services({ data }: { data: OurServicesSection }) {
                         </div>
                     )}
 
-                    <div className="mt-10 flex justify-center md:mt-12">
-                        <AgencyLink
-                            href={`/services#${data.id}`}
-                            className="t3-btn t3-btn-gold"
-                        >
-                            {data.cta?.label || 'View All Services'}
-                        </AgencyLink>
-                    </div>
+                    {items.length > 0 ? (
+                        <div className="mt-10 flex justify-center md:mt-12">
+                            <AgencyLink
+                                href={cta.href}
+                                className="t3-btn t3-btn-gold"
+                            >
+                                {cta.label}
+                            </AgencyLink>
+                        </div>
+                    ) : null}
                 </div>
             </section>
         )
@@ -233,12 +253,12 @@ export function Services({ data }: { data: OurServicesSection }) {
                                     {data.title}
                                 </h2>
                             </div>
-                            {data.cta?.href ? (
+                            {items.length > 0 ? (
                                 <AgencyLink
-                                    href={data.cta.href}
+                                    href={cta.href}
                                     className="rounded-full bg-black/85 px-5 py-2.5 text-sm font-medium text-white"
                                 >
-                                    {data.cta.label}
+                                    {cta.label}
                                 </AgencyLink>
                             ) : null}
                         </div>
@@ -252,45 +272,55 @@ export function Services({ data }: { data: OurServicesSection }) {
                                 />
                             </div>
                         ) : (
-                            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                                {items.map((item, i) => {
-                                    const Icon =
-                                        FALLBACK_ICONS[i % FALLBACK_ICONS.length]
-                                    const iconSrc = resolveThemeAssetUrl(
-                                        item.iconSrc
-                                    )
-                                    return (
-                                        <div
-                                            key={`${item.title}-${i}`}
-                                            className="rounded-2xl border border-black/10 bg-white/5 p-5 transition hover:bg-white/10"
-                                        >
-                                            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/30">
-                                                {iconSrc ? (
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img
-                                                        src={iconSrc}
-                                                        alt={
-                                                            item.iconAlt ||
-                                                            item.title
-                                                        }
-                                                        className="h-6 w-6 object-contain"
-                                                    />
-                                                ) : (
-                                                    <Icon className="h-5 w-5" />
-                                                )}
-                                            </div>
-                                            <p className="mt-4 text-sm font-medium leading-snug">
-                                                {item.title}
-                                            </p>
-                                            {item.description ? (
-                                                <p className="mt-2 text-xs leading-relaxed text-black/65">
-                                                    {item.description}
+                            <>
+                                <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                    {items.map((item, i) => {
+                                        const Icon =
+                                            FALLBACK_ICONS[i % FALLBACK_ICONS.length]
+                                        const iconSrc = resolveThemeAssetUrl(
+                                            item.iconSrc
+                                        )
+                                        return (
+                                            <div
+                                                key={`${item.title}-${i}`}
+                                                className="rounded-2xl border border-black/10 bg-white/5 p-5 transition hover:bg-white/10"
+                                            >
+                                                <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/30">
+                                                    {iconSrc ? (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img
+                                                            src={iconSrc}
+                                                            alt={
+                                                                item.iconAlt ||
+                                                                item.title
+                                                            }
+                                                            className="h-6 w-6 object-contain"
+                                                        />
+                                                    ) : (
+                                                        <Icon className="h-5 w-5" />
+                                                    )}
+                                                </div>
+                                                <p className="mt-4 text-sm font-medium leading-snug">
+                                                    {item.title}
                                                 </p>
-                                            ) : null}
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                                                {item.description ? (
+                                                    <p className="mt-2 text-xs leading-relaxed text-black/65">
+                                                        {item.description}
+                                                    </p>
+                                                ) : null}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                <div className="mt-10 flex justify-center md:mt-12">
+                                    <AgencyLink
+                                        href={cta.href}
+                                        className="rounded-full bg-black/85 px-5 py-2.5 text-sm font-medium text-white"
+                                    >
+                                        {cta.label}
+                                    </AgencyLink>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

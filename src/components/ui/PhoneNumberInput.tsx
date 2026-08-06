@@ -39,6 +39,8 @@ export function PhoneNumberInput({
     error,
     disabled,
     defaultCountry = 'PK',
+    labelClassName,
+    inputClassName,
 }: {
     label?: string
     required?: boolean
@@ -49,6 +51,8 @@ export function PhoneNumberInput({
     error?: string
     disabled?: boolean
     defaultCountry?: CountryCode
+    labelClassName?: string
+    inputClassName?: string
 }) {
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
@@ -114,7 +118,12 @@ export function PhoneNumberInput({
     return (
         <div className={cn('min-w-0', className)}>
             {label ? (
-                <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#888]">
+                <span
+                    className={cn(
+                        'mb-2 block text-xs font-medium uppercase tracking-wide text-[#888]',
+                        labelClassName
+                    )}
+                >
                     {label}
                     {required ? <span className="text-red-500"> *</span> : null}
                 </span>
@@ -122,9 +131,9 @@ export function PhoneNumberInput({
 
             <div
                 className={cn(
-                    'flex h-11 w-full min-w-0 items-stretch overflow-hidden rounded-xl border border-black/10 bg-white text-sm text-[#111]',
-                    'transition focus-within:border-[#111]/25',
-                    error && 'border-red-400 focus-within:border-red-500',
+                    'flex h-12 w-full min-w-0 items-stretch overflow-hidden rounded-lg bg-[#F5F3F0] text-base text-[#1A1F2C] ring-1 ring-[#E8E4DE] sm:h-11 sm:text-sm',
+                    'transition focus-within:bg-white focus-within:ring-2 focus-within:ring-brand/30',
+                    error && 'ring-red-400 focus-within:ring-red-300',
                     disabled && 'cursor-not-allowed opacity-60'
                 )}
             >
@@ -133,7 +142,7 @@ export function PhoneNumberInput({
                         <button
                             type="button"
                             aria-label="Select country"
-                            className="flex w-[58px] shrink-0 items-center justify-center gap-0.5 border-r border-black/10 bg-white px-1.5 outline-none transition hover:bg-[#FAF7F2]"
+                            className="flex w-[58px] shrink-0 items-center justify-center gap-0.5 border-r border-[#E8E4DE] bg-transparent px-1.5 outline-none transition hover:bg-[#EBE8E3]/60"
                         >
                             <CountryFlag code={country} />
                             <ChevronDown className="h-3.5 w-3.5 text-[#666]" />
@@ -217,13 +226,16 @@ export function PhoneNumberInput({
                         onChange={(e) => handleInputChange(e.target.value)}
                         disabled={disabled}
                         placeholder={placeholder}
-                        className="min-w-0 flex-1 bg-transparent pl-2 outline-none placeholder:text-[#999]"
+                        className={cn(
+                            'min-w-0 flex-1 bg-transparent pl-2 outline-none placeholder:text-[#9CA3AF]',
+                            inputClassName
+                        )}
                         aria-label={label || 'Phone number'}
                     />
                 </div>
             </div>
 
-            {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : null}
+            {error ? <p className="mt-1.5 text-sm text-red-600">{error}</p> : null}
         </div>
     )
 }

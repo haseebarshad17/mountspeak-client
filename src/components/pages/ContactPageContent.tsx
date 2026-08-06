@@ -44,7 +44,9 @@ function ContactForm({
                 className={cn(fieldClassName, 'min-h-[140px]')}
                 placeholder="Message"
             />
+
             <button type="submit" className={buttonClassName}>
+
                 Send message
             </button>
         </form>

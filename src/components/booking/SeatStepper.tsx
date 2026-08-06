@@ -21,22 +21,22 @@ export function SeatStepper({
     return (
         <div
             className={cn(
-                'flex h-11 items-center justify-between gap-3 rounded-xl border border-black/10 bg-white px-3.5',
+                'flex items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-[#EBE8E3]',
                 className
             )}
         >
-            <span className="shrink-0 text-sm text-[#555]">{label}</span>
+            <span className="text-sm font-medium text-[#4B5563]">{label}</span>
             <div className="flex shrink-0 items-center gap-1.5">
                 <button
                     type="button"
                     aria-label={`Decrease ${label}`}
                     disabled={value <= min}
                     onClick={() => onChange(Math.max(min, value - 1))}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-black/10 text-[#111] transition hover:bg-[#F7F3EE] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F5F3F0] text-[#1A1F2C] transition hover:bg-[#EBE8E3] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                    <Minus className="h-3 w-3" />
+                    <Minus className="h-3.5 w-3.5" />
                 </button>
-                <span className="w-5 text-center text-sm font-semibold tabular-nums text-[#111]">
+                <span className="min-w-[1.5rem] text-center text-base font-semibold tabular-nums text-[#1A1F2C]">
                     {value}
                 </span>
                 <button
@@ -44,9 +44,9 @@ export function SeatStepper({
                     aria-label={`Increase ${label}`}
                     disabled={value >= max}
                     onClick={() => onChange(Math.min(max, value + 1))}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-black/10 text-[#111] transition hover:bg-[#F7F3EE] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F5F3F0] text-[#1A1F2C] transition hover:bg-[#EBE8E3] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-3.5 w-3.5" />
                 </button>
             </div>
         </div>

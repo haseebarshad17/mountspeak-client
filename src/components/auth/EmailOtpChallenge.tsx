@@ -137,9 +137,9 @@ export function EmailOtpChallenge({
 
     if (signedIn) {
         return (
-            <div className={cn('space-y-3 rounded-xl border border-black/5 bg-[#FAFAFA] p-4', className)}>
+            <div className={cn('space-y-3 rounded-xl bg-[#FAFAF8] p-4 ring-1 ring-[#EBE8E3]', className)}>
                 <label className="block">
-                    <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888]">
+                    <span className="mb-2 block text-sm font-medium text-[#374151]">
                         Email
                     </span>
                     <input
@@ -148,7 +148,9 @@ export function EmailOtpChallenge({
                         readOnly
                         className={cn(FIELD, 'text-[#555]', inputClassName)}
                     />
-                    <p className="mt-1.5 text-xs text-emerald-700">Signed in — ready to book.</p>
+                    <p className="mt-2 text-sm text-emerald-700">
+                        Signed in — ready to book.
+                    </p>
                 </label>
             </div>
         )

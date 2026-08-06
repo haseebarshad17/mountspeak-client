@@ -17,7 +17,6 @@ import type { HomepagePage, NavItem } from '@/services/agency/agency.types'
 import { cn } from '@/lib/utils/cn'
 
 const FALLBACK_LINKS: NavItem[] = [
-    { label: 'Packages', href: '/packages' },
     { label: 'Tours', href: '/tours' },
     { label: 'Services', href: '/services' },
 ]

@@ -4,6 +4,7 @@ import { loadAgencyContext } from '@/lib/site/load-agency-context'
 
 export default async function ServicesPage() {
     const { homepage, capabilities } = await loadAgencyContext()
+    const ourServices = homepage.page.sections?.ourServices
 
     return (
         <MarketingPageShell
@@ -18,7 +19,7 @@ export default async function ServicesPage() {
                 { label: 'Browse tours', href: '/tours', variant: 'ghost' },
             ]}
         >
-            <ServicesPageGrid />
+            <ServicesPageGrid data={ourServices} />
         </MarketingPageShell>
     )
 }
