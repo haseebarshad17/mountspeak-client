@@ -47,7 +47,7 @@ const CODE_BY_KEYWORD: Array<{ match: RegExp; code: string; tag: string }> = [
     { match: /northern|pakistan/i, code: 'NTH', tag: '+ VIEW' },
 ]
 
-function serviceMeta(title: string, index: number) {
+export function serviceMeta(title: string, index: number) {
     const hit = CODE_BY_KEYWORD.find((entry) => entry.match.test(title))
     if (hit) return { code: hit.code, tag: hit.tag }
 

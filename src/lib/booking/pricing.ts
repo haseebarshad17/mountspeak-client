@@ -19,6 +19,36 @@ export function isTourBookingClosed(startDate: string | null | undefined): boole
     return parsed.getTime() <= today.getTime()
 }
 
+export function formatSlotTime(value: string | null | undefined): string | null {
+    if (!value?.trim()) return null
+    const match = value.trim().match(/^(\d{1,2}):(\d{2})/)
+    if (!match) return null
+    let hours = Number(match[1])
+    const minutes = match[2]
+    if (!Number.isFinite(hours)) return null
+    const suffix = hours >= 12 ? 'pm' : 'am'
+    hours = hours % 12 || 12
+    return `${hours}:${minutes} ${suffix}`
+}
+
+export function formatTourSlotLabel(slot: {
+    startDate: string
+    startTime?: string | null
+    ended?: boolean
+}): string {
+    const date = parseTourCalendarDate(slot.startDate)
+    const dateLabel = date
+        ? date.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+          })
+        : slot.startDate
+    const timeLabel = formatSlotTime(slot.startTime)
+    const base = timeLabel ? `${dateLabel} - ${timeLabel}` : dateLabel
+    return slot.ended ? `${base} · Ended` : base
+}
+
 export function getAvailableSeats(
     capacityTotal: number | null | undefined,
     confirmedSeats: number

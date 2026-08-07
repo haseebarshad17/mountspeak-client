@@ -115,6 +115,18 @@ export type TourRow = {
     advance_amount_per_seat?: number | null
 }
 
+export type TourSlot = {
+    id: string
+    tourId: string
+    startDate: string
+    endDate: string
+    startTime: string | null
+    endTime: string | null
+    capacityTotal: number | null
+    confirmedSeats: number
+    isActive: boolean
+}
+
 export type TourDetail = {
     id: string
     agencyId: string
@@ -144,6 +156,7 @@ export type TourDetail = {
     endDate: string | null
     capacityTotal: number | null
     confirmedSeats: number | null
+    slots: TourSlot[]
     highlights: TourHighlight[]
     routeTitle: string | null
     routeSegments: TourRouteSegment[]

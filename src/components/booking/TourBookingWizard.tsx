@@ -18,6 +18,7 @@ import { FileUploadField } from '@/components/ui/FileUploadField'
 import { PhoneNumberInput } from '@/components/ui/PhoneNumberInput'
 import {
     calculateBookingPriceBreakdown,
+    formatTourSlotLabel,
     getAvailableSeats,
     isTourBookingClosed,
 } from '@/lib/booking/pricing'
@@ -65,6 +66,7 @@ type DetailsErrors = Partial<
         | 'phone'
         | 'emergencyPhone'
         | 'cnic'
+        | 'slot'
         | 'seats'
         | 'idFront'
         | 'idBack'
@@ -157,13 +159,19 @@ function TripSummaryCard({
     pricing,
     available,
     closed,
+    selectedSlotId,
+    slotLabels,
 }: {
     tour: BookingTourOption
     pricing: ReturnType<typeof calculateBookingPriceBreakdown>
     available: number | null
     closed: boolean
+    selectedSlotId: string
+    slotLabels: Array<{ id: string; label: string }>
 }) {
     const heroImage = resolveThemeAssetUrl(tour.heroImageUrl)
+    const selectedLabel =
+        slotLabels.find((slot) => slot.id === selectedSlotId)?.label || null
 
     return (
         <aside className="order-first overflow-hidden rounded-2xl bg-white shadow-[0_2px_20px_rgba(26,31,44,0.08)] ring-1 ring-[#EBE8E3] lg:order-none lg:sticky lg:top-24">
@@ -187,7 +195,12 @@ function TripSummaryCard({
                         <h2 className="mt-1 line-clamp-3 text-base font-semibold leading-snug text-[#1A1F2C] sm:mt-2 sm:text-lg">
                             {tour.title}
                         </h2>
-                        {tour.startDate ? (
+                        {selectedLabel ? (
+                            <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-[#6B7280]">
+                                <CalendarDays className="h-4 w-4 shrink-0 text-[#9CA3AF]" />
+                                {selectedLabel}
+                            </p>
+                        ) : tour.startDate ? (
                             <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-[#6B7280]">
                                 <CalendarDays className="h-4 w-4 shrink-0 text-[#9CA3AF]" />
                                 {tour.startDate}
@@ -196,6 +209,29 @@ function TripSummaryCard({
                             <p className="mt-2 text-sm text-[#6B7280]">Dates on request</p>
                         )}
                     </div>
+
+                    {slotLabels.length > 0 ? (
+                        <div className="border-t border-[#F0EDE8] pt-3 sm:pt-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A8F98]">
+                                Available slots
+                            </p>
+                            <ul className="mt-2 space-y-1.5">
+                                {slotLabels.map((slot) => (
+                                    <li
+                                        key={slot.id}
+                                        className={cn(
+                                            'rounded-lg px-3 py-2 text-sm',
+                                            slot.id === selectedSlotId
+                                                ? 'bg-brand/10 font-medium text-[#1A1F2C]'
+                                                : 'bg-[#FAFAF8] text-[#6B7280]'
+                                        )}
+                                    >
+                                        {slot.label}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ) : null}
 
                     <dl className="space-y-2.5 border-t border-[#F0EDE8] pt-3 text-sm sm:pt-4">
                         <div className="flex items-center justify-between gap-3">
@@ -242,12 +278,14 @@ export function TourBookingWizard({
     tour,
     initialAdults = 2,
     initialChildren = 0,
+    initialSlotId = null,
 }: {
     page: HomepagePage
     capabilities: AgencySpecializationCapabilities
     tour: BookingTourOption
     initialAdults?: number
     initialChildren?: number
+    initialSlotId?: string | null
 }) {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -261,7 +299,32 @@ export function TourBookingWizard({
             true
         )
 
+    const availableSlots = useMemo(
+        () =>
+            tour.slots.filter(
+                (slot) => slot.isActive && !isTourBookingClosed(slot.startDate)
+            ),
+        [tour.slots]
+    )
+    const slotLabels = useMemo(
+        () =>
+            availableSlots.map((slot) => ({
+                id: slot.id,
+                label: formatTourSlotLabel({
+                    startDate: slot.startDate,
+                    startTime: slot.startTime,
+                }),
+            })),
+        [availableSlots]
+    )
+
     const [step, setStep] = useState<0 | 1>(0)
+    const [selectedSlotId, setSelectedSlotId] = useState(() => {
+        if (initialSlotId && availableSlots.some((slot) => slot.id === initialSlotId)) {
+            return initialSlotId
+        }
+        return availableSlots.length === 1 ? availableSlots[0].id : ''
+    })
     const [maleSeats, setMaleSeats] = useState(Math.max(1, initialAdults))
     const [femaleSeats, setFemaleSeats] = useState(0)
     const [kidsSeats, setKidsSeats] = useState(Math.max(0, initialChildren))
@@ -279,8 +342,16 @@ export function TourBookingWizard({
         note: '',
     })
 
-    const closed = isTourBookingClosed(tour.startDate)
-    const available = getAvailableSeats(tour.capacityTotal, tour.confirmedSeats)
+    const selectedSlot =
+        availableSlots.find((slot) => slot.id === selectedSlotId) ?? null
+    const closed = selectedSlot
+        ? isTourBookingClosed(selectedSlot.startDate)
+        : availableSlots.length === 0
+          ? isTourBookingClosed(tour.startDate)
+          : false
+    const available = selectedSlot
+        ? getAvailableSeats(selectedSlot.capacityTotal, selectedSlot.confirmedSeats)
+        : getAvailableSeats(tour.capacityTotal, tour.confirmedSeats)
     const pricing = useMemo(
         () =>
             calculateBookingPriceBreakdown({
@@ -329,6 +400,9 @@ export function TourBookingWizard({
         }
         if (!isValidCnic(details.cnic)) {
             next.cnic = getMessage(MessageCode.BOOKING_CNIC_INVALID)
+        }
+        if (availableSlots.length > 0 && !selectedSlotId) {
+            next.slot = getMessage(MessageCode.BOOKING_SLOT_REQUIRED)
         }
         if (maleSeats + femaleSeats < 1) {
             next.seats = getMessage(MessageCode.BOOKING_SEAT_REQUIRED)
@@ -421,6 +495,7 @@ export function TourBookingWizard({
                 buildSubmitTourBookingPayload({
                     bookingId,
                     tourId: tour.id,
+                    slotId: selectedSlotId || null,
                     name: `${details.firstName} ${details.lastName}`.trim(),
                     email: bookingEmail,
                     phone: details.phone,
@@ -503,6 +578,8 @@ export function TourBookingWizard({
                                 pricing={pricing}
                                 available={available}
                                 closed={closed}
+                                selectedSlotId={selectedSlotId}
+                                slotLabels={slotLabels}
                             />
 
                             <div className="order-last min-w-0 lg:order-first">
@@ -525,6 +602,55 @@ export function TourBookingWizard({
                                                 description="Tell us who is traveling on this booking."
                                             >
                                                 <div className="grid gap-4 sm:grid-cols-2">
+                                                    {availableSlots.length > 0 ? (
+                                                        <label className="block min-w-0 sm:col-span-2">
+                                                            <span className={labelClass}>
+                                                                Departure slot
+                                                                <span className="text-red-500">
+                                                                    {' '}
+                                                                    *
+                                                                </span>
+                                                            </span>
+                                                            <select
+                                                                value={selectedSlotId}
+                                                                onChange={(e) => {
+                                                                    setSelectedSlotId(
+                                                                        e.target.value
+                                                                    )
+                                                                    if (errors.slot) {
+                                                                        setErrors((prev) => ({
+                                                                            ...prev,
+                                                                            slot: undefined,
+                                                                        }))
+                                                                    }
+                                                                }}
+                                                                required
+                                                                className={cn(
+                                                                    fieldClass,
+                                                                    errors.slot &&
+                                                                        'bg-red-50 ring-red-400 focus:ring-red-200'
+                                                                )}
+                                                            >
+                                                                <option value="">
+                                                                    Select a departure slot
+                                                                </option>
+                                                                {slotLabels.map((slot) => (
+                                                                    <option
+                                                                        key={slot.id}
+                                                                        value={slot.id}
+                                                                    >
+                                                                        {slot.label}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            {errors.slot ? (
+                                                                <p className="mt-1.5 text-sm text-red-600">
+                                                                    {errors.slot}
+                                                                </p>
+                                                            ) : null}
+                                                        </label>
+                                                    ) : null}
+
                                                     <label className="block min-w-0">
                                                         <span className={labelClass}>
                                                             First name

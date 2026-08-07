@@ -25,6 +25,7 @@ const LABELS: Partial<Record<MessageCodeValue, string>> = {
     [MessageCode.BOOKING_TOUR_REQUIRED]: 'Select a tour to continue.',
     [MessageCode.BOOKING_NOTE_MAX]: 'Note is too long.',
     [MessageCode.BOOKING_SEAT_REQUIRED]: 'Add at least one adult seat.',
+    [MessageCode.BOOKING_SLOT_REQUIRED]: 'Select a departure slot to continue.',
     [MessageCode.BOOKING_PAYMENT_SCREENSHOT_REQUIRED]: 'Upload a payment screenshot.',
     [MessageCode.BOOKING_PAYMENT_SCREENSHOT_SIZE]: 'Screenshot must be under 10MB.',
     [MessageCode.BOOKING_ID_CARD_FRONT_REQUIRED]: 'Upload the front of your ID card.',

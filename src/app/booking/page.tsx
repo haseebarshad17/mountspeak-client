@@ -14,6 +14,7 @@ type PageProps = {
         children?: string
         kind?: string
         id?: string
+        slot?: string
     }>
 }
 
@@ -59,10 +60,12 @@ export default async function BookingPage({ searchParams }: PageProps) {
         capacityTotal: tour.capacityTotal,
         confirmedSeats: tour.confirmedSeats ?? 0,
         heroImageUrl: tour.heroImageUrl,
+        slots: tour.slots,
     }
 
     const adults = Number(params.adults)
     const children = Number(params.children)
+    const initialSlotId = params.slot?.trim() || null
 
     return (
         <Suspense fallback={<div className="site-bg min-h-screen" />}>
@@ -74,6 +77,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
                 initialChildren={
                     Number.isFinite(children) && children >= 0 ? children : 0
                 }
+                initialSlotId={initialSlotId}
             />
         </Suspense>
     )

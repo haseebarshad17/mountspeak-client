@@ -20,6 +20,10 @@ import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { buildTourBookingHref } from '@/lib/booking/booking-href'
+import {
+    formatTourSlotLabel,
+    isTourBookingClosed,
+} from '@/lib/booking/pricing'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { isClassicTemplate } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
@@ -68,7 +72,26 @@ export function TourDetailContent({
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
 
+    const availableSlots = useMemo(
+        () =>
+            tour.slots.filter(
+                (slot) => slot.isActive && !isTourBookingClosed(slot.startDate)
+            ),
+        [tour.slots]
+    )
+    const [selectedSlotId, setSelectedSlotId] = useState(
+        () => availableSlots[0]?.id ?? ''
+    )
+
     const start = formatDate(tour.startDate)
+    const selectedSlot =
+        availableSlots.find((slot) => slot.id === selectedSlotId) ?? null
+    const selectedSlotLabel = selectedSlot
+        ? formatTourSlotLabel({
+              startDate: selectedSlot.startDate,
+              startTime: selectedSlot.startTime,
+          })
+        : null
     const durationLabel = [
         tour.nightCount != null ? `${tour.nightCount} Nights` : null,
         tour.dayCount != null ? `${tour.dayCount} Days` : null,
@@ -105,6 +128,7 @@ export function TourDetailContent({
         slug: tour.slug,
         adults,
         children,
+        slot: selectedSlotId || null,
     })
 
     return (
@@ -651,15 +675,37 @@ export function TourDetailContent({
                                     <span className="text-xs font-medium uppercase tracking-wide text-[#8A8F98]">
                                         Departure
                                     </span>
-                                    <div
-                                        className={cn(
-                                            'mt-1.5 flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C]',
-                                            classic ? 'bg-white' : 'bg-[#FAF7F2]'
-                                        )}
-                                    >
-                                        <CalendarDays className="h-4 w-4 text-[#6B7280]" />
-                                        {start || 'Dates on request'}
-                                    </div>
+                                    {availableSlots.length > 0 ? (
+                                        <select
+                                            value={selectedSlotId}
+                                            onChange={(e) =>
+                                                setSelectedSlotId(e.target.value)
+                                            }
+                                            className={cn(
+                                                'mt-1.5 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C] outline-none',
+                                                classic ? 'bg-white' : 'bg-[#FAF7F2]'
+                                            )}
+                                        >
+                                            {availableSlots.map((slot) => (
+                                                <option key={slot.id} value={slot.id}>
+                                                    {formatTourSlotLabel({
+                                                        startDate: slot.startDate,
+                                                        startTime: slot.startTime,
+                                                    })}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <div
+                                            className={cn(
+                                                'mt-1.5 flex items-center gap-2 rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C]',
+                                                classic ? 'bg-white' : 'bg-[#FAF7F2]'
+                                            )}
+                                        >
+                                            <CalendarDays className="h-4 w-4 text-[#6B7280]" />
+                                            {selectedSlotLabel || start || 'Dates on request'}
+                                        </div>
+                                    )}
                                 </label>
 
                                 <div className="mt-4 space-y-3">

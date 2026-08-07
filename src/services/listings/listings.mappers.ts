@@ -217,6 +217,7 @@ export function mapTourToDetail(row: TourRow): TourDetail {
         endDate: row.end_date,
         capacityTotal: row.capacity_total,
         confirmedSeats: row.confirmed_seats ?? null,
+        slots: [],
         highlights: row.highlights ?? [],
         routeTitle: row.route?.section_title || null,
         routeSegments: row.route?.segments ?? [],

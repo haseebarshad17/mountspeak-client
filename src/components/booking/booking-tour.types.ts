@@ -1,3 +1,5 @@
+import type { TourSlot } from '@/services/listings/listings.types'
+
 export type BookingTourOption = {
     id: string
     slug: string
@@ -12,4 +14,5 @@ export type BookingTourOption = {
     capacityTotal: number | null
     confirmedSeats: number
     heroImageUrl: string | null
+    slots: TourSlot[]
 }

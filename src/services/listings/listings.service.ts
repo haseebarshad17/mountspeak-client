@@ -16,8 +16,53 @@ import type {
     PackageDetail,
     TourDetail,
     TourRow,
+    TourSlot,
     UmrahPlanRow,
 } from './listings.types'
+
+type TourSlotRow = {
+    id: string
+    tour_id: string
+    start_date: string
+    end_date: string
+    start_time: string | null
+    end_time: string | null
+    capacity_total: number | null
+    confirmed_seats: number | null
+    is_active: boolean | null
+}
+
+function mapTourSlot(row: TourSlotRow): TourSlot {
+    return {
+        id: row.id,
+        tourId: row.tour_id,
+        startDate: row.start_date,
+        endDate: row.end_date,
+        startTime: row.start_time,
+        endTime: row.end_time,
+        capacityTotal: row.capacity_total,
+        confirmedSeats: row.confirmed_seats ?? 0,
+        isActive: row.is_active !== false,
+    }
+}
+
+async function fetchTourSlots(
+    supabase: SupabaseClient,
+    tourId: string
+): Promise<TourSlot[]> {
+    const { data, error } = await supabase
+        .from('tour_slots')
+        .select(
+            'id, tour_id, start_date, end_date, start_time, end_time, capacity_total, confirmed_seats, is_active'
+        )
+        .eq('tour_id', tourId)
+        .eq('is_active', true)
+        .order('start_date', { ascending: true })
+        .order('start_time', { ascending: true })
+
+    if (error) throw error
+    return ((data as TourSlotRow[] | null) ?? []).map(mapTourSlot)
+}
 
 const TOUR_DETAIL_COLUMNS =
     'id, agency_id, title, start_date, end_date, price_per_seat, capacity_total, publication_status, from_location, to_location, discount_percent, slug, header, overview, highlights, route, places_visited, journey, stay_and_dine, expedition_perks, visual_fragments, kids_discount, confirmed_seats, category, advance_amount_per_seat'
@@ -192,7 +237,11 @@ export function getListingsService({ supabase }: { supabase: SupabaseClient }) {
                 .maybeSingle()
 
             if (bySlug.error) throw bySlug.error
-            if (bySlug.data) return mapTourToDetail(bySlug.data as TourRow)
+            if (bySlug.data) {
+                const detail = mapTourToDetail(bySlug.data as TourRow)
+                detail.slots = await fetchTourSlots(supabase, detail.id).catch(() => [])
+                return detail
+            }
 
             const byId = await supabase
                 .from('tours')
@@ -204,7 +253,9 @@ export function getListingsService({ supabase }: { supabase: SupabaseClient }) {
 
             if (byId.error) throw byId.error
             if (!byId.data) return null
-            return mapTourToDetail(byId.data as TourRow)
+            const detail = mapTourToDetail(byId.data as TourRow)
+            detail.slots = await fetchTourSlots(supabase, detail.id).catch(() => [])
+            return detail
         },
 
         async getUmrahPlanById(
