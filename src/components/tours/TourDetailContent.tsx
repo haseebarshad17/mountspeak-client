@@ -19,6 +19,7 @@ import { SaveListingButton } from '@/components/listings/SaveListingButton'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Select } from '@/components/ui/Select'
 import { buildTourBookingHref } from '@/lib/booking/booking-href'
 import {
     formatTourSlotLabel,
@@ -676,25 +677,21 @@ export function TourDetailContent({
                                         Departure
                                     </span>
                                     {availableSlots.length > 0 ? (
-                                        <select
+                                        <Select
                                             value={selectedSlotId}
-                                            onChange={(e) =>
-                                                setSelectedSlotId(e.target.value)
-                                            }
+                                            onChange={setSelectedSlotId}
+                                            options={availableSlots.map((slot) => ({
+                                                value: slot.id,
+                                                label: formatTourSlotLabel({
+                                                    startDate: slot.startDate,
+                                                    startTime: slot.startTime,
+                                                }),
+                                            }))}
                                             className={cn(
-                                                'mt-1.5 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C] outline-none',
+                                                'mt-1.5 rounded-xl border border-black/10 px-3 py-2.5 text-sm text-[#1A1F2C]',
                                                 classic ? 'bg-white' : 'bg-[#FAF7F2]'
                                             )}
-                                        >
-                                            {availableSlots.map((slot) => (
-                                                <option key={slot.id} value={slot.id}>
-                                                    {formatTourSlotLabel({
-                                                        startDate: slot.startDate,
-                                                        startTime: slot.startTime,
-                                                    })}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        />
                                     ) : (
                                         <div
                                             className={cn(

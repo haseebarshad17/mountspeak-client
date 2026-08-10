@@ -1,5 +1,6 @@
 import { resolveTourAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { buildBookingRequestHref } from '@/lib/booking/booking-href'
+import { formatTourSlotLabel, getAvailableSeats, isTourBookingClosed } from '@/lib/booking/pricing'
 import type {
     InternationalTourRow,
     ListingItem,
@@ -8,6 +9,7 @@ import type {
     PackageDetailStop,
     TourDetail,
     TourRow,
+    TourSlot,
     UmrahPlanRow,
 } from './listings.types'
 
@@ -37,7 +39,7 @@ function discountedPrice(
     return original * (1 - discountPercent / 100)
 }
 
-export function mapTourToListing(row: TourRow): ListingItem {
+export function mapTourToListing(row: TourRow, slots: TourSlot[] = []): ListingItem {
     const discountPercent = Number(row.discount_percent ?? 0)
     const price = discountedPrice(row.price_per_seat, row.discount_percent)
     const currency = 'PKR'
@@ -54,6 +56,14 @@ export function mapTourToListing(row: TourRow): ListingItem {
     const confirmed = row.confirmed_seats ?? 0
     const seatsLeft =
         capacity != null ? Math.max(capacity - confirmed, 0) : null
+
+    const upcomingSlots = slots
+        .filter((slot) => slot.isActive && !isTourBookingClosed(slot.startDate))
+        .map((slot) => ({
+            id: slot.id,
+            label: formatTourSlotLabel({ startDate: slot.startDate }),
+            seatsLeft: getAvailableSeats(slot.capacityTotal, slot.confirmedSeats),
+        }))
 
     return {
         id: row.id,
@@ -82,6 +92,8 @@ export function mapTourToListing(row: TourRow): ListingItem {
                 : null,
         seatsLeft,
         tripTypeLabel: row.category || 'Public Trip',
+        upcomingSlots: upcomingSlots.length > 0 ? upcomingSlots.slice(0, 3) : undefined,
+        slotsCount: upcomingSlots.length > 0 ? upcomingSlots.length : null,
     }
 }
 

@@ -10,6 +10,16 @@ const LABELS: Partial<Record<MessageCodeValue, string>> = {
         'Could not submit booking request. Please try again.',
     [MessageCode.API_NEWSLETTER_SUBSCRIBE_FAILED]:
         'Could not subscribe. Please try again.',
+    [MessageCode.API_CONSULT_SUBMIT_FAILED]:
+        'Could not send your message. Please try again.',
+    [MessageCode.CONSULT_SUBMIT_SUCCESS]: 'Message sent — we’ll be in touch shortly.',
+    [MessageCode.CONSULT_NAME_REQUIRED]: 'Enter your full name.',
+    [MessageCode.CONSULT_EMAIL_INVALID]: 'Enter a valid email address.',
+    [MessageCode.CONSULT_PHONE_REQUIRED]: 'Phone number is required.',
+    [MessageCode.CONSULT_PHONE_INVALID]: 'Enter a valid phone number.',
+    [MessageCode.CONSULT_TITLE_REQUIRED]: 'Add a short subject for your message.',
+    [MessageCode.CONSULT_DESCRIPTION_REQUIRED]: 'Add a short message so we know how to help.',
+    [MessageCode.CONSULT_MISSING_AGENCY]: 'Agency context is missing.',
     [MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS]: 'Please fix the highlighted fields.',
     [MessageCode.BOOKING_EMAIL_VERIFY_REQUIRED]:
         'Verify your email with the OTP code before submitting.',

@@ -73,21 +73,9 @@ export type LegalDocument = {
     }>
 }
 
-export type FaqItem = {
-    question: string
-    answer: string
-}
-
-export type FaqPageContent = {
-    title: string
-    subtitle?: string
-    items: FaqItem[]
-}
-
 export type AgencySitePages = {
     privacyPolicy?: LegalDocument
     termsOfService?: LegalDocument
-    faq?: FaqPageContent
 }
 
 export type HomepageHeader = {

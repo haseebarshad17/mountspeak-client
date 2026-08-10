@@ -2,7 +2,13 @@
 
 import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
-import type { FaqPageContent as FaqContent } from '@/services/agency/agency.types'
+import type { FaqItem } from '@/services/faqs/faqs.types'
+
+export type FaqContent = {
+    title: string
+    subtitle?: string
+    items: FaqItem[]
+}
 
 export function FaqPageContent({ data }: { data: FaqContent }) {
     const variant = useTemplateVariant()
@@ -21,7 +27,7 @@ export function FaqPageContent({ data }: { data: FaqContent }) {
                     <div className="mt-2 space-y-4">
                         {items.map((item) => (
                             <article
-                                key={item.question}
+                                key={item.id}
                                 className="rounded-[14px] border border-t3-navy/10 bg-white p-5 shadow-[0_10px_30px_rgba(14,27,51,0.05)] md:p-6"
                             >
                                 <h3 className="font-display text-lg font-semibold text-t3-navy">
@@ -55,7 +61,7 @@ export function FaqPageContent({ data }: { data: FaqContent }) {
                 <div className="space-y-4">
                     {items.map((item) => (
                         <article
-                            key={item.question}
+                            key={item.id}
                             className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6"
                         >
                             <h3 className="text-lg font-semibold text-[#111]">

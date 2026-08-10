@@ -56,10 +56,6 @@ function normalizeHomepagePage(page: Record<string, unknown>): HomepagePage {
                 ...defaultsPage.pages?.termsOfService,
                 ...((page.pages as HomepagePage['pages'])?.termsOfService ?? {}),
             },
-            faq: {
-                ...defaultsPage.pages?.faq,
-                ...((page.pages as HomepagePage['pages'])?.faq ?? {}),
-            },
         },
     } as HomepagePage
 }

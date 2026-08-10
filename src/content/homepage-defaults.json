@@ -161,28 +161,6 @@
             "body": "We work carefully to deliver a smooth experience, but we are not liable for delays, weather, partner disruptions, or events outside our reasonable control."
           }
         ]
-      },
-      "faq": {
-        "title": "Frequently asked questions",
-        "subtitle": "Quick answers about bookings, customization, and how we support your trip.",
-        "items": [
-          {
-            "question": "How quickly do you reply?",
-            "answer": "Most inquiries receive a response within one business day — often sooner for active booking requests."
-          },
-          {
-            "question": "Can you customize a package?",
-            "answer": "Yes. Share your dates, group size, and preferences and we’ll suggest a tailored plan."
-          },
-          {
-            "question": "Do you help with bookings too?",
-            "answer": "Absolutely. From tour booking to package requests, our team guides you through the next steps."
-          },
-          {
-            "question": "Where can I see available tours or packages?",
-            "answer": "Use Tours or Packages in the navigation, depending on this agency’s specializations. You can also search by destination and dates from the homepage."
-          }
-        ]
       }
     },
     "sections": {

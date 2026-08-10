@@ -22,6 +22,9 @@ export type ListingItem = {
     originalPriceLabel?: string | null
     seatsLeft?: number | null
     tripTypeLabel?: string | null
+    /** Upcoming departure slots (tours only) — used to show slot chips on cards. */
+    upcomingSlots?: Array<{ id: string; label: string; seatsLeft: number | null }>
+    slotsCount?: number | null
 }
 
 export type ListingSearchFilters = {

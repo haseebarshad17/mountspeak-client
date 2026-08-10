@@ -16,6 +16,7 @@ import { ClassicPageHero } from '@/components/pages/ClassicPageHero'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { FileUploadField } from '@/components/ui/FileUploadField'
 import { PhoneNumberInput } from '@/components/ui/PhoneNumberInput'
+import { Select } from '@/components/ui/Select'
 import {
     calculateBookingPriceBreakdown,
     formatTourSlotLabel,
@@ -347,8 +348,8 @@ export function TourBookingWizard({
     const closed = selectedSlot
         ? isTourBookingClosed(selectedSlot.startDate)
         : availableSlots.length === 0
-          ? isTourBookingClosed(tour.startDate)
-          : false
+            ? isTourBookingClosed(tour.startDate)
+            : false
     const available = selectedSlot
         ? getAvailableSeats(selectedSlot.capacityTotal, selectedSlot.confirmedSeats)
         : getAvailableSeats(tour.capacityTotal, tour.confirmedSeats)
@@ -592,392 +593,384 @@ export function TourBookingWizard({
                                     </div>
 
                                     <div className="px-4 py-5 sm:px-6 sm:py-6">
-                                    {step === 0 ? (
-                                        <form
-                                            onSubmit={onContinueDetails}
-                                            className="space-y-4"
-                                        >
-                                            <FormSection
-                                                title="Personal details"
-                                                description="Tell us who is traveling on this booking."
+                                        {step === 0 ? (
+                                            <form
+                                                onSubmit={onContinueDetails}
+                                                className="space-y-4"
                                             >
-                                                <div className="grid gap-4 sm:grid-cols-2">
-                                                    {availableSlots.length > 0 ? (
-                                                        <label className="block min-w-0 sm:col-span-2">
-                                                            <span className={labelClass}>
-                                                                Departure slot
-                                                                <span className="text-red-500">
-                                                                    {' '}
-                                                                    *
+                                                <FormSection
+                                                    title="Personal details"
+                                                    description="Tell us who is traveling on this booking."
+                                                >
+                                                    <div className="grid gap-4 sm:grid-cols-2">
+                                                        {availableSlots.length > 0 ? (
+                                                            <label className="block min-w-0 sm:col-span-2">
+                                                                <span className={labelClass}>
+                                                                    Departure slot
+                                                                    <span className="text-red-500">
+                                                                        {' '}
+                                                                        *
+                                                                    </span>
                                                                 </span>
+                                                                <Select
+                                                                    value={selectedSlotId}
+                                                                    onChange={(value) => {
+                                                                        setSelectedSlotId(value)
+                                                                        if (errors.slot) {
+                                                                            setErrors((prev) => ({
+                                                                                ...prev,
+                                                                                slot: undefined,
+                                                                            }))
+                                                                        }
+                                                                    }}
+                                                                    options={slotLabels.map(
+                                                                        (slot) => ({
+                                                                            value: slot.id,
+                                                                            label: slot.label,
+                                                                        })
+                                                                    )}
+                                                                    placeholder="Select a departure slot"
+                                                                    className={cn(
+                                                                        fieldClass,
+                                                                        errors.slot &&
+                                                                        'bg-red-50 ring-red-400 focus:ring-red-200'
+                                                                    )}
+                                                                />
+                                                                {errors.slot ? (
+                                                                    <p className="mt-1.5 text-sm text-red-600">
+                                                                        {errors.slot}
+                                                                    </p>
+                                                                ) : null}
+                                                            </label>
+                                                        ) : null}
+
+                                                        <label className="block min-w-0">
+                                                            <span className={labelClass}>
+                                                                First name
                                                             </span>
-                                                            <select
-                                                                value={selectedSlotId}
-                                                                onChange={(e) => {
-                                                                    setSelectedSlotId(
-                                                                        e.target.value
-                                                                    )
-                                                                    if (errors.slot) {
-                                                                        setErrors((prev) => ({
-                                                                            ...prev,
-                                                                            slot: undefined,
-                                                                        }))
-                                                                    }
-                                                                }}
-                                                                required
+                                                            <input
+                                                                value={details.firstName}
+                                                                onChange={(e) =>
+                                                                    setDetails((prev) => ({
+                                                                        ...prev,
+                                                                        firstName: e.target.value,
+                                                                    }))
+                                                                }
                                                                 className={cn(
                                                                     fieldClass,
-                                                                    errors.slot &&
-                                                                        'bg-red-50 ring-red-400 focus:ring-red-200'
+                                                                    errors.firstName &&
+                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
                                                                 )}
-                                                            >
-                                                                <option value="">
-                                                                    Select a departure slot
-                                                                </option>
-                                                                {slotLabels.map((slot) => (
-                                                                    <option
-                                                                        key={slot.id}
-                                                                        value={slot.id}
-                                                                    >
-                                                                        {slot.label}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                            {errors.slot ? (
+                                                                placeholder="e.g. Ali"
+                                                            />
+                                                            {errors.firstName ? (
                                                                 <p className="mt-1.5 text-sm text-red-600">
-                                                                    {errors.slot}
+                                                                    {errors.firstName}
                                                                 </p>
                                                             ) : null}
                                                         </label>
-                                                    ) : null}
 
-                                                    <label className="block min-w-0">
-                                                        <span className={labelClass}>
-                                                            First name
-                                                        </span>
-                                                        <input
-                                                            value={details.firstName}
-                                                            onChange={(e) =>
-                                                                setDetails((prev) => ({
-                                                                    ...prev,
-                                                                    firstName: e.target.value,
-                                                                }))
-                                                            }
-                                                            className={cn(
-                                                                fieldClass,
-                                                                errors.firstName &&
-                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
-                                                            )}
-                                                            placeholder="e.g. Ali"
-                                                        />
-                                                        {errors.firstName ? (
-                                                            <p className="mt-1.5 text-sm text-red-600">
-                                                                {errors.firstName}
-                                                            </p>
-                                                        ) : null}
-                                                    </label>
-
-                                                    <label className="block min-w-0">
-                                                        <span className={labelClass}>
-                                                            Last name
-                                                        </span>
-                                                        <input
-                                                            value={details.lastName}
-                                                            onChange={(e) =>
-                                                                setDetails((prev) => ({
-                                                                    ...prev,
-                                                                    lastName: e.target.value,
-                                                                }))
-                                                            }
-                                                            className={cn(
-                                                                fieldClass,
-                                                                errors.lastName &&
-                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
-                                                            )}
-                                                            placeholder="e.g. Khan"
-                                                        />
-                                                        {errors.lastName ? (
-                                                            <p className="mt-1.5 text-sm text-red-600">
-                                                                {errors.lastName}
-                                                            </p>
-                                                        ) : null}
-                                                    </label>
-
-                                                    <div className="sm:col-span-2">
-                                                        <EmailOtpChallenge
-                                                            agencyId={tour.agencyId}
-                                                            email={details.email}
-                                                            onEmailChange={(email) =>
-                                                                setDetails((prev) => ({
-                                                                    ...prev,
-                                                                    email,
-                                                                }))
-                                                            }
-                                                            className="rounded-xl bg-[#FAFAF8] ring-1 ring-[#EBE8E3]"
-                                                            inputClassName={fieldClass}
-                                                        />
-                                                        {errors.email ? (
-                                                            <p className="mt-1.5 text-sm text-red-600">
-                                                                {errors.email}
-                                                            </p>
-                                                        ) : null}
-                                                    </div>
-
-                                                    <PhoneNumberInput
-                                                        label="Phone"
-                                                        required
-                                                        value={details.phone}
-                                                        onChange={(phone) =>
-                                                            setDetails((prev) => ({
-                                                                ...prev,
-                                                                phone,
-                                                            }))
-                                                        }
-                                                        error={errors.phone}
-                                                        placeholder="300 1234567"
-                                                        labelClassName={labelClass}
-                                                        inputClassName="text-base sm:text-sm"
-                                                    />
-
-                                                    <PhoneNumberInput
-                                                        label="Emergency phone"
-                                                        required
-                                                        value={details.emergencyPhone}
-                                                        onChange={(emergencyPhone) =>
-                                                            setDetails((prev) => ({
-                                                                ...prev,
-                                                                emergencyPhone,
-                                                            }))
-                                                        }
-                                                        error={errors.emergencyPhone}
-                                                        placeholder="300 7654321"
-                                                        labelClassName={labelClass}
-                                                        inputClassName="text-base sm:text-sm"
-                                                    />
-
-                                                    <label className="block min-w-0 sm:col-span-2">
-                                                        <span className={labelClass}>CNIC</span>
-                                                        <input
-                                                            value={details.cnic}
-                                                            onChange={(e) =>
-                                                                setDetails((prev) => ({
-                                                                    ...prev,
-                                                                    cnic: formatCnicInput(
-                                                                        e.target.value
-                                                                    ),
-                                                                }))
-                                                            }
-                                                            className={cn(
-                                                                fieldClass,
-                                                                errors.cnic &&
-                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
-                                                            )}
-                                                            placeholder="12345-1234567-1"
-                                                            inputMode="numeric"
-                                                        />
-                                                        {errors.cnic ? (
-                                                            <p className="mt-1.5 text-sm text-red-600">
-                                                                {errors.cnic}
-                                                            </p>
-                                                        ) : null}
-                                                    </label>
-
-                                                    <label className="block min-w-0 sm:col-span-2">
-                                                        <span className={labelClass}>
-                                                            Notes{' '}
-                                                            <span className="font-normal text-[#9CA3AF]">
-                                                                (optional)
+                                                        <label className="block min-w-0">
+                                                            <span className={labelClass}>
+                                                                Last name
                                                             </span>
-                                                        </span>
-                                                        <textarea
-                                                            value={details.note}
-                                                            onChange={(e) =>
+                                                            <input
+                                                                value={details.lastName}
+                                                                onChange={(e) =>
+                                                                    setDetails((prev) => ({
+                                                                        ...prev,
+                                                                        lastName: e.target.value,
+                                                                    }))
+                                                                }
+                                                                className={cn(
+                                                                    fieldClass,
+                                                                    errors.lastName &&
+                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
+                                                                )}
+                                                                placeholder="e.g. Khan"
+                                                            />
+                                                            {errors.lastName ? (
+                                                                <p className="mt-1.5 text-sm text-red-600">
+                                                                    {errors.lastName}
+                                                                </p>
+                                                            ) : null}
+                                                        </label>
+
+                                                        <div className="sm:col-span-2">
+                                                            <EmailOtpChallenge
+                                                                agencyId={tour.agencyId}
+                                                                email={details.email}
+                                                                onEmailChange={(email) =>
+                                                                    setDetails((prev) => ({
+                                                                        ...prev,
+                                                                        email,
+                                                                    }))
+                                                                }
+                                                                className="rounded-xl bg-[#FAFAF8] ring-1 ring-[#EBE8E3]"
+                                                                inputClassName={fieldClass}
+                                                            />
+                                                            {errors.email ? (
+                                                                <p className="mt-1.5 text-sm text-red-600">
+                                                                    {errors.email}
+                                                                </p>
+                                                            ) : null}
+                                                        </div>
+
+                                                        <PhoneNumberInput
+                                                            label="Phone"
+                                                            required
+                                                            value={details.phone}
+                                                            onChange={(phone) =>
                                                                 setDetails((prev) => ({
                                                                     ...prev,
-                                                                    note: e.target.value,
+                                                                    phone,
                                                                 }))
                                                             }
-                                                            className={cn(
-                                                                fieldClass,
-                                                                'min-h-[100px] resize-y'
-                                                            )}
-                                                            maxLength={500}
-                                                            placeholder="Pickup notes, dietary needs, or other requests"
+                                                            error={errors.phone}
+                                                            placeholder="300 1234567"
+                                                            labelClassName={labelClass}
+                                                            inputClassName="text-base sm:text-sm"
                                                         />
-                                                    </label>
-                                                </div>
-                                            </FormSection>
 
-                                            <FormSection
-                                                title="Travelers"
-                                                description="Select seats for adults and children."
-                                            >
-                                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                                                    <SeatStepper
-                                                        label="Male"
-                                                        value={maleSeats}
-                                                        onChange={setMaleSeats}
-                                                    />
-                                                    <SeatStepper
-                                                        label="Female"
-                                                        value={femaleSeats}
-                                                        onChange={setFemaleSeats}
-                                                    />
-                                                    <SeatStepper
-                                                        label="Children"
-                                                        value={kidsSeats}
-                                                        onChange={setKidsSeats}
-                                                    />
-                                                </div>
-                                                {errors.seats ? (
-                                                    <p className="text-sm text-red-600">
-                                                        {errors.seats}
+                                                        <PhoneNumberInput
+                                                            label="Emergency phone"
+                                                            required
+                                                            value={details.emergencyPhone}
+                                                            onChange={(emergencyPhone) =>
+                                                                setDetails((prev) => ({
+                                                                    ...prev,
+                                                                    emergencyPhone,
+                                                                }))
+                                                            }
+                                                            error={errors.emergencyPhone}
+                                                            placeholder="300 7654321"
+                                                            labelClassName={labelClass}
+                                                            inputClassName="text-base sm:text-sm"
+                                                        />
+
+                                                        <label className="block min-w-0 sm:col-span-2">
+                                                            <span className={labelClass}>CNIC</span>
+                                                            <input
+                                                                value={details.cnic}
+                                                                onChange={(e) =>
+                                                                    setDetails((prev) => ({
+                                                                        ...prev,
+                                                                        cnic: formatCnicInput(
+                                                                            e.target.value
+                                                                        ),
+                                                                    }))
+                                                                }
+                                                                className={cn(
+                                                                    fieldClass,
+                                                                    errors.cnic &&
+                                                                    'bg-red-50 ring-red-400 focus:ring-red-200'
+                                                                )}
+                                                                placeholder="12345-1234567-1"
+                                                                inputMode="numeric"
+                                                            />
+                                                            {errors.cnic ? (
+                                                                <p className="mt-1.5 text-sm text-red-600">
+                                                                    {errors.cnic}
+                                                                </p>
+                                                            ) : null}
+                                                        </label>
+
+                                                        <label className="block min-w-0 sm:col-span-2">
+                                                            <span className={labelClass}>
+                                                                Notes{' '}
+                                                                <span className="font-normal text-[#9CA3AF]">
+                                                                    (optional)
+                                                                </span>
+                                                            </span>
+                                                            <textarea
+                                                                value={details.note}
+                                                                onChange={(e) =>
+                                                                    setDetails((prev) => ({
+                                                                        ...prev,
+                                                                        note: e.target.value,
+                                                                    }))
+                                                                }
+                                                                className={cn(
+                                                                    fieldClass,
+                                                                    'min-h-[100px] resize-y'
+                                                                )}
+                                                                maxLength={500}
+                                                                placeholder="Pickup notes, dietary needs, or other requests"
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                </FormSection>
+
+                                                <FormSection
+                                                    title="Travelers"
+                                                    description="Select seats for adults and children."
+                                                >
+                                                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                                                        <SeatStepper
+                                                            label="Male"
+                                                            value={maleSeats}
+                                                            onChange={setMaleSeats}
+                                                        />
+                                                        <SeatStepper
+                                                            label="Female"
+                                                            value={femaleSeats}
+                                                            onChange={setFemaleSeats}
+                                                        />
+                                                        <SeatStepper
+                                                            label="Children"
+                                                            value={kidsSeats}
+                                                            onChange={setKidsSeats}
+                                                        />
+                                                    </div>
+                                                    {errors.seats ? (
+                                                        <p className="text-sm text-red-600">
+                                                            {errors.seats}
+                                                        </p>
+                                                    ) : null}
+                                                </FormSection>
+
+                                                <FormSection
+                                                    title="Identity documents"
+                                                    description="Upload clear photos of both sides of your ID card."
+                                                >
+                                                    <div className="grid gap-4 sm:grid-cols-2">
+                                                        <FileUploadField
+                                                            label="ID card front"
+                                                            file={idFront}
+                                                            onChange={setIdFront}
+                                                            error={errors.idFront}
+                                                            labelClassName={labelClass}
+                                                        />
+                                                        <FileUploadField
+                                                            label="ID card back"
+                                                            file={idBack}
+                                                            onChange={setIdBack}
+                                                            error={errors.idBack}
+                                                            labelClassName={labelClass}
+                                                        />
+                                                    </div>
+                                                </FormSection>
+
+                                                {errors.form ? (
+                                                    <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">
+                                                        {errors.form}
                                                     </p>
                                                 ) : null}
-                                            </FormSection>
 
-                                            <FormSection
-                                                title="Identity documents"
-                                                description="Upload clear photos of both sides of your ID card."
-                                            >
-                                                <div className="grid gap-4 sm:grid-cols-2">
-                                                    <FileUploadField
-                                                        label="ID card front"
-                                                        file={idFront}
-                                                        onChange={setIdFront}
-                                                        error={errors.idFront}
-                                                        labelClassName={labelClass}
-                                                    />
-                                                    <FileUploadField
-                                                        label="ID card back"
-                                                        file={idBack}
-                                                        onChange={setIdBack}
-                                                        error={errors.idBack}
-                                                        labelClassName={labelClass}
-                                                    />
-                                                </div>
-                                            </FormSection>
-
-                                            {errors.form ? (
-                                                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">
-                                                    {errors.form}
-                                                </p>
-                                            ) : null}
-
-                                            <div className="border-t border-[#F0EDE8] pt-5">
-                                                <button
-                                                    type="submit"
-                                                    className={primaryButtonClass(
-                                                        variant,
-                                                        'w-full rounded-xl px-6 py-3.5 text-base font-semibold sm:text-sm'
-                                                    )}
-                                                >
-                                                    Continue to payment
-                                                </button>
-                                            </div>
-                                        </form>
-                                    ) : (
-                                        <form
-                                            onSubmit={onSubmitPayment}
-                                            className="space-y-4"
-                                        >
-                                            <FormSection title="Payment amount">
-                                                <div className="rounded-xl bg-white p-5 ring-1 ring-[#EBE8E3]">
-                                                    <p className="text-sm text-[#6B7280]">
-                                                        Amount due now
-                                                    </p>
-                                                    <p className="mt-1 text-3xl font-bold tracking-tight text-brand">
-                                                        {formatMoney(
-                                                            pricing.advanceAmountDue,
-                                                            tour.currency
+                                                <div className="border-t border-[#F0EDE8] pt-5">
+                                                    <button
+                                                        type="submit"
+                                                        className={primaryButtonClass(
+                                                            variant,
+                                                            'w-max rounded-full px-6 py-3.5 text-base font-semibold sm:text-sm'
                                                         )}
-                                                    </p>
-                                                    {pricing.balanceDue > 0 ? (
-                                                        <p className="mt-2 text-sm text-[#6B7280]">
-                                                            Balance later:{' '}
+                                                    >
+                                                        Continue to payment
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        ) : (
+                                            <form
+                                                onSubmit={onSubmitPayment}
+                                                className="space-y-4"
+                                            >
+                                                <FormSection title="Payment amount">
+                                                    <div className="rounded-xl bg-white p-5 ring-1 ring-[#EBE8E3]">
+                                                        <p className="text-sm text-[#6B7280]">
+                                                            Amount due now
+                                                        </p>
+                                                        <p className="mt-1 text-3xl font-bold tracking-tight text-brand">
                                                             {formatMoney(
-                                                                pricing.balanceDue,
+                                                                pricing.advanceAmountDue,
                                                                 tour.currency
                                                             )}
                                                         </p>
-                                                    ) : null}
-                                                </div>
-                                            </FormSection>
+                                                        {pricing.balanceDue > 0 ? (
+                                                            <p className="mt-2 text-sm text-[#6B7280]">
+                                                                Balance later:{' '}
+                                                                {formatMoney(
+                                                                    pricing.balanceDue,
+                                                                    tour.currency
+                                                                )}
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+                                                </FormSection>
 
-                                            <FormSection
-                                                title="Agency payment accounts"
-                                                description="Transfer the advance to one of the accounts below, then upload your proof."
-                                            >
-                                                {loadingAccounts ? (
-                                                    <p className="text-sm text-[#6B7280]">
-                                                        Loading…
-                                                    </p>
-                                                ) : paymentAccounts.length === 0 ? (
-                                                    <p className="rounded-xl bg-[#F9FAFB] px-4 py-3 text-sm leading-relaxed text-[#6B7280]">
-                                                        No payment accounts published yet.
-                                                        Contact the agency before transferring.
-                                                    </p>
-                                                ) : (
-                                                    <ul className="space-y-3">
-                                                        {paymentAccounts.map((account) => (
-                                                            <li
-                                                                key={`${account.bank}-${account.value}`}
-                                                                className="rounded-xl bg-white px-4 py-3.5 ring-1 ring-[#EBE8E3]"
-                                                            >
-                                                                <p className="text-sm font-semibold text-[#111]">
-                                                                    {account.bank}
-                                                                    {account.type
-                                                                        ? ` · ${account.type}`
-                                                                        : ''}
-                                                                </p>
-                                                                <p className="mt-1 break-all text-sm text-[#374151]">
-                                                                    {account.value}
-                                                                </p>
-                                                                {account.account_title ? (
-                                                                    <p className="mt-1 text-sm text-[#6B7280]">
-                                                                        {account.account_title}
+                                                <FormSection
+                                                    title="Agency payment accounts"
+                                                    description="Transfer the advance to one of the accounts below, then upload your proof."
+                                                >
+                                                    {loadingAccounts ? (
+                                                        <p className="text-sm text-[#6B7280]">
+                                                            Loading…
+                                                        </p>
+                                                    ) : paymentAccounts.length === 0 ? (
+                                                        <p className="rounded-xl bg-[#F9FAFB] px-4 py-3 text-sm leading-relaxed text-[#6B7280]">
+                                                            No payment accounts published yet.
+                                                            Contact the agency before transferring.
+                                                        </p>
+                                                    ) : (
+                                                        <ul className="space-y-3">
+                                                            {paymentAccounts.map((account) => (
+                                                                <li
+                                                                    key={`${account.bank}-${account.value}`}
+                                                                    className="rounded-xl bg-white px-4 py-3.5 ring-1 ring-[#EBE8E3]"
+                                                                >
+                                                                    <p className="text-sm font-semibold text-[#111]">
+                                                                        {account.bank}
+                                                                        {account.type
+                                                                            ? ` · ${account.type}`
+                                                                            : ''}
                                                                     </p>
-                                                                ) : null}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                )}
-                                            </FormSection>
-
-                                            <FormSection title="Upload payment proof">
-                                                <FileUploadField
-                                                    label="Payment screenshot"
-                                                    file={paymentScreenshot}
-                                                    onChange={setPaymentScreenshot}
-                                                    error={errors.paymentScreenshot}
-                                                    hint="Upload transfer proof — PNG or JPG up to 10MB"
-                                                    labelClassName={labelClass}
-                                                />
-                                            </FormSection>
-
-                                            <div className="flex flex-col gap-3 border-t border-[#F0EDE8] pt-5 sm:flex-row">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setStep(0)}
-                                                    className="w-full rounded-xl bg-[#F5F3F0] px-5 py-3.5 text-base font-medium text-[#1A1F2C] transition hover:bg-[#EBE8E3] sm:w-auto sm:text-sm"
-                                                >
-                                                    Back
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    disabled={isPending}
-                                                    className={primaryButtonClass(
-                                                        variant,
-                                                        'w-full rounded-xl px-6 py-3.5 text-base font-semibold disabled:opacity-60 sm:flex-1 sm:text-sm'
+                                                                    <p className="mt-1 break-all text-sm text-[#374151]">
+                                                                        {account.value}
+                                                                    </p>
+                                                                    {account.account_title ? (
+                                                                        <p className="mt-1 text-sm text-[#6B7280]">
+                                                                            {account.account_title}
+                                                                        </p>
+                                                                    ) : null}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
                                                     )}
-                                                >
-                                                    {isPending
-                                                        ? 'Submitting…'
-                                                        : 'Submit booking'}
-                                                </button>
-                                            </div>
-                                        </form>
-                                    )}
+                                                </FormSection>
+
+                                                <FormSection title="Upload payment proof">
+                                                    <FileUploadField
+                                                        label="Payment screenshot"
+                                                        file={paymentScreenshot}
+                                                        onChange={setPaymentScreenshot}
+                                                        error={errors.paymentScreenshot}
+                                                        hint="Upload transfer proof — PNG or JPG up to 10MB"
+                                                        labelClassName={labelClass}
+                                                    />
+                                                </FormSection>
+
+                                                <div className="flex flex-col gap-3 border-t border-[#F0EDE8] pt-5 sm:flex-row">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setStep(0)}
+                                                        className="w-full rounded-xl bg-[#F5F3F0] px-5 py-3.5 text-base font-medium text-[#1A1F2C] transition hover:bg-[#EBE8E3] sm:w-auto sm:text-sm"
+                                                    >
+                                                        Back
+                                                    </button>
+                                                    <button
+                                                        type="submit"
+                                                        disabled={isPending}
+                                                        className={primaryButtonClass(
+                                                            variant,
+                                                            'w-full rounded-xl px-6 py-3.5 text-base font-semibold disabled:opacity-60 sm:flex-1 sm:text-sm'
+                                                        )}
+                                                    >
+                                                        {isPending
+                                                            ? 'Submitting…'
+                                                            : 'Submit booking'}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
                                     </div>
                                 </div>
                             </div>

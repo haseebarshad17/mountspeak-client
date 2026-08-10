@@ -32,6 +32,7 @@ export function MarketingPageShell({
     agencyId,
     heroActions,
     heroSize = 'default',
+    heroImageOverride,
 }: {
     page: HomepagePage
     title: string
@@ -41,9 +42,11 @@ export function MarketingPageShell({
     agencyId?: string
     heroActions?: ClassicPageHeroAction[]
     heroSize?: 'default' | 'tall' | 'compact'
+    /** Overrides the theme's default hero image (e.g. a CMS page's own hero image). */
+    heroImageOverride?: string
 }) {
     const variant = useTemplateVariant()
-    const imageSrc = resolvePageHeroImage(page)
+    const imageSrc = heroImageOverride?.trim() || resolvePageHeroImage(page)
 
     if (variant === 'temp3') {
         return (

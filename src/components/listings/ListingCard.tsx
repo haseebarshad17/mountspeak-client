@@ -117,10 +117,46 @@ export function ListingCard({
                             </span>
                         </p>
                     </div>
-                    {departureLabel ? (
+                    {item.upcomingSlots && item.upcomingSlots.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            {item.upcomingSlots.map((slot) => (
+                                <span
+                                    key={slot.id}
+                                    className="inline-flex items-center gap-1 rounded-md bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-[#555]"
+                                >
+                                    <CalendarDays className="h-2.5 w-2.5" />
+                                    {slot.label}
+                                    {slot.seatsLeft != null ? (
+                                        <span
+                                            className={cn(
+                                                slot.seatsLeft > 0 ? 'text-[#888]' : 'text-red-500'
+                                            )}
+                                        >
+                                            · {slot.seatsLeft > 0 ? `${slot.seatsLeft} left` : 'Full'}
+                                        </span>
+                                    ) : null}
+                                </span>
+                            ))}
+                            {item.slotsCount && item.slotsCount > item.upcomingSlots.length ? (
+                                <span className="text-[10px] font-medium text-[#9AA0A6]">
+                                    +{item.slotsCount - item.upcomingSlots.length} more
+                                </span>
+                            ) : null}
+                        </div>
+                    ) : departureLabel ? (
                         <p className="mt-1 flex items-center gap-1 text-[11px] text-[#888]">
                             <CalendarDays className="h-3 w-3" />
                             Departs {departureLabel}
+                            {item.seatsLeft != null ? (
+                                <span
+                                    className={cn(
+                                        'ml-0.5',
+                                        item.seatsLeft > 0 ? 'text-[#888]' : 'text-red-500'
+                                    )}
+                                >
+                                    · {item.seatsLeft > 0 ? `${item.seatsLeft} seats left` : 'Full'}
+                                </span>
+                            ) : null}
                         </p>
                     ) : null}
 

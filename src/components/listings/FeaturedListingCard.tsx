@@ -137,10 +137,43 @@ function Temp3FeaturedCard({
                             / person
                         </span>
                     </p>
-                    {departure ? (
+                    {item.upcomingSlots && item.upcomingSlots.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            {item.upcomingSlots.map((slot) => (
+                                <span
+                                    key={slot.id}
+                                    className="inline-flex items-center gap-1 rounded-full bg-t3-cream px-2 py-0.5 font-ui text-[10px] font-semibold text-t3-navy/70"
+                                >
+                                    <CalendarDays className="h-2.5 w-2.5" />
+                                    {slot.label}
+                                    {slot.seatsLeft != null ? (
+                                        <span
+                                            className={cn(
+                                                slot.seatsLeft > 0
+                                                    ? 'text-t3-dim'
+                                                    : 'text-red-500'
+                                            )}
+                                        >
+                                            · {slot.seatsLeft > 0 ? `${slot.seatsLeft} left` : 'Full'}
+                                        </span>
+                                    ) : null}
+                                </span>
+                            ))}
+                            {item.slotsCount && item.slotsCount > item.upcomingSlots.length ? (
+                                <span className="font-ui text-[10px] font-medium text-t3-dim">
+                                    +{item.slotsCount - item.upcomingSlots.length} more
+                                </span>
+                            ) : null}
+                        </div>
+                    ) : departure ? (
                         <p className="mt-1.5 inline-flex items-center gap-1.5 font-ui text-[12px] text-t3-dim">
                             <CalendarDays className="h-3.5 w-3.5" />
                             Next departure: {departure}
+                            {seatsLeft != null ? (
+                                <span className={seatsLeft > 0 ? '' : 'text-red-500'}>
+                                    · {seatsLeft > 0 ? `${seatsLeft} seats left` : 'Full'}
+                                </span>
+                            ) : null}
                         </p>
                     ) : null}
                 </div>
@@ -277,7 +310,29 @@ export function FeaturedListingCard({
                 </h3>
 
                 <div className="mt-3 space-y-1.5 text-sm text-[#6B7280]">
-                    {departure ? (
+                    {item.upcomingSlots && item.upcomingSlots.length > 0 ? (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                            {item.upcomingSlots.map((slot) => (
+                                <span
+                                    key={slot.id}
+                                    className="inline-flex items-center gap-1 rounded-md bg-[#F3F4F6] px-2 py-1 text-xs font-medium text-[#4B5563]"
+                                >
+                                    <CalendarDays className="h-3 w-3" />
+                                    {slot.label}
+                                    {slot.seatsLeft != null ? (
+                                        <span className={slot.seatsLeft > 0 ? '' : 'text-red-500'}>
+                                            · {slot.seatsLeft > 0 ? `${slot.seatsLeft} left` : 'Full'}
+                                        </span>
+                                    ) : null}
+                                </span>
+                            ))}
+                            {item.slotsCount && item.slotsCount > item.upcomingSlots.length ? (
+                                <span className="text-xs font-medium text-[#9AA0A6]">
+                                    +{item.slotsCount - item.upcomingSlots.length} more
+                                </span>
+                            ) : null}
+                        </div>
+                    ) : departure ? (
                         <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                             <span>{departure}</span>
                             <span className="text-[#C4C7CB]">·</span>

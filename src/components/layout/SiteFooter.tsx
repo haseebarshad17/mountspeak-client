@@ -177,16 +177,12 @@ function buildFooterColumns(
             title: siteMapFromCms?.title || 'Site Map',
             items: siteMapItems,
         },
-        {
-            title: legalFromCms?.title || 'Legal',
-            items: legalItems,
-        },
     ]
 
     if (contactFromCms) columns.push(contactFromCms)
     columns.push(...otherCms)
 
-    return columns
+    return { columns, legalItems }
 }
 
 function isExternalHref(href: string) {
@@ -198,10 +194,14 @@ function isExternalHref(href: string) {
     )
 }
 
-function FooterLink({ item }: { item: NavItem }) {
+function FooterLink({
+    item,
+    className = 'block break-words text-sm leading-relaxed text-white/65 transition hover:text-white',
+}: {
+    item: NavItem
+    className?: string
+}) {
     const href = item.href?.trim() || '#'
-    const className =
-        'block break-words text-sm leading-relaxed text-white/65 transition hover:text-white'
 
     if (isExternalHref(href)) {
         return (
@@ -220,6 +220,24 @@ function FooterLink({ item }: { item: NavItem }) {
         <AgencyLink href={href} className={className}>
             {item.label}
         </AgencyLink>
+    )
+}
+
+function FooterLegalLinks({
+    items,
+    linkClassName,
+}: {
+    items: NavItem[]
+    linkClassName: string
+}) {
+    if (items.length === 0) return null
+
+    return (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {items.map((item) => (
+                <FooterLink key={item.label} item={item} className={linkClassName} />
+            ))}
+        </div>
     )
 }
 
@@ -250,7 +268,7 @@ export function SiteFooter({
     const [email, setEmail] = useState('')
     const { mutateAsync: subscribe, isPending } = useCreateSubscription()
 
-    const columns = useMemo(
+    const { columns, legalItems } = useMemo(
         () => buildFooterColumns(footer.columns, capabilities),
         [footer.columns, capabilities]
     )
@@ -326,8 +344,8 @@ export function SiteFooter({
         return (
             <footer className="text-white" style={{ backgroundColor: bg }}>
                 <div className="site-container py-14">
-                    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)] lg:gap-16">
-                        <div className="space-y-4">
+                    <div className="flex flex-col gap-10 lg:flex-row lg:flex-wrap lg:justify-between lg:gap-16">
+                        <div className="space-y-4 lg:max-w-sm">
                             <AgencyLink
                                 href="/"
                                 aria-label={branding.name}
@@ -368,7 +386,7 @@ export function SiteFooter({
                             ) : null}
                         </div>
 
-                        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-10 sm:grid-cols-2">
                             {columns.map((col) => (
                                 <div
                                     key={col.title}
@@ -423,10 +441,16 @@ export function SiteFooter({
                 </div>
 
                 <div className="border-t border-white/10">
-                    <p className="site-container py-5 text-xs text-white/50">
-                        © {new Date().getFullYear()} {branding.name}. All rights
-                        reserved.
-                    </p>
+                    <div className="site-container flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-xs text-white/50">
+                            © {new Date().getFullYear()} {branding.name}. All rights
+                            reserved.
+                        </p>
+                        <FooterLegalLinks
+                            items={legalItems}
+                            linkClassName="text-xs text-white/50 transition hover:text-white"
+                        />
+                    </div>
                 </div>
             </footer>
         )
@@ -436,8 +460,8 @@ export function SiteFooter({
         return (
             <footer className="t3-section-navy border-t border-t3-border text-t3-cream">
                 <div className="t3-wrap py-14 md:py-16">
-                    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)] lg:gap-16">
-                        <div className="space-y-4">
+                    <div className="flex flex-col gap-10 lg:flex-row lg:flex-wrap lg:justify-between lg:gap-16">
+                        <div className="space-y-4 lg:max-w-sm">
                             <AgencyLink
                                 href="/"
                                 aria-label={branding.name}
@@ -478,7 +502,7 @@ export function SiteFooter({
                             ) : null}
                         </div>
 
-                        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-10 sm:grid-cols-2">
                             {columns.map((col) => (
                                 <div
                                     key={col.title}
@@ -533,10 +557,16 @@ export function SiteFooter({
                 </div>
 
                 <div className="border-t border-t3-border">
-                    <p className="t3-wrap py-5 font-mono text-[11px] tracking-[0.08em] text-t3-dim">
-                        © {new Date().getFullYear()} {branding.name}. All rights
-                        reserved.
-                    </p>
+                    <div className="t3-wrap flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="font-mono text-[11px] tracking-[0.08em] text-t3-dim">
+                            © {new Date().getFullYear()} {branding.name}. All rights
+                            reserved.
+                        </p>
+                        <FooterLegalLinks
+                            items={legalItems}
+                            linkClassName="font-mono text-[11px] tracking-[0.08em] text-t3-dim transition hover:text-t3-cream"
+                        />
+                    </div>
                 </div>
             </footer>
         )
@@ -627,9 +657,15 @@ export function SiteFooter({
             </div>
 
             <div className="border-t border-white/10">
-                <p className="site-container py-5 text-xs text-white/50">
-                    © {new Date().getFullYear()} {branding.name}. All rights reserved.
-                </p>
+                <div className="site-container flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-white/50">
+                        © {new Date().getFullYear()} {branding.name}. All rights reserved.
+                    </p>
+                    <FooterLegalLinks
+                        items={legalItems}
+                        linkClassName="text-xs text-white/50 transition hover:text-white"
+                    />
+                </div>
             </div>
         </footer>
     )

@@ -714,12 +714,6 @@ export function Hero({
                             >
                                 Start exploring
                             </AgencyLink>
-                            <AgencyLink
-                                href="/about-us"
-                                className="rounded-full border border-[#111]/15 bg-white/60 px-6 py-3 text-sm font-medium text-[#111]"
-                            >
-                                How it works
-                            </AgencyLink>
                         </div>
                     </div>
 

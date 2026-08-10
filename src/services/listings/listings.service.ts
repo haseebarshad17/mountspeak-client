@@ -64,6 +64,34 @@ async function fetchTourSlots(
     return ((data as TourSlotRow[] | null) ?? []).map(mapTourSlot)
 }
 
+async function fetchTourSlotsByTourIds(
+    supabase: SupabaseClient,
+    tourIds: string[]
+): Promise<Map<string, TourSlot[]>> {
+    const byTour = new Map<string, TourSlot[]>()
+    if (tourIds.length === 0) return byTour
+
+    const { data, error } = await supabase
+        .from('tour_slots')
+        .select(
+            'id, tour_id, start_date, end_date, start_time, end_time, capacity_total, confirmed_seats, is_active'
+        )
+        .in('tour_id', tourIds)
+        .eq('is_active', true)
+        .order('start_date', { ascending: true })
+        .order('start_time', { ascending: true })
+
+    if (error) throw error
+
+    for (const row of (data as TourSlotRow[] | null) ?? []) {
+        const slot = mapTourSlot(row)
+        const existing = byTour.get(slot.tourId)
+        if (existing) existing.push(slot)
+        else byTour.set(slot.tourId, [slot])
+    }
+    return byTour
+}
+
 const TOUR_DETAIL_COLUMNS =
     'id, agency_id, title, start_date, end_date, price_per_seat, capacity_total, publication_status, from_location, to_location, discount_percent, slug, header, overview, highlights, route, places_visited, journey, stay_and_dine, expedition_perks, visual_fragments, kids_discount, confirmed_seats, category, advance_amount_per_seat'
 
@@ -146,7 +174,14 @@ export function getListingsService({ supabase }: { supabase: SupabaseClient }) {
                 .order('updated_at', { ascending: false })
 
             if (error) throw error
-            return ((data as TourRow[] | null) ?? []).map(mapTourToListing)
+            const rows = (data as TourRow[] | null) ?? []
+            const slotsByTour = await fetchTourSlotsByTourIds(
+                supabase,
+                rows.map((row) => row.id)
+            ).catch(() => new Map<string, TourSlot[]>())
+            return rows.map((row) =>
+                mapTourToListing(row, slotsByTour.get(row.id) ?? [])
+            )
         },
 
         async getUmrahPlans(agencyId: string): Promise<ListingItem[]> {

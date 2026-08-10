@@ -1,30 +1,20 @@
 'use client'
 
+import { FormEvent, useState } from 'react'
 import { Clock3, Mail, MapPin, Phone } from 'lucide-react'
+import { toast } from 'sonner'
 import { MarketingCtaBand } from '@/components/pages/MarketingCtaBand'
-import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
+import { Select } from '@/components/ui/Select'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { accentSolidClass, primaryButtonClass } from '@/lib/templates/chrome'
+import { getApiErrorMessage } from '@/lib/api/errors'
+import { MessageCode } from '@/lib/messages/codes'
+import { getMessage, mapZodIssuesToFieldErrors } from '@/lib/messages/get-message'
 import { cn } from '@/lib/utils/cn'
-import type { HomepagePage } from '@/services/agency/agency.types'
-
-const FALLBACK_FAQS = [
-    {
-        question: 'How quickly do you reply?',
-        answer:
-            'Most inquiries receive a response within one business day — often sooner for active booking requests.',
-    },
-    {
-        question: 'Can you customize a package?',
-        answer:
-            'Yes. Share your dates, group size, and preferences and we’ll suggest a tailored plan.',
-    },
-    {
-        question: 'Do you help with bookings too?',
-        answer:
-            'Absolutely. From tour booking to package requests, our team guides you through the next steps.',
-    },
-]
+import { useSubmitConsultUs } from '@/services/consult/consult.queries'
+import { consultUsSchema } from '@/services/consult/consult.validation'
+import { INQUIRY_TYPE_OPTIONS, type InquiryType } from '@/services/consult/consult.types'
+import { isValidAgencyId } from '@/services/specialization/specialization.service'
 
 const CONTACT_DETAILS = [
     { icon: Mail, text: 'hello@mountspeak.com' },
@@ -33,35 +23,159 @@ const CONTACT_DETAILS = [
     { icon: Clock3, text: 'Mon–Sat · 10:00 am – 7:00 pm' },
 ]
 
+const INQUIRY_SELECT_OPTIONS = INQUIRY_TYPE_OPTIONS.map((option) => ({
+    value: option.value,
+    label: option.label,
+}))
+
 function ContactForm({
+    agencyId,
     buttonClassName,
     fieldClassName,
 }: {
+    agencyId?: string
     buttonClassName: string
     fieldClassName: string
 }) {
+    const { mutateAsync: submitConsult, isPending } = useSubmitConsultUs()
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
+    const [inquiryType, setInquiryType] = useState<InquiryType>(
+        INQUIRY_TYPE_OPTIONS[0].value
+    )
+    const [errors, setErrors] = useState<Record<string, string>>({})
+
+    async function onSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        const parsed = consultUsSchema.safeParse({
+            name,
+            email,
+            phone,
+            inquiry_type: inquiryType,
+            title,
+            description,
+        })
+
+        if (!parsed.success) {
+            setErrors(mapZodIssuesToFieldErrors(parsed.error.issues))
+            toast.error(getMessage(MessageCode.VALIDATION_FIX_HIGHLIGHTED_FIELDS))
+            return
+        }
+
+        setErrors({})
+
+        if (!isValidAgencyId(agencyId)) {
+            toast.error(getMessage(MessageCode.CONSULT_MISSING_AGENCY))
+            return
+        }
+
+        try {
+            const response = await submitConsult({
+                ...parsed.data,
+                agency_id: agencyId as string,
+            })
+            toast.success(response?.message || getMessage(MessageCode.CONSULT_SUBMIT_SUCCESS))
+            setName('')
+            setEmail('')
+            setPhone('')
+            setTitle('')
+            setDescription('')
+            setInquiryType(INQUIRY_TYPE_OPTIONS[0].value)
+        } catch (error) {
+            toast.error(getApiErrorMessage(error, MessageCode.API_CONSULT_SUBMIT_FAILED))
+        }
+    }
+
     return (
-        <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <input className={fieldClassName} placeholder="Full name" />
-            <input type="email" className={fieldClassName} placeholder="Email address" />
-            <textarea
-                className={cn(fieldClassName, 'min-h-[140px]')}
-                placeholder="Message"
+        <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
+            <div>
+                <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={cn(fieldClassName, errors.name && 'ring-2 ring-red-400')}
+                    placeholder="Full name"
+                />
+                {errors.name ? (
+                    <p className="mt-1 text-xs text-red-600">{errors.name}</p>
+                ) : null}
+            </div>
+
+            <div>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={cn(fieldClassName, errors.email && 'ring-2 ring-red-400')}
+                    placeholder="Email address"
+                />
+                {errors.email ? (
+                    <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                ) : null}
+            </div>
+
+            <div>
+                <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={cn(fieldClassName, errors.phone && 'ring-2 ring-red-400')}
+                    placeholder="Phone number"
+                />
+                {errors.phone ? (
+                    <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
+                ) : null}
+            </div>
+
+            <Select
+                value={inquiryType}
+                onChange={(value) => setInquiryType(value as InquiryType)}
+                options={INQUIRY_SELECT_OPTIONS}
+                placeholder="What can we help with?"
+                className={fieldClassName}
             />
 
-            <button type="submit" className={buttonClassName}>
+            <div>
+                <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className={cn(fieldClassName, errors.title && 'ring-2 ring-red-400')}
+                    placeholder="Subject"
+                />
+                {errors.title ? (
+                    <p className="mt-1 text-xs text-red-600">{errors.title}</p>
+                ) : null}
+            </div>
 
-                Send message
+            <div>
+                <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className={cn(
+                        fieldClassName,
+                        'min-h-[140px]',
+                        errors.description && 'ring-2 ring-red-400'
+                    )}
+                    placeholder="Message"
+                />
+                {errors.description ? (
+                    <p className="mt-1 text-xs text-red-600">{errors.description}</p>
+                ) : null}
+            </div>
+
+            <button type="submit" disabled={isPending} className={cn(buttonClassName, 'disabled:opacity-60')}>
+                {isPending ? 'Sending…' : 'Send message'}
             </button>
         </form>
     )
 }
 
-export function ContactPageContent({ page }: { page?: HomepagePage }) {
+export function ContactPageContent({ agencyId }: { agencyId?: string }) {
     const variant = useTemplateVariant()
-    const faqs =
-        page?.pages?.faq?.items?.length ? page.pages.faq.items : FALLBACK_FAQS
-    const faqTitle = page?.pages?.faq?.title || 'Common questions'
 
     if (variant === 'temp3') {
         const fieldClass =
@@ -80,6 +194,7 @@ export function ContactPageContent({ page }: { page?: HomepagePage }) {
                                 Send your request and our team will contact you shortly.
                             </p>
                             <ContactForm
+                                agencyId={agencyId}
                                 fieldClassName={fieldClass}
                                 buttonClassName="inline-flex rounded-full bg-t3-warm px-6 py-3 font-ui text-sm font-semibold text-white transition hover:bg-[#d8894a]"
                             />
@@ -127,31 +242,6 @@ export function ContactPageContent({ page }: { page?: HomepagePage }) {
                     </div>
                 </section>
 
-                <section className="t3-section t3-section-soft">
-                    <div className="t3-wrap">
-                        <Temp3SectionHeader
-                            eyebrow="FAQ"
-                            title={faqTitle}
-                            tone="cream"
-                        />
-                        <div className="mx-auto grid max-w-4xl gap-4">
-                            {faqs.map((item) => (
-                                <article
-                                    key={item.question}
-                                    className="rounded-[14px] border border-t3-navy/10 bg-white p-5 shadow-[0_10px_30px_rgba(14,27,51,0.05)] md:p-6"
-                                >
-                                    <h3 className="font-display text-base font-semibold text-t3-navy">
-                                        {item.question}
-                                    </h3>
-                                    <p className="mt-2 font-ui text-sm leading-relaxed text-t3-dim">
-                                        {item.answer}
-                                    </p>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
                 <MarketingCtaBand
                     eyebrow="Prefer to browse first?"
                     title="Explore trips while you wait"
@@ -179,6 +269,7 @@ export function ContactPageContent({ page }: { page?: HomepagePage }) {
                                 Send your request and our team will contact you shortly.
                             </p>
                             <ContactForm
+                                agencyId={agencyId}
                                 fieldClassName="w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none"
                                 buttonClassName="btn-brand rounded-full px-6 py-3 text-sm font-medium"
                             />
@@ -224,32 +315,6 @@ export function ContactPageContent({ page }: { page?: HomepagePage }) {
                     </div>
                 </section>
 
-                <section className="section-spacing section-spacing-top bg-[#F7FAFA]">
-                    <div className="site-container">
-                        <div className="mx-auto mb-10 max-w-2xl text-center">
-                            <p className="text-brand text-sm font-medium uppercase">FAQ</p>
-                            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
-                                {faqTitle}
-                            </h2>
-                        </div>
-                        <div className="mx-auto grid max-w-4xl gap-4">
-                            {faqs.map((item) => (
-                                <article
-                                    key={item.question}
-                                    className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6"
-                                >
-                                    <h3 className="text-base font-semibold text-[#111]">
-                                        {item.question}
-                                    </h3>
-                                    <p className="mt-2 text-sm leading-relaxed text-[#666]">
-                                        {item.answer}
-                                    </p>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
                 <MarketingCtaBand
                     eyebrow="Prefer to browse first?"
                     title="Explore trips while you wait"
@@ -272,6 +337,7 @@ export function ContactPageContent({ page }: { page?: HomepagePage }) {
                         Send your request and our team will contact you shortly.
                     </p>
                     <ContactForm
+                        agencyId={agencyId}
                         fieldClassName="w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none"
                         buttonClassName={primaryButtonClass(
                             variant,
