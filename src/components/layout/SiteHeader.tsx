@@ -16,7 +16,7 @@ function bookNowHref(capabilities?: AgencySpecializationCapabilities) {
     if (!capabilities) return '/tours'
     if (capabilities.hasTours) return '/tours'
     if (capabilities.hasPackages) return '/packages'
-    if (capabilities.hasInternational) return '/tours'
+    if (capabilities.hasInternational) return '/international'
     return '/search'
 }
 
@@ -24,11 +24,14 @@ function bookNowHref(capabilities?: AgencySpecializationCapabilities) {
 function headerNavItems(capabilities?: AgencySpecializationCapabilities) {
     const items: Array<{ label: string; href: string }> = [{ label: 'Home', href: '/' }]
 
+    if (!capabilities || capabilities.hasTours) {
+        items.push({ label: 'Tours', href: '/tours' })
+    }
     if (!capabilities || capabilities.hasPackages) {
         items.push({ label: 'Packages', href: '/packages' })
     }
-    if (!capabilities || capabilities.hasTours || capabilities.hasInternational) {
-        items.push({ label: 'Tours', href: '/tours' })
+    if (!capabilities || capabilities.hasInternational) {
+        items.push({ label: 'International', href: '/international' })
     }
 
     items.push(

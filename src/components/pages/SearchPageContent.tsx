@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { MapPin, Search as SearchIcon, Users } from 'lucide-react'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { SiteFooter } from '@/components/layout/SiteFooter'
@@ -32,6 +32,28 @@ function isKind(value: string | null): value is SpecializationKind {
     return value === 'tours' || value === 'packages' || value === 'international'
 }
 
+type AppliedFilters = {
+    kind: SpecializationKind
+    destination: string
+    date: string
+    travelers: string
+}
+
+/** Update the address bar without triggering a Next.js server refetch. */
+function replaceSearchUrl(
+    next: AppliedFilters,
+    searchParams: { get: (key: string) => string | null }
+) {
+    const params = new URLSearchParams()
+    params.set('kind', next.kind)
+    if (next.destination) params.set('destination', next.destination)
+    if (next.date) params.set('date', next.date)
+    if (next.travelers) params.set('travelers', next.travelers)
+    copyAgencyPreviewParams(params, searchParams)
+    const qs = params.toString()
+    window.history.replaceState(window.history.state, '', qs ? `/search?${qs}` : '/search')
+}
+
 export function SearchPageContent({
     page,
     capabilities,
@@ -45,7 +67,6 @@ export function SearchPageContent({
     destinationsByKind: Record<SpecializationKind, string[]>
     agencyId: string
 }) {
-    const router = useRouter()
     const searchParams = useSearchParams()
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
@@ -55,24 +76,38 @@ export function SearchPageContent({
         resolveThemeAssetUrl(page.sections?.planPerfectTrip?.image?.src)
 
     const kindParam = searchParams.get('kind')
-    const appliedKind: SpecializationKind = isKind(kindParam)
+    const urlKind: SpecializationKind = isKind(kindParam)
         ? kindParam
         : capabilities.defaultKind
-    const appliedDestination = searchParams.get('destination') ?? ''
-    const appliedDate = searchParams.get('date') ?? ''
-    const appliedTravelers = searchParams.get('travelers') ?? ''
+    const urlDestination = searchParams.get('destination') ?? ''
+    const urlDate = searchParams.get('date') ?? ''
+    const urlTravelers = searchParams.get('travelers') ?? ''
 
-    const [draftKind, setDraftKind] = useState<SpecializationKind>(appliedKind)
-    const [destination, setDestination] = useState(appliedDestination)
-    const [departureDate, setDepartureDate] = useState(appliedDate)
-    const [travelers, setTravelers] = useState(appliedTravelers)
+    const [draftKind, setDraftKind] = useState<SpecializationKind>(urlKind)
+    const [destination, setDestination] = useState(urlDestination)
+    const [departureDate, setDepartureDate] = useState(urlDate)
+    const [travelers, setTravelers] = useState(urlTravelers)
+    const [applied, setApplied] = useState<AppliedFilters>({
+        kind: urlKind,
+        destination: urlDestination,
+        date: urlDate,
+        travelers: urlTravelers,
+    })
 
+    // Sync when landing via a real navigation (e.g. hero CTA), not tab clicks.
     useEffect(() => {
-        setDraftKind(appliedKind)
-        setDestination(appliedDestination)
-        setDepartureDate(appliedDate)
-        setTravelers(appliedTravelers)
-    }, [appliedKind, appliedDestination, appliedDate, appliedTravelers])
+        const next: AppliedFilters = {
+            kind: urlKind,
+            destination: urlDestination,
+            date: urlDate,
+            travelers: urlTravelers,
+        }
+        setDraftKind(next.kind)
+        setDestination(next.destination)
+        setDepartureDate(next.date)
+        setTravelers(next.travelers)
+        setApplied(next)
+    }, [urlKind, urlDestination, urlDate, urlTravelers])
 
     const destinationOptions = useMemo(
         () =>
@@ -84,18 +119,18 @@ export function SearchPageContent({
     )
 
     const filtered = useMemo(() => {
-        const travelersCount = Number(appliedTravelers)
-        return (listingsByKind[appliedKind] ?? []).filter((item) => {
+        const travelersCount = Number(applied.travelers)
+        return (listingsByKind[applied.kind] ?? []).filter((item) => {
             if (
-                appliedDestination &&
+                applied.destination &&
                 !item.location
                     .toLowerCase()
-                    .includes(appliedDestination.toLowerCase()) &&
-                !item.title.toLowerCase().includes(appliedDestination.toLowerCase())
+                    .includes(applied.destination.toLowerCase()) &&
+                !item.title.toLowerCase().includes(applied.destination.toLowerCase())
             ) {
                 return false
             }
-            if (appliedDate && item.departureDate && item.departureDate < appliedDate) {
+            if (applied.date && item.departureDate && item.departureDate < applied.date) {
                 return false
             }
             if (
@@ -107,26 +142,42 @@ export function SearchPageContent({
             }
             return true
         })
-    }, [
-        appliedDate,
-        appliedDestination,
-        appliedKind,
-        appliedTravelers,
-        listingsByKind,
-    ])
+    }, [applied, listingsByKind])
+
+    function commitFilters(next: AppliedFilters) {
+        setDraftKind(next.kind)
+        setDestination(next.destination)
+        setDepartureDate(next.date)
+        setTravelers(next.travelers)
+        setApplied(next)
+        replaceSearchUrl(next, searchParams)
+    }
 
     function applyFilters() {
-        const params = new URLSearchParams()
-        params.set('kind', draftKind)
-        if (destination) params.set('destination', destination)
-        if (departureDate) params.set('date', departureDate)
-        if (travelers) params.set('travelers', travelers)
-        copyAgencyPreviewParams(params, searchParams)
-        router.push(`/search?${params.toString()}`)
+        commitFilters({
+            kind: draftKind,
+            destination,
+            date: departureDate,
+            travelers,
+        })
+    }
+
+    function onKindTabClick(kind: SpecializationKind) {
+        if (kind === applied.kind && !applied.destination) {
+            setDraftKind(kind)
+            setDestination('')
+            return
+        }
+        commitFilters({
+            kind,
+            destination: '',
+            date: departureDate,
+            travelers,
+        })
     }
 
     const resultsTitle =
-        capabilities.tabs.find((t) => t.kind === appliedKind)?.label || 'Results'
+        capabilities.tabs.find((t) => t.kind === applied.kind)?.label || 'Results'
 
     if (classic) {
         return (
@@ -148,10 +199,7 @@ export function SearchPageContent({
                                         <button
                                             key={tab.kind}
                                             type="button"
-                                            onClick={() => {
-                                                setDraftKind(tab.kind)
-                                                setDestination('')
-                                            }}
+                                            onClick={() => onKindTabClick(tab.kind)}
                                             className={cn(
                                                 'rounded-full px-4 py-1.5 text-sm font-medium transition',
                                                 draftKind === tab.kind
@@ -281,10 +329,7 @@ export function SearchPageContent({
                                         <button
                                             key={tab.kind}
                                             type="button"
-                                            onClick={() => {
-                                                setDraftKind(tab.kind)
-                                                setDestination('')
-                                            }}
+                                            onClick={() => onKindTabClick(tab.kind)}
                                             className={pillTabClass(
                                                 draftKind === tab.kind,
                                                 variant

@@ -75,11 +75,6 @@ export function ListingPageContent({
                         </div>
                     ) : null}
 
-                    <p className="mb-8 text-center font-ui text-sm text-t3-dim">
-                        Showing {KIND_TITLES[activeKind]}
-                        {items.length ? ` · ${items.length}` : ''}
-                    </p>
-
                     {items.length === 0 ? (
                         <EmptyState
                             title={`No ${KIND_TITLES[activeKind].toLowerCase()} yet`}
@@ -125,11 +120,6 @@ export function ListingPageContent({
                         </div>
                     ) : null}
 
-                    <p className="mb-6 text-center text-sm text-[#666]">
-                        Showing {KIND_TITLES[activeKind]}
-                        {items.length ? ` · ${items.length}` : ''}
-                    </p>
-
                     {items.length === 0 ? (
                         <EmptyState
                             title={`No ${KIND_TITLES[activeKind].toLowerCase()} yet`}
@@ -169,10 +159,6 @@ export function ListingPageContent({
                         ))}
                     </div>
                 ) : null}
-
-                <div className="mb-4 text-sm text-[#666]">
-                    Showing {KIND_TITLES[activeKind]}
-                </div>
 
                 {items.length === 0 ? (
                     <EmptyState

@@ -128,7 +128,7 @@ export function BookingRequestForm({
         return all
     }, [umrahOnly, listingKind])
 
-    const [maleSeat, setMaleSeat] = useState(1)
+    const [maleSeat, setMaleSeat] = useState(0)
     const [femaleSeat, setFemaleSeat] = useState(0)
     const [childSeat, setChildSeat] = useState(0)
     const [travelDate, setTravelDate] = useState('')
@@ -198,7 +198,7 @@ export function BookingRequestForm({
             })
             toast.success('Booking request sent')
             formEl.reset()
-            setMaleSeat(1)
+            setMaleSeat(0)
             setFemaleSeat(0)
             setChildSeat(0)
             setTravelDate('')

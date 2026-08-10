@@ -220,24 +220,6 @@ export function ContactPageContent({ agencyId }: { agencyId?: string }) {
                                     })}
                                 </div>
                             </div>
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                {[
-                                    { label: 'Booking help', value: 'Tours & packages' },
-                                    { label: 'Response time', value: 'Within 24 hours' },
-                                ].map((item) => (
-                                    <div
-                                        key={item.label}
-                                        className="rounded-[14px] border border-t3-navy/10 bg-white p-4 shadow-[0_10px_30px_rgba(14,27,51,0.05)]"
-                                    >
-                                        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-t3-gold">
-                                            {item.label}
-                                        </p>
-                                        <p className="mt-1 font-ui text-sm font-semibold text-t3-navy">
-                                            {item.value}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -292,24 +274,6 @@ export function ContactPageContent({ agencyId }: { agencyId?: string }) {
                                         )
                                     })}
                                 </div>
-                            </div>
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                {[
-                                    { label: 'Booking help', value: 'Tours & packages' },
-                                    { label: 'Response time', value: 'Within 24 hours' },
-                                ].map((item) => (
-                                    <div
-                                        key={item.label}
-                                        className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm"
-                                    >
-                                        <p className="text-brand text-xs font-medium uppercase">
-                                            {item.label}
-                                        </p>
-                                        <p className="mt-1 text-sm font-semibold text-[#111]">
-                                            {item.value}
-                                        </p>
-                                    </div>
-                                ))}
                             </div>
                         </div>
                     </div>

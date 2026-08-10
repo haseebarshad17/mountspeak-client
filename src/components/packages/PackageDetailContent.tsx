@@ -57,7 +57,7 @@ export function PackageDetailContent({
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
     const backHref =
-        packageDetail.kind === 'umrah' ? '/packages' : '/tours?kind=international'
+        packageDetail.kind === 'umrah' ? '/packages' : '/international'
     const backLabel =
         packageDetail.kind === 'umrah' ? 'Back to packages' : 'Back to international tours'
 
@@ -197,24 +197,24 @@ export function PackageDetailContent({
                         {(packageDetail.airline ||
                             packageDetail.flightType ||
                             packageDetail.baggage) && (
-                            <section className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-7">
-                                <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-[#111]">
-                                    <Plane className="h-5 w-5" />
-                                    Flight details
-                                </h2>
-                                <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                                    {packageDetail.airline ? (
-                                        <Fact label="Airline" value={packageDetail.airline} />
-                                    ) : null}
-                                    {packageDetail.flightType ? (
-                                        <Fact label="Flight type" value={packageDetail.flightType} />
-                                    ) : null}
-                                    {packageDetail.baggage ? (
-                                        <Fact label="Baggage" value={packageDetail.baggage} />
-                                    ) : null}
-                                </div>
-                            </section>
-                        )}
+                                <section className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-7">
+                                    <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-[#111]">
+                                        <Plane className="h-5 w-5" />
+                                        Flight details
+                                    </h2>
+                                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                                        {packageDetail.airline ? (
+                                            <Fact label="Airline" value={packageDetail.airline} />
+                                        ) : null}
+                                        {packageDetail.flightType ? (
+                                            <Fact label="Flight type" value={packageDetail.flightType} />
+                                        ) : null}
+                                        {packageDetail.baggage ? (
+                                            <Fact label="Baggage" value={packageDetail.baggage} />
+                                        ) : null}
+                                    </div>
+                                </section>
+                            )}
 
                         {packageDetail.hotels.length > 0 ? (
                             <section className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-7">
@@ -288,45 +288,45 @@ export function PackageDetailContent({
 
                         {(packageDetail.includes.length > 0 ||
                             packageDetail.excludes.length > 0) && (
-                            <section className="grid gap-4 md:grid-cols-2">
-                                {packageDetail.includes.length > 0 ? (
-                                    <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6">
-                                        <h2 className="text-lg font-semibold text-[#111]">
-                                            Includes
-                                        </h2>
-                                        <ul className="mt-3 space-y-2">
-                                            {packageDetail.includes.map((item) => (
-                                                <li
-                                                    key={item}
-                                                    className="flex items-start gap-2 text-sm text-[#555]"
-                                                >
-                                                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                                                    <span>{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ) : null}
-                                {packageDetail.excludes.length > 0 ? (
-                                    <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6">
-                                        <h2 className="text-lg font-semibold text-[#111]">
-                                            Excludes
-                                        </h2>
-                                        <ul className="mt-3 space-y-2">
-                                            {packageDetail.excludes.map((item) => (
-                                                <li
-                                                    key={item}
-                                                    className="flex items-start gap-2 text-sm text-[#555]"
-                                                >
-                                                    <span className="mt-0.5 text-[#999]">—</span>
-                                                    <span>{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ) : null}
-                            </section>
-                        )}
+                                <section className="grid gap-4 md:grid-cols-2">
+                                    {packageDetail.includes.length > 0 ? (
+                                        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6">
+                                            <h2 className="text-lg font-semibold text-[#111]">
+                                                Includes
+                                            </h2>
+                                            <ul className="mt-3 space-y-2">
+                                                {packageDetail.includes.map((item) => (
+                                                    <li
+                                                        key={item}
+                                                        className="flex items-start gap-2 text-sm text-[#555]"
+                                                    >
+                                                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ) : null}
+                                    {packageDetail.excludes.length > 0 ? (
+                                        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6">
+                                            <h2 className="text-lg font-semibold text-[#111]">
+                                                Excludes
+                                            </h2>
+                                            <ul className="mt-3 space-y-2">
+                                                {packageDetail.excludes.map((item) => (
+                                                    <li
+                                                        key={item}
+                                                        className="flex items-start gap-2 text-sm text-[#555]"
+                                                    >
+                                                        <span className="mt-0.5 text-[#999]">—</span>
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ) : null}
+                                </section>
+                            )}
 
                         {(packageDetail.notes || packageDetail.terms) && (
                             <section className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-7">
@@ -398,9 +398,9 @@ export function PackageDetailContent({
                                     variant === 'temp3'
                                         ? 'mt-5 flex w-full items-center justify-center rounded-xl bg-[#0A2F53] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0c3a66]'
                                         : primaryButtonClass(
-                                              variant,
-                                              'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
-                                          )
+                                            variant,
+                                            'mt-5 flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold'
+                                        )
                                 }
                             >
                                 Request booking

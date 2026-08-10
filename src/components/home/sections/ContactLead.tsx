@@ -82,72 +82,78 @@ export function ContactLead({
 
     if (variant === 'temp3') {
         return (
-            <section className="t3-section t3-section-navy relative overflow-hidden">
-                {background ? (
-                    <div
-                        className="pointer-events-none absolute inset-0 opacity-25"
-                        style={{
-                            backgroundImage: `url(${background})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                        }}
-                    />
-                ) : null}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-t3-navy via-t3-navy/95 to-[#132445]" />
+            <section className="t3-section t3-section-cream">
+                <div className="t3-wrap">
+                    <div className="relative overflow-hidden rounded-[20px] bg-t3-navy text-t3-cream shadow-[0_16px_40px_rgba(14,27,51,0.12)] md:rounded-[24px]">
+                        {background ? (
+                            <div
+                                className="pointer-events-none absolute inset-0 opacity-25"
+                                style={{
+                                    backgroundImage: `url(${background})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                }}
+                            />
+                        ) : null}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-t3-navy via-t3-navy/95 to-[#132445]" />
 
-                <div className="t3-wrap relative z-10">
-                    <div className="grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
-                        <div className="flex flex-col justify-center py-2 lg:py-6">
-                            <p className="t3-eyebrow t3-eyebrow-on-navy">
-                                {data.eyebrow || 'Booking'}
-                            </p>
-                            <h2 className="t3-title t3-title-on-navy text-left">
-                                {data.title}
-                            </h2>
-                            <p className="t3-sub t3-sub-on-navy max-w-md text-left">
-                                {data.paragraphs?.[0]}
-                            </p>
+                        <div className="relative z-10 px-5 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14 lg:px-12">
+                            <div className="grid items-stretch gap-8 lg:grid-cols-2 lg:gap-10">
+                                <div className="flex flex-col justify-center py-2 lg:py-6">
+                                    <p className="t3-eyebrow t3-eyebrow-on-navy">
+                                        {data.eyebrow || 'Booking'}
+                                    </p>
+                                    <h2 className="t3-title t3-title-on-navy text-left">
+                                        {data.title}
+                                    </h2>
+                                    <p className="t3-sub t3-sub-on-navy max-w-md text-left">
+                                        {data.paragraphs?.[0]}
+                                    </p>
 
-                            {data.promoHighlight ? (
-                                <p className="mt-6 inline-flex w-fit items-center rounded-full border border-t3-gold/40 bg-t3-gold/10 px-4 py-2 font-ui text-sm font-semibold text-t3-gold">
-                                    {data.promoHighlight}
-                                </p>
-                            ) : null}
+                                    {data.promoHighlight ? (
+                                        <p className="mt-6 inline-flex w-fit items-center rounded-full border border-t3-gold/40 bg-t3-gold/10 px-4 py-2 font-ui text-sm font-semibold text-t3-gold">
+                                            {data.promoHighlight}
+                                        </p>
+                                    ) : null}
 
-                            {data.cta?.href ? (
-                                <div className="mt-8">
-                                    <AgencyLink
-                                        href={data.cta.href}
-                                        className="inline-flex items-center justify-center rounded-full bg-[#E89C5D] px-6 py-3 font-ui text-sm font-semibold text-white transition hover:bg-[#d8894a]"
-                                    >
-                                        {data.cta.label}
-                                    </AgencyLink>
+                                    {data.cta?.href ? (
+                                        <div className="mt-8">
+                                            <AgencyLink
+                                                href={data.cta.href}
+                                                className="inline-flex items-center justify-center rounded-full bg-[#E89C5D] px-6 py-3 font-ui text-sm font-semibold text-white transition hover:bg-[#d8894a]"
+                                            >
+                                                {data.cta.label}
+                                            </AgencyLink>
+                                        </div>
+                                    ) : null}
+
+                                    {data.paragraphs?.[1] ? (
+                                        <p className="mt-8 max-w-md font-ui text-sm leading-relaxed text-t3-muted">
+                                            {data.paragraphs[1]}
+                                        </p>
+                                    ) : null}
                                 </div>
-                            ) : null}
 
-                            {data.paragraphs?.[1] ? (
-                                <p className="mt-8 max-w-md font-ui text-sm leading-relaxed text-t3-muted">
-                                    {data.paragraphs[1]}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div className="min-w-0 rounded-[16px] bg-white p-5 shadow-[0_24px_60px_rgba(0,0,0,0.25)] sm:p-7 md:p-8">
-                            <Suspense
-                                fallback={
-                                    <div className="h-64 animate-pulse rounded-[14px] bg-t3-navy/5" />
-                                }
-                            >
-                                <BookingRequestForm
-                                    agencyId={agencyId}
-                                    capabilities={capabilities}
-                                    title={form.title}
-                                    subtitle={form.subtitle}
-                                    submitLabel={form.submitLabel || 'Send Message'}
-                                    compact
-                                    className="rounded-[16px] border-0 bg-transparent p-0 shadow-none md:p-0"
-                                />
-                            </Suspense>
+                                <div className="min-w-0 rounded-[16px] bg-white p-5 shadow-[0_24px_60px_rgba(0,0,0,0.25)] sm:p-7 md:p-8">
+                                    <Suspense
+                                        fallback={
+                                            <div className="h-64 animate-pulse rounded-[14px] bg-t3-navy/5" />
+                                        }
+                                    >
+                                        <BookingRequestForm
+                                            agencyId={agencyId}
+                                            capabilities={capabilities}
+                                            title={form.title}
+                                            subtitle={form.subtitle}
+                                            submitLabel={
+                                                form.submitLabel || 'Send Message'
+                                            }
+                                            compact
+                                            className="rounded-[16px] border-0 bg-transparent p-0 shadow-none md:p-0"
+                                        />
+                                    </Suspense>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

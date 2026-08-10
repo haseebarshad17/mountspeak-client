@@ -29,7 +29,7 @@ export function BookingRequestPageContent({
 }) {
     const variant = useTemplateVariant()
     const classic = isClassicTemplate(variant)
-    const backHref = kind === 'umrah' ? '/packages' : '/tours'
+    const backHref = kind === 'umrah' ? '/packages' : '/international'
     const form = (
         <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-white" />}>
             <BookingRequestForm
