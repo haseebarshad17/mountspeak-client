@@ -25,8 +25,8 @@ export function Temp3PageHero({
         size === 'tall'
             ? 'min-h-[62vh] md:min-h-[68vh]'
             : size === 'compact'
-              ? 'min-h-[280px] md:min-h-[340px]'
-              : 'min-h-[42vh] md:min-h-[48vh]'
+                ? 'min-h-[280px] md:min-h-[340px]'
+                : 'min-h-[42vh] md:min-h-[48vh]'
 
     return (
         <section

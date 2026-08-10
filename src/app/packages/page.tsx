@@ -48,7 +48,7 @@ export default async function PackagesPage() {
             <ListingPageExtras kindLabel="Packages" />
             <ListingPageContent
                 capabilities={capabilities}
-                allowedKinds={['packages', 'international']}
+                allowedKinds={['packages']}
                 listingsByKind={listingsByKind}
                 agencyId={homepage.agencyId}
             />

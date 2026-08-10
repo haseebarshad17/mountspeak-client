@@ -277,7 +277,7 @@ export function TourBookingWizard({
     page,
     capabilities,
     tour,
-    initialAdults = 2,
+    initialAdults = 0,
     initialChildren = 0,
     initialSlotId = null,
 }: {
@@ -326,7 +326,7 @@ export function TourBookingWizard({
         }
         return availableSlots.length === 1 ? availableSlots[0].id : ''
     })
-    const [maleSeats, setMaleSeats] = useState(Math.max(1, initialAdults))
+    const [maleSeats, setMaleSeats] = useState(Math.max(0, initialAdults))
     const [femaleSeats, setFemaleSeats] = useState(0)
     const [kidsSeats, setKidsSeats] = useState(Math.max(0, initialChildren))
     const [idFront, setIdFront] = useState<File | null>(null)

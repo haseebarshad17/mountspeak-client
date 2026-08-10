@@ -12,7 +12,6 @@ import {
     Minus,
     Mountain,
     Plus,
-    Users,
 } from 'lucide-react'
 import { AgencyLink } from '@/components/links/AgencyLink'
 import { SaveListingButton } from '@/components/listings/SaveListingButton'
@@ -67,7 +66,7 @@ export function TourDetailContent({
     tour: TourDetail
     agencyId: string
 }) {
-    const [adults, setAdults] = useState(2)
+    const [adults, setAdults] = useState(0)
     const [children, setChildren] = useState(0)
     const [galleryOpen, setGalleryOpen] = useState(false)
     const variant = useTemplateVariant()
@@ -718,7 +717,7 @@ export function TourDetailContent({
                                                 type="button"
                                                 aria-label="Fewer adults"
                                                 onClick={() =>
-                                                    setAdults((v) => Math.max(1, v - 1))
+                                                    setAdults((v) => Math.max(0, v - 1))
                                                 }
                                                 className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10"
                                             >
@@ -808,28 +807,6 @@ export function TourDetailContent({
                                         </p>
                                         <p className="text-[10px] text-white/70">Status</p>
                                     </div>
-                                </div>
-
-                                <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-black/[0.06] p-3">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3EDE3] text-[#8B6B3D]">
-                                            <Users className="h-4 w-4" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-[#1A1F2C]">
-                                                Talk to an expert
-                                            </p>
-                                            <p className="text-xs text-[#6B7280]">
-                                                Get trip advice
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <AgencyLink
-                                        href="/contact-us"
-                                        className="rounded-full bg-[#C5A059] px-3 py-1.5 text-xs font-semibold text-white"
-                                    >
-                                        Callback
-                                    </AgencyLink>
                                 </div>
 
                                 {tour.elevationM ? (

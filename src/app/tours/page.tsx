@@ -36,19 +36,19 @@ export default async function ToursPage() {
         <MarketingPageShell
             page={homepage.page}
             title="Tours"
-            subtitle="Discover curated local and international journeys tailored to your agency plan."
+            subtitle="Discover curated local journeys tailored to your agency plan."
             capabilities={capabilities}
             agencyId={homepage.agencyId}
             heroSize="default"
             heroActions={[
-                { label: 'Search trips', href: '/search' },
+                { label: 'Search trips', href: '/search?kind=tours' },
                 { label: 'Contact us', href: '/contact-us', variant: 'ghost' },
             ]}
         >
             <ListingPageExtras kindLabel="Tours" />
             <ListingPageContent
                 capabilities={capabilities}
-                allowedKinds={['tours', 'international']}
+                allowedKinds={['tours']}
                 listingsByKind={listingsByKind}
                 agencyId={homepage.agencyId}
             />

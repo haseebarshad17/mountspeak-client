@@ -73,7 +73,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
                 page={homepage.page}
                 capabilities={capabilities}
                 tour={option}
-                initialAdults={Number.isFinite(adults) && adults > 0 ? adults : 2}
+                initialAdults={Number.isFinite(adults) && adults > 0 ? adults : 0}
                 initialChildren={
                     Number.isFinite(children) && children >= 0 ? children : 0
                 }

@@ -51,11 +51,14 @@ function specializationSiteMap(
 ): NavItem[] {
     const items: NavItem[] = [{ label: 'Home', href: '/' }]
 
+    if (!capabilities || capabilities.hasTours) {
+        items.push({ label: 'Tours', href: '/tours' })
+    }
     if (!capabilities || capabilities.hasPackages) {
         items.push({ label: 'Packages', href: '/packages' })
     }
-    if (!capabilities || capabilities.hasTours || capabilities.hasInternational) {
-        items.push({ label: 'Tours', href: '/tours' })
+    if (!capabilities || capabilities.hasInternational) {
+        items.push({ label: 'International', href: '/international' })
     }
 
     items.push(
@@ -83,11 +86,10 @@ function filterBySpecialization(
             return !capabilities || capabilities.hasPackages
         }
         if (href === '/tours' || label === 'tours') {
-            return (
-                !capabilities ||
-                capabilities.hasTours ||
-                capabilities.hasInternational
-            )
+            return !capabilities || capabilities.hasTours
+        }
+        if (href === '/international' || label === 'international') {
+            return !capabilities || capabilities.hasInternational
         }
         return true
     })
