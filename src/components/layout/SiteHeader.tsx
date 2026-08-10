@@ -55,7 +55,7 @@ export function BrandMark({
             <img
                 src={logoSrc}
                 alt={brand}
-                className={cn('h-9 w-auto max-w-full object-contain', className)}
+                className={cn('h-11 w-auto max-w-full object-contain', className)}
             />
         )
     }

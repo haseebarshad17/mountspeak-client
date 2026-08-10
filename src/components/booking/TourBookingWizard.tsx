@@ -985,7 +985,7 @@ export function TourBookingWizard({
                     </div>
                 </div>
             </main>
-            <SiteFooter page={page} agencyId={tour.agencyId} />
+            <SiteFooter page={page} agencyId={tour.agencyId} capabilities={capabilities} />
         </>
     )
 }

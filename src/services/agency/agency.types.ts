@@ -63,6 +63,33 @@ export type HomepageFooter = {
     }
 }
 
+export type LegalDocument = {
+    title: string
+    subtitle?: string
+    lastUpdated?: string
+    sections: Array<{
+        heading: string
+        body: string
+    }>
+}
+
+export type FaqItem = {
+    question: string
+    answer: string
+}
+
+export type FaqPageContent = {
+    title: string
+    subtitle?: string
+    items: FaqItem[]
+}
+
+export type AgencySitePages = {
+    privacyPolicy?: LegalDocument
+    termsOfService?: LegalDocument
+    faq?: FaqPageContent
+}
+
 export type HomepageHeader = {
     navigation: NavItem[]
     auth: {
@@ -260,6 +287,8 @@ export type HomepagePage = {
     header?: HomepageHeader
     footer: HomepageFooter
     sections: HomepageSections
+    /** Optional CMS pages: privacy, terms, FAQ — from admin theme JSON. */
+    pages?: AgencySitePages
 }
 
 export type HomepageDocument = {

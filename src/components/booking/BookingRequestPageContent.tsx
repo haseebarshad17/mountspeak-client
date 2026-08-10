@@ -79,7 +79,7 @@ export function BookingRequestPageContent({
                         </div>
                     </section>
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -106,7 +106,7 @@ export function BookingRequestPageContent({
                     <div className="mt-8">{form}</div>
                 </div>
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

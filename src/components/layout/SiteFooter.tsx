@@ -14,23 +14,179 @@ import { resolveThemeAssetUrl } from '@/lib/media/resolve-theme-asset'
 import { isValidAgencyId } from '@/services/specialization/specialization.service'
 import { useCreateSubscription } from '@/services/subscribe/subscribe.query'
 import type { HomepagePage, NavItem } from '@/services/agency/agency.types'
+import type { AgencySpecializationCapabilities } from '@/services/specialization/specialization.types'
 import { cn } from '@/lib/utils/cn'
 
-const FALLBACK_LINKS: NavItem[] = [
-    { label: 'Tours', href: '/tours' },
-    { label: 'Services', href: '/services' },
-]
-
-const FALLBACK_SUPPORT: NavItem[] = [
-    { label: 'About us', href: '/about-us' },
-    { label: 'Contact', href: '/contact-us' },
-    { label: 'Home', href: '/' },
+const FALLBACK_LEGAL: NavItem[] = [
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Terms of Service', href: '/terms-of-service' },
 ]
 
 function columnItems(
     column?: { items?: NavItem[]; links?: NavItem[] } | null
 ): NavItem[] {
     return column?.items ?? column?.links ?? []
+}
+
+function columnKey(title: string) {
+    return title.trim().toLowerCase()
+}
+
+function isSiteMapColumn(title: string) {
+    const key = columnKey(title)
+    return key === 'site map' || key === 'sitemap' || key === 'links'
+}
+
+function isLegalColumn(title: string) {
+    return columnKey(title) === 'legal'
+}
+
+function isContactColumn(title: string) {
+    return columnKey(title) === 'contact'
+}
+
+/** Same specialization gates as the header nav. */
+function specializationSiteMap(
+    capabilities?: AgencySpecializationCapabilities
+): NavItem[] {
+    const items: NavItem[] = [{ label: 'Home', href: '/' }]
+
+    if (!capabilities || capabilities.hasPackages) {
+        items.push({ label: 'Packages', href: '/packages' })
+    }
+    if (!capabilities || capabilities.hasTours || capabilities.hasInternational) {
+        items.push({ label: 'Tours', href: '/tours' })
+    }
+
+    items.push(
+        { label: 'Services', href: '/services' },
+        { label: 'About Us', href: '/about-us' },
+        { label: 'FAQ', href: '/faq' },
+        { label: 'Contact', href: '/contact-us' }
+    )
+
+    return items
+}
+
+function filterBySpecialization(
+    items: NavItem[],
+    capabilities?: AgencySpecializationCapabilities
+): NavItem[] {
+    return items.filter((item) => {
+        const href = item.href?.trim() || ''
+        const label = item.label?.trim().toLowerCase() || ''
+
+        // No /discover route on this site.
+        if (href === '/discover' || label === 'discover') return false
+
+        if (href === '/packages' || label === 'packages') {
+            return !capabilities || capabilities.hasPackages
+        }
+        if (href === '/tours' || label === 'tours') {
+            return (
+                !capabilities ||
+                capabilities.hasTours ||
+                capabilities.hasInternational
+            )
+        }
+        return true
+    })
+}
+
+function ensureLink(
+    items: NavItem[],
+    link: NavItem,
+    afterLabel?: string
+): NavItem[] {
+    const exists = items.some(
+        (item) =>
+            item.href?.trim() === link.href ||
+            item.label?.trim().toLowerCase() === link.label.trim().toLowerCase()
+    )
+    if (exists) return items
+
+    if (afterLabel) {
+        const index = items.findIndex(
+            (item) =>
+                item.label?.trim().toLowerCase() === afterLabel.toLowerCase()
+        )
+        if (index >= 0) {
+            return [
+                ...items.slice(0, index + 1),
+                link,
+                ...items.slice(index + 1),
+            ]
+        }
+    }
+
+    return [...items, link]
+}
+
+function buildFooterColumns(
+    footerColumns: HomepagePage['footer']['columns'] | undefined,
+    capabilities?: AgencySpecializationCapabilities
+) {
+    const cmsColumns = (footerColumns ?? [])
+        .map((column) => ({
+            title: column.title,
+            items: filterBySpecialization(
+                columnItems(column).filter((item) => item.label?.trim()),
+                capabilities
+            ),
+        }))
+        .filter((column) => column.items.length > 0)
+
+    const siteMapFromCms = cmsColumns.find((column) =>
+        isSiteMapColumn(column.title)
+    )
+    const legalFromCms = cmsColumns.find((column) => isLegalColumn(column.title))
+    const contactFromCms = cmsColumns.find((column) =>
+        isContactColumn(column.title)
+    )
+    const otherCms = cmsColumns.filter(
+        (column) =>
+            !isSiteMapColumn(column.title) &&
+            !isLegalColumn(column.title) &&
+            !isContactColumn(column.title)
+    )
+
+    let siteMapItems = siteMapFromCms?.items?.length
+        ? [...siteMapFromCms.items]
+        : specializationSiteMap(capabilities)
+
+    siteMapItems = ensureLink(
+        siteMapItems,
+        { label: 'Services', href: '/services' },
+        'Tours'
+    )
+    siteMapItems = ensureLink(siteMapItems, { label: 'FAQ', href: '/faq' }, 'About Us')
+    siteMapItems = filterBySpecialization(siteMapItems, capabilities)
+
+    const legalItems = legalFromCms?.items?.length
+        ? ensureLink(
+              ensureLink(legalFromCms.items, {
+                  label: 'Privacy Policy',
+                  href: '/privacy-policy',
+              }),
+              { label: 'Terms of Service', href: '/terms-of-service' }
+          )
+        : FALLBACK_LEGAL
+
+    const columns: Array<{ title: string; items: NavItem[] }> = [
+        {
+            title: siteMapFromCms?.title || 'Site Map',
+            items: siteMapItems,
+        },
+        {
+            title: legalFromCms?.title || 'Legal',
+            items: legalItems,
+        },
+    ]
+
+    if (contactFromCms) columns.push(contactFromCms)
+    columns.push(...otherCms)
+
+    return columns
 }
 
 function isExternalHref(href: string) {
@@ -78,9 +234,11 @@ type SocialItem = {
 export function SiteFooter({
     page,
     agencyId,
+    capabilities,
 }: {
     page: HomepagePage
     agencyId?: string
+    capabilities?: AgencySpecializationCapabilities
 }) {
     const variant = useTemplateVariant()
     const { footer, branding } = page
@@ -92,26 +250,10 @@ export function SiteFooter({
     const [email, setEmail] = useState('')
     const { mutateAsync: subscribe, isPending } = useCreateSubscription()
 
-    const columns = useMemo(() => {
-        const cmsColumns = (footer.columns ?? [])
-            .map((column) => ({
-                title: column.title,
-                items: columnItems(column).filter((item) => item.label?.trim()),
-            }))
-            .filter((column) => column.items.length > 0)
-
-        return [
-            {
-                title: 'Links',
-                items: FALLBACK_LINKS,
-            },
-            {
-                title: 'Support',
-                items: FALLBACK_SUPPORT,
-            },
-            ...cmsColumns,
-        ]
-    }, [footer.columns])
+    const columns = useMemo(
+        () => buildFooterColumns(footer.columns, capabilities),
+        [footer.columns, capabilities]
+    )
 
     const socialItems = useMemo(() => {
         const items: SocialItem[] = []
@@ -196,7 +338,7 @@ export function SiteFooter({
                                     <img
                                         src={logoSrc}
                                         alt={footer.logo?.alt || branding.name}
-                                        className="h-9 w-auto max-w-[200px] object-contain"
+                                        className="h-12 w-auto max-w-[240px] object-contain"
                                     />
                                 ) : (
                                     <p className="text-xl font-semibold tracking-tight">
@@ -306,7 +448,7 @@ export function SiteFooter({
                                     <img
                                         src={logoSrc}
                                         alt={footer.logo?.alt || branding.name}
-                                        className="h-10 w-auto max-w-[200px] object-contain"
+                                        className="h-12 w-auto max-w-[240px] object-contain"
                                     />
                                 ) : (
                                     <p className="font-display text-xl font-semibold tracking-tight text-t3-cream">
@@ -410,7 +552,7 @@ export function SiteFooter({
                             <img
                                 src={logoSrc}
                                 alt={footer.logo?.alt || branding.name}
-                                className="h-9 w-auto max-w-[200px] object-contain"
+                                className="h-12 w-auto max-w-[240px] object-contain"
                             />
                         ) : (
                             <p className="text-xl font-semibold tracking-tight">

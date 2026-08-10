@@ -60,7 +60,7 @@ export function MarketingPageShell({
                     />
                     {children}
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -80,7 +80,7 @@ export function MarketingPageShell({
                     />
                     {children}
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -102,7 +102,7 @@ export function MarketingPageShell({
                 </section>
                 {children}
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

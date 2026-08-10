@@ -6,19 +6,23 @@ import { Temp3SectionHeader } from '@/components/home/Temp3SectionHeader'
 import { useTemplateVariant } from '@/hooks/useTemplateVariant'
 import { accentSolidClass, primaryButtonClass } from '@/lib/templates/chrome'
 import { cn } from '@/lib/utils/cn'
+import type { HomepagePage } from '@/services/agency/agency.types'
 
-const FAQS = [
+const FALLBACK_FAQS = [
     {
-        q: 'How quickly do you reply?',
-        a: 'Most inquiries receive a response within one business day — often sooner for active booking requests.',
+        question: 'How quickly do you reply?',
+        answer:
+            'Most inquiries receive a response within one business day — often sooner for active booking requests.',
     },
     {
-        q: 'Can you customize a package?',
-        a: 'Yes. Share your dates, group size, and preferences and we’ll suggest a tailored plan.',
+        question: 'Can you customize a package?',
+        answer:
+            'Yes. Share your dates, group size, and preferences and we’ll suggest a tailored plan.',
     },
     {
-        q: 'Do you help with bookings too?',
-        a: 'Absolutely. From tour booking to package requests, our team guides you through the next steps.',
+        question: 'Do you help with bookings too?',
+        answer:
+            'Absolutely. From tour booking to package requests, our team guides you through the next steps.',
     },
 ]
 
@@ -53,8 +57,11 @@ function ContactForm({
     )
 }
 
-export function ContactPageContent() {
+export function ContactPageContent({ page }: { page?: HomepagePage }) {
     const variant = useTemplateVariant()
+    const faqs =
+        page?.pages?.faq?.items?.length ? page.pages.faq.items : FALLBACK_FAQS
+    const faqTitle = page?.pages?.faq?.title || 'Common questions'
 
     if (variant === 'temp3') {
         const fieldClass =
@@ -124,20 +131,20 @@ export function ContactPageContent() {
                     <div className="t3-wrap">
                         <Temp3SectionHeader
                             eyebrow="FAQ"
-                            title="Common questions"
+                            title={faqTitle}
                             tone="cream"
                         />
                         <div className="mx-auto grid max-w-4xl gap-4">
-                            {FAQS.map((item) => (
+                            {faqs.map((item) => (
                                 <article
-                                    key={item.q}
+                                    key={item.question}
                                     className="rounded-[14px] border border-t3-navy/10 bg-white p-5 shadow-[0_10px_30px_rgba(14,27,51,0.05)] md:p-6"
                                 >
                                     <h3 className="font-display text-base font-semibold text-t3-navy">
-                                        {item.q}
+                                        {item.question}
                                     </h3>
                                     <p className="mt-2 font-ui text-sm leading-relaxed text-t3-dim">
-                                        {item.a}
+                                        {item.answer}
                                     </p>
                                 </article>
                             ))}
@@ -222,20 +229,20 @@ export function ContactPageContent() {
                         <div className="mx-auto mb-10 max-w-2xl text-center">
                             <p className="text-brand text-sm font-medium uppercase">FAQ</p>
                             <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#111] md:text-4xl">
-                                Common questions
+                                {faqTitle}
                             </h2>
                         </div>
                         <div className="mx-auto grid max-w-4xl gap-4">
-                            {FAQS.map((item) => (
+                            {faqs.map((item) => (
                                 <article
-                                    key={item.q}
+                                    key={item.question}
                                     className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:p-6"
                                 >
                                     <h3 className="text-base font-semibold text-[#111]">
-                                        {item.q}
+                                        {item.question}
                                     </h3>
                                     <p className="mt-2 text-sm leading-relaxed text-[#666]">
-                                        {item.a}
+                                        {item.answer}
                                     </p>
                                 </article>
                             ))}

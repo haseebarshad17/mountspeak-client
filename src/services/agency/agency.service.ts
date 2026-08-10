@@ -45,6 +45,22 @@ function normalizeHomepagePage(page: Record<string, unknown>): HomepagePage {
             ...defaultsPage.footer,
             ...((page.footer as HomepagePage['footer']) ?? {}),
         },
+        pages: {
+            ...defaultsPage.pages,
+            ...((page.pages as HomepagePage['pages']) ?? {}),
+            privacyPolicy: {
+                ...defaultsPage.pages?.privacyPolicy,
+                ...((page.pages as HomepagePage['pages'])?.privacyPolicy ?? {}),
+            },
+            termsOfService: {
+                ...defaultsPage.pages?.termsOfService,
+                ...((page.pages as HomepagePage['pages'])?.termsOfService ?? {}),
+            },
+            faq: {
+                ...defaultsPage.pages?.faq,
+                ...((page.pages as HomepagePage['pages'])?.faq ?? {}),
+            },
+        },
     } as HomepagePage
 }
 

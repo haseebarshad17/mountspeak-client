@@ -17,7 +17,7 @@ export default async function ContactUsPage() {
                 { label: 'View tours', href: '/tours', variant: 'ghost' },
             ]}
         >
-            <ContactPageContent />
+            <ContactPageContent page={homepage.page} />
         </MarketingPageShell>
     )
 }

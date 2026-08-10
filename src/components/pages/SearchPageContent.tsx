@@ -254,7 +254,7 @@ export function SearchPageContent({
                         </div>
                     </section>
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -388,7 +388,7 @@ export function SearchPageContent({
                     </div>
                 </section>
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

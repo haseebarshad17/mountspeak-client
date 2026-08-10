@@ -910,7 +910,7 @@ export function TourDetailContent({
                     </div>
                 ) : null}
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

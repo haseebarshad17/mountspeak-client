@@ -97,7 +97,7 @@ export function HomePage({
                     <Testimonials data={sections.testimonials} />
                 ) : null}
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

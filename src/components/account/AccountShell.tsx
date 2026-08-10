@@ -65,7 +65,7 @@ export function AccountShell({
                 <main className="site-bg flex min-h-[60vh] items-center justify-center">
                     <div className="h-9 w-9 animate-pulse rounded-full bg-[color-mix(in_srgb,var(--color-brand)_20%,transparent)]" />
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -91,7 +91,7 @@ export function AccountShell({
                         </div>
                     </section>
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -121,7 +121,7 @@ export function AccountShell({
                         </div>
                     </section>
                 </main>
-                <SiteFooter page={page} agencyId={agencyId} />
+                <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
             </>
         )
     }
@@ -143,7 +143,7 @@ export function AccountShell({
                     </div>
                 </div>
             </main>
-            <SiteFooter page={page} agencyId={agencyId} />
+            <SiteFooter page={page} agencyId={agencyId} capabilities={capabilities} />
         </>
     )
 }

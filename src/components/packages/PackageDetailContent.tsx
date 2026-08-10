@@ -409,7 +409,7 @@ export function PackageDetailContent({
                     </aside>
                 </section>
             </main>
-            <SiteFooter page={page} />
+            <SiteFooter page={page} capabilities={capabilities} />
         </>
     )
 }

@@ -64,6 +64,25 @@
       },
       "columns": [
         {
+          "title": "Site Map",
+          "items": [
+            { "label": "Home", "href": "/" },
+            { "label": "Packages", "href": "/packages" },
+            { "label": "Tours", "href": "/tours" },
+            { "label": "Services", "href": "/services" },
+            { "label": "About Us", "href": "/about-us" },
+            { "label": "FAQ", "href": "/faq" },
+            { "label": "Contact", "href": "/contact-us" }
+          ]
+        },
+        {
+          "title": "Legal",
+          "items": [
+            { "label": "Privacy Policy", "href": "/privacy-policy" },
+            { "label": "Terms of Service", "href": "/terms-of-service" }
+          ]
+        },
+        {
           "title": "Contact",
           "items": [
             {
@@ -94,6 +113,76 @@
         "facebook": "https://facebook.com",
         "linkedin": "https://linkedin.com",
         "instagram": "https://instagram.com"
+      }
+    },
+    "pages": {
+      "privacyPolicy": {
+        "title": "Privacy Policy",
+        "subtitle": "How we collect, use, and protect your information when you travel with us.",
+        "lastUpdated": "August 2026",
+        "sections": [
+          {
+            "heading": "Information we collect",
+            "body": "We collect details you share during booking and contact — such as name, email, phone, travel preferences, and payment proof — so we can process your trip and support you."
+          },
+          {
+            "heading": "How we use your information",
+            "body": "Your information is used to confirm bookings, coordinate travel logistics, send updates, and improve our services. We do not sell your personal data."
+          },
+          {
+            "heading": "Sharing and security",
+            "body": "We may share necessary details with trusted partners (hotels, transport, payment providers) only to fulfill your booking. We take reasonable steps to protect your data."
+          },
+          {
+            "heading": "Your choices",
+            "body": "You may request access, correction, or deletion of your personal information by contacting us. Newsletter subscriptions can be stopped at any time."
+          }
+        ]
+      },
+      "termsOfService": {
+        "title": "Terms of Service",
+        "subtitle": "The guidelines that apply when you browse, book, or request travel services with us.",
+        "lastUpdated": "August 2026",
+        "sections": [
+          {
+            "heading": "Bookings and payments",
+            "body": "Tour and package bookings are subject to availability, pricing, and advance payment rules shown at checkout. Submitting a booking request does not guarantee confirmation until the agency accepts it."
+          },
+          {
+            "heading": "Traveler responsibilities",
+            "body": "You are responsible for providing accurate traveler details, valid identity documents, and timely payment. Please review inclusions, exclusions, and departure dates before confirming."
+          },
+          {
+            "heading": "Cancellations and changes",
+            "body": "Cancellation and change policies vary by tour or package. Any fees, refunds, or reschedule options will follow the terms shared for that departure."
+          },
+          {
+            "heading": "Limitation of liability",
+            "body": "We work carefully to deliver a smooth experience, but we are not liable for delays, weather, partner disruptions, or events outside our reasonable control."
+          }
+        ]
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "subtitle": "Quick answers about bookings, customization, and how we support your trip.",
+        "items": [
+          {
+            "question": "How quickly do you reply?",
+            "answer": "Most inquiries receive a response within one business day — often sooner for active booking requests."
+          },
+          {
+            "question": "Can you customize a package?",
+            "answer": "Yes. Share your dates, group size, and preferences and we’ll suggest a tailored plan."
+          },
+          {
+            "question": "Do you help with bookings too?",
+            "answer": "Absolutely. From tour booking to package requests, our team guides you through the next steps."
+          },
+          {
+            "question": "Where can I see available tours or packages?",
+            "answer": "Use Tours or Packages in the navigation, depending on this agency’s specializations. You can also search by destination and dates from the homepage."
+          }
+        ]
       }
     },
     "sections": {
