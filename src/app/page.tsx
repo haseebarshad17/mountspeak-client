@@ -6,6 +6,7 @@ import { fetchTourLocationOptions } from '@/services/tours/tours.server'
 import type { Metadata, Viewport } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
+
     const agencyHomepage = await fetchAgencyHomepage()
 
     try {
